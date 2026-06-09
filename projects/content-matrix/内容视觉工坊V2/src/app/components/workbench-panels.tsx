@@ -2,7 +2,6 @@ import type { ChangeEvent, RefObject } from "react";
 import {
   Activity,
   ClipboardCopy,
-  History,
   Image as ImageIcon,
   Lock,
   Pencil,
@@ -12,12 +11,18 @@ import {
 } from "lucide-react";
 import { Btn, COLORS, FoggyArt, Tag } from "./ui-kit";
 import type { CardPlan } from "../content-planning";
-import type { GeneratedImageItem } from "../workspace";
+import type {
+  GeneratedImageItem,
+  WorkbenchStatusMessage,
+  WorkbenchTaskState,
+} from "../workspace";
+import { formatScopeLabel } from "./use-workbench-controller";
 
 type KnowledgeCardStatus = {
   edited?: boolean;
   replaced?: boolean;
   regenerated?: boolean;
+  needsRegeneration?: boolean;
   updatedAt: string;
 };
 
@@ -161,6 +166,8 @@ export function KnowledgeCardResults({
 
 export function ControlTowerSidebar({
   currentArticleTitle,
+  taskState,
+  statusState,
   plannedKnowledgeCount,
   selectedQuoteCount,
   coverCount,
@@ -170,6 +177,8 @@ export function ControlTowerSidebar({
   onOpenWechat,
 }: {
   currentArticleTitle: string;
+  taskState: WorkbenchTaskState;
+  statusState: WorkbenchStatusMessage | null;
   plannedKnowledgeCount: number;
   selectedQuoteCount: number;
   coverCount: number;
@@ -225,8 +234,12 @@ export function ControlTowerSidebar({
             className="mt-1 flex items-center justify-between"
             style={{ color: COLORS.textFaint, fontSize: 11 }}
           >
-            <span>T-2406-091 · 14:32</span>
-            <span style={{ color: COLORS.blueDeep }}>生成中 · 7 / 11</span>
+            <span>{toDisplayPhase(taskState.phase)}</span>
+            <span style={{ color: statusState?.level === "error" ? "#8A5A46" : COLORS.blueDeep }}>
+              {taskState.totalTasks > 0
+                ? `${taskState.completedTasks} / ${taskState.totalTasks}`
+                : "—"}
+            </span>
           </div>
         </div>
         <div
@@ -238,8 +251,14 @@ export function ControlTowerSidebar({
           <div
             style={{
               height: "100%",
-              width: "63%",
-              background: COLORS.blueDeep,
+              width:
+                taskState.totalTasks > 0
+                  ? `${Math.max(
+                      8,
+                      Math.min(100, (taskState.completedTasks / taskState.totalTasks) * 100)
+                    )}%`
+                  : "8%",
+              background: statusState?.level === "error" ? "#C4876E" : COLORS.blueDeep,
             }}
           />
         </div>
@@ -252,8 +271,12 @@ export function ControlTowerSidebar({
             letterSpacing: "0.04em",
           }}
         >
-          <span>ETA 38s</span>
-          <span>4 张额度 · 已用 3</span>
+          <span>{taskState.currentStepLabel || "等待任务"}</span>
+          <span>
+            {taskState.totalTasks > 0
+              ? `${taskState.completedTasks} / ${taskState.totalTasks}`
+              : "本轮暂无队列"}
+          </span>
         </div>
       </div>
 
@@ -329,7 +352,7 @@ export function ControlTowerSidebar({
       </div>
 
       <div className="mt-auto pt-5">
-        <SmallLabel>最近一次动作</SmallLabel>
+        <SmallLabel>{taskState.lastError ? "最近失败点" : "最近一次动作"}</SmallLabel>
         <div
           className="mt-2 rounded px-3 py-2 flex items-center gap-2"
           style={{
@@ -339,10 +362,16 @@ export function ControlTowerSidebar({
             fontSize: 10.5,
           }}
         >
-          <Activity size={11} strokeWidth={1.6} color={COLORS.blue} />
+          <Activity
+            size={11}
+            strokeWidth={1.6}
+            color={taskState.lastError ? "#C4876E" : COLORS.blue}
+          />
           <span style={{ color: COLORS.textFaint }}>{latestGenerationTime}</span>
           <span style={{ color: COLORS.textMid }} className="truncate">
-            {latestLogText}
+            {taskState.lastError
+              ? `${formatScopeLabel(taskState.lastError.scope)} · ${taskState.lastError.text}`
+              : latestLogText}
           </span>
         </div>
       </div>
@@ -350,8 +379,17 @@ export function ControlTowerSidebar({
   );
 }
 
+function toDisplayPhase(phase: WorkbenchTaskState["phase"]) {
+  if (phase === "planning") return "拆解中";
+  if (phase === "generating") return "出图中";
+  if (phase === "completed") return "完成";
+  if (phase === "failed") return "失败";
+  return "待开始";
+}
+
 function buildStatusBadges(status: KnowledgeCardStatus | undefined, locked: boolean): StatusBadge[] {
   return [
+    status?.needsRegeneration ? { label: "需重生成", tone: "blue" as const } : null,
     status?.edited ? { label: "已编辑", tone: "warm" as const } : null,
     status?.replaced ? { label: "已替换", tone: "success" as const } : null,
     status?.regenerated ? { label: "已重生", tone: "blue" as const } : null,

@@ -47,6 +47,43 @@ export type GenerationPurposeKey =
   | "wx_inline"
   | "xhs_full";
 
+export type WorkbenchTaskPhase =
+  | "idle"
+  | "planning"
+  | "generating"
+  | "completed"
+  | "failed";
+
+export type WorkbenchStatusLevel = "info" | "success" | "error";
+
+export type WorkbenchStatusMessage = {
+  scope: string;
+  level: WorkbenchStatusLevel;
+  text: string;
+  timestamp: string;
+};
+
+export type WorkbenchTaskState = {
+  phase: WorkbenchTaskPhase;
+  currentStepLabel: string;
+  completedTasks: number;
+  totalTasks: number;
+  lastError: WorkbenchStatusMessage | null;
+  statusMessage: WorkbenchStatusMessage | null;
+};
+
+export type WorkbenchQuoteGenerationSelection = {
+  selectedQuoteIndexes: number[];
+  selectedQuoteTexts: string[];
+  generatedAtPlanningRevision: number;
+};
+
+export type WorkbenchImportedMarkdownMeta = {
+  fileName: string;
+  wordCount: number;
+  importedAt: string;
+};
+
 export type GenerationRecord = {
   id: string;
   source: "general-image";
@@ -79,6 +116,7 @@ export type WorkbenchState = {
       edited?: boolean;
       replaced?: boolean;
       regenerated?: boolean;
+      needsRegeneration?: boolean;
       updatedAt: string;
     }
   >;
@@ -93,6 +131,10 @@ export type WorkbenchState = {
       createdAt: string;
     }>
   >;
+  taskState: WorkbenchTaskState;
+  quoteGenerationSelection: WorkbenchQuoteGenerationSelection | null;
+  importedMarkdownMeta: WorkbenchImportedMarkdownMeta | null;
+  replanRevision: number;
 };
 
 type WorkspaceContextValue = {
@@ -145,6 +187,23 @@ const STORAGE_KEYS = {
   workbenchState: "content-visual-studio.workbench-state.v1",
 } as const;
 
+const DEFAULT_WORKBENCH_STATE: WorkbenchState = {
+  lockedKnowledgeCardIndexes: [],
+  knowledgeCardStatuses: {},
+  knowledgeCardHistories: {},
+  taskState: {
+    phase: "idle",
+    currentStepLabel: "",
+    completedTasks: 0,
+    totalTasks: 0,
+    lastError: null,
+    statusMessage: null,
+  },
+  quoteGenerationSelection: null,
+  importedMarkdownMeta: null,
+  replanRevision: 0,
+};
+
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
@@ -161,11 +220,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     readStoredJson(STORAGE_KEYS.planningState, null)
   );
   const [workbenchState, setWorkbenchState] = useState<WorkbenchState>(() =>
-    readStoredJson(STORAGE_KEYS.workbenchState, {
-      lockedKnowledgeCardIndexes: [],
-      knowledgeCardStatuses: {},
-      knowledgeCardHistories: {},
-    })
+    normalizeWorkbenchState(readStoredJson(STORAGE_KEYS.workbenchState, DEFAULT_WORKBENCH_STATE))
   );
 
   const currentArticleBlocks = useMemo(
@@ -256,6 +311,35 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   return (
     <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>
   );
+}
+
+function normalizeWorkbenchState(input: unknown): WorkbenchState {
+  const value = (input && typeof input === "object" ? input : {}) as Partial<WorkbenchState>;
+  const taskState = value.taskState ?? DEFAULT_WORKBENCH_STATE.taskState;
+  return {
+    lockedKnowledgeCardIndexes: Array.isArray(value.lockedKnowledgeCardIndexes)
+      ? value.lockedKnowledgeCardIndexes
+      : [],
+    knowledgeCardStatuses:
+      value.knowledgeCardStatuses && typeof value.knowledgeCardStatuses === "object"
+        ? value.knowledgeCardStatuses
+        : {},
+    knowledgeCardHistories:
+      value.knowledgeCardHistories && typeof value.knowledgeCardHistories === "object"
+        ? value.knowledgeCardHistories
+        : {},
+    taskState: {
+      phase: taskState.phase ?? "idle",
+      currentStepLabel: taskState.currentStepLabel ?? "",
+      completedTasks: taskState.completedTasks ?? 0,
+      totalTasks: taskState.totalTasks ?? 0,
+      lastError: taskState.lastError ?? null,
+      statusMessage: taskState.statusMessage ?? null,
+    },
+    quoteGenerationSelection: value.quoteGenerationSelection ?? null,
+    importedMarkdownMeta: value.importedMarkdownMeta ?? null,
+    replanRevision: value.replanRevision ?? 0,
+  };
 }
 
 export function useWorkspace() {

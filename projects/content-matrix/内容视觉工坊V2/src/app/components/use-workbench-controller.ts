@@ -1,12 +1,16 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { postGenerateImages, postPlanCards } from "../api";
-import type { PlannerRequest, SplitStrategy } from "../content-planning";
+import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
 import type {
+  GeneratedImageItem,
   GenerationPurposeKey,
   GenerationRecord,
   PlanningState,
   WorkbenchState,
+  WorkbenchStatusLevel,
+  WorkbenchStatusMessage,
+  WorkbenchTaskPhase,
   WorkspaceArticle,
   WorkspaceTab,
 } from "../workspace";
@@ -31,6 +35,7 @@ type KnowledgeCardHistorySnapshot = {
 
 type UseWorkbenchControllerArgs = {
   currentArticle: WorkspaceArticle;
+  setCurrentArticle: (article: WorkspaceArticle) => void;
   generationRecords: GenerationRecord[];
   latestGeneration: GenerationRecord | null;
   planningState: PlanningState | null;
@@ -41,8 +46,16 @@ type UseWorkbenchControllerArgs = {
   setActiveTab: (tab: WorkspaceTab) => void;
 };
 
+type ReplanSummary = {
+  preservedQuoteCount: number;
+  clearedQuoteCount: number;
+  preservedKnowledgeCount: number;
+  staleKnowledgeCount: number;
+};
+
 export function useWorkbenchController({
   currentArticle,
+  setCurrentArticle,
   generationRecords,
   latestGeneration,
   planningState,
@@ -68,9 +81,6 @@ export function useWorkbenchController({
   const [minCards, setMinCards] = useState(2);
   const [maxCards, setMaxCards] = useState(6);
   const [selectedQuotes, setSelectedQuotes] = useState<number[]>([0]);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationStatus, setGenerationStatus] = useState("");
-  const [generationError, setGenerationError] = useState("");
   const [regeneratingCardIndex, setRegeneratingCardIndex] = useState<number | null>(null);
   const replaceCardInputRef = useRef<HTMLInputElement | null>(null);
   const [replaceTargetCardIndex, setReplaceTargetCardIndex] = useState<number | null>(null);
@@ -87,27 +97,25 @@ export function useWorkbenchController({
     : buildFallbackInlineImagePlan();
 
   const knowledgeGeneration = generationRecords.find((item) => item.purposeKey === "xhs_card");
+  const quoteGeneration = generationRecords.find((item) => item.purposeKey === "quote");
+  const coverGeneration = generationRecords.find((item) => item.purposeKey === "wx_cover");
+  const inlineGeneration = generationRecords.find((item) => item.purposeKey === "wx_inline");
+
   const knowledgeImagesByCard = new Map(
     (knowledgeGeneration?.images ?? [])
       .filter((image) => image.cardLink)
       .map((image) => [image.cardLink!.index, image])
   );
-  const quoteGeneration = generationRecords.find((item) => item.purposeKey === "quote");
-  const coverGeneration = generationRecords.find((item) => item.purposeKey === "wx_cover");
-  const inlineGeneration = generationRecords.find((item) => item.purposeKey === "wx_inline");
-  const latestGenerationTime = latestGeneration
-    ? new Date(latestGeneration.createdAt).toLocaleTimeString("zh-CN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      })
-    : "14:35";
-  const latestLogText = latestGeneration
-    ? `${latestGeneration.purposeLabel} · ${latestGeneration.images.length} 张`
-    : "cover_03 → 桌面与一杯茶";
+
   const lockedKnowledgeCardIndexes = workbenchState.lockedKnowledgeCardIndexes;
   const knowledgeCardStatuses = workbenchState.knowledgeCardStatuses;
   const knowledgeCardHistories = workbenchState.knowledgeCardHistories;
+  const taskState = workbenchState.taskState;
+  const statusState = taskState.lastError ?? taskState.statusMessage;
+  const importedMarkdownMeta = workbenchState.importedMarkdownMeta;
+  const quoteGenerationSelection = workbenchState.quoteGenerationSelection;
+  const replanRevision = workbenchState.replanRevision;
+
   const unlockedPlannedCards = plannedCards.filter(
     (card) => !lockedKnowledgeCardIndexes.includes(card.index)
   );
@@ -116,6 +124,23 @@ export function useWorkbenchController({
     (outputs.quote ? Math.max(1, selectedQuotes.length) : 0) +
     (outputs.cover ? 3 : 0) +
     (outputs.inline ? plannedInlineImages.length : 0);
+
+  const latestGenerationTime = latestGeneration
+    ? new Date(latestGeneration.createdAt).toLocaleTimeString("zh-CN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+    : taskState.statusMessage
+      ? toDisplayTime(taskState.statusMessage.timestamp)
+      : "—";
+  const latestLogText = taskState.lastError
+    ? `${formatScopeLabel(taskState.lastError.scope)} · ${taskState.lastError.text}`
+    : latestGeneration
+      ? `${latestGeneration.purposeLabel} · ${latestGeneration.images.length} 张`
+      : taskState.statusMessage?.text || "尚无最近动作";
+
+  const isGenerating = taskState.phase === "planning" || taskState.phase === "generating";
 
   function toggleOutput(key: keyof WorkbenchOutputs) {
     setOutputs((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -137,6 +162,71 @@ export function useWorkbenchController({
         lockedKnowledgeCardIndexes: nextLocked,
       };
     });
+  }
+
+  function setTaskPhase(
+    phase: WorkbenchTaskPhase,
+    currentStepLabel: string,
+    completedTasks: number,
+    totalTasks: number
+  ) {
+    setWorkbenchState((prev) => ({
+      ...prev,
+      taskState: {
+        ...prev.taskState,
+        phase,
+        currentStepLabel,
+        completedTasks,
+        totalTasks,
+      },
+    }));
+  }
+
+  function pushStatus(
+    scope: string,
+    level: WorkbenchStatusLevel,
+    text: string,
+    options?: {
+      phase?: WorkbenchTaskPhase;
+      currentStepLabel?: string;
+      completedTasks?: number;
+      totalTasks?: number;
+      keepLastError?: boolean;
+    }
+  ) {
+    const message: WorkbenchStatusMessage = {
+      scope,
+      level,
+      text,
+      timestamp: new Date().toISOString(),
+    };
+    setWorkbenchState((prev) => ({
+      ...prev,
+      taskState: {
+        ...prev.taskState,
+        phase: options?.phase ?? prev.taskState.phase,
+        currentStepLabel: options?.currentStepLabel ?? prev.taskState.currentStepLabel,
+        completedTasks: options?.completedTasks ?? prev.taskState.completedTasks,
+        totalTasks: options?.totalTasks ?? prev.taskState.totalTasks,
+        lastError:
+          level === "error"
+            ? message
+            : options?.keepLastError
+              ? prev.taskState.lastError
+              : null,
+        statusMessage: message,
+      },
+    }));
+  }
+
+  function clearTaskError() {
+    setWorkbenchState((prev) => ({
+      ...prev,
+      taskState: {
+        ...prev.taskState,
+        lastError: null,
+      },
+    }));
   }
 
   function updateKnowledgeCardStatus(
@@ -224,7 +314,7 @@ export function useWorkbenchController({
       });
     }
 
-    const nextImage = {
+    const nextImage: GeneratedImageItem = {
       id:
         existingIndex >= 0
           ? nextImages[existingIndex].id
@@ -264,7 +354,11 @@ export function useWorkbenchController({
     updateKnowledgeCardDraft(editingCardIndex, editingCardTitle, editingCardSummary);
     updateKnowledgeCardStatus(editingCardIndex, { edited: true });
     closeKnowledgeCardEditor();
-    setGenerationStatus(`知识卡 ${String(editingCardIndex).padStart(2, "0")} 文案已保存`);
+    pushStatus(
+      `knowledge-card-${editingCardIndex}`,
+      "success",
+      `知识卡 ${String(editingCardIndex).padStart(2, "0")} 文案已保存`
+    );
   }
 
   function handleRollbackKnowledgeCard(cardIndex: number) {
@@ -281,6 +375,7 @@ export function useWorkbenchController({
       edited: previous.title !== card.title || previous.summary !== card.summary,
       replaced: previous.source === "replaced",
       regenerated: previous.source === "generated" || previous.source === "rollback",
+      needsRegeneration: false,
     });
     setWorkbenchState((prev) => ({
       ...prev,
@@ -289,7 +384,11 @@ export function useWorkbenchController({
         [String(cardIndex)]: (prev.knowledgeCardHistories[String(cardIndex)] || []).slice(1),
       },
     }));
-    setGenerationStatus(`知识卡 ${String(cardIndex).padStart(2, "0")} 已回退上一版`);
+    pushStatus(
+      `knowledge-card-${cardIndex}`,
+      "success",
+      `知识卡 ${String(cardIndex).padStart(2, "0")} 已回退上一版`
+    );
   }
 
   async function handleRegenerateKnowledgeCard(
@@ -305,8 +404,13 @@ export function useWorkbenchController({
       : card;
 
     setRegeneratingCardIndex(cardIndex);
-    setGenerationError("");
-    setGenerationStatus(`正在重生成知识卡 ${String(cardIndex).padStart(2, "0")}`);
+    clearTaskError();
+    pushStatus(`knowledge-card-${cardIndex}`, "info", `正在生成知识卡 ${String(cardIndex).padStart(2, "0")}`, {
+      phase: "generating",
+      currentStepLabel: `生成知识卡 ${String(cardIndex).padStart(2, "0")}`,
+      completedTasks: 0,
+      totalTasks: 1,
+    });
 
     try {
       const record = await postGenerateImages({
@@ -346,11 +450,26 @@ export function useWorkbenchController({
       updateKnowledgeCardStatus(cardIndex, {
         regenerated: true,
         replaced: false,
+        needsRegeneration: false,
       });
-      setGenerationStatus(`知识卡 ${String(cardIndex).padStart(2, "0")} 已更新`);
+      pushStatus(`knowledge-card-${cardIndex}`, "success", `知识卡 ${String(cardIndex).padStart(2, "0")} 已更新`, {
+        phase: "completed",
+        currentStepLabel: "完成",
+        completedTasks: 1,
+        totalTasks: 1,
+      });
     } catch (error) {
-      setGenerationError(error instanceof Error ? error.message : "知识卡重生成失败");
-      setGenerationStatus("知识卡重生成失败");
+      pushStatus(
+        `knowledge-card-${cardIndex}`,
+        "error",
+        error instanceof Error ? error.message : "知识卡生成失败",
+        {
+          phase: "failed",
+          currentStepLabel: `知识卡 ${String(cardIndex).padStart(2, "0")} 失败`,
+          completedTasks: 0,
+          totalTasks: 1,
+        }
+      );
     } finally {
       setRegeneratingCardIndex(null);
     }
@@ -375,8 +494,11 @@ export function useWorkbenchController({
       updateKnowledgeCardStatus(targetCardIndex, {
         replaced: true,
         regenerated: false,
+        needsRegeneration: false,
       });
-      setGenerationStatus(
+      pushStatus(
+        `knowledge-card-${targetCardIndex}`,
+        "success",
         `知识卡 ${String(targetCardIndex).padStart(2, "0")} 已替换为本地图片`
       );
     };
@@ -419,7 +541,12 @@ export function useWorkbenchController({
     };
 
     const planning = await postPlanCards(request);
-    savePlanningState({
+    return savePlanningResult(planning);
+  }
+
+  function savePlanningResult(planning: PlannerResponse) {
+    const nextRevision = replanRevision + 1;
+    const nextPlanningState: PlanningState = {
       provider: planning.provider,
       cardPlan: planning.cardPlan,
       candidateQuotes: planning.analysis.keyQuotes,
@@ -427,19 +554,231 @@ export function useWorkbenchController({
       coverTheme: planning.analysis.coverTheme,
       strategySummary: planning.analysis.imageGenerationSource.strategy,
       updatedAt: new Date().toISOString(),
+    };
+    savePlanningState(nextPlanningState);
+    setWorkbenchState((prev) => ({
+      ...prev,
+      replanRevision: nextRevision,
+    }));
+    return {
+      planning,
+      nextPlanningState,
+      nextRevision,
+    };
+  }
+
+  function syncKnowledgeImagesToNewPlan(nextCardPlan: PlanningState["cardPlan"]) {
+    if (!knowledgeGeneration) {
+      return { preservedKnowledgeCount: 0, staleKnowledgeCount: 0 };
+    }
+
+    const nextPlanByTitle = new Map(
+      nextCardPlan.map((card) => [normalizeText(card.title), card])
+    );
+    const usedIndexes = new Set<number>();
+    let preservedKnowledgeCount = 0;
+    let staleKnowledgeCount = 0;
+
+    const nextImages = knowledgeGeneration.images.map((image) => {
+      if (!image.cardLink) return image;
+      const directMatch = nextCardPlan.find(
+        (card) =>
+          card.index === image.cardLink!.index &&
+          normalizeText(card.title) === normalizeText(image.cardLink!.title)
+      );
+      const titleMatch =
+        directMatch ||
+        (() => {
+          const candidate = nextPlanByTitle.get(normalizeText(image.cardLink!.title));
+          if (!candidate || usedIndexes.has(candidate.index)) return null;
+          return candidate;
+        })();
+
+      if (titleMatch) {
+        usedIndexes.add(titleMatch.index);
+        preservedKnowledgeCount += 1;
+        updateKnowledgeCardStatus(titleMatch.index, {
+          needsRegeneration: false,
+        });
+        return {
+          ...image,
+          cardLink: {
+            index: titleMatch.index,
+            title: titleMatch.title,
+            summary: titleMatch.summary,
+          },
+        };
+      }
+
+      staleKnowledgeCount += 1;
+      updateKnowledgeCardStatus(image.cardLink.index, {
+        needsRegeneration: true,
+      });
+      return image;
     });
 
-    return planning;
+    saveGenerationRecord({
+      ...knowledgeGeneration,
+      images: sortImagesByCardIndex(nextImages),
+      createdAt: new Date().toISOString(),
+    });
+
+    return { preservedKnowledgeCount, staleKnowledgeCount };
+  }
+
+  async function handleReplan() {
+    clearTaskError();
+    pushStatus("planning", "info", "正在重新拆解内容", {
+      phase: "planning",
+      currentStepLabel: "拆解中",
+      completedTasks: 0,
+      totalTasks: 1,
+    });
+
+    try {
+      const previousQuotes = selectedQuotes
+        .map((index) => plannedQuotes[index])
+        .filter(Boolean);
+      const { planning, nextRevision } = await runPlanning();
+      const nextQuotes = planning.analysis.keyQuotes;
+      const preservedQuoteIndexes = previousQuotes
+        .map((quote) => nextQuotes.findIndex((item) => normalizeText(item) === normalizeText(quote)))
+        .filter((index) => index >= 0);
+      const uniquePreservedQuoteIndexes = Array.from(new Set(preservedQuoteIndexes));
+      const clearedQuoteCount = previousQuotes.length - uniquePreservedQuoteIndexes.length;
+      setSelectedQuotes(
+        uniquePreservedQuoteIndexes.length > 0 ? uniquePreservedQuoteIndexes : [0]
+      );
+
+      const { preservedKnowledgeCount, staleKnowledgeCount } =
+        syncKnowledgeImagesToNewPlan(planning.cardPlan);
+
+      const summary: ReplanSummary = {
+        preservedQuoteCount: uniquePreservedQuoteIndexes.length,
+        clearedQuoteCount: Math.max(0, clearedQuoteCount),
+        preservedKnowledgeCount,
+        staleKnowledgeCount,
+      };
+
+      const summaryText = buildReplanSummaryText(summary);
+      pushStatus(
+        "planning",
+        "success",
+        summaryText || "内容拆解已更新",
+        {
+          phase: "completed",
+          currentStepLabel: "完成",
+          completedTasks: 1,
+          totalTasks: 1,
+        }
+      );
+
+      setWorkbenchState((prev) => ({
+        ...prev,
+        quoteGenerationSelection:
+          prev.quoteGenerationSelection?.generatedAtPlanningRevision === nextRevision
+            ? prev.quoteGenerationSelection
+            : prev.quoteGenerationSelection,
+      }));
+
+      return summary;
+    } catch (error) {
+      pushStatus(
+        "planning",
+        "error",
+        error instanceof Error ? error.message : "重新拆解失败",
+        {
+          phase: "failed",
+          currentStepLabel: "拆解失败",
+          completedTasks: 0,
+          totalTasks: 1,
+        }
+      );
+      throw error;
+    }
+  }
+
+  async function handleGenerateQuoteCard() {
+    const preset = quotePreset;
+    if (!preset) return;
+
+    const resolvedIndexes = selectedQuotes.length > 0 ? selectedQuotes : [0];
+    const resolvedTexts = resolvedIndexes
+      .map((index) => plannedQuotes[index] ?? plannedQuotes[0])
+      .filter(Boolean);
+    const primaryQuote = resolvedTexts[0] || "真正的专注不是用力，而是放弃。";
+
+    clearTaskError();
+    pushStatus("quote-generation", "info", "正在生成金句卡", {
+      phase: "generating",
+      currentStepLabel: "生成金句卡",
+      completedTasks: 0,
+      totalTasks: 1,
+    });
+
+    try {
+      const record = await postGenerateImages({
+        articleTitle: currentArticle.title,
+        prompt: `为文章《${currentArticle.title}》生成一张公众号横版金句卡。核心文案是：“${primaryQuote}”。画面需留白、安静、疗愈，便于后续叠加文字。`,
+        negativePrompt: "高饱和、霓虹、复杂纹理、人物特写、卡通插画、杂乱文字",
+        width: preset.w,
+        height: preset.h,
+        count: 1,
+        purposeKey: "quote",
+        purposeLabel: "金句卡",
+        presetKey: preset.k,
+        presetLabel: preset.label,
+        styleName: "蓝雾静读",
+      });
+      saveGenerationRecord(record);
+      setWorkbenchState((prev) => ({
+        ...prev,
+        quoteGenerationSelection: {
+          selectedQuoteIndexes: resolvedIndexes,
+          selectedQuoteTexts: resolvedTexts,
+          generatedAtPlanningRevision: prev.replanRevision,
+        },
+      }));
+      pushStatus("quote-generation", "success", "金句卡已生成", {
+        phase: "completed",
+        currentStepLabel: "完成",
+        completedTasks: 1,
+        totalTasks: 1,
+      });
+    } catch (error) {
+      pushStatus(
+        "quote-generation",
+        "error",
+        error instanceof Error ? error.message : "金句卡生成失败",
+        {
+          phase: "failed",
+          currentStepLabel: "金句卡失败",
+          completedTasks: 0,
+          totalTasks: 1,
+        }
+      );
+    }
   }
 
   async function handleStartGeneration() {
-    setIsGenerating(true);
-    setGenerationError("");
-
+    clearTaskError();
     try {
-      setGenerationStatus("正在拆解内容与提炼候选金句 · 1/2");
-      const planning = await runPlanning();
-      const resolvedQuotes = selectedQuotes
+      pushStatus("planning", "info", "正在拆解内容", {
+        phase: "planning",
+        currentStepLabel: "拆解中",
+        completedTasks: 0,
+        totalTasks: 1,
+      });
+      const { planning, nextRevision } = await runPlanning();
+      pushStatus("planning", "success", "内容拆解已完成", {
+        phase: "planning",
+        currentStepLabel: "拆解完成",
+        completedTasks: 1,
+        totalTasks: 1,
+      });
+
+      const resolvedQuoteIndexes = selectedQuotes.length > 0 ? selectedQuotes : [0];
+      const resolvedQuotes = resolvedQuoteIndexes
         .map((index) => planning.analysis.keyQuotes[index] ?? planning.analysis.keyQuotes[0])
         .filter(Boolean);
       const tasks = buildGenerationTasks({
@@ -452,7 +791,12 @@ export function useWorkbenchController({
       });
 
       if (tasks.length === 0) {
-        setGenerationStatus("内容拆解已完成");
+        pushStatus("generation", "success", "当前没有需要生成的输出项", {
+          phase: "completed",
+          currentStepLabel: "完成",
+          completedTasks: 0,
+          totalTasks: 0,
+        });
         if (outputs.layout) {
           setActiveTab("wechat");
         }
@@ -462,11 +806,18 @@ export function useWorkbenchController({
       const groupedRecords = new Map<GenerationPurposeKey, GenerationRecord>();
       for (let index = 0; index < tasks.length; index += 1) {
         const task = tasks[index];
-        setGenerationStatus(`正在生成 ${task.purposeLabel} · ${index + 1}/${tasks.length}`);
+        const scope = toTaskScope(task);
+        pushStatus(scope, "info", `正在生成 ${buildTaskLabel(task)}`, {
+          phase: "generating",
+          currentStepLabel: buildTaskLabel(task),
+          completedTasks: index,
+          totalTasks: tasks.length,
+        });
+
         const record = await postGenerateImages(task);
 
         if (record.purposeKey === "xhs_card") {
-          const existing = groupedRecords.get(record.purposeKey);
+          const existing = groupedRecords.get(record.purposeKey) ?? knowledgeGeneration;
           const mergedRecord = mergeRecordImages(existing, record);
           groupedRecords.set(record.purposeKey, mergedRecord);
           saveGenerationRecord(mergedRecord);
@@ -475,25 +826,93 @@ export function useWorkbenchController({
               updateKnowledgeCardStatus(image.cardLink.index, {
                 replaced: false,
                 regenerated: false,
+                needsRegeneration: false,
               });
             }
           });
-          continue;
+        } else {
+          groupedRecords.set(record.purposeKey, record);
+          saveGenerationRecord(record);
         }
 
-        groupedRecords.set(record.purposeKey, record);
-        saveGenerationRecord(record);
+        if (record.purposeKey === "quote") {
+          setWorkbenchState((prev) => ({
+            ...prev,
+            quoteGenerationSelection: {
+              selectedQuoteIndexes: resolvedQuoteIndexes,
+              selectedQuoteTexts: resolvedQuotes,
+              generatedAtPlanningRevision: nextRevision,
+            },
+          }));
+        }
+
+        pushStatus(scope, "success", `${buildTaskLabel(task)} 已完成`, {
+          phase: "generating",
+          currentStepLabel: buildTaskLabel(task),
+          completedTasks: index + 1,
+          totalTasks: tasks.length,
+        });
       }
 
-      setGenerationStatus(`已完成 ${tasks.length} 个输出项`);
+      pushStatus("generation", "success", `已完成 ${tasks.length} 个输出项`, {
+        phase: "completed",
+        currentStepLabel: "完成",
+        completedTasks: tasks.length,
+        totalTasks: tasks.length,
+      });
       if (outputs.layout) {
         setActiveTab("wechat");
       }
     } catch (error) {
-      setGenerationError(error instanceof Error ? error.message : "生成失败");
-      setGenerationStatus("生成中断");
-    } finally {
-      setIsGenerating(false);
+      pushStatus(
+        "generation",
+        "error",
+        error instanceof Error ? error.message : "生成失败",
+        {
+          phase: "failed",
+          currentStepLabel: "生成失败",
+          completedTasks: workbenchState.taskState.completedTasks,
+          totalTasks: workbenchState.taskState.totalTasks,
+        }
+      );
+    }
+  }
+
+  async function handleImportMarkdown(file: File | null) {
+    if (!file) return;
+    const isMarkdown =
+      file.name.toLowerCase().endsWith(".md") ||
+      file.type === "text/markdown" ||
+      file.type === "text/plain";
+
+    if (!isMarkdown) {
+      pushStatus("markdown-import", "error", "仅支持导入 Markdown 或纯文本文件");
+      return;
+    }
+
+    try {
+      const rawText = await file.text();
+      if (!rawText.trim()) {
+        throw new Error("文件内容为空");
+      }
+
+      const { title, body } = parseMarkdownArticle(rawText, file.name);
+      setCurrentArticle({ title, body });
+      setWorkbenchState((prev) => ({
+        ...prev,
+        importedMarkdownMeta: {
+          fileName: file.name,
+          wordCount: countCharacters(rawText),
+          importedAt: new Date().toISOString(),
+        },
+      }));
+      pushStatus("markdown-import", "success", "已导入 Markdown");
+    } catch (error) {
+      pushStatus(
+        "markdown-import",
+        "error",
+        error instanceof Error ? error.message : "Markdown 导入失败"
+      );
     }
   }
 
@@ -524,12 +943,13 @@ export function useWorkbenchController({
     lockedKnowledgeCardIndexes,
     knowledgeCardStatuses,
     knowledgeCardHistories,
+    importedMarkdownMeta,
+    quoteGenerationSelection,
+    replanRevision,
+    taskState,
+    statusState,
     estimatedCredits,
     isGenerating,
-    generationStatus,
-    setGenerationStatus,
-    generationError,
-    setGenerationError,
     regeneratingCardIndex,
     replaceCardInputRef,
     editingCardIndex,
@@ -547,6 +967,109 @@ export function useWorkbenchController({
     handleKnowledgeCardFileChange,
     handleEditAndRegenerateKnowledgeCard,
     handleStartGeneration,
+    handleGenerateQuoteCard,
+    handleImportMarkdown,
+    handleReplan,
     runPlanning,
   };
+}
+
+function normalizeText(value: string) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function buildReplanSummaryText(summary: ReplanSummary) {
+  const parts: string[] = [];
+  if (summary.preservedQuoteCount > 0) {
+    parts.push(`保留 ${summary.preservedQuoteCount} 条已选金句`);
+  }
+  if (summary.clearedQuoteCount > 0) {
+    parts.push(`清理 ${summary.clearedQuoteCount} 条失效金句`);
+  }
+  if (summary.preservedKnowledgeCount > 0) {
+    parts.push(`保留 ${summary.preservedKnowledgeCount} 张知识卡结果`);
+  }
+  if (summary.staleKnowledgeCount > 0) {
+    parts.push(`${summary.staleKnowledgeCount} 张知识卡需重生成`);
+  }
+  return parts.join("，");
+}
+
+function toTaskScope(task: {
+  purposeKey: string;
+  cardLink?: { index: number };
+}) {
+  if (task.purposeKey === "xhs_card") {
+    return `knowledge-card-${task.cardLink?.index ?? "unknown"}`;
+  }
+  if (task.purposeKey === "quote") return "quote-generation";
+  if (task.purposeKey === "wx_inline") return "inline-image-generation";
+  if (task.purposeKey === "wx_cover") return "cover-generation";
+  return "generation";
+}
+
+function buildTaskLabel(task: {
+  purposeLabel: string;
+  purposeKey: string;
+  cardLink?: { index: number };
+}) {
+  if (task.purposeKey === "xhs_card" && task.cardLink?.index != null) {
+    return `知识卡 ${String(task.cardLink.index).padStart(2, "0")}`;
+  }
+  if (task.purposeKey === "quote") return "金句卡";
+  if (task.purposeKey === "wx_inline") return "正文配图";
+  if (task.purposeKey === "wx_cover") return "公众号封面";
+  return task.purposeLabel;
+}
+
+export function formatScopeLabel(scope: string) {
+  if (scope === "planning") return "拆解失败";
+  if (scope === "quote-generation") return "金句卡失败";
+  if (scope === "inline-image-generation") return "正文配图失败";
+  if (scope === "cover-generation") return "公众号封面失败";
+  if (scope === "markdown-import") return "导入失败";
+  if (scope.startsWith("knowledge-card-")) {
+    const index = scope.replace("knowledge-card-", "");
+    return `知识卡第 ${Number(index)} 张失败`;
+  }
+  return "最近失败";
+}
+
+function parseMarkdownArticle(rawText: string, fileName: string) {
+  const trimmed = rawText.replace(/\r\n/g, "\n").trim();
+  const h1Match = trimmed.match(/^#\s+(.+)$/m);
+  const fileBaseName = fileName.replace(/\.[^.]+$/, "").trim();
+  let body = trimmed;
+
+  if (h1Match) {
+    body = trimmed.replace(/^#\s+(.+)\n*/m, "").trim();
+  }
+  if (!body) {
+    throw new Error("Markdown 正文为空");
+  }
+
+  const firstParagraph =
+    body
+      .split(/\n\s*\n/)
+      .map((part) => part.replace(/\n+/g, " ").trim())
+      .find(Boolean) || body.replace(/\n+/g, " ").trim();
+
+  const title =
+    h1Match?.[1]?.trim() ||
+    fileBaseName ||
+    firstParagraph.slice(0, Math.min(28, firstParagraph.length));
+
+  return { title, body };
+}
+
+function countCharacters(value: string) {
+  return value.replace(/\s+/g, "").length;
+}
+
+function toDisplayTime(iso: string) {
+  return new Date(iso).toLocaleTimeString("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 }

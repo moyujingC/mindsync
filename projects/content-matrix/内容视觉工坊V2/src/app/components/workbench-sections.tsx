@@ -1,3 +1,4 @@
+import { useId } from "react";
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -28,6 +29,7 @@ import {
 } from "./ui/dialog";
 import { COVER_DRAFTS, ILLUSTRATIONS } from "./workbench-data";
 import { KnowledgeCardResults, ResultRow } from "./workbench-panels";
+import type { WorkbenchImportedMarkdownMeta, WorkbenchStatusMessage } from "../workspace";
 
 export function WorkbenchLeftSidebar({
   inputMode,
@@ -46,8 +48,10 @@ export function WorkbenchLeftSidebar({
   handleStartGeneration,
   isGenerating,
   estimatedCredits,
-  generationStatus,
-  generationError,
+  statusState,
+  importedMarkdownMeta,
+  handleImportMarkdown,
+  handleReplan,
   setActiveTab,
 }: {
   inputMode: "upload" | "paste";
@@ -74,10 +78,13 @@ export function WorkbenchLeftSidebar({
   handleStartGeneration: () => void;
   isGenerating: boolean;
   estimatedCredits: number;
-  generationStatus: string;
-  generationError: string;
+  statusState: WorkbenchStatusMessage | null;
+  importedMarkdownMeta: WorkbenchImportedMarkdownMeta | null;
+  handleImportMarkdown: (file: File | null) => void;
+  handleReplan: () => Promise<unknown>;
   setActiveTab: (tab: "workbench" | "wechat" | "assets" | "image" | "sync") => void;
 }) {
+  const uploadInputId = useId();
   return (
     <aside
       className="overflow-y-auto px-6 py-6 border-r"
@@ -125,56 +132,80 @@ export function WorkbenchLeftSidebar({
             <FileText size={16} strokeWidth={1.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <div style={{ color: COLORS.text, fontSize: 13 }}>论专注 · v3.md</div>
+            <div style={{ color: COLORS.text, fontSize: 13 }}>
+              {importedMarkdownMeta?.fileName || "尚未导入 Markdown"}
+            </div>
             <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 1 }}>
-              12.4 KB · 1,284 字 · 已解析
+              {importedMarkdownMeta
+                ? `${importedMarkdownMeta.wordCount} 字 · ${new Date(
+                    importedMarkdownMeta.importedAt
+                  ).toLocaleTimeString("zh-CN", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })} 导入`
+                : "仅支持 .md / Markdown / 纯文本"}
             </div>
           </div>
-          <button style={{ color: COLORS.textMuted, fontSize: 12 }} className="hover:underline">
-            替换
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <input
-            value={currentArticle.title}
-            onChange={(event) =>
-              setCurrentArticle({ ...currentArticle, title: event.target.value })
-            }
-            className="w-full px-3 rounded-md outline-none"
-            style={{
-              height: 34,
-              background: COLORS.surface,
-              border: `1px solid ${COLORS.border}`,
-              color: COLORS.text,
-              fontSize: 13,
-            }}
-            placeholder="文章标题"
-          />
-          <textarea
-            value={currentArticle.body}
-            onChange={(event) =>
-              setCurrentArticle({ ...currentArticle, body: event.target.value })
-            }
-            className="w-full px-3 py-2.5 rounded-md outline-none resize-none"
-            style={{
-              height: 110,
-              background: COLORS.surface,
-              border: `1px solid ${COLORS.border}`,
-              color: COLORS.textMid,
-              fontSize: 12.5,
-              lineHeight: 1.7,
-            }}
-          />
-          <div
-            className="flex items-center justify-between"
-            style={{ color: COLORS.textFaint, fontSize: 11 }}
+          <label
+            htmlFor={uploadInputId}
+            style={{ color: COLORS.textMuted, fontSize: 12, cursor: "pointer" }}
+            className="hover:underline"
           >
-            <span>{currentArticleMeta}</span>
-            <span>自动保存 · 14:32</span>
-          </div>
+            {importedMarkdownMeta ? "替换" : "导入"}
+          </label>
+          <input
+            id={uploadInputId}
+            type="file"
+            accept=".md,text/markdown,text/plain"
+            className="hidden"
+            onChange={(event) => {
+              void handleImportMarkdown(event.target.files?.[0] ?? null);
+              event.target.value = "";
+            }}
+          />
         </div>
-      )}
+      ) : null}
+
+      <div className="space-y-2 mt-2">
+        <input
+          value={currentArticle.title}
+          onChange={(event) =>
+            setCurrentArticle({ ...currentArticle, title: event.target.value })
+          }
+          className="w-full px-3 rounded-md outline-none"
+          style={{
+            height: 34,
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.border}`,
+            color: COLORS.text,
+            fontSize: 13,
+          }}
+          placeholder="文章标题"
+        />
+        <textarea
+          value={currentArticle.body}
+          onChange={(event) =>
+            setCurrentArticle({ ...currentArticle, body: event.target.value })
+          }
+          className="w-full px-3 py-2.5 rounded-md outline-none resize-none"
+          style={{
+            height: 110,
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.border}`,
+            color: COLORS.textMid,
+            fontSize: 12.5,
+            lineHeight: 1.7,
+          }}
+        />
+        <div
+          className="flex items-center justify-between"
+          style={{ color: COLORS.textFaint, fontSize: 11 }}
+        >
+          <span>{currentArticleMeta}</span>
+          <span>自动保存</span>
+        </div>
+      </div>
 
       <div className="mt-6">
         <Step kicker="02" title="本次输出类型" />
@@ -312,7 +343,7 @@ export function WorkbenchLeftSidebar({
           <Sparkles size={14} strokeWidth={1.6} />
           {isGenerating ? "生成中..." : "开始生成"}
         </Btn>
-        <Btn variant="ghost" size="lg">
+        <Btn variant="ghost" size="lg" onClick={() => void handleReplan()} disabled={isGenerating}>
           <RefreshCw size={12} strokeWidth={1.6} />
           重新拆解
         </Btn>
@@ -320,18 +351,18 @@ export function WorkbenchLeftSidebar({
       <div className="mt-2 text-center" style={{ color: COLORS.textFaint, fontSize: 11 }}>
         预计 ≈ {Math.max(24, estimatedCredits * 8)}s · 消耗 {estimatedCredits} 张额度
       </div>
-      {generationStatus || generationError ? (
+      {statusState ? (
         <div
           className="mt-2 rounded-md px-3 py-2"
           style={{
-            background: generationError ? "#FAF2EE" : COLORS.surface,
-            border: `1px solid ${generationError ? "#E8D8CF" : COLORS.borderSoft}`,
-            color: generationError ? "#8A5A46" : COLORS.textMid,
+            background: statusState.level === "error" ? "#FAF2EE" : COLORS.surface,
+            border: `1px solid ${statusState.level === "error" ? "#E8D8CF" : COLORS.borderSoft}`,
+            color: statusState.level === "error" ? "#8A5A46" : COLORS.textMid,
             fontSize: 11.5,
             lineHeight: 1.6,
           }}
         >
-          {generationError || generationStatus}
+          {statusState.text}
         </div>
       ) : null}
 
@@ -404,9 +435,7 @@ export function WorkbenchCenterSection({
   setOpenCovers,
   openIllus,
   setOpenIllus,
-  runPlanning,
-  setGenerationError,
-  setGenerationStatus,
+  handleReplan,
   latestGeneration,
   knowledgePreset,
   knowledgeImagesByCard,
@@ -423,6 +452,9 @@ export function WorkbenchCenterSection({
   handleRollbackKnowledgeCard,
   quotePreset,
   quoteGeneration,
+  quoteGenerationSelection,
+  replanRevision,
+  handleGenerateQuoteCard,
   coverPreset,
   coverGeneration,
   inlinePreset,
@@ -441,9 +473,7 @@ export function WorkbenchCenterSection({
   setOpenCovers: React.Dispatch<React.SetStateAction<boolean>>;
   openIllus: boolean;
   setOpenIllus: React.Dispatch<React.SetStateAction<boolean>>;
-  runPlanning: () => Promise<unknown>;
-  setGenerationError: React.Dispatch<React.SetStateAction<string>>;
-  setGenerationStatus: React.Dispatch<React.SetStateAction<string>>;
+  handleReplan: () => Promise<unknown>;
   latestGeneration: {
     title: string;
     purposeLabel: string;
@@ -465,6 +495,13 @@ export function WorkbenchCenterSection({
   handleRollbackKnowledgeCard: (cardIndex: number) => void;
   quotePreset?: { w: number; h: number };
   quoteGeneration?: { images: Array<{ imageUrl: string }> };
+  quoteGenerationSelection?: {
+    selectedQuoteIndexes: number[];
+    selectedQuoteTexts: string[];
+    generatedAtPlanningRevision: number;
+  } | null;
+  replanRevision: number;
+  handleGenerateQuoteCard: () => Promise<void>;
   coverPreset?: { w: number; h: number };
   coverGeneration?: { images: Array<{ imageUrl: string }> };
   inlinePreset?: { w: number; h: number };
@@ -502,19 +539,7 @@ export function WorkbenchCenterSection({
                 本次生成 {plannedCards.length} 张知识卡 · 根据文章结构自动拆分
               </span>
               <button
-                onClick={() => {
-                  void (async () => {
-                    try {
-                      setGenerationError("");
-                      setGenerationStatus("正在重新拆解内容");
-                      await runPlanning();
-                      setGenerationStatus("内容拆解已更新");
-                    } catch (error) {
-                      setGenerationError(error instanceof Error ? error.message : "重新拆解失败");
-                      setGenerationStatus("重新拆解失败");
-                    }
-                  })();
-                }}
+                onClick={() => void handleReplan()}
                 className="flex items-center gap-1"
                 style={{ color: COLORS.textMid, fontSize: 12 }}
               >
@@ -564,6 +589,7 @@ export function WorkbenchCenterSection({
           toggleQuote={toggleQuote}
           openQuotes={openQuotes}
           setOpenQuotes={setOpenQuotes}
+          handleGenerateQuoteCard={handleGenerateQuoteCard}
         />
 
         <div className="space-y-2 mb-3">
@@ -641,8 +667,11 @@ export function WorkbenchCenterSection({
           handleRollbackKnowledgeCard={handleRollbackKnowledgeCard}
           quotePreset={quotePreset}
           quoteGeneration={quoteGeneration}
+          quoteGenerationSelection={quoteGenerationSelection}
+          replanRevision={replanRevision}
           plannedQuotes={plannedQuotes}
           selectedQuotes={selectedQuotes}
+          handleGenerateQuoteCard={handleGenerateQuoteCard}
           coverPreset={coverPreset}
           coverGeneration={coverGeneration}
           inlinePreset={inlinePreset}
@@ -754,14 +783,29 @@ function WorkbenchResultsPanel({
   handleRollbackKnowledgeCard,
   quotePreset,
   quoteGeneration,
+  quoteGenerationSelection,
+  replanRevision,
   plannedQuotes,
   selectedQuotes,
+  handleGenerateQuoteCard,
   coverPreset,
   coverGeneration,
   inlinePreset,
   plannedInlineImages,
   inlineGeneration,
 }: any) {
+  const currentQuoteTexts = selectedQuotes
+    .map((index: number) => plannedQuotes[index])
+    .filter(Boolean);
+  const boundQuoteTexts =
+    quoteGenerationSelection?.selectedQuoteTexts?.length
+      ? quoteGenerationSelection.selectedQuoteTexts
+      : currentQuoteTexts;
+  const quoteBindingIsStale =
+    Boolean(quoteGeneration?.images?.[0]) &&
+    ((quoteGenerationSelection?.generatedAtPlanningRevision ?? replanRevision) !==
+      replanRevision ||
+      JSON.stringify(boundQuoteTexts) !== JSON.stringify(currentQuoteTexts));
   return (
     <Panel>
       <div className="flex items-end justify-between mb-3">
@@ -850,6 +894,19 @@ function WorkbenchResultsPanel({
             size={quotePreset ? `公众号正文 · ${quotePreset.w}×${quotePreset.h}` : "公众号正文 · 1080×608"}
             count={1}
           />
+          <div className="mt-2" style={{ color: COLORS.textFaint, fontSize: 11, lineHeight: 1.6 }}>
+            <div>
+              对应金句：
+              <span style={{ color: COLORS.textMid }}>
+                {boundQuoteTexts[0] ? `「${boundQuoteTexts[0]}」` : "暂无已绑定结果"}
+              </span>
+            </div>
+            {quoteBindingIsStale ? (
+              <div style={{ color: "#8A5A46", marginTop: 2 }}>
+                当前展示的是上一轮所选金句结果，再次点击“生成金句卡”才会更新。
+              </div>
+            ) : null}
+          </div>
           <div
             className="mt-2.5 rounded-md p-5 flex flex-col justify-between"
             style={{
@@ -886,6 +943,19 @@ function WorkbenchResultsPanel({
                 <div style={{ color: "#3F4E62", fontSize: 10.5 }}>—— 论专注 v3</div>
               </>
             )}
+          </div>
+          <div className="mt-2 flex justify-end">
+            <Btn
+              size="sm"
+              onClick={() => void handleGenerateQuoteCard()}
+              style={{
+                background: "#8B6F44",
+                color: "#FBFAF7",
+                border: "1px solid #8B6F44",
+              }}
+            >
+              重新生成金句卡
+            </Btn>
           </div>
         </div>
         <div>
@@ -984,12 +1054,14 @@ function QuoteSummaryCard({
   toggleQuote,
   openQuotes,
   setOpenQuotes,
+  handleGenerateQuoteCard,
 }: {
   plannedQuotes: string[];
   selectedQuotes: number[];
   toggleQuote: (index: number) => void;
   openQuotes: boolean;
   setOpenQuotes: React.Dispatch<React.SetStateAction<boolean>>;
+  handleGenerateQuoteCard: () => Promise<void>;
 }) {
   return (
     <div
@@ -1040,6 +1112,7 @@ function QuoteSummaryCard({
           </button>
           <Btn
             size="sm"
+            onClick={() => void handleGenerateQuoteCard()}
             style={{
               background: "#8B6F44",
               color: "#FBFAF7",

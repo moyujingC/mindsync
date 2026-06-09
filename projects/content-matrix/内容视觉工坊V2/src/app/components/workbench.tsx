@@ -31,6 +31,7 @@ export function Workbench() {
 
   const controller = useWorkbenchController({
     currentArticle,
+    setCurrentArticle,
     generationRecords,
     latestGeneration,
     planningState,
@@ -60,8 +61,10 @@ export function Workbench() {
         handleStartGeneration={controller.handleStartGeneration}
         isGenerating={controller.isGenerating}
         estimatedCredits={controller.estimatedCredits}
-        generationStatus={controller.generationStatus}
-        generationError={controller.generationError}
+        statusState={controller.statusState}
+        importedMarkdownMeta={controller.importedMarkdownMeta}
+        handleImportMarkdown={controller.handleImportMarkdown}
+        handleReplan={controller.handleReplan}
         setActiveTab={setActiveTab}
       />
 
@@ -78,9 +81,7 @@ export function Workbench() {
         setOpenCovers={setOpenCovers}
         openIllus={openIllus}
         setOpenIllus={setOpenIllus}
-        runPlanning={controller.runPlanning}
-        setGenerationError={controller.setGenerationError}
-        setGenerationStatus={controller.setGenerationStatus}
+        handleReplan={controller.handleReplan}
         latestGeneration={latestGeneration}
         knowledgePreset={controller.knowledgePreset}
         knowledgeImagesByCard={controller.knowledgeImagesByCard}
@@ -97,6 +98,9 @@ export function Workbench() {
         handleRollbackKnowledgeCard={controller.handleRollbackKnowledgeCard}
         quotePreset={controller.quotePreset}
         quoteGeneration={controller.quoteGeneration}
+        quoteGenerationSelection={controller.quoteGenerationSelection}
+        replanRevision={controller.replanRevision}
+        handleGenerateQuoteCard={controller.handleGenerateQuoteCard}
         coverPreset={controller.coverPreset}
         coverGeneration={controller.coverGeneration}
         inlinePreset={controller.inlinePreset}
@@ -106,6 +110,8 @@ export function Workbench() {
 
       <ControlTowerSidebar
         currentArticleTitle={currentArticle.title}
+        taskState={controller.taskState}
+        statusState={controller.statusState}
         plannedKnowledgeCount={controller.plannedCards.length}
         selectedQuoteCount={controller.selectedQuotes.length}
         coverCount={COVER_DRAFTS.length}
