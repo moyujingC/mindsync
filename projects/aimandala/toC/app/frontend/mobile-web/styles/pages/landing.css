@@ -355,7 +355,7 @@
   font-family: var(--am-font-display);
   font-size: 14px;
   font-weight: 600;
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
 }
 
 .am-step-flow-card__icon {
@@ -368,7 +368,7 @@
   border: 1px solid var(--am-landing-step-icon-border);
   background: var(--am-landing-step-icon-bg);
   box-shadow: var(--am-landing-step-icon-shadow);
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
 }
 
 .am-step-flow-card__title {
@@ -754,7 +754,7 @@
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
 }
 
 .am-faq-note {

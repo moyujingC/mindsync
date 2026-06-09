@@ -351,7 +351,7 @@
   align-items: center;
   gap: 8px;
   margin: 4px 0 0;
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
 }
 
 .mw-report-story__intro span {
@@ -406,7 +406,7 @@
   flex-shrink: 0;
   min-width: auto;
   padding: 0;
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
   font-size: 11px;
   letter-spacing: 0.1em;
 }

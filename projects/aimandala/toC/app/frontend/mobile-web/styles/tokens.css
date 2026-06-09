@@ -138,7 +138,11 @@
   --am-text-on-dark-muted: rgb(var(--am-rgb-sand-300) / 0.64);
   --am-text-on-dark-soft: rgb(var(--am-rgb-sand-300) / 0.56);
   --am-text-on-dark-faint: rgb(var(--am-rgb-sand-300) / 0.45);
-  --am-text-accent: var(--am-color-gold-300);
+  --am-text-brass: var(--am-color-gold-350);
+  --am-text-accent: var(--am-text-brass);
+  --am-text-success: var(--am-color-success-600);
+  --am-text-error: var(--am-color-danger-600);
+  --am-text-info: var(--am-color-info-500);
   --am-border-soft: rgb(var(--am-rgb-copper-400) / 0.14);
   --am-border-strong: rgb(var(--am-rgb-gold-300) / 0.24);
   --am-border-neutral: rgba(112, 90, 63, 0.18);
@@ -174,6 +178,8 @@
   --am-badge-text: rgb(var(--am-rgb-sand-300) / 0.76);
   --am-progress-warm: linear-gradient(90deg, #8f6939, #d0aa73);
   --am-progress-copper: linear-gradient(90deg, #ba6e48, #f0b179);
+  --am-slider-value-primary: var(--am-text-brass);
+  --am-slider-value-secondary: var(--am-color-copper-400);
 
   /* Upload page tokens */
   --am-upload-action-border: rgb(var(--am-rgb-gold-300) / 0.14);
@@ -401,7 +407,7 @@
   --am-report-entry-hero-hint: rgb(var(--am-rgb-gold-300) / 0.72);
   --am-report-entry-theme-pill-border: rgb(var(--am-rgb-gold-300) / 0.25);
   --am-report-entry-theme-pill-bg: rgb(var(--am-rgb-gold-300) / 0.1);
-  --am-report-entry-theme-pill-text: var(--am-color-gold-300);
+  --am-report-entry-theme-pill-text: var(--am-text-brass);
   --am-report-entry-theme-pill-label: rgb(var(--am-rgb-sand-300) / 0.55);
   --am-report-entry-card-bg: var(--am-surface-primary);
   --am-report-entry-card-text: var(--am-color-clay-800);
@@ -425,7 +431,7 @@
     rgb(var(--am-rgb-gold-300) / 0.2),
     rgb(var(--am-rgb-copper-400) / 0.12)
   );
-  --am-report-entry-copper-text: var(--am-color-copper-400);
+  --am-report-entry-copper-text: var(--am-text-brass);
   --am-report-entry-redeem-input-border: rgb(var(--am-rgb-copper-400) / 0.2);
   --am-report-entry-redeem-input-bg: rgba(255, 255, 255, 0.5);
   --am-report-entry-redeem-error-border: rgba(200, 80, 80, 0.5);
@@ -485,7 +491,7 @@
     rgba(122, 142, 168, 0.2)
   );
   --am-loading-version-lite-border: rgba(122, 142, 168, 0.4);
-  --am-loading-version-lite-text: var(--am-color-info-500);
+  --am-loading-version-lite-text: var(--am-text-info);
   --am-loading-version-pro-bg: linear-gradient(
     90deg,
     rgba(155, 64, 48, 0.3),
@@ -597,7 +603,7 @@
   --am-landing-hero-title: #efe1cd;
   --am-landing-hero-title-shadow: 0 3px 12px rgba(5, 10, 24, 0.22);
   --am-landing-hero-subtitle: rgb(var(--am-rgb-sand-300) / 0.66);
-  --am-landing-hero-price: var(--am-color-gold-300);
+  --am-landing-hero-price: var(--am-text-brass);
   --am-landing-scroll-cue: rgba(227, 219, 204, 0.36);
   --am-landing-scroll-cue-arrow: rgba(223, 215, 202, 0.36);
   --am-landing-steps-glow: radial-gradient(
@@ -828,7 +834,7 @@
   --mw-history-refresh-border: rgba(219, 177, 102, 0.28);
   --mw-history-refresh-bg: rgba(78, 72, 70, 0.72);
   --mw-history-refresh-text: #f2bf60;
-  --mw-history-section-title: var(--am-color-gold-300);
+  --mw-history-section-title: var(--am-text-brass);
   --mw-history-section-copy: rgb(var(--am-rgb-sand-300) / 0.45);
   --mw-history-record-border: rgb(var(--am-rgb-gold-300) / 0.15);
   --mw-history-record-bg: linear-gradient(
@@ -853,11 +859,11 @@
   --mw-history-record-meta: rgb(var(--am-rgb-sand-300) / 0.6);
   --mw-history-version-border: rgb(var(--am-rgb-gold-300) / 0.2);
   --mw-history-version-bg: rgb(var(--am-rgb-gold-300) / 0.1);
-  --mw-history-version-text: var(--am-color-gold-350);
+  --mw-history-version-text: var(--am-text-brass);
   --mw-history-version-lite-border: rgba(158, 170, 155, 0.22);
   --mw-history-version-lite-bg: rgba(158, 170, 155, 0.1);
   --mw-history-version-lite-text: #a8c4a0;
-  --mw-history-progress-text: var(--am-color-gold-350);
+  --mw-history-progress-text: var(--am-text-brass);
   --mw-history-progress-track-border: rgb(var(--am-rgb-gold-300) / 0.15);
   --mw-history-progress-track-bg: rgba(22, 35, 60, 0.8);
   --mw-history-progress-fill: linear-gradient(
@@ -868,7 +874,7 @@
   --mw-history-progress-fill-shadow: 0 0 8px rgb(var(--am-rgb-gold-300) / 0.4);
   --mw-history-status-border: rgb(var(--am-rgb-gold-300) / 0.25);
   --mw-history-status-bg: rgb(var(--am-rgb-gold-300) / 0.12);
-  --mw-history-status-text: var(--am-color-gold-350);
+  --mw-history-status-text: var(--am-text-brass);
   --mw-history-status-ready-border: rgba(158, 170, 155, 0.25);
   --mw-history-status-ready-bg: rgba(158, 170, 155, 0.12);
   --mw-history-status-ready-text: #a8c4a0;
@@ -897,7 +903,7 @@
     rgb(var(--am-rgb-gold-300) / 0.35),
     transparent
   );
-  --mw-history-summary-strong: var(--am-color-gold-350);
+  --mw-history-summary-strong: var(--am-text-brass);
   --mw-history-summary-strong-ready: #a8c4a0;
   --mw-history-summary-copy: rgb(var(--am-rgb-sand-300) / 0.4);
   --mw-history-filter-title: rgb(var(--am-rgb-gold-300) / 0.5);

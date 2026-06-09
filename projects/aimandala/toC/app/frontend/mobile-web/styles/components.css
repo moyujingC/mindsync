@@ -1,6 +1,7 @@
 .am-app-topbar {
-  position: relative;
-  z-index: 2;
+  position: sticky;
+  top: 0;
+  z-index: var(--am-z-sticky);
   display: flex;
   align-items: center;
   margin-right: calc(var(--am-app-topbar-bleed, 0px) * -1);
@@ -319,7 +320,7 @@
 }
 
 .mw-meta--soft {
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
 }
 
 .mw-progress {
@@ -487,7 +488,7 @@
 
 .mw-inline-error {
   margin: 10px 0 0;
-  color: var(--am-color-danger-600);
+  color: var(--am-text-error);
   font-size: 13px;
 }
 
@@ -657,7 +658,7 @@
 }
 
 .am-icon-tone-success {
-  color: var(--am-color-success-600);
+  color: var(--am-text-success);
 }
 
 .am-icon-tone-muted {

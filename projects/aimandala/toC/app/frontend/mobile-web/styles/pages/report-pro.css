@@ -40,7 +40,7 @@
   margin-bottom: var(--am-space-3);
   font-size: 28px;
   line-height: 1;
-  color: var(--am-color-danger-500);
+  color: var(--am-text-error);
 }
 
 .am-pro-report-error-card__title {
@@ -660,7 +660,7 @@
 
 .am-pro-report-disclaimer__icon {
   margin-top: 1px;
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
 }
 
 .am-pro-report-footer-brand {
@@ -848,7 +848,7 @@
 
 .am-pro-chat-modal__error {
   margin-bottom: 10px;
-  color: var(--am-color-copper-500);
+  color: var(--am-text-error);
   font-size: var(--am-text-sm);
   line-height: 1.6;
 }

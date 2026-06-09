@@ -408,11 +408,11 @@
 }
 
 .am-upload-slider--gold {
-  --am-upload-slider-value-color: var(--am-color-gold-300);
+  --am-upload-slider-value-color: var(--am-slider-value-primary);
 }
 
 .am-upload-slider--copper {
-  --am-upload-slider-value-color: var(--am-color-copper-400);
+  --am-upload-slider-value-color: var(--am-slider-value-secondary);
   margin-top: -4px;
 }
 
@@ -577,7 +577,7 @@
 }
 
 .am-upload-form-title span {
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
 }
 
 .am-upload-text-input {
@@ -651,7 +651,7 @@
 }
 
 .am-theme-selector__required {
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
 }
 
 .am-theme-selector__scroll {
@@ -728,7 +728,7 @@
 }
 
 .am-theme-selector__card.is-active .am-theme-selector__icon {
-  color: var(--am-color-gold-300);
+  color: var(--am-text-brass);
 }
 
 .am-theme-selector__label,
@@ -744,6 +744,7 @@
 .am-theme-selector__label {
   color: var(--am-upload-theme-label);
   font-weight: 600;
+  transform: translateY(-1px);
 }
 
 .am-theme-selector__sub {
@@ -853,7 +854,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
   text-decoration: underline;
   cursor: pointer;
   font: inherit;

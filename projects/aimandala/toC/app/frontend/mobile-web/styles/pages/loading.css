@@ -30,10 +30,8 @@
 }
 
 .am-loading-visual-ring {
-  --am-loading-visual-size: 200px;
-  --am-loading-visual-outer-size: 230px;
-  margin-top: 18px;
-  margin-bottom: 24px;
+  margin-top: var(--am-loading-visual-offset-y);
+  margin-bottom: var(--am-loading-visual-gap-after);
   width: var(--am-loading-visual-outer-size);
   height: var(--am-loading-visual-outer-size);
   display: grid;
@@ -53,6 +51,7 @@
   width: var(--am-loading-visual-size);
   height: var(--am-loading-visual-size);
   object-fit: cover;
+  object-position: var(--am-loading-visual-focus-position);
   border-radius: 50%;
   filter: var(--am-loading-visual-video-shadow);
   overflow: hidden;
@@ -63,14 +62,24 @@
 }
 
 .am-loading-copy {
-  margin-top: 28px;
+  margin-top: var(--am-loading-copy-offset-y);
   text-align: center;
 }
 
 .am-loading-copy h1 {
+  margin-top: var(--am-loading-title-gap-top);
   font-size: 20px;
   letter-spacing: 0.12em;
   line-height: 1.4;
+}
+
+.am-loading-copy__subtitle {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: 0.03em;
+  color: var(--am-text-on-dark-soft);
 }
 
 .am-loading-version {
@@ -114,9 +123,16 @@
 .am-loading-progress-card,
 .am-loading-log-card,
 .am-loading-tip-card {
-  margin-top: 22px;
+  margin-top: var(--am-loading-title-card-gap);
   padding: 16px;
   border-radius: 22px;
+}
+
+.am-loading-progress-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .am-loading-progress-card,
@@ -124,6 +140,12 @@
   background: var(--am-loading-panel-bg);
   border: 1px solid var(--am-loading-panel-border);
   box-shadow: var(--am-loading-panel-shadow);
+}
+
+.am-loading-progress-card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .am-loading-progress-value {
@@ -169,7 +191,7 @@
 .am-loading-progress-shimmer {
   position: absolute;
   top: 0;
-  width: 40px;
+  width: var(--am-loading-progress-shimmer-width);
   height: 100%;
   background: var(--am-loading-progress-shimmer-bg);
   pointer-events: none;
@@ -189,8 +211,43 @@
 
 .am-loading-progress-note {
   margin-top: 6px;
-  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.55;
   color: var(--am-loading-progress-note);
+}
+
+.am-loading-progress-note__line {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  column-gap: 0;
+  row-gap: 0;
+}
+
+.am-loading-progress-exit {
+  appearance: none;
+  padding: 1px 8px 2px;
+  border: 1px solid var(--am-loading-progress-exit-border);
+  border-radius: 999px;
+  background: var(--am-loading-progress-exit-bg);
+  color: var(--am-text-accent);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  box-shadow: var(--am-loading-progress-exit-shadow);
+}
+
+.am-loading-progress-exit--inline {
+  margin: 0 2px;
+  vertical-align: baseline;
 }
 
 .am-loading-speed-note {
@@ -293,7 +350,7 @@
 }
 
 .am-loading-log-item.is-done .am-loading-log-dot svg {
-  color: var(--am-color-success-600);
+  color: var(--am-text-success);
 }
 
 .am-loading-log-item.is-active {
@@ -337,11 +394,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
 }
 
 .am-loading-tip-title {
-  color: var(--am-color-copper-400);
+  color: var(--am-text-brass);
   font-weight: 500;
 }
 
