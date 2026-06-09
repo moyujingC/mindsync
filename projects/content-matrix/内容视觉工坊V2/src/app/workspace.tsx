@@ -6,6 +6,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import type {
+  CardPlan,
+  InlineImagePlan,
+  PlannerResponse,
+} from "./content-planning";
 
 export type ArticleBlock =
   | { type: "eyebrow"; text: string }
@@ -49,6 +54,16 @@ export type GenerationRecord = {
 
 export type WorkspaceTab = "workbench" | "wechat" | "assets" | "image" | "sync";
 
+export type PlanningState = {
+  provider: PlannerResponse["provider"];
+  cardPlan: CardPlan[];
+  candidateQuotes: string[];
+  inlineImagePlan: InlineImagePlan[];
+  coverTheme: PlannerResponse["analysis"]["coverTheme"];
+  strategySummary: string;
+  updatedAt: string;
+};
+
 type WorkspaceContextValue = {
   activeTab: WorkspaceTab;
   setActiveTab: (tab: WorkspaceTab) => void;
@@ -59,6 +74,9 @@ type WorkspaceContextValue = {
   generationRecords: GenerationRecord[];
   latestGeneration: GenerationRecord | null;
   saveGenerationRecord: (record: GenerationRecord) => void;
+  planningState: PlanningState | null;
+  savePlanningState: (planning: PlanningState) => void;
+  clearPlanningState: () => void;
 };
 
 const DEFAULT_ARTICLE: WorkspaceArticle = {
@@ -90,6 +108,7 @@ const STORAGE_KEYS = {
   article: "content-visual-studio.current-article.v1",
   activeTab: "content-visual-studio.active-tab.v1",
   generationRecords: "content-visual-studio.generation-records.v1",
+  planningState: "content-visual-studio.planning-state.v1",
 } as const;
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
@@ -103,6 +122,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   );
   const [generationRecords, setGenerationRecords] = useState<GenerationRecord[]>(() =>
     readStoredJson(STORAGE_KEYS.generationRecords, [])
+  );
+  const [planningState, setPlanningState] = useState<PlanningState | null>(() =>
+    readStoredJson(STORAGE_KEYS.planningState, null)
   );
 
   const currentArticleBlocks = useMemo(
@@ -122,6 +144,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     });
   }
 
+  function savePlanningState(planning: PlanningState) {
+    setPlanningState(planning);
+  }
+
+  function clearPlanningState() {
+    setPlanningState(null);
+  }
+
   const value = useMemo(
     () => ({
       activeTab,
@@ -133,6 +163,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       generationRecords,
       latestGeneration,
       saveGenerationRecord,
+      planningState,
+      savePlanningState,
+      clearPlanningState,
     }),
     [
       activeTab,
@@ -141,6 +174,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       currentArticleMeta,
       generationRecords,
       latestGeneration,
+      planningState,
     ]
   );
 
@@ -162,6 +196,14 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       JSON.stringify(generationRecords)
     );
   }, [generationRecords]);
+
+  useEffect(() => {
+    if (!planningState) {
+      window.localStorage.removeItem(STORAGE_KEYS.planningState);
+      return;
+    }
+    window.localStorage.setItem(STORAGE_KEYS.planningState, JSON.stringify(planningState));
+  }, [planningState]);
 
   return (
     <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>

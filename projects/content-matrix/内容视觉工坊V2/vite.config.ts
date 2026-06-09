@@ -3,6 +3,10 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import type { Connect } from 'vite'
+import {
+  planCardsWithLLM,
+  planKnowledgeCardsFromArticle,
+} from './server/content-planning'
 import { generateImagesWithModel } from './server/image-generation'
 
 
@@ -63,12 +67,52 @@ function localGenerateImagesApi() {
   }
 }
 
+function localPlanCardsApi() {
+  return {
+    name: 'local-plan-cards-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/plan-cards', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'POST') {
+          next()
+          return
+        }
+
+        try {
+          const body = await jsonBodyParser(req)
+          let planned
+
+          try {
+            planned = await planCardsWithLLM(body)
+          } catch (error) {
+            console.warn('[plan-cards] falling back to local planner:', error instanceof Error ? error.message : error)
+            planned = {
+              provider: 'local-fallback',
+              ...planKnowledgeCardsFromArticle(body),
+            }
+          }
+
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify(planned))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'plan-cards-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
 export default defineConfig(({ mode }) => {
   Object.assign(process.env, loadEnv(mode, __dirname, ''))
 
   return {
     plugins: [
       figmaAssetResolver(),
+      localPlanCardsApi(),
       localGenerateImagesApi(),
       // The React and Tailwind plugins are both required for Make, even if
       // Tailwind is not being actively used – do not remove them

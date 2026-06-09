@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { Panel, Btn, ToggleRow, Tag, COLORS, FoggyArt, Divider } from "./ui-kit";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
+import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
 import {
   useWorkspace,
   type GenerationPurposeKey,
@@ -63,6 +64,8 @@ export function Workbench() {
     generationRecords,
     latestGeneration,
     saveGenerationRecord,
+    planningState,
+    savePlanningState,
   } = useWorkspace();
   const knowledgePreset = findPreset(DEFAULT_PRESET_KEYS.knowledgeCard)?.preset;
   const quotePreset = findPreset(DEFAULT_PRESET_KEYS.quoteCard)?.preset;
@@ -83,11 +86,31 @@ export function Workbench() {
   const [openCovers, setOpenCovers] = useState(false);
   const [openIllus, setOpenIllus] = useState(false);
   const [openQuotes, setOpenQuotes] = useState(false);
-  const [splitStrategy, setSplitStrategy] = useState<"auto" | "less" | "more">(
-    "auto"
-  );
+  const [splitStrategy, setSplitStrategy] = useState<SplitStrategy>("auto");
   const [minCards, setMinCards] = useState(2);
   const [maxCards, setMaxCards] = useState(6);
+
+  const plannedCards = planningState?.cardPlan ?? KNOWLEDGE_CARDS.map((card, index) => ({
+    index: index + 1,
+    title: card.title,
+    summary: card.desc,
+  }));
+  const plannedQuotes = planningState?.candidateQuotes?.length
+    ? planningState.candidateQuotes
+    : QUOTES;
+  const plannedInlineImages = planningState?.inlineImagePlan?.length
+    ? planningState.inlineImagePlan
+    : ILLUSTRATIONS.map((item, index) => ({
+        sectionHeading: item.title,
+        sectionType: "concept" as const,
+        sectionTheme: item.title,
+        sectionKeywords: [item.title],
+        sectionSummary: item.title,
+        visualDirection: "",
+        rationale: "",
+        variant: item.variant,
+        index,
+      }));
 
   const [selectedQuotes, setSelectedQuotes] = useState<number[]>([0]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -112,32 +135,78 @@ export function Workbench() {
     ? `${latestGeneration.purposeLabel} · ${latestGeneration.images.length} 张`
     : "cover_03 → 桌面与一杯茶";
   const estimatedCredits =
-    (outputs.knowledge ? 4 : 0) +
+    (outputs.knowledge ? plannedCards.length : 0) +
     (outputs.quote ? Math.max(1, selectedQuotes.length) : 0) +
     (outputs.cover ? 3 : 0) +
-    (outputs.inline ? 3 : 0);
+    (outputs.inline ? plannedInlineImages.length : 0);
 
-  async function handleStartGeneration() {
-    const tasks = buildGenerationTasks({
+  async function runPlanning() {
+    const preset = knowledgePreset;
+    const request: PlannerRequest = {
       articleTitle: currentArticle.title,
-      articleBody: currentArticle.body,
-      selectedQuotes: selectedQuotes.map((index) => QUOTES[index] ?? QUOTES[0]),
-      outputs,
+      rawText: currentArticle.body,
+      knowledgeCardStyleName: "蓝雾静读",
+      inlineImageStyleName: "留白水墨",
+      cardRatio: preset?.aspect || "3:4",
+      cardWidth: preset?.w || 1280,
+      cardHeight: preset?.h || 1706,
+      splitStrategy,
       minCards,
       maxCards,
-    });
+    };
 
-    if (tasks.length === 0) {
-      if (outputs.layout) {
-        setActiveTab("wechat");
-      }
-      return;
+    const response = await fetch("/api/plan-cards", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    const payload = (await response.json()) as PlannerResponse | { message?: string; error?: string };
+    if (!response.ok) {
+      throw new Error(payload.message || payload.error || "内容拆解失败");
     }
 
+    const planning = payload as PlannerResponse;
+    savePlanningState({
+      provider: planning.provider,
+      cardPlan: planning.cardPlan,
+      candidateQuotes: planning.analysis.keyQuotes,
+      inlineImagePlan: planning.inlineImagePlan,
+      coverTheme: planning.analysis.coverTheme,
+      strategySummary: planning.analysis.imageGenerationSource.strategy,
+      updatedAt: new Date().toISOString(),
+    });
+
+    return planning;
+  }
+
+  async function handleStartGeneration() {
     setIsGenerating(true);
     setGenerationError("");
 
     try {
+      setGenerationStatus("正在拆解内容与提炼候选金句 · 1/2");
+      const planning = await runPlanning();
+      const resolvedQuotes = selectedQuotes
+        .map((index) => planning.analysis.keyQuotes[index] ?? planning.analysis.keyQuotes[0])
+        .filter(Boolean);
+      const tasks = buildGenerationTasks({
+        articleTitle: currentArticle.title,
+        articleBody: currentArticle.body,
+        planning,
+        selectedQuotes: resolvedQuotes,
+        outputs,
+      });
+
+      if (tasks.length === 0) {
+        setGenerationStatus("内容拆解已完成");
+        if (outputs.layout) {
+          setActiveTab("wechat");
+        }
+        return;
+      }
+
       for (let index = 0; index < tasks.length; index += 1) {
         const task = tasks[index];
         setGenerationStatus(`正在生成 ${task.purposeLabel} · ${index + 1}/${tasks.length}`);
@@ -606,9 +675,22 @@ export function Workbench() {
                   style={{ color: COLORS.textMid }}
                 >
                   <Wand2 size={11} strokeWidth={1.6} color={COLORS.blue} />
-                  本次生成 4 张知识卡 · 根据文章结构自动拆分
+                  本次生成 {plannedCards.length} 张知识卡 · 根据文章结构自动拆分
                 </span>
                 <button
+                  onClick={() => {
+                    void (async () => {
+                      try {
+                        setGenerationError("");
+                        setGenerationStatus("正在重新拆解内容");
+                        await runPlanning();
+                        setGenerationStatus("内容拆解已更新");
+                      } catch (error) {
+                        setGenerationError(error instanceof Error ? error.message : "重新拆解失败");
+                        setGenerationStatus("重新拆解失败");
+                      }
+                    })();
+                  }}
                   className="flex items-center gap-1"
                   style={{ color: COLORS.textMid, fontSize: 12 }}
                 >
@@ -619,9 +701,9 @@ export function Workbench() {
 
             <div className="px-5 pb-5">
               <div className="space-y-2">
-                {KNOWLEDGE_CARDS.map((c) => (
+                {plannedCards.map((c) => (
                   <div
-                    key={c.i}
+                    key={`${c.index}-${c.title}`}
                     className="flex items-start gap-3 px-3.5 py-3 rounded-md"
                     style={{
                       background: COLORS.surfaceAlt,
@@ -637,7 +719,7 @@ export function Workbench() {
                         letterSpacing: "0.06em",
                       }}
                     >
-                      {c.i}
+                      {String(c.index).padStart(2, "0")}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div style={{ color: COLORS.text, fontSize: 13.5 }}>
@@ -650,7 +732,7 @@ export function Workbench() {
                           marginTop: 2,
                         }}
                       >
-                        {c.desc}
+                        {c.summary}
                       </div>
                     </div>
                     <CheckCircle2
@@ -691,14 +773,14 @@ export function Workbench() {
                     候选金句
                   </span>
                   <span style={{ color: "#8B6F44", fontSize: 12 }}>
-                    {QUOTES.length} 条 · 已选 {selectedQuotes.length} / {QUOTES.length}
+                    {plannedQuotes.length} 条 · 已选 {selectedQuotes.length} / {plannedQuotes.length}
                   </span>
                 </div>
                 <div
                   className="mt-1 truncate"
                   style={{ color: "#7A6244", fontSize: 11.5 }}
                 >
-                  「{QUOTES[selectedQuotes[0] ?? 0]}」
+                  「{plannedQuotes[selectedQuotes[0] ?? 0] ?? plannedQuotes[0]}」
                 </div>
               </div>
 
@@ -738,7 +820,7 @@ export function Workbench() {
                   borderTop: `1px solid rgba(225,215,194,0.7)`,
                 }}
               >
-                {QUOTES.map((q, i) => {
+                {plannedQuotes.map((q, i) => {
                   const checked = selectedQuotes.includes(i);
                   return (
                     <button
@@ -937,22 +1019,22 @@ export function Workbench() {
                     ? `${knowledgePreset.aspect} 高清 · ${knowledgePreset.w}×${knowledgePreset.h}`
                     : "3:4 高清 · 1280×1706"
                 }
-                count={4}
+                count={plannedCards.length}
               />
               <div className="grid grid-cols-4 gap-3 mt-2.5">
                 {(knowledgeGeneration
-                  ? knowledgeGeneration.images.slice(0, 4).map((image, i) => ({
+                  ? knowledgeGeneration.images.slice(0, plannedCards.length).map((image, i) => ({
                       mode: "real" as const,
                       image,
                       index: i,
                     }))
-                  : KNOWLEDGE_CARDS.map((card, i) => ({
+                  : plannedCards.map((card, i) => ({
                       mode: "mock" as const,
                       card,
                       index: i,
                     }))).map((item) => (
                   <div
-                    key={item.mode === "real" ? item.image.id : item.card.i}
+                    key={item.mode === "real" ? item.image.id : `${item.card.index}-${item.card.title}`}
                     className="rounded-md overflow-hidden"
                     style={{ border: `1px solid ${COLORS.borderSoft}` }}
                   >
@@ -990,7 +1072,7 @@ export function Workbench() {
                             letterSpacing: "0.18em",
                           }}
                         >
-                          {item.card.i} / 04
+                          {String(item.card.index).padStart(2, "0")} / {String(plannedCards.length).padStart(2, "0")}
                         </div>
                         <div
                           style={{
@@ -1051,8 +1133,15 @@ export function Workbench() {
                           letterSpacing: "0.02em",
                         }}
                       >
-                        真正的专注<br />
-                        不是用力，而是放弃。
+                        {(plannedQuotes[selectedQuotes[0] ?? 0] ?? plannedQuotes[0] ?? "真正的专注不是用力，而是放弃。")
+                          .split("，")
+                          .map((line, index, list) => (
+                            <span key={`${line}-${index}`}>
+                              {line}
+                              {index < list.length - 1 ? "，" : ""}
+                              {index < list.length - 1 ? <br /> : null}
+                            </span>
+                          ))}
                       </div>
                       <div style={{ color: "#3F4E62", fontSize: 10.5 }}>
                         —— 论专注 v3
@@ -1125,12 +1214,12 @@ export function Workbench() {
                     ? `横版默认 · ${inlinePreset.w}×${inlinePreset.h}`
                     : "横版默认 · 1080×608"
                 }
-                count={3}
+                count={plannedInlineImages.length}
               />
               <div className="grid grid-cols-3 gap-3 mt-2.5">
-                {ILLUSTRATIONS.map((c, i) => (
+                {plannedInlineImages.map((c, i) => (
                   <div
-                    key={i}
+                    key={`${c.sectionHeading}-${i}`}
                     className="rounded-md overflow-hidden"
                     style={{ border: `1px solid ${COLORS.borderSoft}` }}
                   >
@@ -1149,7 +1238,15 @@ export function Workbench() {
                     ) : (
                       <FoggyArt
                         hue={i + 1}
-                        variant={c.variant}
+                        variant={
+                          "variant" in c && c.variant
+                            ? c.variant
+                            : i % 3 === 0
+                              ? "wave"
+                              : i % 3 === 1
+                                ? "mountain"
+                                : "leaf"
+                        }
                         style={{
                           aspectRatio: inlinePreset
                             ? `${inlinePreset.w} / ${inlinePreset.h}`
@@ -1494,13 +1591,13 @@ function RangeField({
 function buildGenerationTasks({
   articleTitle,
   articleBody,
+  planning,
   selectedQuotes,
   outputs,
-  minCards,
-  maxCards,
 }: {
   articleTitle: string;
   articleBody: string;
+  planning: PlannerResponse;
   selectedQuotes: string[];
   outputs: {
     knowledge: boolean;
@@ -1509,8 +1606,6 @@ function buildGenerationTasks({
     inline: boolean;
     layout: boolean;
   };
-  minCards: number;
-  maxCards: number;
 }) {
   const bodyPreview = articleBody
     .replace(/\s+/g, " ")
@@ -1534,13 +1629,16 @@ function buildGenerationTasks({
   if (outputs.knowledge) {
     const preset = findPreset(DEFAULT_PRESET_KEYS.knowledgeCard)?.preset;
     if (preset) {
+      const outline = planning.cardPlan
+        .map((card) => `${card.index}. ${card.title}`)
+        .join("；");
       tasks.push({
         articleTitle,
-        prompt: `围绕文章《${articleTitle}》生成一组小红书知识卡片主视觉。提炼核心观点，画面克制、低饱和、雾蓝基调，适合信息型知识卡传播。文章摘要：${bodyPreview}。拆卡范围控制在 ${minCards}-${maxCards} 张之间。`,
+        prompt: `围绕文章《${articleTitle}》生成一组小红书知识卡片主视觉。当前拆解为 ${planning.cardPlan.length} 张，卡片主线：${outline}。提炼核心观点，画面克制、低饱和、雾蓝基调，适合信息型知识卡传播。文章摘要：${bodyPreview}。`,
         negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
         width: preset.w,
         height: preset.h,
-        count: 4,
+        count: planning.cardPlan.length,
         purposeKey: "xhs_card",
         purposeLabel: "小红书知识卡片 / 图文配图",
         presetKey: preset.k,
@@ -1573,9 +1671,10 @@ function buildGenerationTasks({
   if (outputs.cover) {
     const preset = findPreset(DEFAULT_PRESET_KEYS.wechatCover)?.preset;
     if (preset) {
+      const coverTheme = planning.analysis.coverTheme;
       tasks.push({
         articleTitle,
-        prompt: `为公众号文章《${articleTitle}》生成 3 张封面候选图。方向克制、留白、低饱和雾蓝与暖灰，适合知识型内容封面。文章摘要：${bodyPreview}。`,
+        prompt: `为公众号文章《${articleTitle}》生成 3 张封面候选图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。方向克制、留白、低饱和雾蓝与暖灰，适合知识型内容封面。文章摘要：${bodyPreview}。`,
         negativePrompt: "高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、文字",
         width: preset.w,
         height: preset.h,
@@ -1592,13 +1691,16 @@ function buildGenerationTasks({
   if (outputs.inline) {
     const preset = findPreset(DEFAULT_PRESET_KEYS.wechatInline)?.preset;
     if (preset) {
+      const inlineThemes = planning.inlineImagePlan
+        .map((item) => `${item.sectionHeading}：${item.visualDirection}`)
+        .join("；");
       tasks.push({
         articleTitle,
-        prompt: `为文章《${articleTitle}》生成 3 张公众号正文配图。要求适合段落间穿插，风格安静、克制、雾蓝主色，具备抽象自然意象。文章摘要：${bodyPreview}。`,
+        prompt: `为文章《${articleTitle}》生成 ${planning.inlineImagePlan.length} 张公众号正文配图。当前配图规划：${inlineThemes}。要求适合段落间穿插，风格安静、克制、雾蓝主色，具备抽象自然意象。文章摘要：${bodyPreview}。`,
         negativePrompt: "高饱和、霓虹、复杂场景、卡通、重文字、噪点过多",
         width: preset.w,
         height: preset.h,
-        count: 3,
+        count: planning.inlineImagePlan.length,
         purposeKey: "wx_inline",
         purposeLabel: "公众号正文配图",
         presetKey: preset.k,
