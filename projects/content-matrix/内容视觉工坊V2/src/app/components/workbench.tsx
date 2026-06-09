@@ -26,7 +26,7 @@ import {
   Replace,
   History,
 } from "lucide-react";
-import { Panel, Btn, ToggleRow, Tag, COLORS, FoggyArt, Divider } from "./ui-kit";
+import { Panel, Btn, Tag, COLORS, FoggyArt, Divider } from "./ui-kit";
 import {
   Dialog,
   DialogContent,
@@ -36,37 +36,19 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
-import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
+import type { PlannerRequest, SplitStrategy } from "../content-planning";
+import { postGenerateImages, postPlanCards } from "../api";
+import { useWorkspace, type GenerationRecord } from "../workspace";
 import {
-  useWorkspace,
-  type GenerationPurposeKey,
-  type GenerationRecord,
-} from "../workspace";
-
-const KNOWLEDGE_CARDS = [
-  { i: "01", title: "注意力的隐性税收", desc: "持续切换让大脑反复加载上下文，代价比想象中大。" },
-  { i: "02", title: "专注不是用力", desc: "真正的专注来自更少的目标，而不是更紧的咬牙。" },
-  { i: "03", title: "把专注当作长期能力", desc: "它需要环境设计、节律和恢复，而不是一次冲刺。" },
-  { i: "04", title: "可执行的三步实验", desc: "从单一任务窗口到深度时段，渐进而不是激进。" },
-];
-
-const QUOTES = [
-  "真正的专注不是用力，而是放弃。",
-  "你以为的高效，常常只是切换得更快。",
-  "把专注当作能力，而不是一次决心。",
-];
-
-const COVER_DRAFTS = [
-  { title: "一座静山一盏灯", note: "克制 · 留白 · 主图偏左", variant: "mountain" as const },
-  { title: "雾中的窗", note: "蓝雾基调 · 单点光源", variant: "circle" as const },
-  { title: "桌面与一杯茶", note: "生活感 · 暖灰底", variant: "abstract" as const },
-];
-
-const ILLUSTRATIONS = [
-  { title: "段落一：注意力切换的代价", variant: "wave" as const },
-  { title: "段落二：专注的真正成本", variant: "mountain" as const },
-  { title: "段落三：能力而非决心", variant: "leaf" as const },
-];
+  buildFallbackCardPlan,
+  buildFallbackInlineImagePlan,
+  buildGenerationTasks,
+  COVER_DRAFTS,
+  ILLUSTRATIONS,
+  mergeRecordImages,
+  QUOTES,
+  sortImagesByCardIndex,
+} from "./workbench-data";
 
 export function Workbench() {
   const {
@@ -105,27 +87,13 @@ export function Workbench() {
   const [minCards, setMinCards] = useState(2);
   const [maxCards, setMaxCards] = useState(6);
 
-  const plannedCards = planningState?.cardPlan ?? KNOWLEDGE_CARDS.map((card, index) => ({
-    index: index + 1,
-    title: card.title,
-    summary: card.desc,
-  }));
+  const plannedCards = planningState?.cardPlan ?? buildFallbackCardPlan();
   const plannedQuotes = planningState?.candidateQuotes?.length
     ? planningState.candidateQuotes
     : QUOTES;
   const plannedInlineImages = planningState?.inlineImagePlan?.length
     ? planningState.inlineImagePlan
-    : ILLUSTRATIONS.map((item, index) => ({
-        sectionHeading: item.title,
-        sectionType: "concept" as const,
-        sectionTheme: item.title,
-        sectionKeywords: [item.title],
-        sectionSummary: item.title,
-        visualDirection: "",
-        rationale: "",
-        variant: item.variant,
-        index,
-      }));
+    : buildFallbackInlineImagePlan();
 
   const [selectedQuotes, setSelectedQuotes] = useState<number[]>([0]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -297,7 +265,7 @@ export function Workbench() {
       purposeLabel: "小红书知识卡片 / 图文配图",
       presetLabel: knowledgePreset?.label || "小红书 3:4 高清 · 1280×1706",
       styleName: existingRecord?.styleName || "蓝雾静读",
-      images: nextImages.sort((a, b) => (a.cardLink?.index ?? 999) - (b.cardLink?.index ?? 999)),
+      images: sortImagesByCardIndex(nextImages),
       createdAt: new Date().toISOString(),
     };
 
@@ -354,35 +322,24 @@ export function Workbench() {
     setGenerationStatus(`正在重生成知识卡 ${String(cardIndex).padStart(2, "0")}`);
 
     try {
-      const response = await fetch("/api/generate-images", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const record = await postGenerateImages({
+        articleTitle: currentArticle.title,
+        prompt: `为文章《${currentArticle.title}》的第 ${resolvedCard.index} 张小红书知识卡片生成主视觉。卡片标题：${resolvedCard.title}。卡片摘要：${resolvedCard.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。`,
+        negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
+        width: preset.w,
+        height: preset.h,
+        count: 1,
+        purposeKey: "xhs_card",
+        purposeLabel: "小红书知识卡片 / 图文配图",
+        presetKey: preset.k,
+        presetLabel: preset.label,
+        styleName: "蓝雾静读",
+        cardLink: {
+          index: resolvedCard.index,
+          title: resolvedCard.title,
+          summary: resolvedCard.summary,
         },
-        body: JSON.stringify({
-          articleTitle: currentArticle.title,
-          prompt: `为文章《${currentArticle.title}》的第 ${resolvedCard.index} 张小红书知识卡片生成主视觉。卡片标题：${resolvedCard.title}。卡片摘要：${resolvedCard.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。`,
-          negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
-          width: preset.w,
-          height: preset.h,
-          count: 1,
-          purposeKey: "xhs_card",
-          purposeLabel: "小红书知识卡片 / 图文配图",
-          presetKey: preset.k,
-          presetLabel: preset.label,
-          styleName: "蓝雾静读",
-          cardLink: {
-            index: resolvedCard.index,
-            title: resolvedCard.title,
-            summary: resolvedCard.summary,
-          },
-        }),
       });
-      const payload = (await response.json()) as GenerationRecord | { message?: string; error?: string };
-      if (!response.ok) {
-        throw new Error(payload.message || payload.error || "知识卡重生成失败");
-      }
-      const record = payload as GenerationRecord;
       const previousImage = knowledgeGeneration?.images.find(
         (item) => item.cardLink?.index === resolvedCard.index
       );
@@ -396,15 +353,7 @@ export function Workbench() {
           createdAt: new Date().toISOString(),
         });
       }
-      const merged = {
-        ...(knowledgeGeneration || record),
-        ...record,
-        images: [
-          ...(knowledgeGeneration?.images.filter((item) => item.cardLink?.index !== resolvedCard.index) || []),
-          ...record.images,
-        ].sort((a, b) => (a.cardLink?.index ?? 999) - (b.cardLink?.index ?? 999)),
-        createdAt: new Date().toISOString(),
-      } satisfies GenerationRecord;
+      const merged = mergeRecordImages(knowledgeGeneration, record);
       saveGenerationRecord(merged);
       updateKnowledgeCardStatus(cardIndex, {
         regenerated: true,
@@ -478,19 +427,7 @@ export function Workbench() {
       maxCards,
     };
 
-    const response = await fetch("/api/plan-cards", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(request),
-    });
-    const payload = (await response.json()) as PlannerResponse | { message?: string; error?: string };
-    if (!response.ok) {
-      throw new Error(payload.message || payload.error || "内容拆解失败");
-    }
-
-    const planning = payload as PlannerResponse;
+    const planning = await postPlanCards(request);
     savePlanningState({
       provider: planning.provider,
       cardPlan: planning.cardPlan,
@@ -536,30 +473,10 @@ export function Workbench() {
       for (let index = 0; index < tasks.length; index += 1) {
         const task = tasks[index];
         setGenerationStatus(`正在生成 ${task.purposeLabel} · ${index + 1}/${tasks.length}`);
-        const response = await fetch("/api/generate-images", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(task),
-        });
-        const payload = (await response.json()) as
-          | GenerationRecord
-          | { message?: string; error?: string };
-        if (!response.ok) {
-          throw new Error(payload.message || payload.error || `${task.purposeLabel} 生成失败`);
-        }
-        const record = payload as GenerationRecord;
+        const record = await postGenerateImages(task);
         if (record.purposeKey === "xhs_card") {
           const existing = groupedRecords.get(record.purposeKey);
-          const mergedRecord = existing
-            ? {
-                ...record,
-                images: [...existing.images, ...record.images].sort(
-                  (a, b) => (a.cardLink?.index ?? 999) - (b.cardLink?.index ?? 999)
-                ),
-              }
-            : record;
+          const mergedRecord = mergeRecordImages(existing, record);
           groupedRecords.set(record.purposeKey, mergedRecord);
           saveGenerationRecord(mergedRecord);
           record.images.forEach((image) => {
@@ -2162,144 +2079,6 @@ function RangeField({
       </div>
     </div>
   );
-}
-
-function buildGenerationTasks({
-  articleTitle,
-  articleBody,
-  planning,
-  selectedQuotes,
-  outputs,
-  lockedKnowledgeCardIndexes,
-}: {
-  articleTitle: string;
-  articleBody: string;
-  planning: PlannerResponse;
-  selectedQuotes: string[];
-  outputs: {
-    knowledge: boolean;
-    quote: boolean;
-    cover: boolean;
-    inline: boolean;
-    layout: boolean;
-  };
-  lockedKnowledgeCardIndexes: number[];
-}) {
-  const bodyPreview = articleBody
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 140);
-
-  const tasks: Array<{
-    articleTitle: string;
-    prompt: string;
-    negativePrompt: string;
-    width: number;
-    height: number;
-    count: number;
-    purposeKey: GenerationPurposeKey;
-    purposeLabel: string;
-    presetKey: string;
-    presetLabel: string;
-    styleName: string;
-    cardLink?: {
-      index: number;
-      title: string;
-      summary: string;
-    };
-  }> = [];
-
-  if (outputs.knowledge) {
-    const preset = findPreset(DEFAULT_PRESET_KEYS.knowledgeCard)?.preset;
-    if (preset) {
-      planning.cardPlan
-        .filter((card) => !lockedKnowledgeCardIndexes.includes(card.index))
-        .forEach((card) => {
-        tasks.push({
-          articleTitle,
-          prompt: `为文章《${articleTitle}》的第 ${card.index} 张小红书知识卡片生成主视觉。卡片标题：${card.title}。卡片摘要：${card.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。文章摘要：${bodyPreview}。`,
-          negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
-          width: preset.w,
-          height: preset.h,
-          count: 1,
-          purposeKey: "xhs_card",
-          purposeLabel: "小红书知识卡片 / 图文配图",
-          presetKey: preset.k,
-          presetLabel: preset.label,
-          styleName: "蓝雾静读",
-          cardLink: {
-            index: card.index,
-            title: card.title,
-            summary: card.summary,
-          },
-        });
-      });
-    }
-  }
-
-  if (outputs.quote) {
-    const preset = findPreset(DEFAULT_PRESET_KEYS.quoteCard)?.preset;
-    if (preset) {
-      const quoteText = selectedQuotes[0] || "真正的专注不是用力，而是放弃。";
-      tasks.push({
-        articleTitle,
-        prompt: `为文章《${articleTitle}》生成一张公众号横版金句卡。核心文案是：“${quoteText}”。画面需留白、安静、疗愈，便于后续叠加文字。`,
-        negativePrompt: "高饱和、霓虹、复杂纹理、人物特写、卡通插画、杂乱文字",
-        width: preset.w,
-        height: preset.h,
-        count: 1,
-        purposeKey: "quote",
-        purposeLabel: "金句卡",
-        presetKey: preset.k,
-        presetLabel: preset.label,
-        styleName: "蓝雾静读",
-      });
-    }
-  }
-
-  if (outputs.cover) {
-    const preset = findPreset(DEFAULT_PRESET_KEYS.wechatCover)?.preset;
-    if (preset) {
-      const coverTheme = planning.analysis.coverTheme;
-      tasks.push({
-        articleTitle,
-        prompt: `为公众号文章《${articleTitle}》生成 3 张封面候选图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。方向克制、留白、低饱和雾蓝与暖灰，适合知识型内容封面。文章摘要：${bodyPreview}。`,
-        negativePrompt: "高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、文字",
-        width: preset.w,
-        height: preset.h,
-        count: 3,
-        purposeKey: "wx_cover",
-        purposeLabel: "公众号封面",
-        presetKey: preset.k,
-        presetLabel: preset.label,
-        styleName: "蓝雾静读",
-      });
-    }
-  }
-
-  if (outputs.inline) {
-    const preset = findPreset(DEFAULT_PRESET_KEYS.wechatInline)?.preset;
-    if (preset) {
-      const inlineThemes = planning.inlineImagePlan
-        .map((item) => `${item.sectionHeading}：${item.visualDirection}`)
-        .join("；");
-      tasks.push({
-        articleTitle,
-        prompt: `为文章《${articleTitle}》生成 ${planning.inlineImagePlan.length} 张公众号正文配图。当前配图规划：${inlineThemes}。要求适合段落间穿插，风格安静、克制、雾蓝主色，具备抽象自然意象。文章摘要：${bodyPreview}。`,
-        negativePrompt: "高饱和、霓虹、复杂场景、卡通、重文字、噪点过多",
-        width: preset.w,
-        height: preset.h,
-        count: planning.inlineImagePlan.length,
-        purposeKey: "wx_inline",
-        purposeLabel: "公众号正文配图",
-        presetKey: preset.k,
-        presetLabel: preset.label,
-        styleName: "留白水墨",
-      });
-    }
-  }
-
-  return tasks;
 }
 
 function SmallLabel({ children }: { children: React.ReactNode }) {

@@ -1,23 +1,5 @@
 import crypto from "node:crypto";
-
-export type GenerateImagesRequest = {
-  articleTitle: string;
-  prompt: string;
-  negativePrompt?: string;
-  width: number;
-  height: number;
-  count: number;
-  purposeKey: string;
-  purposeLabel: string;
-  presetKey: string;
-  presetLabel: string;
-  styleName: string;
-  cardLink?: {
-    index: number;
-    title: string;
-    summary: string;
-  };
-};
+import type { GenerateImagesRequest } from "../src/app/api";
 
 type OpenAICompatibleImageResponse = {
   data?: Array<{

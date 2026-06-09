@@ -16,6 +16,7 @@ import {
   useWorkspace,
   type GenerationRecord,
 } from "../workspace";
+import { postGenerateImages } from "../api";
 
 const STYLES = [
   { name: "蓝雾静读", hue: 0, variant: "mountain" },
@@ -66,35 +67,19 @@ export function GeneralImage() {
     setErrorMessage("");
 
     try {
-      const response = await fetch("/api/generate-images", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          articleTitle: currentArticle.title,
-          prompt,
-          negativePrompt,
-          width,
-          height,
-          count,
-          purposeKey,
-          purposeLabel: purpose.label,
-          presetKey: preset.k,
-          presetLabel: preset.label,
-          styleName: style,
-        }),
+      const record = await postGenerateImages({
+        articleTitle: currentArticle.title,
+        prompt,
+        negativePrompt,
+        width,
+        height,
+        count,
+        purposeKey,
+        purposeLabel: purpose.label,
+        presetKey: preset.k,
+        presetLabel: preset.label,
+        styleName: style,
       });
-
-      const payload = (await response.json()) as
-        | GenerationRecord
-        | { message?: string; error?: string };
-
-      if (!response.ok) {
-        throw new Error(payload.message || payload.error || "图片生成失败");
-      }
-
-      const record = payload as GenerationRecord;
       setGeneratedRecord(record);
       saveGenerationRecord(record);
     } catch (error) {
