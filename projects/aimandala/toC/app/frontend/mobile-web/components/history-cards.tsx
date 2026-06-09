@@ -7,8 +7,117 @@ import {
   type SharedHistoryFilterId,
 } from "../../shared/ui";
 import type { HistoryPageDescriptor } from "../pages";
+import type { SharedHistoryRecordItem } from "../../shared/ui/types";
 
 export type HistoryFilterId = SharedHistoryFilterId;
+
+type IconNode = [tag: "path" | "circle" | "rect", attrs: Record<string, string>][];
+
+const ICON_EYE: IconNode = [
+  ["path", { d: "M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z", key: "e1" }],
+  ["circle", { cx: "12", cy: "12", r: "2.8", key: "e2" }],
+];
+
+const ICON_LOADER: IconNode = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "l1" }]];
+
+function LucideIcon({
+  iconNode,
+  size = 24,
+  strokeWidth = 2,
+  className,
+}: {
+  iconNode: IconNode;
+  size?: number;
+  strokeWidth?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      {iconNode.map(([tag, attrs]) => {
+        const { key, ...rest } = attrs;
+        return tag === "path"
+          ? <path key={key} {...rest} />
+          : tag === "circle"
+            ? <circle key={key} {...rest} />
+            : <rect key={key} {...rest} />;
+      })}
+    </svg>
+  );
+}
+
+export interface HistoryFeaturedRecordCardProps {
+  item: SharedHistoryRecordItem;
+  imageUrl?: string;
+  isBusy?: boolean;
+  disabled?: boolean;
+  onOpenRecord?: (interpretationId: string) => void;
+}
+
+export function HistoryFeaturedRecordCard({
+  item,
+  imageUrl,
+  isBusy = false,
+  disabled = false,
+  onOpenRecord,
+}: HistoryFeaturedRecordCardProps) {
+  const progressPercent = Number.parseInt(item.progressLabel.replace(/\D/g, ""), 10);
+
+  return (
+    <article className={`mw-history-record mw-history-record--featured mw-history-record--${item.statusTone}`}>
+      <div
+        className={`mw-history-record__thumb mw-history-record__thumb--featured${!item.recordReady ? " mw-history-record__thumb--featured-pending" : ""}`}
+        style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
+      />
+      <div className="mw-history-record__body">
+        <div className="mw-history-record__title-row">
+          <span className="mw-history-record__icon" aria-hidden="true">✧</span>
+          <h3>{item.themeLabel}</h3>
+        </div>
+        <div className="mw-history-record__meta">
+          <span className="mw-history-clock" aria-hidden="true" />
+          <span>{item.subtitle.replace("创建于 ", "")}</span>
+          <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
+            {item.focusReportType === "pro" ? "Pro" : "Lite"}
+          </strong>
+        </div>
+        {!item.recordReady ? (
+          <div className="mw-history-record__progress">
+            <span>{Number.isNaN(progressPercent) ? item.progressLabel : `${progressPercent}%`}</span>
+            <div>
+              <i style={{ width: `${Number.isNaN(progressPercent) ? 40 : Math.max(8, progressPercent)}%` }} />
+            </div>
+          </div>
+        ) : null}
+      </div>
+      <button
+        type="button"
+        className={`mw-history-status-pill${item.recordReady ? " mw-history-status-pill--ready" : " mw-history-status-pill--pending"}`}
+        onClick={() => onOpenRecord?.(item.interpretationId)}
+        disabled={disabled}
+      >
+        <span className="mw-history-status-pill__icon" aria-hidden="true">
+          {item.recordReady ? (
+            <LucideIcon iconNode={ICON_EYE} size={14} strokeWidth={1.9} />
+          ) : (
+            <LucideIcon iconNode={ICON_LOADER} size={14} strokeWidth={1.9} className="am-lucide-spin" />
+          )}
+        </span>
+        {isBusy ? "打开中..." : item.recordReady ? "待查看" : "生成中"}
+      </button>
+    </article>
+  );
+}
 
 export interface HistorySummaryRowProps {
   summary: HistoryPageDescriptor["summary"];

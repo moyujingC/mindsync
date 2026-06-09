@@ -1,7 +1,7 @@
 import { MobileWebAppShell } from "../app-shell";
 import { createHistoryPageDescriptor } from "../pages";
 import { mobileWebRoutes } from "../routes";
-import { type HistoryFilterId } from "../components/history-cards";
+import { HistoryFeaturedRecordCard, type HistoryFilterId } from "../components/history-cards";
 import type { InterpretationListQuery, InterpretationRecordResponse } from "../../shared/types";
 
 const themeOptions = [
@@ -217,47 +217,16 @@ export function MobileWebHistoryPage({
               {pendingItems.map((item, index) => {
                 const imageUrl = getRecordImage(item.interpretationId);
                 const isBusy = actionBusy && activeRecordId === item.interpretationId;
-                const progressPercent = Number.parseInt(item.progressLabel.replace(/\D/g, ""), 10);
 
                 return (
-                  <article
+                  <HistoryFeaturedRecordCard
                     key={`pending-${item.interpretationId}`}
-                    className={`mw-history-record mw-history-record--featured mw-history-record--${item.statusTone}`}
-                  >
-                    <div
-                      className={`mw-history-record__thumb mw-history-record__thumb--${index % 4}`}
-                      style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
-                    />
-                    <div className="mw-history-record__body">
-                      <div className="mw-history-record__title-row">
-                        <span className="mw-history-record__icon" aria-hidden="true">✧</span>
-                        <h3>{item.themeLabel}</h3>
-                      </div>
-                      <div className="mw-history-record__meta">
-                        <span className="mw-history-clock" aria-hidden="true" />
-                        <span>{item.subtitle.replace("创建于 ", "")}</span>
-                        <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
-                          {item.focusReportType === "pro" ? "Pro" : "Lite"}
-                        </strong>
-                      </div>
-                      <div className="mw-history-record__progress">
-                        <span>{Number.isNaN(progressPercent) ? item.progressLabel : `${progressPercent}%`}</span>
-                        <div>
-                          <i style={{ width: `${Number.isNaN(progressPercent) ? 40 : Math.max(8, progressPercent)}%` }} />
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className="mw-history-status-pill mw-history-status-pill--pending"
-                      onClick={() => {
-                        onOpenRecord?.(item.interpretationId);
-                      }}
-                      disabled={filterBusy || actionBusy}
-                    >
-                      {isBusy ? "打开中..." : "生成中"}
-                    </button>
-                  </article>
+                    item={item}
+                    imageUrl={imageUrl}
+                    isBusy={isBusy}
+                    disabled={filterBusy || actionBusy}
+                    onOpenRecord={onOpenRecord}
+                  />
                 );
               })}
             </div>
