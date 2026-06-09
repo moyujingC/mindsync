@@ -82,6 +82,17 @@ export type WorkbenchState = {
       updatedAt: string;
     }
   >;
+  knowledgeCardHistories: Record<
+    string,
+    Array<{
+      imageUrl: string;
+      prompt: string;
+      title: string;
+      summary: string;
+      source: "generated" | "replaced" | "rollback";
+      createdAt: string;
+    }>
+  >;
 };
 
 type WorkspaceContextValue = {
@@ -153,6 +164,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     readStoredJson(STORAGE_KEYS.workbenchState, {
       lockedKnowledgeCardIndexes: [],
       knowledgeCardStatuses: {},
+      knowledgeCardHistories: {},
     })
   );
 

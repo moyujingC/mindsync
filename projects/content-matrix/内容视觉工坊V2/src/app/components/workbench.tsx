@@ -24,6 +24,7 @@ import {
   Lock,
   Unlock,
   Replace,
+  History,
 } from "lucide-react";
 import { Panel, Btn, ToggleRow, Tag, COLORS, FoggyArt, Divider } from "./ui-kit";
 import {
@@ -161,6 +162,7 @@ export function Workbench() {
     : "cover_03 → 桌面与一杯茶";
   const lockedKnowledgeCardIndexes = workbenchState.lockedKnowledgeCardIndexes;
   const knowledgeCardStatuses = workbenchState.knowledgeCardStatuses;
+  const knowledgeCardHistories = workbenchState.knowledgeCardHistories;
   const unlockedPlannedCards = plannedCards.filter(
     (card) => !lockedKnowledgeCardIndexes.includes(card.index)
   );
@@ -195,6 +197,29 @@ export function Workbench() {
           ...patch,
           updatedAt: new Date().toISOString(),
         },
+      },
+    }));
+  }
+
+  function pushKnowledgeCardHistory(
+    cardIndex: number,
+    snapshot: {
+      imageUrl: string;
+      prompt: string;
+      title: string;
+      summary: string;
+      source: "generated" | "replaced" | "rollback";
+      createdAt: string;
+    }
+  ) {
+    setWorkbenchState((prev) => ({
+      ...prev,
+      knowledgeCardHistories: {
+        ...prev.knowledgeCardHistories,
+        [String(cardIndex)]: [
+          snapshot,
+          ...(prev.knowledgeCardHistories[String(cardIndex)] || []),
+        ].slice(0, 6),
       },
     }));
   }
@@ -234,6 +259,17 @@ export function Workbench() {
     const existingRecord = knowledgeGeneration;
     const nextImages = existingRecord?.images ? [...existingRecord.images] : [];
     const existingIndex = nextImages.findIndex((item) => item.cardLink?.index === cardIndex);
+    if (existingIndex >= 0) {
+      const currentImage = nextImages[existingIndex];
+      pushKnowledgeCardHistory(cardIndex, {
+        imageUrl: currentImage.imageUrl,
+        prompt: currentImage.prompt,
+        title: currentImage.cardLink?.title || card.title,
+        summary: currentImage.cardLink?.summary || card.summary,
+        source: "replaced",
+        createdAt: new Date().toISOString(),
+      });
+    }
     const nextImage = {
       id: existingIndex >= 0 ? nextImages[existingIndex].id : `manual-${Date.now().toString(36)}-${cardIndex}`,
       imageUrl,
@@ -276,6 +312,30 @@ export function Workbench() {
     });
     closeKnowledgeCardEditor();
     setGenerationStatus(`知识卡 ${String(editingCardIndex).padStart(2, "0")} 文案已保存`);
+  }
+
+  function handleRollbackKnowledgeCard(cardIndex: number) {
+    const history = knowledgeCardHistories[String(cardIndex)] || [];
+    const previous = history[0];
+    if (!previous) return;
+    const card = plannedCards.find((item) => item.index === cardIndex);
+    if (!card) return;
+
+    updateKnowledgeCardDraft(cardIndex, previous.title, previous.summary);
+    replaceKnowledgeCardImage(cardIndex, previous.imageUrl, previous.prompt);
+    updateKnowledgeCardStatus(cardIndex, {
+      edited: previous.title !== card.title || previous.summary !== card.summary,
+      replaced: previous.source === "replaced",
+      regenerated: previous.source === "generated" || previous.source === "rollback",
+    });
+    setWorkbenchState((prev) => ({
+      ...prev,
+      knowledgeCardHistories: {
+        ...prev.knowledgeCardHistories,
+        [String(cardIndex)]: (prev.knowledgeCardHistories[String(cardIndex)] || []).slice(1),
+      },
+    }));
+    setGenerationStatus(`知识卡 ${String(cardIndex).padStart(2, "0")} 已回退上一版`);
   }
 
   async function handleRegenerateKnowledgeCard(
@@ -323,6 +383,19 @@ export function Workbench() {
         throw new Error(payload.message || payload.error || "知识卡重生成失败");
       }
       const record = payload as GenerationRecord;
+      const previousImage = knowledgeGeneration?.images.find(
+        (item) => item.cardLink?.index === resolvedCard.index
+      );
+      if (previousImage) {
+        pushKnowledgeCardHistory(cardIndex, {
+          imageUrl: previousImage.imageUrl,
+          prompt: previousImage.prompt,
+          title: previousImage.cardLink?.title || card.title,
+          summary: previousImage.cardLink?.summary || card.summary,
+          source: "generated",
+          createdAt: new Date().toISOString(),
+        });
+      }
       const merged = {
         ...(knowledgeGeneration || record),
         ...record,
@@ -1310,6 +1383,7 @@ export function Workbench() {
                   const linkedImage = knowledgeImagesByCard.get(card.index);
                   const locked = lockedKnowledgeCardIndexes.includes(card.index);
                   const status = knowledgeCardStatuses[String(card.index)];
+                  const historyCount = knowledgeCardHistories[String(card.index)]?.length || 0;
                   const statusBadges = [
                     status?.edited ? { label: "已编辑", tone: "warm" as const } : null,
                     status?.replaced ? { label: "已替换", tone: "success" as const } : null,
@@ -1391,6 +1465,20 @@ export function Workbench() {
                             >
                               <Replace size={12} strokeWidth={1.6} />
                             </button>
+                            <button
+                              onClick={() => handleRollbackKnowledgeCard(card.index)}
+                              disabled={historyCount === 0}
+                              className="w-7 h-7 rounded flex items-center justify-center"
+                              style={{
+                                background: "rgba(251,250,247,0.88)",
+                                border: `1px solid ${COLORS.borderSoft}`,
+                                color: COLORS.textMid,
+                                opacity: historyCount === 0 ? 0.4 : 1,
+                              }}
+                              title="回退上一版"
+                            >
+                              <History size={12} strokeWidth={1.6} />
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -1445,6 +1533,14 @@ export function Workbench() {
                             ))}
                           </div>
                         )}
+                        {historyCount > 0 && (
+                          <div
+                            className="mt-2"
+                            style={{ color: COLORS.textFaint, fontSize: 10.5 }}
+                          >
+                            可回退 {historyCount} 版
+                          </div>
+                        )}
                         <div className="mt-3 flex items-center justify-between">
                           <button
                             onClick={() => toggleKnowledgeCardLock(card.index)}
@@ -1478,6 +1574,19 @@ export function Workbench() {
                             >
                               <Replace size={11} strokeWidth={1.6} />
                               替换
+                            </button>
+                            <button
+                              onClick={() => handleRollbackKnowledgeCard(card.index)}
+                              className="flex items-center gap-1"
+                              disabled={historyCount === 0}
+                              style={{
+                                color: COLORS.textMuted,
+                                fontSize: 10.5,
+                                opacity: historyCount === 0 ? 0.45 : 1,
+                              }}
+                            >
+                              <History size={11} strokeWidth={1.6} />
+                              回退
                             </button>
                           </div>
                         </div>
