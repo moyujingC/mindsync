@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 function AppTopBarBackIcon() {
   return (
@@ -19,6 +19,8 @@ export interface SharedAppTopBarProps {
   backLabel?: string;
   trailing?: ReactNode;
   onBack?: () => void;
+  className?: string;
+  style?: CSSProperties;
 }
 
 export function SharedAppTopBar({
@@ -26,9 +28,11 @@ export function SharedAppTopBar({
   backLabel = "返回",
   trailing,
   onBack,
+  className,
+  style,
 }: SharedAppTopBarProps) {
   return (
-    <div className="am-app-topbar">
+    <div className={className ? `am-app-topbar ${className}` : "am-app-topbar"} style={style}>
       <button type="button" className="am-app-topbar__back" onClick={onBack} aria-label={backLabel}>
         <AppTopBarBackIcon />
       </button>

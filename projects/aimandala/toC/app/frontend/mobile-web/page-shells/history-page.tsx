@@ -1,7 +1,8 @@
 import { MobileWebAppShell } from "../app-shell";
 import { createHistoryPageDescriptor } from "../pages";
 import { mobileWebRoutes } from "../routes";
-import { HistoryFeaturedRecordCard, type HistoryFilterId } from "../components/history-cards";
+import { HistoryRecordCard, type HistoryFilterId } from "../components/history-cards";
+import { SharedAppTopBar } from "../../shared/ui/app-top-bar";
 import type { InterpretationListQuery, InterpretationRecordResponse } from "../../shared/types";
 
 const themeOptions = [
@@ -70,7 +71,7 @@ export function MobileWebHistoryPage({
   const descriptor = createHistoryPageDescriptor(records);
   const activeTheme = historyQuery?.theme;
   const activeLimit = historyQuery?.limit ?? 20;
-  const pendingItems = descriptor.items.slice(0, 4);
+  const pendingItems = descriptor.items.slice(0, 6);
   const filteredItems = descriptor.items.filter((item) => {
     const matchesTheme = !activeTheme || item.theme === activeTheme;
     if (!matchesTheme) {
@@ -144,21 +145,13 @@ export function MobileWebHistoryPage({
       hideHeader
     >
       <div className="mw-history-page">
-        <header className="am-app-topbar mw-history-topbar" style={{ ["--am-app-topbar-bleed" as string]: "0px" }}>
-          <button
-            type="button"
-            className="am-app-topbar__back"
-            aria-label="返回上传页"
-            onClick={onBackToUpload}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M15 5 8 12l7 7" />
-              <path d="M9 12h12" />
-            </svg>
-          </button>
-          <h1 className="am-app-topbar__title">{descriptor.title}</h1>
-          <span className="am-app-topbar__spacer" aria-hidden="true" />
-        </header>
+        <SharedAppTopBar
+          title={descriptor.title}
+          backLabel="返回上传页"
+          onBack={onBackToUpload}
+          className="mw-history-topbar"
+          style={{ ["--am-app-topbar-bleed" as string]: "0px" }}
+        />
 
         <section className="mw-history-intro">
           <div className="mw-history-intro__halo mw-history-intro__halo--top" aria-hidden="true" />
@@ -197,10 +190,11 @@ export function MobileWebHistoryPage({
                 const isBusy = actionBusy && activeRecordId === item.interpretationId;
 
                 return (
-                  <HistoryFeaturedRecordCard
+                  <HistoryRecordCard
                     key={`pending-${item.interpretationId}`}
                     item={item}
                     imageUrl={imageUrl}
+                    variant="featured"
                     isBusy={isBusy}
                     disabled={filterBusy || actionBusy}
                     onOpenRecord={onOpenRecord}
@@ -268,9 +262,8 @@ export function MobileWebHistoryPage({
                     {active ? <span className="mw-history-theme-card__check" /> : null}
                     <span className="mw-history-theme-card__icon">{renderIcon(theme.icon)}</span>
                     <strong>
-                      {theme.labelTop}
-                      <br />
-                      {theme.labelBottom}
+                      <span className="mw-history-theme-card__label-top">{theme.labelTop}</span>
+                      <span className="mw-history-theme-card__label-bottom">{theme.labelBottom}</span>
                     </strong>
                   </button>
                 );
@@ -308,40 +301,16 @@ export function MobileWebHistoryPage({
                 const isBusy = actionBusy && activeRecordId === item.interpretationId;
 
                 return (
-                  <article
+                  <HistoryRecordCard
                     key={item.interpretationId}
-                    className={`mw-history-record mw-history-record--${item.statusTone}`}
-                  >
-                    <div
-                      className={`mw-history-record__thumb mw-history-record__thumb--${index % 4}`}
-                      style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
-                    />
-                    <div className="mw-history-record__body">
-                      <div className="mw-history-record__title-row">
-                        <span className="mw-history-record__icon" aria-hidden="true">
-                          {item.recordReady ? "♡" : "✧"}
-                        </span>
-                        <h3>{item.themeLabel}</h3>
-                      </div>
-                      <div className="mw-history-record__meta">
-                        <span className="mw-history-clock" aria-hidden="true" />
-                        <span>{item.subtitle.replace("创建于 ", "")}</span>
-                        <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
-                          {item.focusReportType === "pro" ? "Pro" : "Lite"}
-                        </strong>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className={`mw-history-status-pill${item.recordReady ? " mw-history-status-pill--ready" : " mw-history-status-pill--pending"}`}
-                      onClick={() => {
-                        onOpenRecord?.(item.interpretationId);
-                      }}
-                      disabled={filterBusy || actionBusy}
-                    >
-                      {isBusy ? "打开中..." : item.recordReady ? "可查看" : "生成中"}
-                    </button>
-                  </article>
+                    item={item}
+                    imageUrl={imageUrl}
+                    variant="default"
+                    thumbIndex={index}
+                    isBusy={isBusy}
+                    disabled={filterBusy || actionBusy}
+                    onOpenRecord={onOpenRecord}
+                  />
                 );
               })}
             </div>
