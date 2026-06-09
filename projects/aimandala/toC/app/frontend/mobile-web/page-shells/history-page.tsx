@@ -2,18 +2,19 @@ import { MobileWebAppShell } from "../app-shell";
 import { createHistoryPageDescriptor } from "../pages";
 import { mobileWebRoutes } from "../routes";
 import { HistoryRecordCard, type HistoryFilterId } from "../components/history-cards";
-import { SharedAppTopBar } from "../../shared/ui/app-top-bar";
+import { SharedAppTopBar, SharedTopicSelector, sharedTopicSelectorOptions, type SharedTopicSelectorOption } from "../../shared/ui";
 import type { InterpretationListQuery, InterpretationRecordResponse } from "../../shared/types";
 
-const themeOptions = [
-  { id: undefined, labelTop: "全面", labelBottom: "看看", icon: "star" },
-  { id: "father_relationship", labelTop: "父亲", labelBottom: "关系", icon: "person" },
-  { id: "mother_relationship", labelTop: "母亲", labelBottom: "关系", icon: "person" },
-  { id: "intimate_relationship", labelTop: "亲密", labelBottom: "关系", icon: "group" },
-  { id: "parent_child_relationship", labelTop: "亲子", labelBottom: "关系", icon: "moon" },
-  { id: "wealth", labelTop: "财富", labelBottom: "事业", icon: "sparkle" },
-  { id: "personal_growth", labelTop: "个人", labelBottom: "成长", icon: "star" },
-  { id: "career_development", labelTop: "事业", labelBottom: "发展", icon: "sparkle" },
+const historyThemeOptions: SharedTopicSelectorOption[] = [
+  {
+    value: "all",
+    label: "全面",
+    subLabel: "看看",
+    icon: [
+      ["path", { d: "m12 3.5 2.7 5.4 6 .9-4.4 4.2 1 6-5.3-2.8L6.7 20l1-6-4.4-4.2 6-.9Z", key: "star-1" }],
+    ],
+  },
+  ...sharedTopicSelectorOptions,
 ] as const;
 
 const limitOptions = [
@@ -88,47 +89,6 @@ export function MobileWebHistoryPage({
         return true;
     }
   });
-
-  const renderIcon = (icon: (typeof themeOptions)[number]["icon"]) => {
-    switch (icon) {
-      case "person":
-        return (
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="7" r="3" />
-            <path d="M7.5 20c.4-4 2.1-6 4.5-6s4.1 2 4.5 6" />
-          </svg>
-        );
-      case "group":
-        return (
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="9" cy="8" r="3" />
-            <circle cx="16" cy="9" r="2.5" />
-            <path d="M4.5 20c.5-4 2.4-6 5.5-6 2.1 0 3.6.9 4.5 2.7" />
-            <path d="M14 14.5c2.8.1 4.6 1.9 5 5.5" />
-          </svg>
-        );
-      case "moon":
-        return (
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M15.5 4.2a7 7 0 1 0 4.3 10.3A6 6 0 1 1 15.5 4.2Z" />
-            <circle cx="8" cy="9" r="1.2" />
-          </svg>
-        );
-      case "sparkle":
-        return (
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 3.5 14.4 9l5.6 2.3-5.6 2.3L12 19.5l-2.4-5.9L4 11.3 9.6 9Z" />
-          </svg>
-        );
-      case "star":
-      default:
-        return (
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m12 3.5 2.7 5.4 6 .9-4.4 4.2 1 6-5.3-2.8L6.7 20l1-6-4.4-4.2 6-.9Z" />
-          </svg>
-        );
-    }
-  };
 
   const getRecordImage = (interpretationId: string) => {
     const record = records.find((candidate) => candidate.interpretation_id === interpretationId);
@@ -249,34 +209,14 @@ export function MobileWebHistoryPage({
           </section>
 
           <section className="mw-history-filter-block">
-            <h3>主题</h3>
-            <div className="mw-history-theme-scroll">
-              {themeOptions.map((theme) => {
-                const active = theme.id ? activeTheme === theme.id : !activeTheme;
-                return (
-                  <button
-                    key={theme.id ?? "all"}
-                    type="button"
-                    className={`mw-history-theme-card${active ? " is-active" : ""}`}
-                    onClick={() => onThemeChange?.(theme.id)}
-                    disabled={filterBusy}
-                  >
-                    {active ? <span className="mw-history-theme-card__check" /> : null}
-                    <span className="mw-history-theme-card__icon">{renderIcon(theme.icon)}</span>
-                    <strong>
-                      <span className="mw-history-theme-card__label-top">{theme.labelTop}</span>
-                      <span className="mw-history-theme-card__label-bottom">{theme.labelBottom}</span>
-                    </strong>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="mw-history-theme-dots">
-              {themeOptions.map((theme) => {
-                const active = theme.id ? activeTheme === theme.id : !activeTheme;
-                return <span key={`dot-${theme.id ?? "all"}`} className={active ? "is-active" : ""} />;
-              })}
-            </div>
+            <h3>议题</h3>
+            <SharedTopicSelector
+              prefix="mw-history-theme"
+              options={historyThemeOptions}
+              value={activeTheme ?? "all"}
+              disabled={filterBusy}
+              onChange={(nextValue) => onThemeChange?.(nextValue === "all" ? undefined : nextValue)}
+            />
           </section>
 
           <section className="mw-history-filter-block">

@@ -658,6 +658,8 @@
   display: flex;
   gap: 10.08px;
   width: 100%;
+  margin-top: -6px;
+  padding-top: 6px;
   overflow-x: auto;
   padding-bottom: 12px;
   flex-wrap: nowrap;
