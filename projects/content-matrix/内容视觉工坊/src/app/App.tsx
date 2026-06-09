@@ -6,8 +6,8 @@ import { useWorkspaceLayout } from "./hooks/useWorkspaceLayout";
 import { useWorkspaceDocument } from "./hooks/useWorkspaceDocument";
 import { Button } from "./components/ui/button";
 import { PanelLeft, FileText } from "lucide-react";
-import { useState } from "react";
-import { parseWechatEditorPastePayload, saveWechatEditorImport } from "./lib/wechatEditorImport";
+import { useEffect, useState } from "react";
+import { loadLatestWechatEditorImport, parseWechatEditorPastePayload, saveWechatEditorImport } from "./lib/wechatEditorImport";
 import type { SavedWechatEditorImport, WechatEditorImportSummary } from "./types";
 
 export default function App() {
@@ -46,6 +46,27 @@ export default function App() {
     syncWechatEditorImportSummary(summary);
     setSavedWechatEditorImport(null);
   }
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function bootstrapLatestWechatEditorImport() {
+      try {
+        const summary = await loadLatestWechatEditorImport();
+        if (!summary || cancelled) return;
+        setLocalWechatEditorImportSummary(summary);
+        syncWechatEditorImportSummary(summary);
+      } catch (error) {
+        console.warn("[wechat-editor-import] bootstrap failed", error);
+      }
+    }
+
+    void bootstrapLatestWechatEditorImport();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [syncWechatEditorImportSummary]);
 
   async function handleSaveWechatEditorImport() {
     if (!wechatEditorImportSummary) return;

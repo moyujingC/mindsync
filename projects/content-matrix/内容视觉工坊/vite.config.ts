@@ -250,6 +250,52 @@ function localSaveWechatEditorImportApi() {
   }
 }
 
+function localLoadLatestWechatEditorImportApi() {
+  return {
+    name: 'local-load-latest-wechat-editor-import-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/load-latest-wechat-editor-import', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'GET') {
+          next()
+          return
+        }
+
+        try {
+          if (!fs.existsSync(wechatEditorImportsRoot)) {
+            res.statusCode = 404
+            res.end('Not found')
+            return
+          }
+
+          const files = fs
+            .readdirSync(wechatEditorImportsRoot)
+            .filter((file) => file.endsWith('.json'))
+            .sort()
+            .reverse()
+
+          if (files.length === 0) {
+            res.statusCode = 404
+            res.end('Not found')
+            return
+          }
+
+          const latestFilePath = path.join(wechatEditorImportsRoot, files[0])
+          const content = fs.readFileSync(latestFilePath, 'utf8')
+          res.setHeader('Content-Type', 'application/json')
+          res.end(content)
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'load-latest-wechat-editor-import-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [
     figmaAssetResolver(),
@@ -259,6 +305,7 @@ export default defineConfig({
     localGenerateWechatInlineImageApi(),
     localGeneratedAssetsApi(),
     localSaveWechatEditorImportApi(),
+    localLoadLatestWechatEditorImportApi(),
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them
     react(),

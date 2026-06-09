@@ -165,3 +165,19 @@ export async function saveWechatEditorImport(payload: {
 
   return response.json() as Promise<SavedWechatEditorImport>;
 }
+
+export async function loadLatestWechatEditorImport(): Promise<WechatEditorImportSummary | null> {
+  const response = await fetch("/api/load-latest-wechat-editor-import");
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || "load-latest-wechat-editor-import failed");
+  }
+
+  const payload = await response.json();
+  return (payload?.summary as WechatEditorImportSummary | null) ?? null;
+}
