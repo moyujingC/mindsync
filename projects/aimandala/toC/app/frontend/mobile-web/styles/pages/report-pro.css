@@ -61,44 +61,6 @@
   min-height: 46px;
 }
 
-.am-pro-report-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: var(--am-shell-topbar-border);
-  background: var(--am-shell-topbar-bg);
-}
-
-.am-pro-report-topbar__action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  padding: 4px;
-  border: 0;
-  background: transparent;
-  color: var(--am-shell-topbar-icon);
-}
-
-.am-pro-report-topbar__brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--am-text-accent);
-  font-family: var(--am-font-display);
-  font-size: var(--am-text-lg);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-}
-
-.am-pro-report-topbar__brand-logo {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-}
-
 .am-pro-report-hero {
   position: relative;
   background: var(--am-report-pro-hero-bg);

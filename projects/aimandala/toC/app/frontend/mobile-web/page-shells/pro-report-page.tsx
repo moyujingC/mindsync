@@ -9,6 +9,7 @@ import {
 import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
 import { getThemeDisplayName } from "../../shared/core";
+import { SharedAppTopBar } from "../../shared/ui/app-top-bar";
 import type { MandalaFlowState } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
 
@@ -32,22 +33,6 @@ type ChatMessage = {
   role: "user" | "assistant";
   content: string;
 };
-
-function TopArrowIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ShareGlyph() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M15 8.5A3.5 3.5 0 1 1 8.8 10.7L4.5 13.2M15.2 13.3L19.5 10.8M13.5 15.3L16.8 17.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function SaveGlyph() {
   return (
@@ -801,26 +786,11 @@ export function MobileWebProReportPage({
   return (
     <div className="am-pro-report-page" style={pageStyle}>
       <div className="am-pro-report-page__frame">
-        <div className="am-pro-report-topbar">
-          <button
-            type="button"
-            onClick={onBackAction}
-            className="am-pro-report-topbar__action"
-          >
-            <TopArrowIcon />
-          </button>
-          <div className="am-pro-report-topbar__brand">
-            <img
-              src={logoNiwu}
-              alt="一镜一梳"
-              className="am-pro-report-topbar__brand-logo"
-            />
-            <span>Pro版完整解读</span>
-          </div>
-          <button type="button" className="am-pro-report-topbar__action">
-            <ShareGlyph />
-          </button>
-        </div>
+        <SharedAppTopBar
+          title="Pro版完整解读"
+          backLabel="返回上一页"
+          onBack={onBackAction}
+        />
 
         <div className="am-pro-report-page__scroll am-scrollbar-hide">
           <section className="am-pro-report-hero">

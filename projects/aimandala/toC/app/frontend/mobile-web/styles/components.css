@@ -37,7 +37,8 @@
   background: var(--am-component-topbar-glow-copper);
 }
 
-.am-app-topbar__back {
+.am-app-topbar__back,
+.am-app-topbar__action {
   position: relative;
   z-index: 1;
   display: grid;
