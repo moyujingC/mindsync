@@ -13,9 +13,7 @@ import {
 import { Btn, COLORS, FoggyArt, Tag, Divider } from "./ui-kit";
 import { IMAGE_PURPOSES } from "../image-presets";
 import {
-  createGenerationId,
   useWorkspace,
-  type GeneratedImageItem,
   type GenerationRecord,
 } from "../workspace";
 

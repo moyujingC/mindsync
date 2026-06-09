@@ -88,6 +88,18 @@ export function Workbench() {
     setSelectedQuotes((s) =>
       s.includes(i) ? s.filter((x) => x !== i) : [...s, i]
     );
+  const latestGenerationTime = latestGeneration
+    ? new Date(latestGeneration.createdAt).toLocaleTimeString("zh-CN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+    : "14:35";
+  const latestGenerationImages = latestGeneration?.images ?? [];
+  const latestPurpose = latestGeneration?.purposeKey;
+  const latestLogText = latestGeneration
+    ? `${latestGeneration.purposeLabel} · ${latestGeneration.images.length} 张`
+    : "cover_03 → 桌面与一杯茶";
 
   return (
     <div className="grid grid-cols-[332px_1fr_300px] h-full overflow-hidden">
@@ -840,44 +852,69 @@ export function Workbench() {
                 count={4}
               />
               <div className="grid grid-cols-4 gap-3 mt-2.5">
-                {KNOWLEDGE_CARDS.map((c, i) => (
+                {(latestPurpose === "xhs_card"
+                  ? latestGenerationImages.slice(0, 4).map((image, i) => ({
+                      mode: "real" as const,
+                      image,
+                      index: i,
+                    }))
+                  : KNOWLEDGE_CARDS.map((card, i) => ({
+                      mode: "mock" as const,
+                      card,
+                      index: i,
+                    }))).map((item) => (
                   <div
-                    key={i}
+                    key={item.mode === "real" ? item.image.id : item.card.i}
                     className="rounded-md overflow-hidden"
                     style={{ border: `1px solid ${COLORS.borderSoft}` }}
                   >
-                    <div
-                      className="p-3 flex flex-col justify-between"
-                      style={{
-                        aspectRatio:
-                          knowledgePreset
-                            ? `${knowledgePreset.w} / ${knowledgePreset.h}`
-                            : "1280 / 1706",
-                        background:
-                          i % 2 === 0
-                            ? "linear-gradient(160deg,#EEF2F6 0%,#D6DEE7 100%)"
-                            : "linear-gradient(160deg,#F1ECE3 0%,#DACFBE 100%)",
-                      }}
-                    >
-                      <div
+                    {item.mode === "real" ? (
+                      <img
+                        src={item.image.imageUrl}
+                        alt={`知识卡片 ${item.index + 1}`}
                         style={{
-                          color: i % 2 === 0 ? COLORS.blueDeep : "#7A6F5A",
-                          fontSize: 10,
-                          letterSpacing: "0.18em",
+                          width: "100%",
+                          aspectRatio:
+                            knowledgePreset
+                              ? `${knowledgePreset.w} / ${knowledgePreset.h}`
+                              : "1280 / 1706",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      <div
+                        className="p-3 flex flex-col justify-between"
+                        style={{
+                          aspectRatio:
+                            knowledgePreset
+                              ? `${knowledgePreset.w} / ${knowledgePreset.h}`
+                              : "1280 / 1706",
+                          background:
+                            item.index % 2 === 0
+                              ? "linear-gradient(160deg,#EEF2F6 0%,#D6DEE7 100%)"
+                              : "linear-gradient(160deg,#F1ECE3 0%,#DACFBE 100%)",
                         }}
                       >
-                        {c.i} / 04
+                        <div
+                          style={{
+                            color: item.index % 2 === 0 ? COLORS.blueDeep : "#7A6F5A",
+                            fontSize: 10,
+                            letterSpacing: "0.18em",
+                          }}
+                        >
+                          {item.card.i} / 04
+                        </div>
+                        <div
+                          style={{
+                            color: item.index % 2 === 0 ? "#2B3645" : "#3D3328",
+                            fontSize: 12,
+                            lineHeight: 1.45,
+                          }}
+                        >
+                          {item.card.title}
+                        </div>
                       </div>
-                      <div
-                        style={{
-                          color: i % 2 === 0 ? "#2B3645" : "#3D3328",
-                          fontSize: 12,
-                          lineHeight: 1.45,
-                        }}
-                      >
-                        {c.title}
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -904,21 +941,36 @@ export function Workbench() {
                     border: `1px solid ${COLORS.borderSoft}`,
                   }}
                 >
-                  <Quote size={20} strokeWidth={1.4} color="#3F4E62" />
-                  <div
-                    style={{
-                      color: "#2B3645",
-                      fontSize: 17,
-                      lineHeight: 1.55,
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    真正的专注<br />
-                    不是用力，而是放弃。
-                  </div>
-                  <div style={{ color: "#3F4E62", fontSize: 10.5 }}>
-                    —— 论专注 v3
-                  </div>
+                  {latestPurpose === "quote" && latestGenerationImages[0] ? (
+                    <img
+                      src={latestGenerationImages[0].imageUrl}
+                      alt="最新金句卡"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: 6,
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <Quote size={20} strokeWidth={1.4} color="#3F4E62" />
+                      <div
+                        style={{
+                          color: "#2B3645",
+                          fontSize: 17,
+                          lineHeight: 1.55,
+                          letterSpacing: "0.02em",
+                        }}
+                      >
+                        真正的专注<br />
+                        不是用力，而是放弃。
+                      </div>
+                      <div style={{ color: "#3F4E62", fontSize: 10.5 }}>
+                        —— 论专注 v3
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               <div>
@@ -942,11 +994,19 @@ export function Workbench() {
                         height: 56,
                       }}
                     >
-                      <FoggyArt
-                        hue={i}
-                        variant={c.variant}
-                        style={{ width: 130, height: "100%" }}
-                      />
+                      {latestPurpose === "wx_cover" && latestGenerationImages[i] ? (
+                        <img
+                          src={latestGenerationImages[i].imageUrl}
+                          alt={`封面 ${i + 1}`}
+                          style={{ width: 130, height: "100%", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <FoggyArt
+                          hue={i}
+                          variant={c.variant}
+                          style={{ width: 130, height: "100%" }}
+                        />
+                      )}
                       <div className="flex-1 px-3 min-w-0">
                         <div
                           style={{ color: COLORS.text, fontSize: 12.5 }}
@@ -986,15 +1046,29 @@ export function Workbench() {
                     className="rounded-md overflow-hidden"
                     style={{ border: `1px solid ${COLORS.borderSoft}` }}
                   >
-                    <FoggyArt
-                      hue={i + 1}
-                      variant={c.variant}
-                      style={{
-                        aspectRatio: inlinePreset
-                          ? `${inlinePreset.w} / ${inlinePreset.h}`
-                          : "1080 / 608",
-                      }}
-                    />
+                    {latestPurpose === "wx_inline" && latestGenerationImages[i] ? (
+                      <img
+                        src={latestGenerationImages[i].imageUrl}
+                        alt={`正文配图 ${i + 1}`}
+                        style={{
+                          width: "100%",
+                          aspectRatio: inlinePreset
+                            ? `${inlinePreset.w} / ${inlinePreset.h}`
+                            : "1080 / 608",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      <FoggyArt
+                        hue={i + 1}
+                        variant={c.variant}
+                        style={{
+                          aspectRatio: inlinePreset
+                            ? `${inlinePreset.w} / ${inlinePreset.h}`
+                            : "1080 / 608",
+                        }}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
@@ -1191,9 +1265,9 @@ export function Workbench() {
             }}
           >
             <Activity size={11} strokeWidth={1.6} color={COLORS.blue} />
-            <span style={{ color: COLORS.textFaint }}>14:35</span>
+            <span style={{ color: COLORS.textFaint }}>{latestGenerationTime}</span>
             <span style={{ color: COLORS.textMid }} className="truncate">
-              cover_03 → 桌面与一杯茶
+              {latestLogText}
             </span>
           </div>
         </div>
