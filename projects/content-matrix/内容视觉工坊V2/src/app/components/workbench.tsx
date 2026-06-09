@@ -26,6 +26,14 @@ import {
   Replace,
 } from "lucide-react";
 import { Panel, Btn, ToggleRow, Tag, COLORS, FoggyArt, Divider } from "./ui-kit";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
 import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
 import {
@@ -125,6 +133,9 @@ export function Workbench() {
   const [regeneratingCardIndex, setRegeneratingCardIndex] = useState<number | null>(null);
   const replaceCardInputRef = useRef<HTMLInputElement | null>(null);
   const [replaceTargetCardIndex, setReplaceTargetCardIndex] = useState<number | null>(null);
+  const [editingCardIndex, setEditingCardIndex] = useState<number | null>(null);
+  const [editingCardTitle, setEditingCardTitle] = useState("");
+  const [editingCardSummary, setEditingCardSummary] = useState("");
   const toggleQuote = (i: number) =>
     setSelectedQuotes((s) =>
       s.includes(i) ? s.filter((x) => x !== i) : [...s, i]
@@ -168,6 +179,34 @@ export function Workbench() {
     });
   }
 
+  function updateKnowledgeCardDraft(cardIndex: number, nextTitle: string, nextSummary: string) {
+    if (!planningState) return;
+    const nextCardPlan = planningState.cardPlan.map((card) =>
+      card.index === cardIndex
+        ? { ...card, title: nextTitle.trim() || card.title, summary: nextSummary.trim() || card.summary }
+        : card
+    );
+    savePlanningState({
+      ...planningState,
+      cardPlan: nextCardPlan,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  function openKnowledgeCardEditor(cardIndex: number) {
+    const card = plannedCards.find((item) => item.index === cardIndex);
+    if (!card) return;
+    setEditingCardIndex(cardIndex);
+    setEditingCardTitle(card.title);
+    setEditingCardSummary(card.summary);
+  }
+
+  function closeKnowledgeCardEditor() {
+    setEditingCardIndex(null);
+    setEditingCardTitle("");
+    setEditingCardSummary("");
+  }
+
   function replaceKnowledgeCardImage(cardIndex: number, imageUrl: string, prompt: string) {
     const card = plannedCards.find((item) => item.index === cardIndex);
     if (!card) return;
@@ -209,10 +248,23 @@ export function Workbench() {
     saveGenerationRecord(nextRecord);
   }
 
-  async function handleRegenerateKnowledgeCard(cardIndex: number) {
+  function saveKnowledgeCardDraft() {
+    if (editingCardIndex == null) return;
+    updateKnowledgeCardDraft(editingCardIndex, editingCardTitle, editingCardSummary);
+    closeKnowledgeCardEditor();
+    setGenerationStatus(`知识卡 ${String(editingCardIndex).padStart(2, "0")} 文案已保存`);
+  }
+
+  async function handleRegenerateKnowledgeCard(
+    cardIndex: number,
+    nextDraft?: { title: string; summary: string }
+  ) {
     const preset = knowledgePreset;
     const card = plannedCards.find((item) => item.index === cardIndex);
     if (!preset || !card) return;
+    const resolvedCard = nextDraft
+      ? { ...card, title: nextDraft.title, summary: nextDraft.summary }
+      : card;
 
     setRegeneratingCardIndex(cardIndex);
     setGenerationError("");
@@ -226,7 +278,7 @@ export function Workbench() {
         },
         body: JSON.stringify({
           articleTitle: currentArticle.title,
-          prompt: `为文章《${currentArticle.title}》的第 ${card.index} 张小红书知识卡片生成主视觉。卡片标题：${card.title}。卡片摘要：${card.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。`,
+          prompt: `为文章《${currentArticle.title}》的第 ${resolvedCard.index} 张小红书知识卡片生成主视觉。卡片标题：${resolvedCard.title}。卡片摘要：${resolvedCard.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。`,
           negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
           width: preset.w,
           height: preset.h,
@@ -237,9 +289,9 @@ export function Workbench() {
           presetLabel: preset.label,
           styleName: "蓝雾静读",
           cardLink: {
-            index: card.index,
-            title: card.title,
-            summary: card.summary,
+            index: resolvedCard.index,
+            title: resolvedCard.title,
+            summary: resolvedCard.summary,
           },
         }),
       });
@@ -252,7 +304,7 @@ export function Workbench() {
         ...(knowledgeGeneration || record),
         ...record,
         images: [
-          ...(knowledgeGeneration?.images.filter((item) => item.cardLink?.index !== card.index) || []),
+          ...(knowledgeGeneration?.images.filter((item) => item.cardLink?.index !== resolvedCard.index) || []),
           ...record.images,
         ].sort((a, b) => (a.cardLink?.index ?? 999) - (b.cardLink?.index ?? 999)),
         createdAt: new Date().toISOString(),
@@ -287,6 +339,21 @@ export function Workbench() {
     reader.readAsDataURL(file);
     event.target.value = "";
     setReplaceTargetCardIndex(null);
+  }
+
+  async function handleEditAndRegenerateKnowledgeCard() {
+    if (editingCardIndex == null) return;
+    const nextTitle = editingCardTitle.trim();
+    const nextSummary = editingCardSummary.trim();
+    updateKnowledgeCardDraft(editingCardIndex, nextTitle, nextSummary);
+    await handleRegenerateKnowledgeCard(editingCardIndex, {
+      title: nextTitle || plannedCards.find((item) => item.index === editingCardIndex)?.title || "",
+      summary:
+        nextSummary ||
+        plannedCards.find((item) => item.index === editingCardIndex)?.summary ||
+        "",
+    });
+    closeKnowledgeCardEditor();
   }
 
   async function runPlanning() {
@@ -1322,6 +1389,14 @@ export function Workbench() {
                           </button>
                           <div className="flex items-center gap-2">
                             <button
+                              onClick={() => openKnowledgeCardEditor(card.index)}
+                              className="flex items-center gap-1"
+                              style={{ color: COLORS.textMuted, fontSize: 10.5 }}
+                            >
+                              <Pencil size={11} strokeWidth={1.6} />
+                              编辑
+                            </button>
+                            <button
                               onClick={() => void handleRegenerateKnowledgeCard(card.index)}
                               className="flex items-center gap-1"
                               style={{ color: COLORS.textMuted, fontSize: 10.5 }}
@@ -1714,6 +1789,74 @@ export function Workbench() {
           </div>
         </div>
       </aside>
+
+      <Dialog
+        open={editingCardIndex != null}
+        onOpenChange={(open) => {
+          if (!open) closeKnowledgeCardEditor();
+        }}
+      >
+        <DialogContent className="max-w-[560px]">
+          <DialogHeader>
+            <DialogTitle>编辑知识卡文案</DialogTitle>
+            <DialogDescription>
+              修改标题和摘要后，可以直接保存或保存并重生成当前卡片。
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <div style={{ color: COLORS.textMid, fontSize: 12, marginBottom: 6 }}>
+                标题
+              </div>
+              <input
+                value={editingCardTitle}
+                onChange={(event) => setEditingCardTitle(event.target.value)}
+                className="w-full px-3 rounded-md outline-none"
+                style={{
+                  height: 36,
+                  background: COLORS.pageBg,
+                  border: `1px solid ${COLORS.border}`,
+                  color: COLORS.text,
+                  fontSize: 13,
+                }}
+              />
+            </div>
+            <div>
+              <div style={{ color: COLORS.textMid, fontSize: 12, marginBottom: 6 }}>
+                摘要
+              </div>
+              <textarea
+                value={editingCardSummary}
+                onChange={(event) => setEditingCardSummary(event.target.value)}
+                className="w-full px-3 py-2 rounded-md outline-none resize-none"
+                style={{
+                  height: 120,
+                  background: COLORS.pageBg,
+                  border: `1px solid ${COLORS.border}`,
+                  color: COLORS.text,
+                  fontSize: 13,
+                  lineHeight: 1.7,
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Btn variant="ghost" size="md" onClick={closeKnowledgeCardEditor}>
+              取消
+            </Btn>
+            <Btn variant="secondary" size="md" onClick={saveKnowledgeCardDraft}>
+              仅保存
+            </Btn>
+            <Btn
+              variant="primary"
+              size="md"
+              onClick={() => void handleEditAndRegenerateKnowledgeCard()}
+            >
+              保存并重生成
+            </Btn>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
