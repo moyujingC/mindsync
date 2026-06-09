@@ -56,40 +56,58 @@ function LucideIcon({
   );
 }
 
-export interface HistoryFeaturedRecordCardProps {
+export interface HistoryRecordCardProps {
   item: SharedHistoryRecordItem;
   imageUrl?: string;
+  variant?: "featured" | "default";
+  thumbIndex?: number;
+  statusLabelOverride?: string;
   isBusy?: boolean;
   disabled?: boolean;
   onOpenRecord?: (interpretationId: string) => void;
 }
 
-export function HistoryFeaturedRecordCard({
+export function HistoryRecordCard({
   item,
   imageUrl,
+  variant = "default",
+  thumbIndex = 0,
+  statusLabelOverride,
   isBusy = false,
   disabled = false,
   onOpenRecord,
-}: HistoryFeaturedRecordCardProps) {
+}: HistoryRecordCardProps) {
   const progressPercent = Number.parseInt(item.progressLabel.replace(/\D/g, ""), 10);
+  const isFeatured = variant === "featured";
+  const thumbClassName = isFeatured
+    ? `mw-history-record__thumb mw-history-record__thumb--featured${!item.recordReady ? " mw-history-record__thumb--featured-pending" : ""}`
+    : `mw-history-record__thumb mw-history-record__thumb--${thumbIndex % 4}`;
+  const iconGlyph = item.recordReady ? "♡" : "✧";
+  const statusLabel = isBusy
+    ? "打开中..."
+    : statusLabelOverride ?? (isFeatured ? (item.recordReady ? "待查看" : "生成中") : (item.recordReady ? "可查看" : "生成中"));
 
   return (
-    <article className={`mw-history-record mw-history-record--featured mw-history-record--${item.statusTone}`}>
+    <article
+      className={`mw-history-record${isFeatured ? " mw-history-record--featured" : " mw-history-record--default"} mw-history-record--${item.statusTone}`}
+    >
       <div
-        className={`mw-history-record__thumb mw-history-record__thumb--featured${!item.recordReady ? " mw-history-record__thumb--featured-pending" : ""}`}
+        className={thumbClassName}
         style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
       />
       <div className="mw-history-record__body">
-        <div className="mw-history-record__title-row">
-          <span className="mw-history-record__icon" aria-hidden="true">✧</span>
-          <h3>{item.themeLabel}</h3>
-        </div>
-        <div className="mw-history-record__meta">
-          <span className="mw-history-clock" aria-hidden="true" />
-          <span>{item.subtitle.replace("创建于 ", "")}</span>
-          <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
-            {item.focusReportType === "pro" ? "Pro" : "Lite"}
-          </strong>
+        <div className="mw-history-record__copy">
+          <div className="mw-history-record__title-row">
+            <span className="mw-history-record__icon" aria-hidden="true">{iconGlyph}</span>
+            <h3>{item.themeLabel}</h3>
+          </div>
+          <div className="mw-history-record__meta">
+            <span className="mw-history-clock" aria-hidden="true" />
+            <span>{item.subtitle.replace("创建于 ", "")}</span>
+            <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
+              {item.focusReportType === "pro" ? "Pro" : "Lite"}
+            </strong>
+          </div>
         </div>
         {!item.recordReady ? (
           <div className="mw-history-record__progress">
@@ -113,7 +131,7 @@ export function HistoryFeaturedRecordCard({
             <LucideIcon iconNode={ICON_LOADER} size={14} strokeWidth={1.9} className="am-lucide-spin" />
           )}
         </span>
-        {isBusy ? "打开中..." : item.recordReady ? "待查看" : "生成中"}
+        <span className="mw-history-status-pill__label">{statusLabel}</span>
       </button>
     </article>
   );

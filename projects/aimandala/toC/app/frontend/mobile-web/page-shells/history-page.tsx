@@ -195,6 +195,8 @@ export function MobileWebHistoryPage({
                     item={item}
                     imageUrl={imageUrl}
                     variant="featured"
+                    thumbIndex={index}
+                    statusLabelOverride={item.recordReady ? "待查看" : "生成中"}
                     isBusy={isBusy}
                     disabled={filterBusy || actionBusy}
                     onOpenRecord={onOpenRecord}
@@ -231,12 +233,12 @@ export function MobileWebHistoryPage({
 
           <section className="mw-history-filter-block">
             <h3>状态</h3>
-            <div className="mw-history-pill-row">
+            <div className="mw-history-pill-row mw-history-pill-row--status">
               {statusOptions.map((option) => (
                 <button
                   key={option.id}
                   type="button"
-                  className={`mw-history-pill${activeFilter === option.id ? " is-active" : ""}`}
+                  className={`mw-history-pill mw-history-pill--status${activeFilter === option.id ? " is-active" : ""}`}
                   onClick={() => onFilterChange?.(option.id)}
                   disabled={filterBusy}
                 >
@@ -279,12 +281,12 @@ export function MobileWebHistoryPage({
 
           <section className="mw-history-filter-block">
             <h3>时间范围</h3>
-            <div className="mw-history-pill-row">
+            <div className="mw-history-pill-row mw-history-pill-row--limit">
               {limitOptions.map((option) => (
                 <button
                   key={option.value}
                   type="button"
-                  className={`mw-history-pill${activeLimit === option.value ? " is-active" : ""}`}
+                  className={`mw-history-pill mw-history-pill--limit${activeLimit === option.value ? " is-active" : ""}`}
                   onClick={() => onLimitChange?.(option.value)}
                   disabled={filterBusy}
                 >
@@ -305,8 +307,9 @@ export function MobileWebHistoryPage({
                     key={item.interpretationId}
                     item={item}
                     imageUrl={imageUrl}
-                    variant="default"
+                    variant="featured"
                     thumbIndex={index}
+                    statusLabelOverride={item.recordReady ? "可查看" : "生成中"}
                     isBusy={isBusy}
                     disabled={filterBusy || actionBusy}
                     onOpenRecord={onOpenRecord}
