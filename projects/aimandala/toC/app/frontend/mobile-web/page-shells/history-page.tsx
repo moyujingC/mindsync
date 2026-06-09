@@ -56,13 +56,8 @@ export function MobileWebHistoryPage({
   historyQuery,
   activeFilter = "all",
   filterBusy = false,
-  historyStatusLabel,
-  historyStatusDetail,
-  historyStatusTone = "preview",
-  historyRefreshHint,
   actionBusy = false,
   activeRecordId = null,
-  refreshBusy = false,
   environmentLabel,
   environmentDetail,
   environmentTone,
@@ -70,7 +65,6 @@ export function MobileWebHistoryPage({
   onFilterChange,
   onThemeChange,
   onLimitChange,
-  onRefresh,
   onOpenRecord,
 }: MobileWebHistoryPageProps) {
   const descriptor = createHistoryPageDescriptor(records);
@@ -193,22 +187,6 @@ export function MobileWebHistoryPage({
           <span className="mw-history-intro__glow-line" aria-hidden="true" />
         </section>
 
-        {historyStatusLabel ? (
-          <section className={`mw-inline-banner mw-inline-banner--${historyStatusTone}`}>
-            <strong>{historyStatusLabel}</strong>
-            <p>{historyStatusDetail}</p>
-            {historyRefreshHint ? <p>{historyRefreshHint}</p> : null}
-            <button
-              type="button"
-              className="mw-history-refresh"
-              onClick={onRefresh}
-              disabled={refreshBusy || filterBusy || actionBusy}
-            >
-              {refreshBusy ? "刷新中..." : "立即刷新"}
-            </button>
-          </section>
-        ) : null}
-
         <section className="mw-history-featured">
           <h2>待查看的解读</h2>
           <p>这里会优先显示还在生成中，或刚生成完成、还没来得及查看的报告。</p>
@@ -322,20 +300,6 @@ export function MobileWebHistoryPage({
               ))}
             </div>
           </section>
-
-          {filterBusy ? (
-            <section className="mw-inline-banner mw-inline-banner--runtime">
-              <strong>正在切换历史筛选</strong>
-              <p>当前正在按所选条件重新请求真实记录。</p>
-            </section>
-          ) : null}
-
-          {actionBusy ? (
-            <section className="mw-inline-banner mw-inline-banner--runtime">
-              <strong>正在打开历史记录</strong>
-              <p>当前正在刷新这条记录的真实状态，并按结果跳转到等待页或报告页。</p>
-            </section>
-          ) : null}
 
           {filteredItems.length ? (
             <div className="mw-history-record-list mw-history-record-list--all">
