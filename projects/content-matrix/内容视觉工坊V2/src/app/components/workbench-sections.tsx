@@ -457,6 +457,8 @@ export function WorkbenchCenterSection({
   handleGenerateQuoteCard,
   coverPreset,
   coverGeneration,
+  coverSelection,
+  handleSelectCover,
   inlinePreset,
   plannedInlineImages,
   inlineGeneration,
@@ -504,6 +506,8 @@ export function WorkbenchCenterSection({
   handleGenerateQuoteCard: () => Promise<void>;
   coverPreset?: { w: number; h: number };
   coverGeneration?: { images: Array<{ imageUrl: string }> };
+  coverSelection?: { selectedCoverIndex: number; updatedAt: string } | null;
+  handleSelectCover: (index: number) => void;
   inlinePreset?: { w: number; h: number };
   plannedInlineImages: Array<any>;
   inlineGeneration?: { images: Array<{ imageUrl: string }> };
@@ -674,6 +678,8 @@ export function WorkbenchCenterSection({
           handleGenerateQuoteCard={handleGenerateQuoteCard}
           coverPreset={coverPreset}
           coverGeneration={coverGeneration}
+          coverSelection={coverSelection}
+          handleSelectCover={handleSelectCover}
           inlinePreset={inlinePreset}
           plannedInlineImages={plannedInlineImages}
           inlineGeneration={inlineGeneration}
@@ -790,6 +796,8 @@ function WorkbenchResultsPanel({
   handleGenerateQuoteCard,
   coverPreset,
   coverGeneration,
+  coverSelection,
+  handleSelectCover,
   inlinePreset,
   plannedInlineImages,
   inlineGeneration,
@@ -806,6 +814,7 @@ function WorkbenchResultsPanel({
     ((quoteGenerationSelection?.generatedAtPlanningRevision ?? replanRevision) !==
       replanRevision ||
       JSON.stringify(boundQuoteTexts) !== JSON.stringify(currentQuoteTexts));
+  const selectedCoverIndex = coverSelection?.selectedCoverIndex ?? 0;
   return (
     <Panel>
       <div className="flex items-end justify-between mb-3">
@@ -966,12 +975,13 @@ function WorkbenchResultsPanel({
           />
           <div className="space-y-2 mt-2.5">
             {COVER_DRAFTS.map((item, index) => (
-              <div
+              <button
                 key={index}
-                className="rounded-md flex items-center overflow-hidden"
+                onClick={() => handleSelectCover(index)}
+                className="w-full rounded-md flex items-center overflow-hidden text-left"
                 style={{
-                  border: `1px solid ${COLORS.borderSoft}`,
-                  background: COLORS.surfaceAlt,
+                  border: `1px solid ${index === selectedCoverIndex ? COLORS.blueDeep : COLORS.borderSoft}`,
+                  background: index === selectedCoverIndex ? COLORS.blueTint : COLORS.surfaceAlt,
                   height: 56,
                 }}
               >
@@ -992,9 +1002,9 @@ function WorkbenchResultsPanel({
                     {item.note}
                   </div>
                 </div>
-                {index === 0 ? <Tag tone="blue">已选</Tag> : null}
+                {index === selectedCoverIndex ? <Tag tone="blue">已选</Tag> : null}
                 <div className="w-3" />
-              </div>
+              </button>
             ))}
           </div>
         </div>

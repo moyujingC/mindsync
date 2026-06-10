@@ -89,6 +89,11 @@ export type WorkbenchImportedMarkdownMeta = {
   importedAt: string;
 };
 
+export type WorkbenchCoverSelection = {
+  selectedCoverIndex: number;
+  updatedAt: string;
+};
+
 export type GenerationRecord = {
   id: string;
   source: "general-image";
@@ -138,6 +143,7 @@ export type WorkbenchState = {
   >;
   taskState: WorkbenchTaskState;
   quoteGenerationSelection: WorkbenchQuoteGenerationSelection | null;
+  coverSelection: WorkbenchCoverSelection | null;
   importedMarkdownMeta: WorkbenchImportedMarkdownMeta | null;
   replanRevision: number;
 };
@@ -205,6 +211,7 @@ const DEFAULT_WORKBENCH_STATE: WorkbenchState = {
     statusMessage: null,
   },
   quoteGenerationSelection: null,
+  coverSelection: null,
   importedMarkdownMeta: null,
   replanRevision: 0,
 };
@@ -342,6 +349,7 @@ function normalizeWorkbenchState(input: unknown): WorkbenchState {
       statusMessage: taskState.statusMessage ?? null,
     },
     quoteGenerationSelection: value.quoteGenerationSelection ?? null,
+    coverSelection: value.coverSelection ?? null,
     importedMarkdownMeta: value.importedMarkdownMeta ?? null,
     replanRevision: value.replanRevision ?? 0,
   };

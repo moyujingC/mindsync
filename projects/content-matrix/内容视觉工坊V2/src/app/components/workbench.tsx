@@ -103,6 +103,8 @@ export function Workbench() {
         handleGenerateQuoteCard={controller.handleGenerateQuoteCard}
         coverPreset={controller.coverPreset}
         coverGeneration={controller.coverGeneration}
+        coverSelection={controller.coverSelection}
+        handleSelectCover={controller.handleSelectCover}
         inlinePreset={controller.inlinePreset}
         plannedInlineImages={controller.plannedInlineImages}
         inlineGeneration={controller.inlineGeneration}

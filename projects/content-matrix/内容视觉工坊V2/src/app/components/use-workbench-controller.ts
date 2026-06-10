@@ -114,6 +114,7 @@ export function useWorkbenchController({
   const statusState = taskState.lastError ?? taskState.statusMessage;
   const importedMarkdownMeta = workbenchState.importedMarkdownMeta;
   const quoteGenerationSelection = workbenchState.quoteGenerationSelection;
+  const coverSelection = workbenchState.coverSelection;
   const replanRevision = workbenchState.replanRevision;
 
   const unlockedPlannedCards = plannedCards.filter(
@@ -227,6 +228,17 @@ export function useWorkbenchController({
         lastError: null,
       },
     }));
+  }
+
+  function handleSelectCover(index: number) {
+    setWorkbenchState((prev) => ({
+      ...prev,
+      coverSelection: {
+        selectedCoverIndex: index,
+        updatedAt: new Date().toISOString(),
+      },
+    }));
+    pushStatus("cover-selection", "success", `已选中封面 ${index + 1}`);
   }
 
   function updateKnowledgeCardStatus(
@@ -864,6 +876,16 @@ export function useWorkbenchController({
           saveGenerationRecord(record);
         }
 
+        if (record.purposeKey === "wx_cover") {
+          setWorkbenchState((prev) => ({
+            ...prev,
+            coverSelection: prev.coverSelection ?? {
+              selectedCoverIndex: 0,
+              updatedAt: new Date().toISOString(),
+            },
+          }));
+        }
+
         if (record.purposeKey === "quote") {
           setWorkbenchState((prev) => ({
             ...prev,
@@ -967,6 +989,7 @@ export function useWorkbenchController({
     quoteGeneration,
     coverGeneration,
     inlineGeneration,
+    coverSelection,
     latestGenerationTime,
     latestLogText,
     lockedKnowledgeCardIndexes,
@@ -997,6 +1020,7 @@ export function useWorkbenchController({
     handleEditAndRegenerateKnowledgeCard,
     handleStartGeneration,
     handleGenerateQuoteCard,
+    handleSelectCover,
     handleImportMarkdown,
     handleReplan,
     runPlanning,

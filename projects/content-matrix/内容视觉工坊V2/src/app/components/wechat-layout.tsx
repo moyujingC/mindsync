@@ -64,6 +64,7 @@ export function WechatLayout() {
     currentArticleBlocks,
     currentArticleMeta,
     generationRecords,
+    workbenchState,
   } =
     useWorkspace();
   const [mapping, setMapping] = useState<MappingMode>("h2h3");
@@ -161,7 +162,8 @@ export function WechatLayout() {
   );
   const coverGeneration = generationRecords.find((item) => item.purposeKey === "wx_cover");
   const inlineGeneration = generationRecords.find((item) => item.purposeKey === "wx_inline");
-  const previewCover = coverGeneration?.images[0]?.imageUrl ?? null;
+  const selectedCoverIndex = workbenchState.coverSelection?.selectedCoverIndex ?? 0;
+  const previewCover = coverGeneration?.images[selectedCoverIndex]?.imageUrl ?? null;
   const inlineImageMap = useMemo(
     () =>
       new Map(
