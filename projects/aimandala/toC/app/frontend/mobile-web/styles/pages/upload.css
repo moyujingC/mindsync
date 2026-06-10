@@ -21,7 +21,7 @@
   position: sticky;
   top: 0;
   z-index: calc(var(--am-z-sticky) + 1);
-  border-bottom: 1px solid var(--am-upload-topbar-divider);
+  border-bottom: var(--am-shell-topbar-border);
   background: var(--am-upload-hero-bg);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
