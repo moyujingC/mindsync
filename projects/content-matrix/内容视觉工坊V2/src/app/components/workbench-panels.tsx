@@ -81,6 +81,7 @@ export function KnowledgeCardResults({
   onRegenerate,
   onReplace,
   onRollback,
+  onPreview,
 }: {
   plannedCards: CardPlan[];
   knowledgeSizeLabel: string;
@@ -97,6 +98,7 @@ export function KnowledgeCardResults({
   onRegenerate: (cardIndex: number) => void;
   onReplace: (cardIndex: number) => void;
   onRollback: (cardIndex: number) => void;
+  onPreview: (imageUrl: string, alt: string) => void;
 }) {
   return (
     <div className="mt-2">
@@ -138,6 +140,7 @@ export function KnowledgeCardResults({
                 onRegenerate={onRegenerate}
                 onReplace={onReplace}
                 onRollback={onRollback}
+                onPreview={onPreview}
               />
             );
           }
@@ -412,6 +415,7 @@ function KnowledgeCardImageTile({
   onRegenerate,
   onReplace,
   onRollback,
+  onPreview,
 }: {
   image: GeneratedImageItem;
   cardIndex: number;
@@ -425,6 +429,7 @@ function KnowledgeCardImageTile({
   onRegenerate: (cardIndex: number) => void;
   onReplace: (cardIndex: number) => void;
   onRollback: (cardIndex: number) => void;
+  onPreview: (imageUrl: string, alt: string) => void;
 }) {
   return (
     <div className="rounded-md overflow-hidden" style={{ border: `1px solid ${COLORS.borderSoft}` }}>
@@ -432,10 +437,12 @@ function KnowledgeCardImageTile({
         <img
           src={image.imageUrl}
           alt={`知识卡片 ${tileIndex + 1}`}
+          onClick={() => onPreview(image.imageUrl, `知识卡片 ${tileIndex + 1}`)}
           style={{
             width: "100%",
             aspectRatio,
             objectFit: "cover",
+            cursor: "zoom-in",
           }}
         />
         <div className="absolute top-2 left-2 right-2 flex items-center justify-between">

@@ -951,6 +951,7 @@ function WorkbenchResultsPanel({
   plannedInlineImages,
   inlineGeneration,
 }: any) {
+  const [previewImage, setPreviewImage] = useState<{ imageUrl: string; alt: string } | null>(null);
   const currentQuoteTexts = selectedQuotes
     .map((index: number) => plannedQuotes[index])
     .filter(Boolean);
@@ -964,6 +965,32 @@ function WorkbenchResultsPanel({
       replanRevision ||
       JSON.stringify(generatedQuoteTexts) !== JSON.stringify(currentQuoteTexts));
   const selectedCoverIndex = coverSelection?.selectedCoverIndex ?? 0;
+  const downloadableImages = [
+    ...(Array.from(knowledgeImagesByCard.values()) as Array<{ imageUrl: string }>),
+    ...(quoteGeneration?.images ?? []),
+    ...(coverGeneration?.images ?? []),
+    ...(inlineGeneration?.images ?? []),
+  ];
+
+  function handlePreviewImage(imageUrl: string, alt: string) {
+    setPreviewImage({ imageUrl, alt });
+  }
+
+  function handleDownloadAll() {
+    downloadableImages.forEach((image, index) => {
+      const link = document.createElement("a");
+      link.href = image.imageUrl;
+      link.download = `content-visual-${String(index + 1).padStart(2, "0")}.png`;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      document.body.appendChild(link);
+      window.setTimeout(() => {
+        link.click();
+        document.body.removeChild(link);
+      }, index * 120);
+    });
+  }
+
   return (
     <Panel>
       <div className="flex items-end justify-between mb-3">
@@ -975,7 +1002,12 @@ function WorkbenchResultsPanel({
             生成结果总览
           </div>
         </div>
-        <button className="flex items-center gap-1" style={{ color: COLORS.blue, fontSize: 12 }}>
+        <button
+          className="flex items-center gap-1"
+          style={{ color: COLORS.blue, fontSize: 12 }}
+          onClick={handleDownloadAll}
+          disabled={downloadableImages.length === 0}
+        >
           全部下载 <ArrowUpRight size={12} strokeWidth={1.6} />
         </button>
       </div>
@@ -1006,12 +1038,14 @@ function WorkbenchResultsPanel({
                 key={image.id}
                 src={image.imageUrl}
                 alt={latestGeneration.title}
+                onClick={() => handlePreviewImage(image.imageUrl, latestGeneration.title)}
                 className="rounded"
                 style={{
                   width: 42,
                   height: 42,
                   objectFit: "cover",
                   border: `1px solid ${COLORS.borderSoft}`,
+                  cursor: "zoom-in",
                 }}
               />
             ))}
@@ -1043,6 +1077,7 @@ function WorkbenchResultsPanel({
         }}
         onReplace={handleReplaceKnowledgeCardClick}
         onRollback={handleRollbackKnowledgeCard}
+        onPreview={handlePreviewImage}
       />
 
       <div className="grid grid-cols-2 gap-5 mt-5">
@@ -1082,11 +1117,13 @@ function WorkbenchResultsPanel({
               <img
                 src={quoteGeneration.images[0].imageUrl}
                 alt="最新金句卡"
+                onClick={() => handlePreviewImage(quoteGeneration.images[0].imageUrl, "金句底图")}
                 style={{
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
                   borderRadius: 6,
+                  cursor: "zoom-in",
                 }}
               />
             ) : (
@@ -1145,7 +1182,11 @@ function WorkbenchResultsPanel({
                   <img
                     src={coverGeneration.images[index].imageUrl}
                     alt={`封面 ${index + 1}`}
-                    style={{ width: 130, height: "100%", objectFit: "cover" }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handlePreviewImage(coverGeneration.images[index].imageUrl, `封面 ${index + 1}`);
+                    }}
+                    style={{ width: 130, height: "100%", objectFit: "cover", cursor: "zoom-in" }}
                   />
                 ) : (
                   <FoggyArt hue={index} variant={item.variant} style={{ width: 130, height: "100%" }} />
@@ -1183,10 +1224,14 @@ function WorkbenchResultsPanel({
                 <img
                   src={inlineGeneration.images[index].imageUrl}
                   alt={`正文配图 ${index + 1}`}
+                  onClick={() =>
+                    handlePreviewImage(inlineGeneration.images[index].imageUrl, `正文配图 ${index + 1}`)
+                  }
                   style={{
                     width: "100%",
                     aspectRatio: inlinePreset ? `${inlinePreset.w} / ${inlinePreset.h}` : "1080 / 608",
                     objectFit: "cover",
+                    cursor: "zoom-in",
                   }}
                 />
               ) : (
@@ -1210,6 +1255,35 @@ function WorkbenchResultsPanel({
           ))}
         </div>
       </div>
+
+      <Dialog
+        open={previewImage != null}
+        onOpenChange={(open) => {
+          if (!open) setPreviewImage(null);
+        }}
+      >
+        <DialogContent className="max-w-[980px]">
+          <DialogHeader>
+            <DialogTitle>{previewImage?.alt || "图片预览"}</DialogTitle>
+            <DialogDescription>这里展示当前图片的放大预览。</DialogDescription>
+          </DialogHeader>
+          {previewImage ? (
+            <div className="max-h-[75vh] overflow-auto">
+              <img
+                src={previewImage.imageUrl}
+                alt={previewImage.alt}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  borderRadius: 8,
+                  border: `1px solid ${COLORS.borderSoft}`,
+                }}
+              />
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </Panel>
   );
 }
