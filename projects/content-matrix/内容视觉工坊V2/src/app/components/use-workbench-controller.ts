@@ -85,7 +85,7 @@ export function useWorkbenchController({
   const [splitStrategy, setSplitStrategy] = useState<SplitStrategy>("auto");
   const [minCards, setMinCards] = useState(2);
   const [maxCards, setMaxCards] = useState(6);
-  const [selectedQuotes, setSelectedQuotes] = useState<number[]>([0]);
+  const [selectedQuotes, setSelectedQuotes] = useState<number[]>([]);
   const [regeneratingCardIndex, setRegeneratingCardIndex] = useState<number | null>(null);
   const replaceCardInputRef = useRef<HTMLInputElement | null>(null);
   const [replaceTargetCardIndex, setReplaceTargetCardIndex] = useState<number | null>(null);

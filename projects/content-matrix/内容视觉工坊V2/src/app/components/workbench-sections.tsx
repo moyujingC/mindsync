@@ -833,15 +833,15 @@ function WorkbenchResultsPanel({
   const currentQuoteTexts = selectedQuotes
     .map((index: number) => plannedQuotes[index])
     .filter(Boolean);
-  const boundQuoteTexts =
-    quoteGenerationSelection?.selectedQuoteTexts?.length
-      ? quoteGenerationSelection.selectedQuoteTexts
-      : currentQuoteTexts;
+  const generatedQuoteTexts = quoteGenerationSelection?.selectedQuoteTexts?.length
+    ? quoteGenerationSelection.selectedQuoteTexts
+    : [];
+  const hasGeneratedQuote = Boolean(quoteGeneration?.images?.[0]);
   const quoteBindingIsStale =
-    Boolean(quoteGeneration?.images?.[0]) &&
+    hasGeneratedQuote &&
     ((quoteGenerationSelection?.generatedAtPlanningRevision ?? replanRevision) !==
       replanRevision ||
-      JSON.stringify(boundQuoteTexts) !== JSON.stringify(currentQuoteTexts));
+      JSON.stringify(generatedQuoteTexts) !== JSON.stringify(currentQuoteTexts));
   const selectedCoverIndex = coverSelection?.selectedCoverIndex ?? 0;
   return (
     <Panel>
@@ -929,15 +929,20 @@ function WorkbenchResultsPanel({
           <ResultRow
             label="金句卡横版（公众号）"
             size={quotePreset ? `公众号正文 · ${quotePreset.w}×${quotePreset.h}` : "公众号正文 · 1080×608"}
-            count={1}
+            count={quoteGeneration?.images.length ?? 0}
           />
           <div className="mt-2" style={{ color: COLORS.textFaint, fontSize: 11, lineHeight: 1.6 }}>
             <div>
               对应金句：
               <span style={{ color: COLORS.textMid }}>
-                {boundQuoteTexts[0] ? `「${boundQuoteTexts[0]}」` : "暂无已绑定结果"}
+                {generatedQuoteTexts[0] ? `「${generatedQuoteTexts[0]}」` : "暂无已绑定结果"}
               </span>
             </div>
+            {!hasGeneratedQuote && currentQuoteTexts[0] ? (
+              <div style={{ marginTop: 2 }}>
+                当前勾选：<span style={{ color: COLORS.textMid }}>「{currentQuoteTexts[0]}」</span>
+              </div>
+            ) : null}
             {quoteBindingIsStale ? (
               <div style={{ color: "#8A5A46", marginTop: 2 }}>
                 当前展示的是上一轮所选金句结果，再次点击“生成金句卡”才会更新。
@@ -967,8 +972,8 @@ function WorkbenchResultsPanel({
               <>
                 <Quote size={20} strokeWidth={1.4} color="#3F4E62" />
                 <div style={{ color: "#2B3645", fontSize: 17, lineHeight: 1.55, letterSpacing: "0.02em" }}>
-                  {((selectedQuotes.length > 0 ? plannedQuotes[selectedQuotes[0]] : null) ??
-                    "尚未选择候选金句")
+                {((selectedQuotes.length > 0 ? plannedQuotes[selectedQuotes[0]] : null) ??
+                    "尚未生成金句卡")
                     .split("，")
                     .map((line: string, index: number, list: string[]) => (
                       <span key={`${line}-${index}`}>
