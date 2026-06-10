@@ -1146,7 +1146,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .mw-history-all__summary {
@@ -1184,6 +1184,16 @@
 
 .mw-history-all__summary-pill--ready strong {
   color: var(--mw-history-summary-strong-ready);
+}
+
+.mw-history-all__summary-pill--ready {
+  border-color: rgb(168 196 160 / 0.18);
+  background: rgb(168 196 160 / 0.08);
+}
+
+.mw-history-all__summary-pill--pending {
+  border-color: rgb(var(--am-rgb-gold-300) / 0.18);
+  background: rgb(var(--am-rgb-gold-300) / 0.08);
 }
 
 .mw-history-summary {
@@ -1240,7 +1250,7 @@
 }
 
 .mw-history-filter-block {
-  margin-top: 9px;
+  margin-top: 8px;
 }
 
 .mw-history-filter-block h3 {
@@ -1479,7 +1489,7 @@
 
 .mw-history-record-list--all {
   gap: 8px;
-  margin-top: 9px;
+  margin-top: 10px;
 }
 
 @keyframes mw-history-track-pulse {
