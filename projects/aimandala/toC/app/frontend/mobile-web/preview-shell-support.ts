@@ -28,18 +28,10 @@ export const DEFAULT_PREVIEW_DRAFT: MobileWebUploadDraft = {
 export const PREVIEW_ROUTE_OPTIONS: Array<{
   label: string;
   value: MobileWebRouteId;
-}> = [
-  { label: "落地页", value: "landing" },
-  { label: "上传", value: "upload" },
-  { label: "付款", value: "reportEntry" },
-  { label: "加载", value: "loading" },
-  { label: "新版解读报告", value: "report" },
-  { label: "历史", value: "history" },
-  { label: "历史记录详情", value: "historyRecordDetail" },
-  { label: "详情-未升级 Pro", value: "historyRecordDetailNotUpgraded" },
-  { label: "详情-Pro 生成中", value: "historyRecordDetailGenerating" },
-  { label: "详情-Pro 已可查看", value: "historyRecordDetailViewable" },
-];
+}> = mobileWebRoutes.map((route) => ({
+  label: route.previewLabel ?? route.title,
+  value: route.id,
+}));
 
 export const PREVIEW_POLLING_INTERVAL_MS = 1500;
 export const PREVIEW_POLLING_MAX_ATTEMPTS = 8;
