@@ -1255,7 +1255,7 @@
 
 .mw-history-filter-block h3 {
   margin: 0 0 4px;
-  color: var(--mw-history-filter-title);
+  color: rgb(var(--am-rgb-gold-300) / 0.5);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -1279,8 +1279,9 @@
 }
 
 .mw-history-pill--ghost {
-  background: rgb(255 255 255 / 0.02);
-  color: rgb(214 196 165 / 0.76);
+  border-color: rgb(138 124 108 / 0.12);
+  background: rgb(138 124 108 / 0.06);
+  color: rgb(var(--am-rgb-sand-300) / 0.4);
 }
 
 .mw-history-pill.is-active {

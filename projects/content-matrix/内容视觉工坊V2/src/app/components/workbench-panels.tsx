@@ -24,6 +24,7 @@ type KnowledgeCardStatus = {
   replaced?: boolean;
   regenerated?: boolean;
   needsRegeneration?: boolean;
+  finalized?: boolean;
   updatedAt: string;
 };
 
@@ -77,6 +78,7 @@ export function KnowledgeCardResults({
   replaceCardInputRef,
   onReplaceInputChange,
   onToggleLock,
+  onFinalize,
   onEdit,
   onRegenerate,
   onReplace,
@@ -94,6 +96,7 @@ export function KnowledgeCardResults({
   replaceCardInputRef: RefObject<HTMLInputElement | null>;
   onReplaceInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onToggleLock: (cardIndex: number) => void;
+  onFinalize: (cardIndex: number) => void;
   onEdit: (cardIndex: number) => void;
   onRegenerate: (cardIndex: number) => void;
   onReplace: (cardIndex: number) => void;
@@ -137,6 +140,7 @@ export function KnowledgeCardResults({
                 historyCount={historyCount}
                 aspectRatio={knowledgeAspectRatio}
                 onToggleLock={onToggleLock}
+                onFinalize={onFinalize}
                 onRegenerate={onRegenerate}
                 onReplace={onReplace}
                 onRollback={onRollback}
@@ -156,6 +160,7 @@ export function KnowledgeCardResults({
               historyCount={historyCount}
               aspectRatio={knowledgeAspectRatio}
               onToggleLock={onToggleLock}
+              onFinalize={onFinalize}
               onEdit={onEdit}
               onRegenerate={onRegenerate}
               onReplace={onReplace}
@@ -394,6 +399,7 @@ function toDisplayPhase(phase: WorkbenchTaskState["phase"]) {
 
 function buildStatusBadges(status: KnowledgeCardStatus | undefined, locked: boolean): StatusBadge[] {
   return [
+    status?.finalized ? { label: "已定稿", tone: "success" as const } : null,
     status?.needsRegeneration ? { label: "需重生成", tone: "blue" as const } : null,
     status?.edited ? { label: "已编辑", tone: "warm" as const } : null,
     status?.replaced ? { label: "已替换", tone: "success" as const } : null,
@@ -412,6 +418,7 @@ function KnowledgeCardImageTile({
   historyCount,
   aspectRatio,
   onToggleLock,
+  onFinalize,
   onRegenerate,
   onReplace,
   onRollback,
@@ -426,6 +433,7 @@ function KnowledgeCardImageTile({
   historyCount: number;
   aspectRatio: string;
   onToggleLock: (cardIndex: number) => void;
+  onFinalize: (cardIndex: number) => void;
   onRegenerate: (cardIndex: number) => void;
   onReplace: (cardIndex: number) => void;
   onRollback: (cardIndex: number) => void;
@@ -464,6 +472,12 @@ function KnowledgeCardImageTile({
               onClick={() => onToggleLock(cardIndex)}
             />
             <IconActionButton
+              title="设为定稿"
+              icon={<ClipboardCopy size={12} strokeWidth={1.6} />}
+              color={COLORS.success}
+              onClick={() => onFinalize(cardIndex)}
+            />
+            <IconActionButton
               title="单张重生成"
               icon={<RotateCcw size={12} strokeWidth={1.6} />}
               disabled={regenerating}
@@ -498,6 +512,7 @@ function KnowledgeCardDraftTile({
   historyCount,
   aspectRatio,
   onToggleLock,
+  onFinalize,
   onEdit,
   onRegenerate,
   onReplace,
@@ -511,6 +526,7 @@ function KnowledgeCardDraftTile({
   historyCount: number;
   aspectRatio: string;
   onToggleLock: (cardIndex: number) => void;
+  onFinalize: (cardIndex: number) => void;
   onEdit: (cardIndex: number) => void;
   onRegenerate: (cardIndex: number) => void;
   onReplace: (cardIndex: number) => void;
@@ -581,6 +597,12 @@ function KnowledgeCardDraftTile({
             {locked ? "已锁定" : "锁定"}
           </button>
           <div className="flex items-center gap-2">
+            <TextActionButton
+              icon={<ClipboardCopy size={11} strokeWidth={1.6} />}
+              onClick={() => onFinalize(card.index)}
+            >
+              定稿
+            </TextActionButton>
             <TextActionButton icon={<Pencil size={11} strokeWidth={1.6} />} onClick={() => onEdit(card.index)}>
               编辑
             </TextActionButton>

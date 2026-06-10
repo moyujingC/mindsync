@@ -91,6 +91,7 @@ export type WorkbenchImportedMarkdownMeta = {
 
 export type WorkbenchCoverSelection = {
   selectedCoverIndex: number;
+  finalizedCoverIndex?: number | null;
   updatedAt: string;
 };
 
@@ -128,6 +129,7 @@ export type WorkbenchState = {
       replaced?: boolean;
       regenerated?: boolean;
       needsRegeneration?: boolean;
+      finalized?: boolean;
       updatedAt: string;
     }
   >;

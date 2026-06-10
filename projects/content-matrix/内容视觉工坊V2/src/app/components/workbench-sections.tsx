@@ -475,6 +475,7 @@ export function WorkbenchCenterSection({
   replaceCardInputRef,
   handleKnowledgeCardFileChange,
   toggleKnowledgeCardLock,
+  handleFinalizeKnowledgeCard,
   openKnowledgeCardEditor,
   handleRegenerateKnowledgeCard,
   handleReplaceKnowledgeCardClick,
@@ -488,6 +489,7 @@ export function WorkbenchCenterSection({
   coverGeneration,
   coverSelection,
   handleSelectCover,
+  handleFinalizeCover,
   inlinePreset,
   plannedInlineImages,
   inlineGeneration,
@@ -520,6 +522,7 @@ export function WorkbenchCenterSection({
   replaceCardInputRef: React.RefObject<HTMLInputElement | null>;
   handleKnowledgeCardFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   toggleKnowledgeCardLock: (cardIndex: number) => void;
+  handleFinalizeKnowledgeCard: (cardIndex: number) => void;
   openKnowledgeCardEditor: (cardIndex: number) => void;
   handleRegenerateKnowledgeCard: (cardIndex: number) => Promise<void>;
   handleReplaceKnowledgeCardClick: (cardIndex: number) => void;
@@ -535,8 +538,13 @@ export function WorkbenchCenterSection({
   handleGenerateQuoteCard: () => Promise<void>;
   coverPreset?: { w: number; h: number };
   coverGeneration?: { images: Array<{ imageUrl: string }> };
-  coverSelection?: { selectedCoverIndex: number; updatedAt: string } | null;
+  coverSelection?: {
+    selectedCoverIndex: number;
+    finalizedCoverIndex?: number | null;
+    updatedAt: string;
+  } | null;
   handleSelectCover: (index: number) => void;
+  handleFinalizeCover: (index: number) => void;
   inlinePreset?: { w: number; h: number };
   plannedInlineImages: Array<any>;
   inlineGeneration?: { images: Array<{ imageUrl: string }> };
@@ -814,6 +822,7 @@ export function WorkbenchCenterSection({
           replaceCardInputRef={replaceCardInputRef}
           handleKnowledgeCardFileChange={handleKnowledgeCardFileChange}
           toggleKnowledgeCardLock={toggleKnowledgeCardLock}
+          handleFinalizeKnowledgeCard={handleFinalizeKnowledgeCard}
           openKnowledgeCardEditor={openKnowledgeCardEditor}
           handleRegenerateKnowledgeCard={handleRegenerateKnowledgeCard}
           handleReplaceKnowledgeCardClick={handleReplaceKnowledgeCardClick}
@@ -829,6 +838,7 @@ export function WorkbenchCenterSection({
           coverGeneration={coverGeneration}
           coverSelection={coverSelection}
           handleSelectCover={handleSelectCover}
+          handleFinalizeCover={handleFinalizeCover}
           inlinePreset={inlinePreset}
           plannedInlineImages={plannedInlineImages}
           inlineGeneration={inlineGeneration}
@@ -932,6 +942,7 @@ function WorkbenchResultsPanel({
   replaceCardInputRef,
   handleKnowledgeCardFileChange,
   toggleKnowledgeCardLock,
+  handleFinalizeKnowledgeCard,
   openKnowledgeCardEditor,
   handleRegenerateKnowledgeCard,
   handleReplaceKnowledgeCardClick,
@@ -947,6 +958,7 @@ function WorkbenchResultsPanel({
   coverGeneration,
   coverSelection,
   handleSelectCover,
+  handleFinalizeCover,
   inlinePreset,
   plannedInlineImages,
   inlineGeneration,
@@ -966,6 +978,7 @@ function WorkbenchResultsPanel({
       replanRevision ||
       JSON.stringify(generatedQuoteTexts) !== JSON.stringify(currentQuoteTexts));
   const selectedCoverIndex = coverSelection?.selectedCoverIndex ?? 0;
+  const finalizedCoverIndex = coverSelection?.finalizedCoverIndex ?? null;
   const downloadableImages = [
     ...(Array.from(knowledgeImagesByCard.values()) as Array<{ imageUrl: string }>),
     ...(quoteGeneration?.images ?? []),
@@ -1104,6 +1117,7 @@ function WorkbenchResultsPanel({
         replaceCardInputRef={replaceCardInputRef}
         onReplaceInputChange={handleKnowledgeCardFileChange}
         onToggleLock={toggleKnowledgeCardLock}
+        onFinalize={handleFinalizeKnowledgeCard}
         onEdit={openKnowledgeCardEditor}
         onRegenerate={(cardIndex) => {
           void handleRegenerateKnowledgeCard(cardIndex);
@@ -1201,40 +1215,62 @@ function WorkbenchResultsPanel({
           />
           <div className="space-y-2 mt-2.5">
             {COVER_DRAFTS.map((item, index) => (
-              <button
+              <div
                 key={index}
-                onClick={() => handleSelectCover(index)}
-                className="w-full rounded-md flex items-center overflow-hidden text-left"
+                className="w-full rounded-md overflow-hidden"
                 style={{
                   border: `1px solid ${index === selectedCoverIndex ? COLORS.blueDeep : COLORS.borderSoft}`,
                   background: index === selectedCoverIndex ? COLORS.blueTint : COLORS.surfaceAlt,
-                  height: 56,
                 }}
               >
-                {coverGeneration?.images[index] ? (
-                  <img
-                    src={coverGeneration.images[index].imageUrl}
-                    alt={`封面 ${index + 1}`}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handlePreviewImage(coverGeneration.images[index].imageUrl, `封面 ${index + 1}`);
-                    }}
-                    style={{ width: 130, height: "100%", objectFit: "cover", cursor: "zoom-in" }}
-                  />
-                ) : (
-                  <FoggyArt hue={index} variant={item.variant} style={{ width: 130, height: "100%" }} />
-                )}
-                <div className="flex-1 px-3 min-w-0">
-                  <div style={{ color: COLORS.text, fontSize: 12.5 }} className="truncate">
-                    {item.title}
+                <button
+                  onClick={() => handleSelectCover(index)}
+                  className="w-full flex items-center overflow-hidden text-left"
+                  style={{ height: 56 }}
+                >
+                  {coverGeneration?.images[index] ? (
+                    <img
+                      src={coverGeneration.images[index].imageUrl}
+                      alt={`封面 ${index + 1}`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handlePreviewImage(coverGeneration.images[index].imageUrl, `封面 ${index + 1}`);
+                      }}
+                      style={{ width: 130, height: "100%", objectFit: "cover", cursor: "zoom-in" }}
+                    />
+                  ) : (
+                    <FoggyArt hue={index} variant={item.variant} style={{ width: 130, height: "100%" }} />
+                  )}
+                  <div className="flex-1 px-3 min-w-0">
+                    <div style={{ color: COLORS.text, fontSize: 12.5 }} className="truncate">
+                      {item.title}
+                    </div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11 }} className="truncate">
+                      {item.note}
+                    </div>
                   </div>
-                  <div style={{ color: COLORS.textFaint, fontSize: 11 }} className="truncate">
-                    {item.note}
+                  <div className="flex items-center gap-1.5">
+                    {index === selectedCoverIndex ? <Tag tone="blue">已选</Tag> : null}
+                    {index === finalizedCoverIndex ? <Tag tone="success">已定稿</Tag> : null}
                   </div>
+                  <div className="w-3" />
+                </button>
+                <div
+                  className="px-3 py-2 flex items-center justify-end"
+                  style={{
+                    borderTop: `1px solid ${COLORS.borderSoft}`,
+                    background: COLORS.surface,
+                  }}
+                >
+                  <Btn
+                    variant={index === finalizedCoverIndex ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => handleFinalizeCover(index)}
+                  >
+                    {index === finalizedCoverIndex ? "当前定稿" : "设为定稿"}
+                  </Btn>
                 </div>
-                {index === selectedCoverIndex ? <Tag tone="blue">已选</Tag> : null}
-                <div className="w-3" />
-              </button>
+              </div>
             ))}
           </div>
         </div>

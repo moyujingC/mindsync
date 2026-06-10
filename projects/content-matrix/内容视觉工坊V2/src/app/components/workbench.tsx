@@ -95,6 +95,7 @@ export function Workbench() {
         replaceCardInputRef={controller.replaceCardInputRef}
         handleKnowledgeCardFileChange={controller.handleKnowledgeCardFileChange}
         toggleKnowledgeCardLock={controller.toggleKnowledgeCardLock}
+        handleFinalizeKnowledgeCard={controller.handleFinalizeKnowledgeCard}
         openKnowledgeCardEditor={controller.openKnowledgeCardEditor}
         handleRegenerateKnowledgeCard={controller.handleRegenerateKnowledgeCard}
         handleReplaceKnowledgeCardClick={controller.handleReplaceKnowledgeCardClick}
@@ -108,6 +109,7 @@ export function Workbench() {
         coverGeneration={controller.coverGeneration}
         coverSelection={controller.coverSelection}
         handleSelectCover={controller.handleSelectCover}
+        handleFinalizeCover={controller.handleFinalizeCover}
         inlinePreset={controller.inlinePreset}
         plannedInlineImages={controller.plannedInlineImages}
         inlineGeneration={controller.inlineGeneration}

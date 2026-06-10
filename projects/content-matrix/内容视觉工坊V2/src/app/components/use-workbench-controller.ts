@@ -294,11 +294,24 @@ export function useWorkbenchController({
     setWorkbenchState((prev) => ({
       ...prev,
       coverSelection: {
+        ...prev.coverSelection,
         selectedCoverIndex: index,
         updatedAt: new Date().toISOString(),
       },
     }));
     pushStatus("cover-selection", "success", `已选中封面 ${index + 1}`);
+  }
+
+  function handleFinalizeCover(index: number) {
+    setWorkbenchState((prev) => ({
+      ...prev,
+      coverSelection: {
+        selectedCoverIndex: index,
+        finalizedCoverIndex: index,
+        updatedAt: new Date().toISOString(),
+      },
+    }));
+    pushStatus("cover-selection", "success", `封面 ${index + 1} 已设为定稿`);
   }
 
   function updateKnowledgeCardStatus(
@@ -316,6 +329,21 @@ export function useWorkbenchController({
         },
       },
     }));
+  }
+
+  function handleFinalizeKnowledgeCard(cardIndex: number) {
+    updateKnowledgeCardStatus(cardIndex, { finalized: true });
+    setWorkbenchState((prev) => ({
+      ...prev,
+      lockedKnowledgeCardIndexes: prev.lockedKnowledgeCardIndexes.includes(cardIndex)
+        ? prev.lockedKnowledgeCardIndexes
+        : [...prev.lockedKnowledgeCardIndexes, cardIndex].sort((a, b) => a - b),
+    }));
+    pushStatus(
+      `knowledge-card-${cardIndex}`,
+      "success",
+      `知识卡 ${String(cardIndex).padStart(2, "0")} 已设为定稿`
+    );
   }
 
   function pushKnowledgeCardHistory(
@@ -1210,6 +1238,7 @@ export function useWorkbenchController({
     closeKnowledgeCardEditor,
     saveKnowledgeCardDraft,
     toggleKnowledgeCardLock,
+    handleFinalizeKnowledgeCard,
     handleRollbackKnowledgeCard,
     handleRegenerateKnowledgeCard,
     handleReplaceKnowledgeCardClick,
@@ -1218,6 +1247,7 @@ export function useWorkbenchController({
     handleStartGeneration,
     handleGenerateQuoteCard,
     handleSelectCover,
+    handleFinalizeCover,
     handleImportMarkdown,
     handleReplan,
     runPlanning,
