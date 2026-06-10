@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, useState } from "react";
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -29,6 +29,7 @@ import {
 } from "./ui/dialog";
 import { COVER_DRAFTS, ILLUSTRATIONS } from "./workbench-data";
 import { KnowledgeCardResults, ResultRow } from "./workbench-panels";
+import type { CardPlan } from "../content-planning";
 import type { WorkbenchImportedMarkdownMeta, WorkbenchStatusMessage } from "../workspace";
 import { formatScopeLabel } from "./use-workbench-controller";
 
@@ -493,7 +494,7 @@ export function WorkbenchCenterSection({
 }: {
   currentArticle: { title: string };
   currentArticleMeta: string;
-  plannedCards: Array<{ index: number; title: string; summary: string }>;
+  plannedCards: CardPlan[];
   plannedQuotes: string[];
   selectedQuotes: number[];
   toggleQuote: (index: number) => void;
@@ -540,6 +541,12 @@ export function WorkbenchCenterSection({
   plannedInlineImages: Array<any>;
   inlineGeneration?: { images: Array<{ imageUrl: string }> };
 }) {
+  const [inspectionCardIndex, setInspectionCardIndex] = useState<number | null>(null);
+  const inspectionCard =
+    inspectionCardIndex == null
+      ? null
+      : plannedCards.find((card) => card.index === inspectionCardIndex) || null;
+
   return (
     <section className="overflow-y-auto px-9 py-6">
       <div className="max-w-[800px] mx-auto">
@@ -607,6 +614,13 @@ export function WorkbenchCenterSection({
                     <div style={{ color: COLORS.textMuted, fontSize: 12, marginTop: 2 }}>
                       {card.summary}
                     </div>
+                    <button
+                      onClick={() => setInspectionCardIndex(card.index)}
+                      className="mt-2 flex items-center gap-1"
+                      style={{ color: COLORS.blueDeep, fontSize: 11.5 }}
+                    >
+                      查看完整拆解 <ChevronRight size={11} strokeWidth={1.6} />
+                    </button>
                   </div>
                   <CheckCircle2 size={15} strokeWidth={1.6} color={COLORS.success} />
                 </div>
@@ -614,6 +628,113 @@ export function WorkbenchCenterSection({
             </div>
           </div>
         </Panel>
+
+        <Dialog
+          open={inspectionCard != null}
+          onOpenChange={(open) => {
+            if (!open) setInspectionCardIndex(null);
+          }}
+        >
+          <DialogContent className="max-w-[760px]">
+            <DialogHeader>
+              <DialogTitle>
+                {inspectionCard
+                  ? `知识卡 ${String(inspectionCard.index).padStart(2, "0")} · 完整拆解`
+                  : "完整拆解"}
+              </DialogTitle>
+              <DialogDescription>
+                这里展示当前卡片的完整拆解内容，便于直接判断生成质量。
+              </DialogDescription>
+            </DialogHeader>
+            {inspectionCard ? (
+              <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-4">
+                <div>
+                  <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>标题</div>
+                  <div style={{ color: COLORS.text, fontSize: 15 }}>{inspectionCard.title}</div>
+                </div>
+                <div>
+                  <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>摘要</div>
+                  <div style={{ color: COLORS.textMid, fontSize: 13.5, lineHeight: 1.7 }}>
+                    {inspectionCard.summary}
+                  </div>
+                </div>
+                {inspectionCard.contentSections?.length ? (
+                  <div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 8 }}>
+                      内容区域
+                    </div>
+                    <div className="space-y-3">
+                      {inspectionCard.contentSections.map((section, sectionIndex) => (
+                        <div
+                          key={`${section.name}-${sectionIndex}`}
+                          className="rounded-md px-3.5 py-3"
+                          style={{
+                            background: COLORS.surfaceAlt,
+                            border: `1px solid ${COLORS.borderSoft}`,
+                          }}
+                        >
+                          <div style={{ color: COLORS.text, fontSize: 13 }}>
+                            {section.name}
+                          </div>
+                          <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 2 }}>
+                            {section.position}
+                          </div>
+                          <div className="mt-2 space-y-2">
+                            {section.items.map((item, itemIndex) => (
+                              <div key={`${item.text}-${itemIndex}`}>
+                                <div style={{ color: COLORS.textMid, fontSize: 12.5, lineHeight: 1.7 }}>
+                                  {item.text}
+                                </div>
+                                <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 2 }}>
+                                  插画：{item.illustration}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {inspectionCard.textBlocks?.length ? (
+                  <div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>
+                      信息点
+                    </div>
+                    <div className="space-y-1.5">
+                      {inspectionCard.textBlocks.map((block, index) => (
+                        <div key={`${block}-${index}`} style={{ color: COLORS.textMid, fontSize: 12.5 }}>
+                          {index + 1}. {block}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {inspectionCard.promptText ? (
+                  <div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>
+                      完整 Prompt
+                    </div>
+                    <pre
+                      className="rounded-md p-3 whitespace-pre-wrap break-words"
+                      style={{
+                        background: COLORS.surfaceAlt,
+                        border: `1px solid ${COLORS.borderSoft}`,
+                        color: COLORS.textMid,
+                        fontSize: 12,
+                        lineHeight: 1.7,
+                        fontFamily:
+                          'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace',
+                      }}
+                    >
+                      {inspectionCard.promptText}
+                    </pre>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </DialogContent>
+        </Dialog>
 
         <QuoteSummaryCard
           plannedQuotes={plannedQuotes}
