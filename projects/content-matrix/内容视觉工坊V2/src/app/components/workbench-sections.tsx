@@ -965,6 +965,7 @@ function WorkbenchResultsPanel({
 }: any) {
   const [previewImage, setPreviewImage] = useState<{ imageUrl: string; alt: string } | null>(null);
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
+  const [isExportingReleasePack, setIsExportingReleasePack] = useState(false);
   const currentQuoteTexts = selectedQuotes
     .map((index: number) => plannedQuotes[index])
     .filter(Boolean);
@@ -979,6 +980,80 @@ function WorkbenchResultsPanel({
       JSON.stringify(generatedQuoteTexts) !== JSON.stringify(currentQuoteTexts));
   const selectedCoverIndex = coverSelection?.selectedCoverIndex ?? 0;
   const finalizedCoverIndex = coverSelection?.finalizedCoverIndex ?? null;
+  const finalizedKnowledgeImages = plannedCards
+    .map((card) => {
+      const status = knowledgeCardStatuses[String(card.index)];
+      const image = knowledgeImagesByCard.get(card.index);
+      if (!status?.finalized || !image) return null;
+      return {
+        kind: "knowledge" as const,
+        cardIndex: card.index,
+        title: card.title,
+        imageUrl: image.imageUrl,
+      };
+    })
+    .filter(Boolean);
+  const releaseCoverIndex =
+    finalizedCoverIndex != null
+      ? finalizedCoverIndex
+      : coverGeneration?.images[selectedCoverIndex]
+        ? selectedCoverIndex
+        : null;
+  const releaseCoverImage =
+    releaseCoverIndex != null ? coverGeneration?.images[releaseCoverIndex] ?? null : null;
+  const releaseInlineImages = plannedInlineImages
+    .map((item: any, index: number) => {
+      const image = inlineGeneration?.images[index];
+      if (!image) return null;
+      return {
+        kind: "inline" as const,
+        index,
+        sectionHeading: item.sectionHeading,
+        imageUrl: image.imageUrl,
+      };
+    })
+    .filter(Boolean);
+  const releaseAssets = [
+    releaseCoverImage
+      ? {
+          kind: "cover" as const,
+          imageUrl: releaseCoverImage.imageUrl,
+          filename:
+            releaseCoverIndex === finalizedCoverIndex
+              ? "release-cover-final.png"
+              : "release-cover-selected.png",
+          label:
+            releaseCoverIndex === finalizedCoverIndex ? "公众号封面（已定稿）" : "公众号封面（当前已选）",
+        }
+      : null,
+    ...finalizedKnowledgeImages.map((item: any) => ({
+      kind: item.kind,
+      imageUrl: item.imageUrl,
+      filename: `release-knowledge-card-${String(item.cardIndex).padStart(2, "0")}.png`,
+      label: `知识卡 ${String(item.cardIndex).padStart(2, "0")} · ${item.title}`,
+    })),
+    quoteGeneration?.images[0]
+      ? {
+          kind: "quote" as const,
+          imageUrl: quoteGeneration.images[0].imageUrl,
+          filename: "release-quote-background.png",
+          label: generatedQuoteTexts[0]
+            ? `金句底图 · ${generatedQuoteTexts[0]}`
+            : "金句底图",
+        }
+      : null,
+    ...releaseInlineImages.map((item: any) => ({
+      kind: item.kind,
+      imageUrl: item.imageUrl,
+      filename: `release-inline-${String(item.index + 1).padStart(2, "0")}.png`,
+      label: `正文配图 ${item.index + 1} · ${item.sectionHeading}`,
+    })),
+  ].filter(Boolean) as Array<{
+    kind: "cover" | "knowledge" | "quote" | "inline";
+    imageUrl: string;
+    filename: string;
+    label: string;
+  }>;
   const downloadableImages = [
     ...(Array.from(knowledgeImagesByCard.values()) as Array<{ imageUrl: string }>),
     ...(quoteGeneration?.images ?? []),
@@ -1017,6 +1092,18 @@ function WorkbenchResultsPanel({
     }
   }
 
+  function downloadTextFile(content: string, filename: string) {
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  }
+
   async function handleDownloadAll() {
     if (downloadableImages.length === 0 || isDownloadingAll) return;
     setIsDownloadingAll(true);
@@ -1037,6 +1124,40 @@ function WorkbenchResultsPanel({
     }
   }
 
+  async function handleExportReleasePack() {
+    if (releaseAssets.length === 0 || isExportingReleasePack) return;
+    setIsExportingReleasePack(true);
+    try {
+      const manifestLines = [
+        `文章标题：${currentArticle.title}`,
+        `导出时间：${new Date().toLocaleString("zh-CN", { hour12: false })}`,
+        `封面：${
+          releaseCoverIndex == null
+            ? "无"
+            : releaseCoverIndex === finalizedCoverIndex
+              ? `已定稿 #${releaseCoverIndex + 1}`
+              : `当前已选 #${releaseCoverIndex + 1}`
+        }`,
+        `知识卡定稿：${finalizedKnowledgeImages.length} 张`,
+        `金句底图：${quoteGeneration?.images[0] ? "已包含" : "无"}`,
+        `正文配图：${releaseInlineImages.length} 张`,
+        "",
+        "素材清单：",
+        ...releaseAssets.map((item, index) => `${index + 1}. ${item.label} -> ${item.filename}`),
+      ];
+      downloadTextFile(manifestLines.join("\n"), "release-assets-manifest.txt");
+      for (let index = 0; index < releaseAssets.length; index += 1) {
+        const asset = releaseAssets[index];
+        // eslint-disable-next-line no-await-in-loop
+        await downloadImage(asset.imageUrl, asset.filename);
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((resolve) => window.setTimeout(resolve, 120));
+      }
+    } finally {
+      setIsExportingReleasePack(false);
+    }
+  }
+
   return (
     <Panel>
       <div className="flex items-end justify-between mb-3">
@@ -1048,14 +1169,42 @@ function WorkbenchResultsPanel({
             生成结果总览
           </div>
         </div>
-        <button
-          className="flex items-center gap-1"
-          style={{ color: COLORS.blue, fontSize: 12 }}
-          onClick={() => void handleDownloadAll()}
-          disabled={downloadableImages.length === 0 || isDownloadingAll}
-        >
-          {isDownloadingAll ? "下载中" : "全部下载"} <ArrowUpRight size={12} strokeWidth={1.6} />
-        </button>
+        <div className="flex items-center gap-2">
+          <Btn
+            variant="secondary"
+            size="sm"
+            onClick={() => void handleExportReleasePack()}
+            disabled={releaseAssets.length === 0 || isExportingReleasePack}
+          >
+            {isExportingReleasePack ? "导出中" : "导出定稿"}
+          </Btn>
+          <button
+            className="flex items-center gap-1"
+            style={{ color: COLORS.blue, fontSize: 12 }}
+            onClick={() => void handleDownloadAll()}
+            disabled={downloadableImages.length === 0 || isDownloadingAll}
+          >
+            {isDownloadingAll ? "下载中" : "全部下载"} <ArrowUpRight size={12} strokeWidth={1.6} />
+          </button>
+        </div>
+      </div>
+
+      <div
+        className="mb-4 rounded-md px-3.5 py-2.5 flex items-center justify-between gap-4"
+        style={{
+          background: COLORS.pageBg,
+          border: `1px solid ${COLORS.borderSoft}`,
+        }}
+      >
+        <div style={{ color: COLORS.textFaint, fontSize: 11.5 }}>
+          定稿导出会优先带出封面定稿、知识卡定稿，并附一份发布素材清单。
+        </div>
+        <div className="flex items-center gap-2 text-right" style={{ color: COLORS.textMid, fontSize: 11.5 }}>
+          <span>封面 {releaseCoverImage ? 1 : 0}</span>
+          <span>知识卡 {finalizedKnowledgeImages.length}</span>
+          <span>金句 {quoteGeneration?.images[0] ? 1 : 0}</span>
+          <span>配图 {releaseInlineImages.length}</span>
+        </div>
       </div>
 
       {latestGeneration ? (
