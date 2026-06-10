@@ -156,6 +156,16 @@ export function MobileWebHistoryPage({
         return true;
     }
   });
+  const filteredSessions = Array.from(
+    filteredItems.reduce((map, item) => {
+      const key = `${item.themeLabel}__${item.subtitle}`;
+      const existing = map.get(key);
+      if (!existing || (existing.focusReportType === "lite" && item.focusReportType === "pro")) {
+        map.set(key, item);
+      }
+      return map;
+    }, new Map<string, typeof descriptor.items[number]>()),
+  ).map(([, item]) => item);
 
   const getRecordImage = (interpretationId: string) => {
     const record = records.find((candidate) => candidate.interpretation_id === interpretationId);
@@ -299,9 +309,9 @@ export function MobileWebHistoryPage({
             </div>
           </section>
 
-          {filteredItems.length ? (
+          {filteredSessions.length ? (
             <div className="mw-history-record-list mw-history-record-list--all">
-              {filteredItems.map((item, index) => {
+              {filteredSessions.map((item, index) => {
                 const imageUrl = getRecordImage(item.interpretationId);
                 const isBusy = actionBusy && activeRecordId === item.interpretationId;
                 const isPendingPreviewItem = pendingItems.some((pendingItem) => pendingItem.interpretationId === item.interpretationId);

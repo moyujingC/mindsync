@@ -744,6 +744,116 @@
   color: var(--am-text-brass);
 }
 
+.mw-history-record__body--default {
+  justify-content: center;
+}
+
+.mw-history-record__header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.mw-history-record__title-row--default {
+  gap: 6px;
+  min-width: 0;
+}
+
+.mw-history-record__time {
+  flex-shrink: 0;
+  color: rgb(var(--am-rgb-sand-300) / 0.42);
+  font-size: 10.5px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.mw-history-record__status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mw-history-record__status-line--default {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mw-history-record__version-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+}
+
+.mw-history-record__track-dot {
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgb(var(--am-rgb-sand-300) / 0.22);
+  border-radius: 999px;
+  background: transparent;
+}
+
+.mw-history-record__track-dot.is-on.is-lite {
+  border-color: rgb(168 196 160 / 0.92);
+  background: rgb(168 196 160 / 0.92);
+}
+
+.mw-history-record__track-dot.is-on.is-pro {
+  border-color: rgb(var(--am-rgb-gold-300) / 0.92);
+  background: rgb(var(--am-rgb-gold-300) / 0.92);
+}
+
+.mw-history-record__track-dot.is-generating.is-pro {
+  border-color: rgb(var(--am-rgb-gold-300) / 0.92);
+  background: rgb(var(--am-rgb-gold-300) / 0.92);
+  box-shadow: 0 0 6px rgb(var(--am-rgb-gold-300) / 0.45);
+  animation: mw-history-track-pulse 1.8s ease-in-out infinite;
+}
+
+.mw-history-record__track-line {
+  width: 10px;
+  height: 1px;
+  background: rgb(var(--am-rgb-sand-300) / 0.16);
+}
+
+.mw-history-record__track-line.is-on {
+  background: rgb(var(--am-rgb-gold-300) / 0.45);
+}
+
+.mw-history-record__cta-inline {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 1px;
+  margin-right: 12px;
+  margin-left: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: rgb(var(--am-rgb-gold-300) / 0.82);
+}
+
+.mw-history-record__cta-inline-label {
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.mw-history-record__cta-inline-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 13px;
+  color: inherit;
+}
+
 .mw-history-record--default .mw-history-status-pill::before {
   content: none;
 }
@@ -777,6 +887,7 @@
 .mw-history-record--default .mw-history-record__title-row h3 {
   font-size: 14px;
   font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 .mw-history-record--default .mw-history-record__meta {
@@ -1165,6 +1276,19 @@
 
 .mw-history-record-list--all {
   margin-top: 8px;
+}
+
+@keyframes mw-history-track-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.14);
+  }
 }
 
 .mw-history-empty {

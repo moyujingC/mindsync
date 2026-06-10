@@ -83,6 +83,17 @@ export interface HistoryRecordCardProps {
   onOpenRecord?: (interpretationId: string) => void;
 }
 
+function renderTrackState(item: SharedHistoryRecordItem) {
+  const hasLite = item.availableReportTypes.includes("lite");
+  const hasPro = item.availableReportTypes.includes("pro");
+
+  return {
+    liteOn: hasLite,
+    proOn: hasPro && item.recordReady,
+    proGenerating: hasPro && !item.recordReady && item.focusReportType === "pro",
+  };
+}
+
 export function HistoryRecordCard({
   item,
   imageUrl,
@@ -122,6 +133,56 @@ export function HistoryRecordCard({
   const badgeLabel = isBusy
     ? "打开中..."
     : statusLabelOverride ?? ctaLabel;
+  const trackState = renderTrackState(item);
+
+  if (!isFeatured) {
+    return (
+      <article className={`mw-history-record mw-history-record--default mw-history-record--${item.statusTone}`}>
+        <div
+          className={thumbClassName}
+          style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
+        />
+        <div className="mw-history-record__body mw-history-record__body--default">
+          <div className="mw-history-record__header-row">
+            <div className="mw-history-record__title-row mw-history-record__title-row--default">
+              <span className="mw-history-record__icon" aria-hidden="true">{iconGlyph}</span>
+              <h3>{item.themeLabel}</h3>
+            </div>
+            <span className="mw-history-record__time">{item.subtitle.replace("创建于 ", "")}</span>
+          </div>
+
+          <div className="mw-history-record__status-row">
+            <div className="mw-history-record__version-track" aria-hidden="true">
+              <span className={`mw-history-record__track-dot${trackState.liteOn ? " is-on is-lite" : ""}`} />
+              <span className={`mw-history-record__track-line${trackState.proOn || trackState.proGenerating ? " is-on" : ""}`} />
+              <span
+                className={`mw-history-record__track-dot${
+                  trackState.proOn ? " is-on is-pro" : trackState.proGenerating ? " is-generating is-pro" : ""
+                }`}
+              />
+            </div>
+            <p className="mw-history-record__status-line mw-history-record__status-line--default">{statusSummary}</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="mw-history-record__cta-inline"
+          onClick={() => onOpenRecord?.(item.interpretationId)}
+          disabled={disabled}
+        >
+          <span className="mw-history-record__cta-inline-label">{badgeLabel}</span>
+          <span className="mw-history-record__cta-inline-icon" aria-hidden="true">
+            {item.recordReady ? (
+              <LucideIcon iconNode={ICON_ARROW} size={13} strokeWidth={1.9} />
+            ) : (
+              <LucideIcon iconNode={ICON_LOADER} size={13} strokeWidth={1.9} className="am-lucide-spin" />
+            )}
+          </span>
+        </button>
+      </article>
+    );
+  }
 
   return (
     <article
