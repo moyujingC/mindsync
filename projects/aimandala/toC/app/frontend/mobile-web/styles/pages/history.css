@@ -352,8 +352,8 @@
 
 .mw-history-record-list {
   display: grid;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .mw-history-record {
@@ -362,9 +362,13 @@
   min-height: 94px;
   overflow: hidden;
   border: 1px solid var(--mw-history-record-border);
-  border-radius: 15px;
+  border-radius: 12px;
   background: var(--mw-history-record-bg);
   box-shadow: var(--mw-history-record-shadow);
+}
+
+.mw-history-record--featured {
+  border-radius: 16px;
 }
 
 .mw-history-record__thumb {
