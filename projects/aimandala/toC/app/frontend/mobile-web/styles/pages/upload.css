@@ -20,6 +20,8 @@
   position: sticky;
   top: 0;
   z-index: calc(var(--am-z-sticky) + 1);
+  border-bottom: 0;
+  background: var(--am-upload-hero-bg);
 }
 
 .am-upload-hero__glow,
