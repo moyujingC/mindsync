@@ -731,10 +731,10 @@
 
 .mw-history-record--default .mw-history-status-pill {
   min-width: auto;
-  min-height: 23px;
-  gap: 3px;
-  margin-left: 2px;
-  margin-right: 1px;
+  min-height: 24px;
+  gap: 1px;
+  margin-left: 4px;
+  margin-right: 3px;
   align-self: center;
   padding-right: 0;
   padding-left: 0;
@@ -749,44 +749,50 @@
 }
 
 .mw-history-record--default .mw-history-status-pill__label {
-  font-size: 6.55px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
 }
 
 .mw-history-record--default .mw-history-status-pill__icon,
 .mw-history-record--default .mw-history-status-pill__icon svg {
-  width: 4px;
-  height: 4px;
+  width: 11px;
+  height: 11px;
 }
 
 .mw-history-record--default {
-  min-height: 64px;
+  min-height: 84px;
 }
 
 .mw-history-record--default .mw-history-record__thumb {
-  flex-basis: 54px;
-  width: 54px;
-  margin-left: 6px;
-  border-radius: 7px;
+  flex-basis: 60px;
+  width: 60px;
+  margin-left: 12px;
+  border-radius: 8px;
 }
 
 .mw-history-record--default .mw-history-record__body {
-  padding: 5px 1px 4px 6px;
+  padding: 8px 2px 8px 12px;
 }
 
 .mw-history-record--default .mw-history-record__title-row h3 {
-  font-size: 10.9px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .mw-history-record--default .mw-history-record__meta {
-  font-size: 6.95px;
+  font-size: 10.5px;
+  line-height: 1.25;
 }
 
 .mw-history-record--default .mw-history-record__status-line {
-  font-size: 7.95px;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.32;
 }
 
 .mw-history-record--default .mw-history-record__helper-line {
-  font-size: 6.15px;
+  font-size: 10.5px;
+  line-height: 1.35;
 }
 
 .mw-history-record--default .mw-history-record__progress {
@@ -878,9 +884,9 @@
 .mw-history-all__summary-pill {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  min-height: 18px;
-  padding: 0 5px;
+  gap: 4px;
+  min-height: 20px;
+  padding: 0 6px;
   border: 1px solid rgb(var(--am-rgb-gold-300) / 0.18);
   border-radius: 999px;
   background: rgb(10 18 34 / 0.24);
@@ -889,14 +895,14 @@
 
 .mw-history-all__summary-pill strong {
   color: var(--mw-history-summary-strong);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1;
 }
 
 .mw-history-all__summary-pill span {
   color: var(--mw-history-section-copy);
-  font-size: 6.9px;
+  font-size: 10px;
   line-height: 1;
 }
 
@@ -958,15 +964,15 @@
 }
 
 .mw-history-filter-block {
-  margin-top: 9px;
+  margin-top: 10px;
 }
 
 .mw-history-filter-block h3 {
-  margin: 0 0 4px;
+  margin: 0 0 5px;
   color: var(--mw-history-filter-title);
-  font-size: 8.4px;
+  font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .mw-history-pill-row {
@@ -976,13 +982,13 @@
 }
 
 .mw-history-pill {
-  min-height: 21px;
-  padding: 0 8px;
+  min-height: 26px;
+  padding: 0 12px;
   border: 1px solid var(--mw-history-pill-border);
   border-radius: 999px;
   background: var(--mw-history-pill-bg);
   color: var(--mw-history-pill-text);
-  font-size: 8.15px;
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -999,19 +1005,19 @@
 }
 
 .mw-history-pill--status {
-  font-size: 8.7px;
+  font-size: 12px;
 }
 
 .mw-history-pill--limit {
-  font-size: 8.7px;
+  font-size: 12px;
 }
 
 .mw-history-theme__scroll {
   display: flex;
-  gap: 5px;
-  margin-top: -1px;
-  padding-top: 1px;
-  padding-bottom: 2px;
+  gap: 8px;
+  margin-top: -2px;
+  padding-top: 2px;
+  padding-bottom: 3px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -1022,10 +1028,10 @@
 
 .mw-history-theme__card {
   position: relative;
-  flex: 0 0 52px;
-  width: 52px;
-  height: 61px;
-  padding: 6px 4px 4px;
+  flex: 0 0 62px;
+  width: 62px;
+  height: 72px;
+  padding: 8px 4px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1092,7 +1098,7 @@
 .mw-history-theme__icon {
   display: block;
   margin-top: 0;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
   color: var(--am-text-brass);
   line-height: 0;
   filter: drop-shadow(0 1px 4px rgb(var(--am-rgb-gold-300) / 0.16));
@@ -1115,9 +1121,9 @@
   overflow: hidden;
   text-align: center;
   text-overflow: ellipsis;
-  font-size: 10.1px;
+  font-size: 12px;
   font-weight: 500;
-  line-height: 1.05;
+  line-height: 1.3;
   letter-spacing: 0;
 }
 
@@ -1158,7 +1164,7 @@
 }
 
 .mw-history-record-list--all {
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .mw-history-empty {
