@@ -190,11 +190,12 @@ export function SharedTopicSelector({
       >
         {options.map((option) => {
           const isSelected = selected === option.value;
+          const isAll = option.value === "all";
           return (
             <button
               key={option.value}
               type="button"
-              className={`${prefix}__card${isSelected ? " is-active" : ""}`}
+              className={`${prefix}__card${isSelected ? " is-active" : ""}${isAll ? " is-all" : ""}`}
               onClick={(event) => {
                 if (disabled || suppressNextClickRef.current) {
                   event.preventDefault();

@@ -1161,6 +1161,12 @@
     background 160ms ease;
 }
 
+.mw-history-theme__card.is-all {
+  border-style: dashed;
+  border-color: rgb(var(--am-rgb-sand-300) / 0.18);
+  background: rgb(22 35 60 / 0.35);
+}
+
 .mw-history-theme__card.is-active {
   border-color: var(--mw-history-theme-card-active-border);
   background: var(--mw-history-theme-card-active-bg);
@@ -1170,11 +1176,23 @@
     0 3px 10px rgb(12 20 36 / 0.14);
 }
 
+.mw-history-theme__card.is-all.is-active {
+  border-style: dashed;
+  border-color: rgb(var(--am-rgb-sand-300) / 0.4);
+  background: linear-gradient(135deg, rgb(232 220 200 / 0.08), rgb(180 170 150 / 0.06));
+  color: rgb(var(--am-rgb-sand-250) / 0.9);
+  box-shadow: none;
+}
+
 .mw-history-theme__card.is-active:hover {
   transform: translateY(-3px);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.08),
     0 6px 14px rgb(12 20 36 / 0.18);
+}
+
+.mw-history-theme__card.is-all.is-active:hover {
+  box-shadow: none;
 }
 
 .mw-history-theme__glow {
@@ -1188,8 +1206,8 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: var(--mw-history-theme-card-check);
   box-shadow: 0 1px 3px rgb(12 20 36 / 0.14);
@@ -1197,6 +1215,10 @@
 
 .mw-history-theme__check svg {
   color: var(--mw-history-theme-card-check-mark);
+}
+
+.mw-history-theme__card.is-all .mw-history-theme__check {
+  background: rgb(var(--am-rgb-sand-300) / 0.4);
 }
 
 .mw-history-theme__icon,
@@ -1247,12 +1269,28 @@
   color: var(--mw-history-theme-card-text);
 }
 
+.mw-history-theme__card.is-all .mw-history-theme__label {
+  color: rgb(var(--am-rgb-sand-300) / 0.55);
+}
+
+.mw-history-theme__card.is-all .mw-history-theme__sub {
+  color: rgb(var(--am-rgb-sand-300) / 0.35);
+}
+
 .mw-history-theme__card.is-active .mw-history-theme__label {
   color: var(--mw-history-theme-card-active-text);
 }
 
 .mw-history-theme__card.is-active .mw-history-theme__sub {
   color: var(--am-text-brass);
+}
+
+.mw-history-theme__card.is-all.is-active .mw-history-theme__label {
+  color: rgb(var(--am-rgb-sand-250) / 0.9);
+}
+
+.mw-history-theme__card.is-all.is-active .mw-history-theme__sub {
+  color: rgb(var(--am-rgb-sand-300) / 0.55);
 }
 
 .mw-history-theme__dots {
@@ -1263,14 +1301,14 @@
 }
 
 .mw-history-theme__dot {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 999px;
   background: var(--mw-history-theme-dot);
 }
 
 .mw-history-theme__dot.is-active {
-  width: 10px;
+  width: 14px;
   background: var(--mw-history-theme-dot-active);
 }
 
