@@ -1,7 +1,134 @@
 import { MobileWebAppShell } from "../app-shell";
 import { createHistoryRecordDetailPageDescriptor } from "../pages";
 import { mobileWebRoutes, type MobileWebRouteId } from "../routes";
+import { SharedAppTopBar } from "../../shared/ui";
 import type { InterpretationRecordResponse, InterpretationVersion } from "../../shared/types";
+import historyDetailThumb from "../assets/history-dunhuang-pattern-clean.png";
+
+function CheckIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M20 6 9 17l-5-5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="2.8" stroke="currentColor" strokeWidth="1.9" />
+    </svg>
+  );
+}
+
+function LoaderIcon({ spinning = false }: { spinning?: boolean }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={spinning ? "am-lucide-spin" : undefined}
+    >
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="5" y="10" width="14" height="10" rx="2.5" stroke="currentColor" strokeWidth="1.9" />
+      <path d="M8 10V8a4 4 0 1 1 8 0v2" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function SparklesIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 3 14.1 8.8 20 11 14.1 13.2 12 19 9.9 13.2 4 11 9.9 8.8 12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 7.8v4.6l3 1.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M9 6 15 12 9 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function HistoryRecordDetailStatusBadge({
+  tone,
+  label,
+  spinning = false,
+}: {
+  tone: "jade" | "gold" | "muted";
+  label: string;
+  spinning?: boolean;
+}) {
+  const icon =
+    tone === "jade" ? (
+      <CheckIcon />
+    ) : tone === "gold" && spinning ? (
+      <LoaderIcon spinning />
+    ) : tone === "gold" ? (
+      <SparklesIcon />
+    ) : (
+      <LockIcon />
+    );
+
+  return (
+    <span className={`mw-history-detail-badge mw-history-detail-badge--${tone}`}>
+      <span className="mw-history-detail-badge__icon">{icon}</span>
+      <span>{label}</span>
+    </span>
+  );
+}
+
+function HistoryRecordDetailTimeline({
+  items,
+}: {
+  items: ReturnType<typeof createHistoryRecordDetailPageDescriptor>["timeline"];
+}) {
+  return (
+    <div className="mw-history-detail-timeline__list">
+      {items.map((item, index) => {
+        const isLast = index === items.length - 1;
+        return (
+          <article
+            key={item.id}
+            className={`mw-history-detail-timeline__item mw-history-detail-timeline__item--${item.state}`}
+          >
+            <div className="mw-history-detail-timeline__rail" aria-hidden="true">
+              <span className="mw-history-detail-timeline__dot" />
+              {isLast ? null : <span className="mw-history-detail-timeline__line" />}
+            </div>
+            <div className="mw-history-detail-timeline__content">
+              <p className="mw-history-detail-timeline__label">{item.label}</p>
+              {item.time ? (
+                <p className="mw-history-detail-timeline__time">{item.time}</p>
+              ) : null}
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
 
 export interface MobileWebHistoryRecordDetailPageProps {
   route: MobileWebRouteId;
@@ -25,85 +152,179 @@ export function MobileWebHistoryRecordDetailPage({
   onOpenReportType,
 }: MobileWebHistoryRecordDetailPageProps) {
   const descriptor = createHistoryRecordDetailPageDescriptor(record);
+  const liteBusy = openingReportType === "lite";
+  const proBusy = openingReportType === "pro";
 
   return (
     <MobileWebAppShell
       route={mobileWebRoutes.find((item) => item.id === route) ?? mobileWebRoutes[0]}
+      className="mw-history-shell"
+      hideHeader
       environmentLabel={environmentLabel}
       environmentDetail={environmentDetail}
       environmentTone={environmentTone}
     >
-      <section className="mw-hero-card mw-history-detail-hero">
-        <p className="mw-kicker">历史记录详情</p>
-        <h2>{descriptor.title}</h2>
-        <p className="mw-history-detail-hero__subtitle">{descriptor.subtitle}</p>
-        <p className="mw-meta mw-history-detail-hero__meta">
-          议题：{descriptor.themeLabel} · 可查看版本：{descriptor.versionSummary}
-        </p>
-      </section>
+      <div className="mw-history-page mw-history-detail-page">
+        <SharedAppTopBar
+          title="解读详情"
+          backLabel="返回历史记录"
+          onBack={onBackToHistory}
+          className="mw-history-topbar"
+          style={{ ["--am-app-topbar-bleed" as string]: "0px" }}
+        />
 
-      <section className="mw-inline-banner mw-inline-banner--runtime mw-history-detail-status">
-        <strong>{descriptor.statusLabel}</strong>
-        <p>{descriptor.statusDetail}</p>
-        <p className="mw-meta mw-history-detail-status__meta">当前进度：{descriptor.progressLabel}</p>
-      </section>
+        <section className="mw-history-detail-summary">
+          <div
+            className={`mw-history-detail-summary__thumb${descriptor.imageUrl ? " has-image" : ""}`}
+            style={{
+              ["--mw-history-detail-thumb-image" as string]: `url(${descriptor.imageUrl ?? historyDetailThumb})`,
+            }}
+            aria-hidden="true"
+          />
 
-      <section className="am-stack mw-stack mw-history-detail-actions">
-        {descriptor.actions.map((action) => {
-          const isBusy = openingReportType === action.reportType;
+          <div className="mw-history-detail-summary__copy">
+            <p className="mw-history-detail-summary__eyebrow">本次议题</p>
+            <h2>{descriptor.themeLabel}</h2>
+            <p className="mw-history-detail-summary__time">
+              <ClockIcon />
+              <span>{descriptor.createdAtLabel}</span>
+            </p>
+          </div>
 
-          return (
-            <article
-              key={action.reportType}
-              className={`am-card mw-card mw-history-detail-action-card ${action.emphasis === "primary" ? "mw-card--history-proReady is-primary" : "mw-card--history-ready"}${!action.enabled ? " is-disabled" : ""}${isBusy ? " is-busy" : ""}`}
-            >
-              <div className="am-card__header mw-card__header">
-                <h3>{action.label}</h3>
-                <span className={`am-badge mw-badge mw-badge--${action.enabled ? "ready" : "pending"}`}>
-                  {action.statusLabel}
-                </span>
+          <div className="mw-history-detail-summary__divider" aria-hidden="true" />
+
+          <div className="mw-history-detail-summary__meta">
+            <div className="mw-history-detail-summary__field">
+              <span className="mw-history-detail-summary__label">当前状态</span>
+              <HistoryRecordDetailStatusBadge
+                tone={
+                  descriptor.state === "viewable"
+                    ? "gold"
+                    : descriptor.state === "generating"
+                      ? "gold"
+                      : "jade"
+                }
+                label={descriptor.summaryStatusLabel}
+                spinning={descriptor.state === "generating"}
+              />
+            </div>
+            <div className="mw-history-detail-summary__field mw-history-detail-summary__field--end">
+              <span className="mw-history-detail-summary__label">版本进度</span>
+              <span className={`mw-history-detail-track mw-history-detail-track--${descriptor.state}`}>
+                <span>Lite</span>
+                <span className="mw-history-detail-track__arrow" aria-hidden="true">→</span>
+                <span>Pro</span>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section className="mw-history-detail-flow">
+          <div className="mw-history-detail-flow__heading">
+            <span aria-hidden="true" />
+            <strong>解读进度</strong>
+          </div>
+
+          <article className={`mw-history-detail-step mw-history-detail-step--lite${descriptor.liteStep.compact ? " is-compact" : ""}`}>
+            <header className="mw-history-detail-step__header">
+              <div>
+                <p className="mw-history-detail-step__index">{descriptor.liteStep.stepLabel}</p>
+                <h3>{descriptor.liteStep.title}</h3>
               </div>
-              <p className="mw-history-detail-action-card__body">{action.statusDetail}</p>
-              <div className="mw-button-row">
-                <button
-                  type="button"
-                  className="mw-secondary-button mw-secondary-button--inline"
-                  disabled={!action.enabled || isBusy}
-                  onClick={() => {
-                    onOpenReportType?.(action.reportType);
-                  }}
-                >
-                  {isBusy ? "打开中..." : action.label}
-                </button>
+              <HistoryRecordDetailStatusBadge
+                tone={descriptor.liteStep.statusTone}
+                label={descriptor.liteStep.statusLabel}
+              />
+            </header>
+
+            {descriptor.liteStep.compact ? null : (
+              <p className="mw-history-detail-step__body">{descriptor.liteStep.description}</p>
+            )}
+
+            <div className="mw-history-detail-step__actions">
+              <button
+                type="button"
+                className={
+                  descriptor.liteStep.actionEmphasis === "inline"
+                    ? "mw-history-detail-link"
+                    : "mw-secondary-button"
+                }
+                disabled={liteBusy}
+                onClick={() => onOpenReportType?.("lite")}
+              >
+                {descriptor.liteStep.actionEmphasis === "inline" ? (
+                  <>
+                    <EyeIcon />
+                    <span>{liteBusy ? "打开中..." : descriptor.liteStep.actionLabel}</span>
+                    <ChevronRightIcon size={13} />
+                  </>
+                ) : (
+                  <>
+                    <EyeIcon />
+                    <span>{liteBusy ? "打开中..." : descriptor.liteStep.actionLabel}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </article>
+
+          <div
+            className={`mw-history-detail-connector${descriptor.state === "not-upgraded" ? " is-pending" : ""}`}
+            aria-hidden="true"
+          />
+
+          <article className={`mw-history-detail-step mw-history-detail-step--pro mw-history-detail-step--${descriptor.state}`}>
+            <header className="mw-history-detail-step__header">
+              <div>
+                <p className="mw-history-detail-step__index">{descriptor.proStep.stepLabel}</p>
+                <h3>{descriptor.proStep.title}</h3>
               </div>
-            </article>
-          );
-        })}
-      </section>
+              <HistoryRecordDetailStatusBadge
+                tone={descriptor.proStep.statusTone}
+                label={descriptor.proStep.statusLabel}
+                spinning={descriptor.proStep.showSpinner}
+              />
+            </header>
 
-      <section className="am-card mw-card mw-history-detail-timeline">
-        <div className="am-card__header mw-card__header">
-          <h3>版本演进</h3>
-        </div>
-        <div className="am-stack mw-stack mw-history-detail-timeline__list">
-          {descriptor.timeline.map((entry) => (
-            <article key={entry.id} className="mw-history-detail-timeline__item">
-              <p className="mw-history-detail-timeline__title"><strong>{entry.title}</strong></p>
-              <p className="mw-meta mw-history-detail-timeline__detail">{entry.detail}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+            <p className="mw-history-detail-step__body">{descriptor.proStep.description}</p>
 
-      <footer className="mw-footer-action mw-history-detail-footer">
-        <button
-          type="button"
-          className="mw-secondary-button"
-          onClick={onBackToHistory}
-        >
-          返回历史记录
-        </button>
-      </footer>
+            {descriptor.proStep.progressPercent != null ? (
+              <div className="mw-history-detail-progress">
+                <div className="mw-history-detail-progress__track">
+                  <i style={{ width: `${descriptor.proStep.progressPercent}%` }} />
+                </div>
+                <div className="mw-history-detail-progress__meta">
+                  <span>{descriptor.proStep.progressHint}</span>
+                  <span>{descriptor.proStep.progressPercent}%</span>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="mw-history-detail-step__actions">
+              <button
+                type="button"
+                className={
+                  descriptor.proStep.actionEmphasis === "primary"
+                    ? "mw-primary-button"
+                    : "mw-secondary-button"
+                }
+                disabled={proBusy}
+                onClick={() => onOpenReportType?.("pro")}
+              >
+                {descriptor.proStep.showSpinner && !proBusy ? <LoaderIcon spinning /> : null}
+                <span>{proBusy ? "打开中..." : descriptor.proStep.actionLabel}</span>
+                {descriptor.proStep.actionEmphasis === "primary" ? <ChevronRightIcon /> : null}
+              </button>
+            </div>
+          </article>
+        </section>
+
+        <section className="mw-history-detail-timeline">
+          <h3>{descriptor.timelineTitle}</h3>
+          <p>{descriptor.timelineSubtitle}</p>
+          <HistoryRecordDetailTimeline items={descriptor.timeline} />
+        </section>
+      </div>
     </MobileWebAppShell>
   );
 }

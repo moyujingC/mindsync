@@ -242,7 +242,7 @@ describe("MobileWebApp", () => {
     expect(html).toContain("查看详情与进度");
   });
 
-  it("historyRecordDetail 路由会渲染版本选择与升级历史", () => {
+  it("historyRecordDetail 路由会渲染版本进度与解读轨迹", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="historyRecordDetail"
@@ -256,11 +256,12 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("历史记录详情");
-    expect(html).toContain("打开 Lite 报告");
-    expect(html).toContain("打开 Pro 报告");
-    expect(html).toContain("版本演进");
-    expect(html).toContain("Lite / Pro");
+    expect(html).toContain("解读详情");
+    expect(html).toContain("查看 Lite");
+    expect(html).toContain("查看 Pro");
+    expect(html).toContain("这次解读的过程");
+    expect(html).toContain("Lite");
+    expect(html).toContain("Pro");
   });
 
   it("historyRecordDetail 三种状态路由都可直接渲染", () => {
@@ -307,11 +308,11 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(notUpgraded).toContain("打开 Lite 报告");
-    expect(notUpgraded).toContain("未购买");
-    expect(generating).toContain("查看 Pro 状态");
+    expect(notUpgraded).toContain("查看 Lite");
+    expect(notUpgraded).toContain("未升级");
+    expect(generating).toContain("查看进度");
     expect(generating).toContain("生成中");
-    expect(viewable).toContain("打开 Pro 报告");
-    expect(viewable).toContain("可查看");
+    expect(viewable).toContain("查看 Pro");
+    expect(viewable).toContain("已可查看");
   });
 });
