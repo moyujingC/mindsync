@@ -688,7 +688,7 @@
 .mw-history-record__status-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -711,7 +711,7 @@
 .mw-history-record__version-track {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   flex: 0 0 auto;
 }
 
@@ -741,7 +741,7 @@
 }
 
 .mw-history-record__track-line {
-  width: 10px;
+  width: 8px;
   height: 1px;
   background: rgb(var(--am-rgb-sand-300) / 0.16);
 }
@@ -754,9 +754,9 @@
   display: inline-flex;
   align-items: center;
   align-self: center;
-  gap: 2px;
-  margin-right: 12px;
-  margin-left: 4px;
+  gap: 1px;
+  margin-right: 8px;
+  margin-left: 2px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -774,18 +774,19 @@
 }
 
 .mw-history-record__cta-inline-label {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .mw-history-record__cta-inline-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
   color: inherit;
 }
 
@@ -816,7 +817,7 @@
 }
 
 .mw-history-record--default .mw-history-record__body {
-  padding: 8px 2px 8px 12px;
+  padding: 8px 3px 8px 12px;
 }
 
 .mw-history-record--default .mw-history-record__title-row h3 {
@@ -961,7 +962,7 @@
 }
 
 .mw-history-filter-block {
-  margin-top: 10px;
+  margin-top: 9px;
 }
 
 .mw-history-filter-block h3 {
@@ -1016,7 +1017,7 @@
   gap: 8px;
   margin-top: 0;
   padding-top: 0;
-  padding-bottom: 3px;
+  padding-bottom: 4px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -1202,7 +1203,7 @@
 
 .mw-history-record-list--all {
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 @keyframes mw-history-track-pulse {
