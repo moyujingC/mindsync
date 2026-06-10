@@ -20,6 +20,7 @@ export function Workbench() {
     saveGenerationRecord,
     planningState,
     savePlanningState,
+    clearPlanningState,
     workbenchState,
     setWorkbenchState,
   } = useWorkspace();
@@ -36,6 +37,7 @@ export function Workbench() {
     latestGeneration,
     planningState,
     savePlanningState,
+    clearPlanningState,
     saveGenerationRecord,
     workbenchState,
     setWorkbenchState,

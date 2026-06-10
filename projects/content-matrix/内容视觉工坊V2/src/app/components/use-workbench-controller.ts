@@ -40,7 +40,9 @@ type UseWorkbenchControllerArgs = {
   latestGeneration: GenerationRecord | null;
   planningState: PlanningState | null;
   savePlanningState: (planning: PlanningState) => void;
+  clearPlanningState: () => void;
   saveGenerationRecord: (record: GenerationRecord) => void;
+  clearGenerationRecords: (purposeKeys?: GenerationPurposeKey[]) => void;
   workbenchState: WorkbenchState;
   setWorkbenchState: React.Dispatch<React.SetStateAction<WorkbenchState>>;
   setActiveTab: (tab: WorkspaceTab) => void;
@@ -60,7 +62,9 @@ export function useWorkbenchController({
   latestGeneration,
   planningState,
   savePlanningState,
+  clearPlanningState,
   saveGenerationRecord,
+  clearGenerationRecords,
   workbenchState,
   setWorkbenchState,
   setActiveTab,
@@ -543,9 +547,13 @@ export function useWorkbenchController({
   }
 
   async function runPlanning() {
+    return runPlanningForArticle(currentArticle);
+  }
+
+  async function runPlanningForArticle(article: WorkspaceArticle) {
     const request: PlannerRequest = {
-      articleTitle: currentArticle.title,
-      rawText: currentArticle.body,
+      articleTitle: article.title,
+      rawText: article.body,
       knowledgeCardStyleName: "蓝雾静读",
       inlineImageStyleName: "留白水墨",
       cardRatio: knowledgePreset?.aspect || "3:4",
@@ -986,16 +994,42 @@ export function useWorkbenchController({
       }
 
       const { title, body } = parseMarkdownArticle(rawText, file.name);
-      setCurrentArticle({ title, body });
+      const nextArticle = { title, body };
+      setCurrentArticle(nextArticle);
+      clearGenerationRecords(["xhs_card", "quote", "wx_cover", "wx_inline"]);
+      setSelectedQuotes([]);
+      clearPlanningState();
       setWorkbenchState((prev) => ({
         ...prev,
+        lockedKnowledgeCardIndexes: [],
+        knowledgeCardStatuses: {},
+        knowledgeCardHistories: {},
+        quoteGenerationSelection: null,
+        coverSelection: null,
         importedMarkdownMeta: {
           fileName: file.name,
           wordCount: countCharacters(rawText),
           importedAt: new Date().toISOString(),
         },
       }));
-      pushStatus("markdown-import", "success", "已导入 Markdown");
+      pushStatus("markdown-import", "info", "已导入 Markdown，正在刷新内容拆解", {
+        phase: "planning",
+        currentStepLabel: "导入后重拆解",
+        completedTasks: 0,
+        totalTasks: 1,
+      });
+      await runPlanningForArticle(nextArticle);
+      pushStatus(
+        "markdown-import",
+        "success",
+        "已导入 Markdown，并刷新内容拆解；旧出图结果已清空",
+        {
+          phase: "completed",
+          currentStepLabel: "完成",
+          completedTasks: 1,
+          totalTasks: 1,
+        }
+      );
     } catch (error) {
       pushStatus(
         "markdown-import",

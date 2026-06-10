@@ -158,6 +158,7 @@ type WorkspaceContextValue = {
   generationRecords: GenerationRecord[];
   latestGeneration: GenerationRecord | null;
   saveGenerationRecord: (record: GenerationRecord) => void;
+  clearGenerationRecords: (purposeKeys?: GenerationPurposeKey[]) => void;
   planningState: PlanningState | null;
   savePlanningState: (planning: PlanningState) => void;
   clearPlanningState: () => void;
@@ -252,6 +253,15 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     });
   }
 
+  function clearGenerationRecords(purposeKeys?: GenerationPurposeKey[]) {
+    setGenerationRecords((prev) => {
+      if (!purposeKeys || purposeKeys.length === 0) {
+        return [];
+      }
+      return prev.filter((item) => !purposeKeys.includes(item.purposeKey));
+    });
+  }
+
   function savePlanningState(planning: PlanningState) {
     setPlanningState(planning);
   }
@@ -271,6 +281,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       generationRecords,
       latestGeneration,
       saveGenerationRecord,
+      clearGenerationRecords,
       planningState,
       savePlanningState,
       clearPlanningState,
@@ -284,6 +295,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       currentArticleMeta,
       generationRecords,
       latestGeneration,
+      clearGenerationRecords,
       planningState,
       workbenchState,
     ]
