@@ -145,6 +145,53 @@ export function useWorkbenchController({
       ? `${latestGeneration.purposeLabel} · ${latestGeneration.images.length} 张`
       : taskState.statusMessage?.text || "尚无最近动作";
 
+  const controlTowerOutputs = {
+    knowledge: buildOutputSummary({
+      label: "知识卡片",
+      generatedCount: knowledgeGeneration?.images.length ?? 0,
+      plannedCount: plannedCards.length,
+      generatedText:
+        knowledgeGeneration?.images.length && knowledgeGeneration.images.length > 0
+          ? `${knowledgeGeneration.images.length} 张已生成`
+          : null,
+      pendingText: planningState ? `${plannedCards.length} 张待生成` : "待拆解",
+      modeText: "自动拆分",
+    }),
+    quote: buildOutputSummary({
+      label: "金句卡",
+      generatedCount: quoteGeneration?.images.length ?? 0,
+      plannedCount: selectedQuotes.length,
+      generatedText:
+        quoteGenerationSelection?.selectedQuoteTexts?.length
+          ? `${quoteGenerationSelection.selectedQuoteTexts.length} 条已绑定`
+          : `${quoteGeneration?.images.length ?? 0} 张已生成`,
+      pendingText: selectedQuotes.length > 0 ? `${selectedQuotes.length} 条待生成` : "未选择",
+      modeText: selectedQuotes.length > 0 ? "按勾选生成" : "待勾选",
+    }),
+    cover: buildOutputSummary({
+      label: "公众号封面",
+      generatedCount: coverGeneration?.images.length ?? 0,
+      plannedCount: 3,
+      generatedText:
+        coverGeneration?.images.length && coverGeneration.images.length > 0
+          ? `${coverGeneration.images.length} 张已生成`
+          : null,
+      pendingText: "3 张待生成",
+    }),
+    inline: buildOutputSummary({
+      label: "正文配图",
+      generatedCount: inlineGeneration?.images.length ?? 0,
+      plannedCount: plannedInlineImages.length,
+      generatedText:
+        inlineGeneration?.images.length && inlineGeneration.images.length > 0
+          ? `${inlineGeneration.images.length} 张已生成`
+          : null,
+      pendingText: planningState
+        ? `${plannedInlineImages.length} 张待生成`
+        : "待拆解",
+    }),
+  };
+
   const isGenerating = taskState.phase === "planning" || taskState.phase === "generating";
 
   function toggleOutput(key: keyof WorkbenchOutputs) {
@@ -1064,6 +1111,7 @@ export function useWorkbenchController({
     coverSelection,
     latestGenerationTime,
     latestLogText,
+    controlTowerOutputs,
     lockedKnowledgeCardIndexes,
     knowledgeCardStatuses,
     knowledgeCardHistories,
@@ -1096,6 +1144,33 @@ export function useWorkbenchController({
     handleImportMarkdown,
     handleReplan,
     runPlanning,
+  };
+}
+
+function buildOutputSummary({
+  label,
+  modeText,
+  generatedCount,
+  plannedCount,
+  generatedText,
+  pendingText,
+}: {
+  label: string;
+  modeText?: string;
+  generatedCount: number;
+  plannedCount: number;
+  generatedText: string | null;
+  pendingText: string;
+}) {
+  return {
+    label,
+    modeText: modeText ?? null,
+    valueText:
+      generatedCount > 0
+        ? generatedText || `${generatedCount} 张已生成`
+        : plannedCount > 0
+          ? pendingText
+          : "未启用",
   };
 }
 

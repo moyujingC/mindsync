@@ -7,7 +7,6 @@ import {
   WorkbenchLeftSidebar,
 } from "./workbench-sections";
 import { useWorkbenchController } from "./use-workbench-controller";
-import { COVER_DRAFTS } from "./workbench-data";
 
 export function Workbench() {
   const {
@@ -116,10 +115,7 @@ export function Workbench() {
         currentArticleTitle={currentArticle.title}
         taskState={controller.taskState}
         statusState={controller.statusState}
-        plannedKnowledgeCount={controller.plannedCards.length}
-        selectedQuoteCount={controller.selectedQuotes.length}
-        coverCount={COVER_DRAFTS.length}
-        inlineCount={controller.plannedInlineImages.length}
+        outputSummaries={controller.controlTowerOutputs}
         latestGenerationTime={controller.latestGenerationTime}
         latestLogText={controller.latestLogText}
         onOpenWechat={() => setActiveTab("wechat")}

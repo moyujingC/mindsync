@@ -169,10 +169,7 @@ export function ControlTowerSidebar({
   currentArticleTitle,
   taskState,
   statusState,
-  plannedKnowledgeCount,
-  selectedQuoteCount,
-  coverCount,
-  inlineCount,
+  outputSummaries,
   latestGenerationTime,
   latestLogText,
   onOpenWechat,
@@ -180,10 +177,12 @@ export function ControlTowerSidebar({
   currentArticleTitle: string;
   taskState: WorkbenchTaskState;
   statusState: WorkbenchStatusMessage | null;
-  plannedKnowledgeCount: number;
-  selectedQuoteCount: number;
-  coverCount: number;
-  inlineCount: number;
+  outputSummaries: {
+    knowledge: { label: string; modeText: string | null; valueText: string };
+    quote: { label: string; modeText: string | null; valueText: string };
+    cover: { label: string; modeText: string | null; valueText: string };
+    inline: { label: string; modeText: string | null; valueText: string };
+  };
   latestGenerationTime: string;
   latestLogText: string;
   onOpenWechat: () => void;
@@ -294,22 +293,24 @@ export function ControlTowerSidebar({
           }}
         >
           {[
-            ["知识卡片", "自动拆分", `${plannedKnowledgeCount} 张`],
-            ["金句卡", "已选生成", `${Math.max(1, selectedQuoteCount)} 张`],
-            ["公众号封面", null, `${coverCount} 张`],
-            ["正文配图", null, `${inlineCount} 张`],
-          ].map(([label, mode, value]) => (
-            <div key={label as string} className="flex items-center justify-between">
+            outputSummaries.knowledge,
+            outputSummaries.quote,
+            outputSummaries.cover,
+            outputSummaries.inline,
+          ].map((item) => (
+            <div key={item.label} className="flex items-center justify-between gap-3">
               <span
                 className="flex items-baseline gap-1.5"
                 style={{ color: COLORS.textMid }}
               >
-                <span>{label}</span>
-                {mode ? (
-                  <span style={{ color: COLORS.textFaint, fontSize: 10.5 }}>{mode}</span>
+                <span>{item.label}</span>
+                {item.modeText ? (
+                  <span style={{ color: COLORS.textFaint, fontSize: 10.5 }}>{item.modeText}</span>
                 ) : null}
               </span>
-              <span style={{ color: COLORS.text }}>{value}</span>
+              <span style={{ color: COLORS.text }} className="text-right">
+                {item.valueText}
+              </span>
             </div>
           ))}
         </div>
