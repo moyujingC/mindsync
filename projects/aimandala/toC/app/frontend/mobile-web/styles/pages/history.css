@@ -440,7 +440,7 @@
 .mw-history-record__body {
   flex: 1;
   min-width: 0;
-  padding: 9px 6px 9px 10px;
+  padding: 8px 5px 8px 10px;
   display: flex;
   flex-direction: column;
 }
@@ -492,15 +492,15 @@
 
 .mw-history-record__status-line {
   color: var(--mw-history-record-title);
-  font-size: 9.1px;
-  line-height: 1.28;
+  font-size: 9px;
+  line-height: 1.26;
   font-weight: 600;
 }
 
 .mw-history-record__helper-line {
   color: var(--mw-history-record-meta);
-  font-size: 6.8px;
-  line-height: 1.2;
+  font-size: 6.7px;
+  line-height: 1.16;
 }
 
 .mw-history-version {
@@ -581,7 +581,7 @@
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__body,
 .mw-history-record--featured.mw-history-record--proReady .mw-history-record__body {
-  padding-top: 9px;
+  padding-top: 8px;
   padding-bottom: 8px;
   justify-content: center;
 }
@@ -602,7 +602,7 @@
 }
 
 .mw-history-record--featured .mw-history-record__title-row h3 {
-  font-size: 13px;
+  font-size: 12.85px;
   font-weight: 600;
   line-height: 1.12;
 }
@@ -615,7 +615,7 @@
   gap: 4px;
   margin-left: 0;
   font-size: 8px;
-  line-height: 1.2;
+  line-height: 1.16;
 }
 
 .mw-history-record--featured .mw-history-version {
@@ -733,7 +733,7 @@
   min-width: auto;
   gap: 3px;
   margin-left: 4px;
-  margin-right: 6px;
+  margin-right: 4px;
   padding-right: 2px;
   padding-left: 2px;
   border-color: transparent;
@@ -747,7 +747,7 @@
 }
 
 .mw-history-record--default .mw-history-status-pill__label {
-  font-size: 7px;
+  font-size: 6.9px;
 }
 
 .mw-history-record--default .mw-history-status-pill__icon,
@@ -768,7 +768,7 @@
 }
 
 .mw-history-record--default .mw-history-record__body {
-  padding: 7px 5px 7px 8px;
+  padding: 7px 4px 7px 8px;
 }
 
 .mw-history-record--default .mw-history-record__title-row h3 {
