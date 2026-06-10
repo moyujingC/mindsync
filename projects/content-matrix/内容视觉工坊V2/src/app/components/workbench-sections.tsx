@@ -967,7 +967,8 @@ function WorkbenchResultsPanel({
               <>
                 <Quote size={20} strokeWidth={1.4} color="#3F4E62" />
                 <div style={{ color: "#2B3645", fontSize: 17, lineHeight: 1.55, letterSpacing: "0.02em" }}>
-                  {(plannedQuotes[selectedQuotes[0] ?? 0] ?? plannedQuotes[0] ?? "真正的专注不是用力，而是放弃。")
+                  {((selectedQuotes.length > 0 ? plannedQuotes[selectedQuotes[0]] : null) ??
+                    "尚未选择候选金句")
                     .split("，")
                     .map((line: string, index: number, list: string[]) => (
                       <span key={`${line}-${index}`}>
@@ -985,6 +986,7 @@ function WorkbenchResultsPanel({
             <Btn
               size="sm"
               onClick={() => void handleGenerateQuoteCard()}
+              disabled={selectedQuotes.length === 0}
               style={{
                 background: "#8B6F44",
                 color: "#FBFAF7",
@@ -1127,9 +1129,11 @@ function QuoteSummaryCard({
               {plannedQuotes.length} 条 · 已选 {selectedQuotes.length} / {plannedQuotes.length}
             </span>
           </div>
-          <div className="mt-1 truncate" style={{ color: "#7A6244", fontSize: 11.5 }}>
-            「{plannedQuotes[selectedQuotes[0] ?? 0] ?? plannedQuotes[0]}」
-          </div>
+        <div className="mt-1 truncate" style={{ color: "#7A6244", fontSize: 11.5 }}>
+            {selectedQuotes.length > 0
+              ? `「${plannedQuotes[selectedQuotes[0]] ?? "当前选择已失效"}」`
+              : "尚未选择候选金句"}
+        </div>
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
@@ -1151,6 +1155,7 @@ function QuoteSummaryCard({
           <Btn
             size="sm"
             onClick={() => void handleGenerateQuoteCard()}
+            disabled={selectedQuotes.length === 0}
             style={{
               background: "#8B6F44",
               color: "#FBFAF7",

@@ -155,8 +155,8 @@ export function buildGenerationTasks({
 
   if (outputs.quote) {
     const preset = findPreset(DEFAULT_PRESET_KEYS.quoteCard)?.preset;
-    if (preset) {
-      const quoteText = selectedQuotes[0] || "真正的专注不是用力，而是放弃。";
+    if (preset && selectedQuotes.length > 0) {
+      const quoteText = selectedQuotes[0];
       tasks.push({
         articleTitle,
         prompt: `为文章《${articleTitle}》生成一张公众号横版金句卡。核心文案是：“${quoteText}”。画面需留白、安静、疗愈，便于后续叠加文字。`,

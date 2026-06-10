@@ -122,7 +122,7 @@ export function useWorkbenchController({
   );
   const estimatedCredits =
     (outputs.knowledge ? unlockedPlannedCards.length : 0) +
-    (outputs.quote ? Math.max(1, selectedQuotes.length) : 0) +
+    (outputs.quote ? selectedQuotes.length : 0) +
     (outputs.cover ? 3 : 0) +
     (outputs.inline ? plannedInlineImages.length : 0);
 
@@ -151,6 +151,10 @@ export function useWorkbenchController({
     setSelectedQuotes((prev) =>
       prev.includes(index) ? prev.filter((item) => item !== index) : [...prev, index]
     );
+  }
+
+  function resolveValidSelectedQuoteIndexes(quotes: string[], indexes: number[]) {
+    return indexes.filter((index) => index >= 0 && index < quotes.length);
   }
 
   function toggleKnowledgeCardLock(cardIndex: number) {
@@ -687,9 +691,7 @@ export function useWorkbenchController({
         .filter((index) => index >= 0);
       const uniquePreservedQuoteIndexes = Array.from(new Set(preservedQuoteIndexes));
       const clearedQuoteCount = previousQuotes.length - uniquePreservedQuoteIndexes.length;
-      setSelectedQuotes(
-        uniquePreservedQuoteIndexes.length > 0 ? uniquePreservedQuoteIndexes : [0]
-      );
+      setSelectedQuotes(uniquePreservedQuoteIndexes);
 
       const { preservedKnowledgeCount, staleKnowledgeCount } =
         syncKnowledgeImagesToNewPlan(planning.cardPlan);
@@ -714,14 +716,6 @@ export function useWorkbenchController({
         }
       );
 
-      setWorkbenchState((prev) => ({
-        ...prev,
-        quoteGenerationSelection:
-          prev.quoteGenerationSelection?.generatedAtPlanningRevision === nextRevision
-            ? prev.quoteGenerationSelection
-            : prev.quoteGenerationSelection,
-      }));
-
       return summary;
     } catch (error) {
       pushStatus(
@@ -743,11 +737,29 @@ export function useWorkbenchController({
     const preset = quotePreset;
     if (!preset) return;
 
-    const resolvedIndexes = selectedQuotes.length > 0 ? selectedQuotes : [0];
+    const resolvedIndexes = resolveValidSelectedQuoteIndexes(plannedQuotes, selectedQuotes);
+    if (resolvedIndexes.length === 0) {
+      pushStatus("quote-generation", "error", "请先勾选至少 1 条候选金句", {
+        phase: "failed",
+        currentStepLabel: "金句卡失败",
+        completedTasks: 0,
+        totalTasks: 1,
+      });
+      return;
+    }
     const resolvedTexts = resolvedIndexes
-      .map((index) => plannedQuotes[index] ?? plannedQuotes[0])
+      .map((index) => plannedQuotes[index])
       .filter(Boolean);
-    const primaryQuote = resolvedTexts[0] || "真正的专注不是用力，而是放弃。";
+    const primaryQuote = resolvedTexts[0];
+    if (!primaryQuote) {
+      pushStatus("quote-generation", "error", "当前候选金句不可用，请先重新拆解", {
+        phase: "failed",
+        currentStepLabel: "金句卡失败",
+        completedTasks: 0,
+        totalTasks: 1,
+      });
+      return;
+    }
 
     clearTaskError();
     pushStatus("quote-generation", "info", "正在生成金句卡", {
@@ -837,9 +849,12 @@ export function useWorkbenchController({
       return;
     }
 
-    const resolvedQuoteIndexes = selectedQuotes.length > 0 ? selectedQuotes : [0];
+    const resolvedQuoteIndexes = resolveValidSelectedQuoteIndexes(
+      planning.analysis.keyQuotes,
+      selectedQuotes
+    );
     const resolvedQuotes = resolvedQuoteIndexes
-      .map((index) => planning.analysis.keyQuotes[index] ?? planning.analysis.keyQuotes[0])
+      .map((index) => planning.analysis.keyQuotes[index])
       .filter(Boolean);
     const tasks = buildGenerationTasks({
       articleTitle: currentArticle.title,
