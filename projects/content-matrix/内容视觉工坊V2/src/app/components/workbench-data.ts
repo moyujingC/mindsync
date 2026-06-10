@@ -59,6 +59,7 @@ export type WorkbenchOutputs = {
 export function buildKnowledgeCardPrompt({
   articleTitle,
   cardIndex,
+  cardTotal,
   cardTitle,
   cardSummary,
   cardLayoutHint,
@@ -70,6 +71,7 @@ export function buildKnowledgeCardPrompt({
 }: {
   articleTitle: string;
   cardIndex: number;
+  cardTotal: number;
   cardTitle: string;
   cardSummary: string;
   cardLayoutHint?: string;
@@ -81,61 +83,83 @@ export function buildKnowledgeCardPrompt({
 }) {
   const textBlocks = (cardTextBlocks || []).filter(Boolean).slice(0, 4);
   const illustrationHints = (cardIllustrationHints || []).filter(Boolean).slice(0, textBlocks.length || 4);
-  const renderedTextBlocks =
-    textBlocks.length > 0
-      ? textBlocks
-          .map((block, index) => {
-            const hint = illustrationHints[index];
-            return `- 信息点 ${index + 1}：\`${block}\`${hint ? `（旁边可配 ${hint}）` : ""}`;
-          })
-          .join("\n")
-      : `- 根据文章《${articleTitle}》和这张卡片主题，补全 3 到 4 个简短信息点
-- 每个信息点控制在 18 到 36 字之间，放在独立信息容器内`;
+  const upperBlocks = textBlocks.slice(0, Math.max(1, Math.ceil(textBlocks.length / 2)));
+  const lowerBlocks = textBlocks.slice(upperBlocks.length);
+  const upperRendered = upperBlocks
+    .map((block, index) => {
+      const hint = illustrationHints[index];
+      return `- \`${block}\`${hint ? `（旁边画${hint}）` : ""}`;
+    })
+    .join("\n");
+  const lowerRendered = lowerBlocks
+    .map((block, index) => {
+      const hint = illustrationHints[index + upperBlocks.length];
+      return `- \`${block}\`${hint ? `（旁边画${hint}）` : ""}`;
+    })
+    .join("\n");
+  const totalLabel = String(cardTotal).padStart(2, "0");
+  const indexLabel = String(cardIndex).padStart(2, "0");
 
   return `【文字渲染规则 - 严格遵守】
+（以下规则适用于豆包/即梦等国内绘画AI模型，使用Google/nano banana pro等工具可忽略）
 只渲染提示词中用反引号 \`\` 明确标注的文字内容，原样呈现。
 凡是提示词中没有用反引号标注的地方，一律不得自行添加任何文字、字母、数字或符号。
+图标、插画、装饰元素可以自由发挥，但不得在其上附加任何未经指定的文字。
+
+---
 
 【第${cardIndex}张图 - 独立完整的一张图，单独占据一个完整的3:4竖版画布，请勿与其他图合并】
 
-整体风格说明：
-- 这是小红书知识卡，不是金句卡，不是纯主视觉海报
-- 每张图都必须是一张信息含量明确的完整知识卡
-- 保持当前产品的低饱和、雾蓝、克制、安静、专业气质
-- 画面是被整理过的知识信息板，不要做夸张插画海报
+## 整体风格说明（与本系列所有图保持一致）
 
-画幅比例：独立的3:4竖版
-系列标识：右上角标注 \`${String(cardIndex).padStart(2, "0")}/04\`
+整体风格：手绘涂鸦笔记 (Sketchnote) 风格，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
 
-本张图内容：
-- 主标题放在画面顶部醒目区域：\`${cardTitle}\`
-- 核心摘要放在标题下方信息区：\`${cardSummary}\`
-- 构图建议：${cardLayoutHint || "竖向信息卡 / 分区知识板"}
-- 以下信息点必须逐条渲染到独立信息容器中：
-${renderedTextBlocks}
-- 每个信息点都服务于解释标题，不要重复抒情，不要只写口号
-- 可以使用箭头、分区框、便签、序号、细线连接，但不要把内容挤成一整段
-- 装饰提示：${cardDecorationHint || "用克制的分区框、细线和轻装饰来组织信息，不要喧宾夺主"}
-${cardEndingLabel ? `- 画面底部可加轻量收口标识：\`${cardEndingLabel}\`` : ""}
+画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
+
+视觉风格：清新自然风
+
+背景：浅绿米白渐变，水彩晕染效果
+
+配色：草绿、天蓝、暖黄，深绿轮廓
+
+字体：清晰可辨的中文手写体风格
+
+系列标识：右上角标注序号"${indexLabel}/${totalLabel}"
+
+---
+
+## 本张图内容
+
+主题：${cardSummary}
+
+构图：${cardLayoutHint || "竖向递进卡片型"}
+
+标题区（画面顶部15-20%）：
+- 标题文字：\`${cardTitle}\`
+- 视觉设计：放在醒目的浅绿色圆角横幅内，旁边画一个与“${cardTitle}”相关的简笔画插图
+- 序号标识：右上角标注"${indexLabel}/${totalLabel}"
+
+内容与排版：
+
+【核心信息区】（位于画面上半部分中心位置）：
+${upperRendered || `- \`${cardSummary}\`（旁边画与主题相关的简笔画插图）`}
+
+${lowerRendered ? `【补充信息区】（位于画面下半部分）：
+${lowerRendered}
+
+` : ""}整体装饰元素：
+- ${cardDecorationHint || "画面边缘点缀浅绿色装饰线条，不同信息区用轻分区框区分，元素间用简约箭头连接"}
 
 内容来源约束：
-- 文章主题：${articleTitle}
+- 文章标题：${articleTitle}
 - 本张卡主题：${cardTitle}
 - 本张卡摘要：${cardSummary}
 - 文章上下文摘要：${bodyPreview}
-- 信息必须围绕当前卡片主题展开，不要偏到别的卡片
-
-版式要求：
-- 标题区占顶部 15% 到 20%
-- 中部为 3 到 4 个信息模块，信息层级清楚，便于扫描
-- 底部可有一行很轻的结论或提醒，但不要做成大金句
-- 整体更像高信息密度知识卡，而不是一句话观点卡
-
-避免：
-- 不要只生成一句大字标题加很少文字
-- 不要做金句卡
-- 不要做纯情绪插画
-- 不要高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版`;
+- 所有信息必须围绕当前卡片主题展开，不要偏到别的卡片，不要偷换观点，不要压缩成一句大口号。
+${cardEndingLabel ? `
+结尾特殊标识：
+- 画面底部加"${cardEndingLabel}"标记，字体为手写体风格，颜色为深绿色` : ""}
+`;
 }
 
 export function buildFallbackCardPlan(): CardPlan[] {
@@ -265,6 +289,7 @@ export function buildGenerationTasks({
             prompt: buildKnowledgeCardPrompt({
               articleTitle,
               cardIndex: card.index,
+              cardTotal: planning.cardPlan.length,
               cardTitle: card.title,
               cardSummary: card.summary,
               cardLayoutHint: card.layoutHint,

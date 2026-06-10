@@ -486,6 +486,7 @@ export function useWorkbenchController({
         prompt: buildKnowledgeCardPrompt({
           articleTitle: currentArticle.title,
           cardIndex: resolvedCard.index,
+          cardTotal: plannedCards.length,
           cardTitle: resolvedCard.title,
           cardSummary: resolvedCard.summary,
           cardLayoutHint: resolvedCard.layoutHint,
