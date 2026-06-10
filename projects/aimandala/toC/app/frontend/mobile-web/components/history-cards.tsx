@@ -135,6 +135,71 @@ export function HistoryRecordCard({
     : statusLabelOverride ?? ctaLabel;
   const trackState = renderTrackState(item);
 
+  if (isFeatured) {
+    return (
+      <article className={`mw-history-record mw-history-record--featured mw-history-record--${item.statusTone}`}>
+        <div
+          className={thumbClassName}
+          style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
+        />
+        <div className="mw-history-record__featured-body">
+          <div className="mw-history-record__featured-header">
+            <span className="mw-history-record__icon mw-history-record__icon--featured" aria-hidden="true">{iconGlyph}</span>
+            <h3>{item.themeLabel}</h3>
+          </div>
+
+          <div className="mw-history-record__featured-meta">
+            <span className="mw-history-clock" aria-hidden="true" />
+            <span>{item.subtitle.replace("创建于 ", "")}</span>
+          </div>
+
+          <div className="mw-history-record__featured-status">
+            <span className={`mw-history-record__featured-dot${isPending ? " is-pending" : " is-ready"}`} aria-hidden="true">
+              {isPending ? (
+                <LucideIcon iconNode={ICON_LOADER} size={11} strokeWidth={1.9} className="am-lucide-spin" />
+              ) : null}
+            </span>
+            <div className="mw-history-record__featured-copy">
+              <div className="mw-history-record__featured-status-row">
+                <p className="mw-history-record__status-line mw-history-record__status-line--featured">{statusSummary}</p>
+                {isPending ? (
+                  <span className="mw-history-record__featured-progress-number">
+                    {Number.isNaN(progressPercent) ? item.progressLabel : `${progressPercent}%`}
+                  </span>
+                ) : null}
+              </div>
+              {helperCopy ? <p className="mw-history-record__helper-line mw-history-record__helper-line--featured">{helperCopy}</p> : null}
+            </div>
+          </div>
+
+          <div className="mw-history-record__featured-actions">
+            <button
+              type="button"
+              className="mw-history-record__featured-cta"
+              onClick={() => onOpenRecord?.(item.interpretationId)}
+              disabled={disabled}
+            >
+              <span>{badgeLabel}</span>
+              <span className="mw-history-record__featured-cta-icon" aria-hidden="true">
+                {item.recordReady ? (
+                  <LucideIcon iconNode={ICON_ARROW} size={12} strokeWidth={1.9} />
+                ) : (
+                  <LucideIcon iconNode={ICON_LOADER} size={12} strokeWidth={1.9} className="am-lucide-spin" />
+                )}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {isPending ? (
+          <div className="mw-history-record__featured-progressbar">
+            <i style={{ width: `${Number.isNaN(progressPercent) ? 40 : Math.max(8, progressPercent)}%` }} />
+          </div>
+        ) : null}
+      </article>
+    );
+  }
+
   if (!isFeatured) {
     return (
       <article className={`mw-history-record mw-history-record--default mw-history-record--${item.statusTone}`}>
@@ -184,53 +249,7 @@ export function HistoryRecordCard({
     );
   }
 
-  return (
-    <article
-      className={`mw-history-record${isFeatured ? " mw-history-record--featured" : " mw-history-record--default"} mw-history-record--${item.statusTone}`}
-    >
-      <div
-        className={thumbClassName}
-        style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
-      />
-      <div className="mw-history-record__body">
-        <div className="mw-history-record__copy">
-          <div className="mw-history-record__title-row">
-            <span className="mw-history-record__icon" aria-hidden="true">{iconGlyph}</span>
-            <h3>{item.themeLabel}</h3>
-          </div>
-          <div className="mw-history-record__meta">
-            <span className="mw-history-clock" aria-hidden="true" />
-            <span>{item.subtitle.replace("创建于 ", "")}</span>
-          </div>
-          <p className="mw-history-record__status-line">{statusSummary}</p>
-          {helperCopy ? <p className="mw-history-record__helper-line">{helperCopy}</p> : null}
-        </div>
-        {isPending ? (
-          <div className="mw-history-record__progress">
-            <span>{Number.isNaN(progressPercent) ? item.progressLabel : `${progressPercent}%`}</span>
-            <div>
-              <i style={{ width: `${Number.isNaN(progressPercent) ? 40 : Math.max(8, progressPercent)}%` }} />
-            </div>
-          </div>
-        ) : null}
-      </div>
-      <button
-        type="button"
-        className={`mw-history-status-pill${item.recordReady ? " mw-history-status-pill--ready" : " mw-history-status-pill--pending"}`}
-        onClick={() => onOpenRecord?.(item.interpretationId)}
-        disabled={disabled}
-      >
-        <span className="mw-history-status-pill__icon" aria-hidden="true">
-          {item.recordReady ? (
-            <LucideIcon iconNode={ICON_ARROW} size={14} strokeWidth={1.9} />
-          ) : (
-            <LucideIcon iconNode={ICON_LOADER} size={14} strokeWidth={1.9} className="am-lucide-spin" />
-          )}
-        </span>
-        <span className="mw-history-status-pill__label">{badgeLabel}</span>
-      </button>
-    </article>
-  );
+  return null;
 }
 
 export interface HistorySummaryRowProps {

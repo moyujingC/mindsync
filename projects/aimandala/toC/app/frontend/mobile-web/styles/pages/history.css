@@ -570,13 +570,16 @@
 
 .mw-history-record--featured.mw-history-record--ready,
 .mw-history-record--featured.mw-history-record--proReady {
-  min-height: 98px;
+  min-height: 112px;
 }
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__thumb,
 .mw-history-record--featured.mw-history-record--proReady .mw-history-record__thumb {
-  flex-basis: 86px;
-  width: 86px;
+  flex-basis: 100px;
+  width: 100px;
+  height: 112px;
+  margin-left: 0;
+  border-radius: 0;
 }
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__body,
@@ -616,6 +619,151 @@
   margin-left: 0;
   font-size: 8px;
   line-height: 1.16;
+}
+
+.mw-history-record__featured-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 10px 12px 10px 14px;
+}
+
+.mw-history-record__featured-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mw-history-record__featured-header h3 {
+  margin: 0;
+  color: var(--mw-history-record-title);
+  font-family: var(--am-font-display);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+.mw-history-record__icon--featured {
+  color: var(--am-color-gold-300);
+  font-size: 13px;
+}
+
+.mw-history-record__featured-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  color: rgb(var(--am-rgb-sand-300) / 0.5);
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.mw-history-record__featured-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.mw-history-record__featured-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 11px;
+  height: 11px;
+  margin-top: 2px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.mw-history-record__featured-dot.is-ready {
+  background: radial-gradient(circle, rgb(var(--am-rgb-gold-300) / 0.9), rgb(200 120 80 / 0.45));
+  box-shadow: 0 0 8px rgb(var(--am-rgb-gold-300) / 0.35);
+}
+
+.mw-history-record__featured-dot.is-pending {
+  color: var(--am-color-gold-300);
+}
+
+.mw-history-record__featured-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.mw-history-record__featured-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mw-history-record__status-line--featured {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mw-history-record__featured-progress-number {
+  flex: 0 0 auto;
+  color: var(--am-color-gold-300);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.mw-history-record__helper-line--featured {
+  margin-top: 1px;
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.mw-history-record__featured-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.mw-history-record__featured-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 13px;
+  border: 1px solid rgb(var(--am-rgb-gold-300) / 0.45);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #9b4030 0%, #c87850 50%, #d4a054 100%);
+  box-shadow: 0 2px 10px rgb(200 120 80 / 0.22);
+  color: rgb(245 239 226 / 1);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.mw-history-record__featured-cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+}
+
+.mw-history-record__featured-progressbar {
+  padding: 0 12px 10px 114px;
+}
+
+.mw-history-record__featured-progressbar i {
+  display: block;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(var(--am-rgb-gold-300) / 0.6), rgb(200 120 80 / 0.7));
+  box-shadow: 0 0 8px rgb(var(--am-rgb-gold-300) / 0.4);
 }
 
 .mw-history-record--featured .mw-history-version {
@@ -701,13 +849,16 @@
 
 .mw-history-record--featured.mw-history-record--pending,
 .mw-history-record--featured.mw-history-record--proPending {
-  min-height: 102px;
+  min-height: 112px;
 }
 
 .mw-history-record--featured.mw-history-record--pending .mw-history-record__thumb,
 .mw-history-record--featured.mw-history-record--proPending .mw-history-record__thumb {
-  flex-basis: 86px;
-  width: 86px;
+  flex-basis: 100px;
+  width: 100px;
+  height: 112px;
+  margin-left: 0;
+  border-radius: 0;
 }
 
 .mw-history-record--featured.mw-history-record--pending .mw-history-record__body,
