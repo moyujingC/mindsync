@@ -59,7 +59,12 @@ const DEFAULT_THEME: WechatTheme = {
 };
 
 export function WechatLayout() {
-  const { currentArticle, currentArticleBlocks, currentArticleMeta, latestGeneration } =
+  const {
+    currentArticle,
+    currentArticleBlocks,
+    currentArticleMeta,
+    generationRecords,
+  } =
     useWorkspace();
   const [mapping, setMapping] = useState<MappingMode>("h2h3");
   const [importedHtml, setImportedHtml] = useState("");
@@ -154,12 +159,18 @@ export function WechatLayout() {
     () => buildArticleMetaLine(currentArticleMeta),
     [currentArticleMeta]
   );
-  const previewCover = latestGeneration?.purposeKey === "wx_cover"
-    ? latestGeneration.images[0]?.imageUrl
-    : null;
-  const previewInlineImage = latestGeneration?.purposeKey === "wx_inline"
-    ? latestGeneration.images[0]?.imageUrl
-    : null;
+  const coverGeneration = generationRecords.find((item) => item.purposeKey === "wx_cover");
+  const inlineGeneration = generationRecords.find((item) => item.purposeKey === "wx_inline");
+  const previewCover = coverGeneration?.images[0]?.imageUrl ?? null;
+  const inlineImageMap = useMemo(
+    () =>
+      new Map(
+        (inlineGeneration?.images ?? [])
+          .filter((item) => item.inlineLink?.sectionKey)
+          .map((item) => [item.inlineLink!.sectionKey, item.imageUrl])
+      ),
+    [inlineGeneration]
+  );
 
   async function handlePasteFromClipboard() {
     setIsPasting(true);
@@ -303,7 +314,7 @@ export function WechatLayout() {
         currentArticle.title,
         articleMetaLine,
         currentArticleBlocks,
-        previewInlineImage
+        inlineImageMap
       );
       const plainText = buildWechatArticleText(currentArticle.title, currentArticleBlocks);
 
@@ -745,11 +756,14 @@ export function WechatLayout() {
               }
 
               if (block.type === "image") {
+                const inlineImageUrl = block.sectionKey
+                  ? inlineImageMap.get(block.sectionKey) ?? null
+                  : null;
                 return (
                   <div key={`image-${i}`} className="mt-6">
-                    {previewInlineImage ? (
+                    {inlineImageUrl ? (
                       <img
-                        src={previewInlineImage}
+                        src={inlineImageUrl}
                         alt={block.label}
                         style={{
                           aspectRatio: "16/9",
@@ -1111,7 +1125,7 @@ function buildWechatArticleHtml(
   title: string,
   meta: string,
   blocks: ArticleBlock[],
-  inlineImageUrl?: string | null
+  inlineImageMap: Map<string, string>
 ) {
   const blocksHtml = blocks.map((block) => {
     if (block.type === "eyebrow") {
@@ -1150,6 +1164,9 @@ function buildWechatArticleHtml(
     }
 
     if (block.type === "image") {
+      const inlineImageUrl = block.sectionKey
+        ? inlineImageMap.get(block.sectionKey) ?? null
+        : null;
       return `
         <figure style="margin:24px 0 0;">
           ${

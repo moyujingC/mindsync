@@ -20,7 +20,7 @@ export type ArticleBlock =
   | { type: "quote"; text: string }
   | { type: "section"; title: string; body: string }
   | { type: "note"; text: string }
-  | { type: "image"; label: string };
+  | { type: "image"; label: string; sectionKey?: string };
 
 export type WorkspaceArticle = {
   title: string;
@@ -33,6 +33,11 @@ export type GeneratedImageItem = {
   prompt: string;
   width: number;
   height: number;
+  inlineLink?: {
+    sectionKey: string;
+    sectionHeading: string;
+    sectionSummary: string;
+  };
   cardLink?: {
     index: number;
     title: string;
@@ -381,6 +386,7 @@ function buildArticleBlocks(body: string): ArticleBlock[] {
     .filter(Boolean);
 
   const blocks: ArticleBlock[] = [];
+  let lastSectionKey: string | undefined;
 
   for (let index = 0; index < chunks.length; index += 1) {
     const chunk = chunks[index];
@@ -401,7 +407,11 @@ function buildArticleBlocks(body: string): ArticleBlock[] {
     }
 
     if (/^(图|图片)[:：]/.test(chunk)) {
-      blocks.push({ type: "image", label: chunk.replace(/^(图|图片)[:：]\s*/, "") });
+      blocks.push({
+        type: "image",
+        label: chunk.replace(/^(图|图片)[:：]\s*/, ""),
+        sectionKey: lastSectionKey,
+      });
       continue;
     }
 
@@ -409,6 +419,7 @@ function buildArticleBlocks(body: string): ArticleBlock[] {
       const title = chunk.replace(/^#{1,3}\s+/, "");
       const next = chunks[index + 1];
       if (next && !looksLikeStandaloneBlock(next)) {
+        lastSectionKey = toSectionKey(title);
         blocks.push({ type: "section", title, body: next });
         index += 1;
       } else {
@@ -420,6 +431,7 @@ function buildArticleBlocks(body: string): ArticleBlock[] {
     if (/^([一二三四五六七八九十]+、|[0-9]+\.)/.test(chunk)) {
       const next = chunks[index + 1];
       if (next && !looksLikeStandaloneBlock(next)) {
+        lastSectionKey = toSectionKey(chunk);
         blocks.push({ type: "section", title: chunk, body: next });
         index += 1;
       } else {
@@ -434,6 +446,10 @@ function buildArticleBlocks(body: string): ArticleBlock[] {
   return blocks.length > 0
     ? blocks
     : [{ type: "paragraph", text: body.trim() || DEFAULT_ARTICLE.body }];
+}
+
+function toSectionKey(value: string) {
+  return value.replace(/\s+/g, " ").trim().toLowerCase();
 }
 
 function looksLikeStandaloneBlock(chunk: string) {

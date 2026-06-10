@@ -2,6 +2,7 @@ import type { ChangeEvent, RefObject } from "react";
 import {
   Activity,
   ClipboardCopy,
+  History,
   Image as ImageIcon,
   Lock,
   Pencil,

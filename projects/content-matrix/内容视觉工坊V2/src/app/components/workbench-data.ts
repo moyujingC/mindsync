@@ -66,6 +66,7 @@ export function buildFallbackCardPlan(): CardPlan[] {
 
 export function buildFallbackInlineImagePlan(): InlineImagePlan[] {
   return ILLUSTRATIONS.map((item, index) => ({
+    sectionKey: item.title.replace(/\s+/g, " ").trim().toLowerCase(),
     sectionHeading: item.title,
     sectionType: "concept" as const,
     sectionTheme: item.title,
@@ -210,6 +211,11 @@ export function buildGenerationTasks({
         presetKey: preset.k,
         presetLabel: preset.label,
         styleName: "留白水墨",
+        inlineLinks: planning.inlineImagePlan.map((item) => ({
+          sectionKey: item.sectionKey,
+          sectionHeading: item.sectionHeading,
+          sectionSummary: item.sectionSummary,
+        })),
       });
     }
   }

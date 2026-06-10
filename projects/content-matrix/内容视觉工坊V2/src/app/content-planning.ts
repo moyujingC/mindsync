@@ -9,6 +9,7 @@ export type CardPlan = {
 };
 
 export type InlineImagePlan = {
+  sectionKey: string;
   sectionHeading: string;
   sectionType: WechatInlineSectionType;
   sectionTheme: string;

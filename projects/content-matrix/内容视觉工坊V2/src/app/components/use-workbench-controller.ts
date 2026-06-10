@@ -567,6 +567,35 @@ export function useWorkbenchController({
     };
   }
 
+  function bindInlineImages(
+    record: GenerationRecord,
+    inlineLinks:
+      | Array<{
+          sectionKey: string;
+          sectionHeading: string;
+          sectionSummary: string;
+        }>
+      | undefined
+  ) {
+    if (record.purposeKey !== "wx_inline" || !inlineLinks?.length) {
+      return record;
+    }
+
+    return {
+      ...record,
+      images: record.images.map((image, index) => ({
+        ...image,
+        inlineLink: inlineLinks[index]
+          ? {
+              sectionKey: inlineLinks[index].sectionKey,
+              sectionHeading: inlineLinks[index].sectionHeading,
+              sectionSummary: inlineLinks[index].sectionSummary,
+            }
+          : image.inlineLink,
+      })),
+    };
+  }
+
   function syncKnowledgeImagesToNewPlan(nextCardPlan: PlanningState["cardPlan"]) {
     if (!knowledgeGeneration) {
       return { preservedKnowledgeCount: 0, staleKnowledgeCount: 0 };
@@ -814,7 +843,7 @@ export function useWorkbenchController({
           totalTasks: tasks.length,
         });
 
-        const record = await postGenerateImages(task);
+        const record = bindInlineImages(await postGenerateImages(task), task.inlineLinks);
 
         if (record.purposeKey === "xhs_card") {
           const existing = groupedRecords.get(record.purposeKey) ?? knowledgeGeneration;
