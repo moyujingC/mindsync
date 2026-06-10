@@ -352,14 +352,14 @@
 
 .mw-history-record-list {
   display: grid;
-  gap: 10px;
+  gap: 11px;
   margin-top: 11px;
 }
 
 .mw-history-record {
   position: relative;
   display: flex;
-  min-height: 92px;
+  min-height: 94px;
   overflow: hidden;
   border: 1px solid var(--mw-history-record-border);
   border-radius: 15px;
@@ -369,8 +369,8 @@
 
 .mw-history-record__thumb {
   position: relative;
-  flex: 0 0 82px;
-  width: 82px;
+  flex: 0 0 84px;
+  width: 84px;
   min-height: 0;
   aspect-ratio: 1 / 1;
   align-self: center;
@@ -387,16 +387,17 @@
   position: absolute;
   inset: 0;
   background: var(--mw-history-record-thumb-fade);
+  opacity: 0.72;
 }
 
 .mw-history-record__thumb--featured {
   background-size: cover, 228px;
-  background-position: center, 32% 36%;
-  filter: saturate(1.04) brightness(0.94);
+  background-position: center, 50% 50%;
+  filter: saturate(1.02) brightness(0.96);
 }
 
 .mw-history-record__thumb--featured-pending {
-  background-position: center, 36% 32%;
+  background-position: center, 52% 46%;
 }
 
 .mw-history-record__thumb--1 {
@@ -419,7 +420,7 @@
 .mw-history-record__body {
   flex: 1;
   min-width: 0;
-  padding: 10px 8px 10px 11px;
+  padding: 9px 7px 9px 10px;
   display: flex;
   flex-direction: column;
 }
@@ -427,7 +428,7 @@
 .mw-history-record__copy {
   display: grid;
   align-content: start;
-  gap: 3px;
+  gap: 2px;
   min-height: 100%;
 }
 
@@ -441,7 +442,7 @@
   margin: 0;
   color: var(--mw-history-record-title);
   font-family: var(--am-font-display);
-  font-size: 13px;
+  font-size: 12.75px;
   font-weight: 600;
   letter-spacing: 0.04em;
   line-height: 1.15;
@@ -449,7 +450,7 @@
 
 .mw-history-record__icon {
   color: var(--mw-history-record-icon);
-  font-size: 10.5px;
+  font-size: 10px;
   line-height: 1;
 }
 
@@ -459,8 +460,8 @@
   gap: 4px;
   margin-top: 0;
   color: var(--mw-history-record-meta);
-  font-size: 8.5px;
-  line-height: 1.24;
+  font-size: 8px;
+  line-height: 1.2;
   flex-wrap: wrap;
 }
 
@@ -471,15 +472,15 @@
 
 .mw-history-record__status-line {
   color: var(--mw-history-record-title);
-  font-size: 9.75px;
-  line-height: 1.34;
+  font-size: 9.25px;
+  line-height: 1.3;
   font-weight: 600;
 }
 
 .mw-history-record__helper-line {
   color: var(--mw-history-record-meta);
-  font-size: 7.25px;
-  line-height: 1.3;
+  font-size: 7px;
+  line-height: 1.24;
 }
 
 .mw-history-version {
@@ -521,12 +522,12 @@
   display: grid;
   gap: 3px;
   margin-top: auto;
-  padding-top: 5px;
+  padding-top: 4px;
 }
 
 .mw-history-record__progress span {
   color: var(--mw-history-progress-text);
-  font-size: 8px;
+  font-size: 7.5px;
   font-weight: 500;
   text-align: right;
 }
@@ -549,19 +550,19 @@
 
 .mw-history-record--featured.mw-history-record--ready,
 .mw-history-record--featured.mw-history-record--proReady {
-  min-height: 94px;
+  min-height: 98px;
 }
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__thumb,
 .mw-history-record--featured.mw-history-record--proReady .mw-history-record__thumb {
-  flex-basis: 82px;
-  width: 82px;
+  flex-basis: 86px;
+  width: 86px;
 }
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__body,
 .mw-history-record--featured.mw-history-record--proReady .mw-history-record__body {
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding-top: 9px;
+  padding-bottom: 9px;
   justify-content: center;
 }
 
@@ -581,20 +582,20 @@
 }
 
 .mw-history-record--featured .mw-history-record__title-row h3 {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.12;
 }
 
 .mw-history-record--featured .mw-history-record__icon {
-  font-size: 10.5px;
+  font-size: 10px;
 }
 
 .mw-history-record--featured .mw-history-record__meta {
   gap: 4px;
   margin-left: 0;
-  font-size: 8.5px;
-  line-height: 1.25;
+  font-size: 8.25px;
+  line-height: 1.24;
 }
 
 .mw-history-record--featured .mw-history-version {
@@ -623,14 +624,14 @@
   flex: 0 0 auto;
   margin-left: 5px;
   margin-right: 8px;
-  min-width: 74px;
+  min-width: 72px;
   min-height: 28px;
-  padding: 1px 12px 2px;
+  padding: 1px 11px 2px;
   border: 1px solid var(--mw-history-status-border);
   border-radius: 999px;
   background: var(--mw-history-status-bg);
   color: var(--mw-history-status-text);
-  font-size: 8.5px;
+  font-size: 8px;
   font-weight: 600;
   letter-spacing: 0;
   white-space: nowrap;
@@ -680,18 +681,18 @@
 
 .mw-history-record--featured.mw-history-record--pending,
 .mw-history-record--featured.mw-history-record--proPending {
-  min-height: 96px;
+  min-height: 102px;
 }
 
 .mw-history-record--featured.mw-history-record--pending .mw-history-record__thumb,
 .mw-history-record--featured.mw-history-record--proPending .mw-history-record__thumb {
-  flex-basis: 82px;
-  width: 82px;
+  flex-basis: 86px;
+  width: 86px;
 }
 
 .mw-history-record--featured.mw-history-record--pending .mw-history-record__body,
 .mw-history-record--featured.mw-history-record--proPending .mw-history-record__body {
-  padding-bottom: 5px;
+  padding-bottom: 6px;
   justify-content: center;
 }
 
@@ -733,34 +734,34 @@
 }
 
 .mw-history-record--default {
-  min-height: 68px;
+  min-height: 70px;
 }
 
 .mw-history-record--default .mw-history-record__thumb {
-  flex-basis: 56px;
-  width: 56px;
+  flex-basis: 58px;
+  width: 58px;
   margin-left: 6px;
   border-radius: 8px;
 }
 
 .mw-history-record--default .mw-history-record__body {
-  padding: 6px 5px 6px 8px;
+  padding: 7px 5px 7px 8px;
 }
 
 .mw-history-record--default .mw-history-record__title-row h3 {
-  font-size: 11px;
+  font-size: 11.25px;
 }
 
 .mw-history-record--default .mw-history-record__meta {
-  font-size: 7px;
+  font-size: 7.25px;
 }
 
 .mw-history-record--default .mw-history-record__status-line {
-  font-size: 8px;
+  font-size: 8.25px;
 }
 
 .mw-history-record--default .mw-history-record__helper-line {
-  font-size: 6px;
+  font-size: 6.25px;
 }
 
 .mw-history-record--default .mw-history-record__progress {
@@ -768,7 +769,7 @@
 }
 
 .mw-history-record--default .mw-history-record__progress span {
-  font-size: 7px;
+  font-size: 7.25px;
 }
 
 .mw-history-record--featured .mw-history-status-pill {
