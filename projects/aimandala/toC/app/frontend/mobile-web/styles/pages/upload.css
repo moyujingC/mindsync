@@ -12,7 +12,8 @@
 .am-upload-hero {
   position: relative;
   min-height: 468px;
-  padding: 0 16px 14px;
+  margin-top: -1px;
+  padding: 1px 16px 14px;
   background: var(--am-upload-hero-bg);
 }
 
@@ -22,6 +23,9 @@
   z-index: calc(var(--am-z-sticky) + 1);
   border-bottom: 0;
   background: var(--am-upload-hero-bg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 0 rgb(12 18 34);
 }
 
 .am-upload-hero__glow,
