@@ -387,17 +387,17 @@
   position: absolute;
   inset: 0;
   background: var(--mw-history-record-thumb-fade);
-  opacity: 0.72;
+  opacity: 0.58;
 }
 
 .mw-history-record__thumb--featured {
   background-size: cover, 228px;
-  background-position: center, 50% 50%;
-  filter: saturate(1.02) brightness(0.96);
+  background-position: center, 50% 48%;
+  filter: saturate(1.03) brightness(0.98);
 }
 
 .mw-history-record__thumb--featured-pending {
-  background-position: center, 52% 46%;
+  background-position: center, 52% 44%;
 }
 
 .mw-history-record__thumb--1 {
@@ -420,7 +420,7 @@
 .mw-history-record__body {
   flex: 1;
   min-width: 0;
-  padding: 9px 7px 9px 10px;
+  padding: 9px 6px 9px 10px;
   display: flex;
   flex-direction: column;
 }
@@ -428,7 +428,7 @@
 .mw-history-record__copy {
   display: grid;
   align-content: start;
-  gap: 2px;
+  gap: 3px;
   min-height: 100%;
 }
 
@@ -472,15 +472,15 @@
 
 .mw-history-record__status-line {
   color: var(--mw-history-record-title);
-  font-size: 9.25px;
-  line-height: 1.3;
+  font-size: 9.1px;
+  line-height: 1.28;
   font-weight: 600;
 }
 
 .mw-history-record__helper-line {
   color: var(--mw-history-record-meta);
-  font-size: 7px;
-  line-height: 1.24;
+  font-size: 6.8px;
+  line-height: 1.2;
 }
 
 .mw-history-version {
@@ -562,7 +562,7 @@
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__body,
 .mw-history-record--featured.mw-history-record--proReady .mw-history-record__body {
   padding-top: 9px;
-  padding-bottom: 9px;
+  padding-bottom: 8px;
   justify-content: center;
 }
 
@@ -594,8 +594,8 @@
 .mw-history-record--featured .mw-history-record__meta {
   gap: 4px;
   margin-left: 0;
-  font-size: 8.25px;
-  line-height: 1.24;
+  font-size: 8px;
+  line-height: 1.2;
 }
 
 .mw-history-record--featured .mw-history-version {
@@ -623,7 +623,7 @@
   align-self: center;
   flex: 0 0 auto;
   margin-left: 5px;
-  margin-right: 8px;
+  margin-right: 7px;
   min-width: 72px;
   min-height: 28px;
   padding: 1px 11px 2px;
@@ -712,8 +712,10 @@
 .mw-history-record--default .mw-history-status-pill {
   min-width: auto;
   gap: 3px;
-  padding-right: 4px;
-  padding-left: 4px;
+  margin-left: 4px;
+  margin-right: 6px;
+  padding-right: 2px;
+  padding-left: 2px;
   border-color: transparent;
   background: transparent;
   box-shadow: none;
@@ -725,13 +727,13 @@
 }
 
 .mw-history-record--default .mw-history-status-pill__label {
-  font-size: 7.25px;
+  font-size: 7px;
 }
 
 .mw-history-record--default .mw-history-status-pill__icon,
 .mw-history-record--default .mw-history-status-pill__icon svg {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 .mw-history-record--default {
