@@ -13,6 +13,17 @@ export type HistoryFilterId = SharedHistoryFilterId;
 
 type IconNode = [tag: "path" | "circle" | "rect", attrs: Record<string, string>][];
 
+const THEME_GLYPH_MAP: Record<string, string> = {
+  intimate_relationship: "♡",
+  wealth: "☆",
+  personal_growth: "✧",
+  parent_child_relationship: "◇",
+  father_relationship: "♢",
+  mother_relationship: "◌",
+  career_development: "✦",
+  body_health: "✺",
+};
+
 const ICON_EYE: IconNode = [
   ["path", { d: "M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z", key: "e1" }],
   ["circle", { cx: "12", cy: "12", r: "2.8", key: "e2" }],
@@ -85,7 +96,7 @@ export function HistoryRecordCard({
   const thumbClassName = isFeatured
     ? `mw-history-record__thumb mw-history-record__thumb--featured${!item.recordReady ? " mw-history-record__thumb--featured-pending" : ""}`
     : `mw-history-record__thumb mw-history-record__thumb--${thumbIndex % 4}`;
-  const iconGlyph = item.recordReady ? "♡" : "✧";
+  const iconGlyph = THEME_GLYPH_MAP[item.theme] ?? "✧";
   const ctaLabel = isBusy
     ? "打开中..."
     : actionLabelOverride ?? (item.focusReportType === "pro"
@@ -94,9 +105,7 @@ export function HistoryRecordCard({
   const reportLabel = item.focusReportType === "pro" ? "Pro 完整解读" : "Lite 初步解读";
   const statusSummary = isPending
     ? `${reportLabel} · 生成中${Number.isNaN(progressPercent) ? "" : ` ${progressPercent}%`}`
-    : !isFeatured && item.focusReportType === "lite" && item.availableReportTypes.length === 1
-      ? `${reportLabel} · 可升级 Pro`
-      : `${reportLabel} · 已可查看`;
+    : `${reportLabel} · 已可查看`;
   const helperCopy = isFeatured
     ? (item.focusReportType === "pro"
       ? (item.recordReady ? "Lite 基础上的深入解读" : "Lite 已可查看")
