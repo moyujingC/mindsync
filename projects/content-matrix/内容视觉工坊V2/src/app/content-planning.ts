@@ -6,6 +6,7 @@ export type CardPlan = {
   index: number;
   title: string;
   summary: string;
+  promptText?: string;
   theme?: string;
   layoutHint?: string;
   textBlocks?: string[];

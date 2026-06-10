@@ -487,6 +487,7 @@ export function useWorkbenchController({
           articleTitle: currentArticle.title,
           cardIndex: resolvedCard.index,
           cardTotal: plannedCards.length,
+          promptText: resolvedCard.promptText,
           cardTitle: resolvedCard.title,
           cardSummary: resolvedCard.summary,
           cardTheme: resolvedCard.theme,

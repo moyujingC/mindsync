@@ -91,6 +91,104 @@ function buildTitleVisualHint(title: string) {
   return `放在醒目的浅绿色圆角横幅内，旁边画一个与“${title}”相关的简笔画插图`;
 }
 
+function renderPromptSections(
+  sections: Array<{
+    name: string;
+    position: string;
+    items: Array<{ text: string; illustration: string }>;
+  }>
+) {
+  return sections
+    .map((section) => {
+      const items = section.items
+        .map((item) => `- \`${item.text}\`（旁边画${item.illustration}）`)
+        .join("\n");
+      return `【${section.name}】（${section.position}）：
+${items}`;
+    })
+    .join("\n\n");
+}
+
+function buildKnowledgeCardPromptText({
+  cardIndex,
+  cardTotal,
+  cardTitle,
+  cardTheme,
+  cardLayoutHint,
+  titleVisualHint,
+  contentSections,
+  decorationHint,
+  endingLabel,
+}: {
+  cardIndex: number;
+  cardTotal: number;
+  cardTitle: string;
+  cardTheme: string;
+  cardLayoutHint: string;
+  titleVisualHint: string;
+  contentSections: Array<{
+    name: string;
+    position: string;
+    items: Array<{ text: string; illustration: string }>;
+  }>;
+  decorationHint: string;
+  endingLabel?: string;
+}) {
+  const indexLabel = String(cardIndex).padStart(2, "0");
+  const totalLabel = String(cardTotal).padStart(2, "0");
+
+  return `【文字渲染规则 - 严格遵守】
+（以下规则适用于豆包/即梦等国内绘画AI模型，使用Google/nano banana pro等工具可忽略）
+只渲染提示词中用反引号 \`\` 明确标注的文字内容，原样呈现。
+凡是提示词中没有用反引号标注的地方，一律不得自行添加任何文字、字母、数字或符号。
+图标、插画、装饰元素可以自由发挥，但不得在其上附加任何未经指定的文字。
+
+---
+
+【第${cardIndex}张图 - 独立完整的一张图，单独占据一个完整的3:4竖版画布，请勿与其他图合并】
+
+## 整体风格说明（与本系列所有图保持一致）
+
+整体风格：手绘涂鸦笔记 (Sketchnote) 风格，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
+
+画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
+
+视觉风格：清新自然风
+
+背景：浅绿米白渐变，水彩晕染效果
+
+配色：草绿、天蓝、暖黄，深绿轮廓
+
+字体：清晰可辨的中文手写体风格
+
+系列标识：右上角标注序号"${indexLabel}/${totalLabel}"
+
+---
+
+## 本张图内容
+
+主题：${cardTheme}
+
+构图：${cardLayoutHint}
+
+标题区（画面顶部15-20%）：
+- 标题文字：\`${cardTitle}\`
+- 视觉设计：${titleVisualHint}
+- 序号标识：右上角标注"${indexLabel}/${totalLabel}"
+
+内容与排版：
+
+${renderPromptSections(contentSections)}
+
+整体装饰元素：
+- ${decorationHint}
+${endingLabel ? `
+
+结尾特殊标识：
+- 画面底部加"${endingLabel}"标记，字体为手写体风格，颜色为深绿色` : ""}
+`;
+}
+
 function buildCardTextBlocks(section: { heading: string; body: string[] }, title: string, summary: string) {
   const source = splitSentences(section.body.join(" "));
   const picked = source.filter((sentence) => sentence.length >= 12).slice(0, 4);
@@ -245,18 +343,35 @@ export function planKnowledgeCardsFromArticle(
     const layoutHint = buildCardLayoutHint(index, normalizedSections.length);
     const textBlocks = buildCardTextBlocks(section, title, summary || title);
     const illustrationHints = buildIllustrationHints(title, textBlocks);
+    const contentSections = buildContentSections(layoutHint, textBlocks, illustrationHints);
+    const titleVisualHint = buildTitleVisualHint(title);
+    const theme = summary || title;
+    const decorationHint = "使用分区框、箭头、便签和轻手绘装饰组织信息，避免堆成一段";
+    const endingLabel = index === normalizedSections.length - 1 ? "完结" : undefined;
+
     return {
       index: index + 1,
       title,
       summary: summary || "等待文章内容补充后再生成摘要。",
-      theme: summary || title,
+      promptText: buildKnowledgeCardPromptText({
+        cardIndex: index + 1,
+        cardTotal: normalizedSections.length,
+        cardTitle: title,
+        cardTheme: theme,
+        cardLayoutHint: layoutHint,
+        titleVisualHint,
+        contentSections,
+        decorationHint,
+        endingLabel,
+      }),
+      theme,
       layoutHint,
       textBlocks,
       illustrationHints,
-      titleVisualHint: buildTitleVisualHint(title),
-      contentSections: buildContentSections(layoutHint, textBlocks, illustrationHints),
-      decorationHint: "使用分区框、箭头、便签和轻手绘装饰组织信息，避免堆成一段",
-      endingLabel: index === normalizedSections.length - 1 ? "完结" : undefined,
+      titleVisualHint,
+      contentSections,
+      decorationHint,
+      endingLabel,
     };
   });
 
@@ -312,6 +427,7 @@ function buildPrompt(request: PlannerRequest) {
 1. 判断适合拆成几张知识卡片
 2. 为每张卡片生成标题
 3. 为每张卡片生成一句摘要
+3.0 为每张卡片直接生成一段完整的最终绘图提示词，结构贴近用户提供的知识卡片提示词模板
 3.1 为每张卡片生成 3-4 个可直接上图的简短信息点
 3.2 为每张卡片生成一个构图提示
 3.3 为每张卡片生成标题区的视觉描述
@@ -369,6 +485,7 @@ ${request.rawText}
       "index": 1,
       "title": "卡片标题",
       "summary": "卡片摘要",
+      "promptText": "完整绘图提示词",
       "theme": "本张图主题",
       "layoutHint": "上下对比型",
       "textBlocks": ["信息点1", "信息点2", "信息点3"],

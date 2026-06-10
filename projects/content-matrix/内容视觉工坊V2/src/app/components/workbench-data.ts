@@ -89,6 +89,7 @@ export function buildKnowledgeCardPrompt({
   articleTitle,
   cardIndex,
   cardTotal,
+  promptText,
   cardTitle,
   cardSummary,
   cardTheme,
@@ -104,6 +105,7 @@ export function buildKnowledgeCardPrompt({
   articleTitle: string;
   cardIndex: number;
   cardTotal: number;
+  promptText?: string;
   cardTitle: string;
   cardSummary: string;
   cardTheme?: string;
@@ -123,6 +125,18 @@ export function buildKnowledgeCardPrompt({
   cardEndingLabel?: string;
   bodyPreview: string;
 }) {
+  if (promptText?.trim()) {
+    return `${promptText.trim()}
+
+## 当前项目定制补充（在保留原提示词风格骨架的前提下追加）
+
+- 整体饱和度再压低一点，避免过亮、过甜、过儿童化
+- 颜色关系更克制，允许加入少量雾蓝、灰白、浅暖灰作为辅助平衡
+- 版面优先服务信息阅读，不要把画面做成纯装饰海报
+- 手绘感可以保留，但不要过度可爱，不要太像儿童贴纸
+- 保持安静、专业、疗愈的阅读气质`;
+  }
+
   const textBlocks = (cardTextBlocks || []).filter(Boolean).slice(0, 4);
   const illustrationHints = (cardIllustrationHints || []).filter(Boolean).slice(0, textBlocks.length || 4);
   const upperBlocks = textBlocks.slice(0, Math.max(1, Math.ceil(textBlocks.length / 2)));
@@ -407,6 +421,7 @@ export function buildGenerationTasks({
               articleTitle,
               cardIndex: card.index,
               cardTotal: planning.cardPlan.length,
+              promptText: card.promptText,
               cardTitle: card.title,
               cardSummary: card.summary,
               cardTheme: card.theme,
