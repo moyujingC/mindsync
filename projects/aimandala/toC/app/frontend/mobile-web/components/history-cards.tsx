@@ -9,7 +9,7 @@ import {
 import type { HistoryPageDescriptor } from "../pages";
 import type { SharedHistoryRecordItem } from "../../shared/ui/types";
 
-export type HistoryFilterId = SharedHistoryFilterId;
+export type HistoryFilterId = SharedHistoryFilterId | "review";
 
 type IconNode = [tag: "path" | "circle" | "rect", attrs: Record<string, string>][];
 

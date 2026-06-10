@@ -34,6 +34,17 @@ export interface HistoryPageDescriptor {
   };
 }
 
+const historyThemeDisplayNames: Record<string, string> = {
+  wealth: "财富事业",
+  wealth_career: "财富事业",
+  career_development: "财富事业",
+  personal_growth: "个人成长",
+};
+
+function getHistoryThemeDisplayName(theme: string): string {
+  return historyThemeDisplayNames[theme] ?? getThemeDisplayName(theme) ?? theme;
+}
+
 function formatHistoryCreatedAt(value: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
@@ -73,7 +84,7 @@ export function createHistoryPageDescriptor(
   return {
     pageId: "history-page",
     title: "历史解读",
-    subtitle: "查看已经生成的曼陀罗解读记录。",
+    subtitle: "这里保留你已经生成过的所有解读记录，方便你随时回看",
     summary: {
       total: records.length,
       ready,
@@ -81,7 +92,7 @@ export function createHistoryPageDescriptor(
     },
     items: records.map((record) => {
       const presentation = getGenerationPresentation(record);
-      const themeLabel = getThemeDisplayName(record.theme) ?? record.theme;
+      const themeLabel = getHistoryThemeDisplayName(record.theme);
       const availableReportTypes = getAvailableReportTypes(record);
       const focusReportType = availableReportTypes.includes("pro") ? "pro" : "lite";
       const isPending = !presentation.isReady;
