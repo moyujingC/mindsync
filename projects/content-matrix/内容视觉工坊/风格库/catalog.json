@@ -1,0 +1,169 @@
+{
+  "version": "2026-06-10",
+  "accountName": "墨予镜",
+  "root": "projects/content-matrix/内容视觉工坊/风格库",
+  "notes": [
+    "这份目录只收录当前风格库中实际存在的图片风格素材。",
+    "字段 promptBase 和 fit 用于内容视觉工坊后续接程序化出图与风格选择。",
+    "缺失的历史编号目录（如 02 / 03 / 04 / 09 / 10）不在本清单中恢复推断。"
+  ],
+  "styles": [
+    {
+      "id": "A01",
+      "family": "主风格",
+      "name": "墨予镜 · 极简纸本信息板",
+      "folder": "01_极简纸本信息板",
+      "status": "ready",
+      "pinned": true,
+      "desc": "极简信息板 / 纸本结构 / 低饱和排版",
+      "meta": "主风格 A01 · 参考图 6 张",
+      "fit": ["knowledgeCards", "xiaohongshuCover"],
+      "mood": ["极简", "纸本", "信息板", "克制"],
+      "palette": ["#f3ecdb", "#1f3a36", "#b86b3a", "#8a8270"],
+      "promptBase": "极简纸本信息板风格，版式清楚、留白克制、适合观点与方法类知识卡，不做厚重科技噪点。",
+      "referenceImages": [
+        "01_极简纸本信息板/IMG_7772.JPG",
+        "01_极简纸本信息板/IMG_7773.JPG",
+        "01_极简纸本信息板/IMG_7774.JPG",
+        "01_极简纸本信息板/IMG_7775.JPG",
+        "01_极简纸本信息板/IMG_7776.JPG",
+        "01_极简纸本信息板/IMG_7777.JPG"
+      ]
+    },
+    {
+      "id": "A02",
+      "family": "主风格",
+      "name": "墨予镜 · 手账教程说明卡",
+      "folder": "05_手账教程说明卡",
+      "status": "ready",
+      "desc": "教程步骤 / 手账模块 / 说明更强",
+      "meta": "主风格 A02 · 参考图 6 张",
+      "fit": ["knowledgeCards", "xiaohongshuCover"],
+      "mood": ["教程", "步骤", "手账", "说明"],
+      "palette": ["#f2ebdf", "#5f584d", "#c0a574", "#ddd3c2"],
+      "promptBase": "手账教程说明卡风格，步骤清楚、模块规整、适合方法类内容，不要画面过满。",
+      "referenceImages": [
+        "05_手账教程说明卡/IMG_7808.JPG",
+        "05_手账教程说明卡/IMG_7809.JPG",
+        "05_手账教程说明卡/IMG_7810.JPG",
+        "05_手账教程说明卡/IMG_7811.JPG",
+        "05_手账教程说明卡/IMG_7812.JPG",
+        "05_手账教程说明卡/IMG_7813.JPG"
+      ]
+    },
+    {
+      "id": "B01",
+      "family": "辅风格",
+      "name": "墨予镜 · 纸张材质方法卡",
+      "folder": "06_纸张材质方法卡",
+      "status": "ready",
+      "desc": "纸张材质 / 方法拆解 / 纸感更强",
+      "meta": "辅风格 B01 · 参考图 6 张",
+      "fit": ["knowledgeCards", "xiaohongshuCover"],
+      "mood": ["纸张", "材质", "方法", "结构"],
+      "palette": ["#f5ebd7", "#6c6557", "#cfa968", "#dbd2c2"],
+      "promptBase": "纸张材质方法卡风格，强调纸面纹理、分类说明、方法拆解，适合收藏型知识卡。",
+      "referenceImages": [
+        "06_纸张材质方法卡/IMG_7814.JPG",
+        "06_纸张材质方法卡/IMG_7815.JPG",
+        "06_纸张材质方法卡/IMG_7816.JPG",
+        "06_纸张材质方法卡/IMG_7817.JPG",
+        "06_纸张材质方法卡/IMG_7818.JPG",
+        "06_纸张材质方法卡/IMG_7819.JPG"
+      ]
+    },
+    {
+      "id": "B02",
+      "family": "辅风格",
+      "name": "墨予镜 · 胶带极简手账卡",
+      "folder": "07_胶带极简手账卡",
+      "status": "ready",
+      "desc": "胶带便签 / 极简手账 / 单步强调",
+      "meta": "辅风格 B02 · 参考图 6 张",
+      "fit": ["knowledgeCards", "xiaohongshuCover"],
+      "mood": ["胶带", "便签", "极简", "手账"],
+      "palette": ["#f4eee1", "#655d50", "#b79d75", "#ddd4c3"],
+      "promptBase": "胶带极简手账卡风格，单步重点突出，纸张与便签感明确，适合轻方法知识卡。",
+      "referenceImages": [
+        "07_胶带极简手账卡/IMG_7820.JPG",
+        "07_胶带极简手账卡/IMG_7821.JPG",
+        "07_胶带极简手账卡/IMG_7822.JPG",
+        "07_胶带极简手账卡/IMG_7823.JPG",
+        "07_胶带极简手账卡/IMG_7824.JPG",
+        "07_胶带极简手账卡/IMG_7825.JPG"
+      ]
+    },
+    {
+      "id": "A03",
+      "family": "主风格",
+      "name": "墨予镜 · 纸感科技信息卡",
+      "folder": "08_纸感科技信息卡",
+      "status": "ready",
+      "pinned": true,
+      "desc": "纸感科技 / 蓝灰信息 / AI 主题更稳",
+      "meta": "主风格 A03 · 参考图 8 张",
+      "fit": ["knowledgeCards", "wechatCover", "wechatShareCover", "wechatInlineImages", "xiaohongshuCover"],
+      "mood": ["科技", "蓝灰", "纸感", "信息"],
+      "palette": ["#edf2f7", "#5d7185", "#9db3ca", "#d7dde5"],
+      "promptBase": "纸感科技信息卡风格，蓝灰和米白并置，科技感克制、信息层级清楚，适合 AI 主题封面与配图。",
+      "referenceImages": [
+        "08_纸感科技信息卡/IMG_7832.JPG",
+        "08_纸感科技信息卡/IMG_7833.JPG",
+        "08_纸感科技信息卡/IMG_7834.JPG",
+        "08_纸感科技信息卡/IMG_7835.JPG",
+        "08_纸感科技信息卡/IMG_7836.JPG",
+        "08_纸感科技信息卡/IMG_7837.JPG",
+        "08_纸感科技信息卡/IMG_7838.JPG",
+        "08_纸感科技信息卡/IMG_7839.JPG"
+      ]
+    },
+    {
+      "id": "B06",
+      "family": "辅风格",
+      "name": "墨予镜 · 东方器物书信卡",
+      "folder": "11_东方器物书信卡",
+      "status": "ready",
+      "desc": "东方器物 / 书信感 / 文人气",
+      "meta": "辅风格 B06 · 参考图 7 张",
+      "fit": ["knowledgeCards", "wechatCover", "wechatShareCover", "xiaohongshuCover"],
+      "mood": ["东方", "器物", "书信", "文人感"],
+      "palette": ["#f5efe5", "#6a5a49", "#b48f6a", "#ded0be"],
+      "promptBase": "东方器物书信卡风格，茶器、纸笺、旧物与书信感结合，适合文化主题、观点卡与封面。",
+      "referenceImages": [
+        "11_东方器物书信卡/IMG_7867.JPG",
+        "11_东方器物书信卡/IMG_7868.JPG",
+        "11_东方器物书信卡/IMG_7869.JPG",
+        "11_东方器物书信卡/IMG_7870.JPG",
+        "11_东方器物书信卡/IMG_7871.JPG",
+        "11_东方器物书信卡/IMG_7872.JPG",
+        "11_东方器物书信卡/IMG_7873.JPG"
+      ]
+    },
+    {
+      "id": "B07",
+      "family": "辅风格",
+      "name": "墨予镜 · 浅绿疗愈流程卡",
+      "folder": "12_浅绿疗愈流程卡",
+      "status": "ready",
+      "desc": "浅绿底 / 疗愈流程 / 插画步骤说明",
+      "meta": "辅风格 B07 · 参考图 11 张",
+      "fit": ["knowledgeCards", "xiaohongshuCover"],
+      "mood": ["浅绿", "疗愈", "流程", "步骤"],
+      "palette": ["#eaf4d8", "#5b6f52", "#e0bb78", "#b8d39c"],
+      "promptBase": "浅绿疗愈流程卡风格，轻插画、步骤说明、疗愈和成长主题明确，适合流程型知识卡片。",
+      "referenceImages": [
+        "12_浅绿疗愈流程卡/IMG_7675.PNG",
+        "12_浅绿疗愈流程卡/IMG_7676.PNG",
+        "12_浅绿疗愈流程卡/IMG_7717.PNG",
+        "12_浅绿疗愈流程卡/IMG_7718.PNG",
+        "12_浅绿疗愈流程卡/IMG_7719.PNG",
+        "12_浅绿疗愈流程卡/IMG_7720.PNG",
+        "12_浅绿疗愈流程卡/IMG_7723.PNG",
+        "12_浅绿疗愈流程卡/IMG_7724.PNG",
+        "12_浅绿疗愈流程卡/IMG_7725.PNG",
+        "12_浅绿疗愈流程卡/IMG_7726.PNG",
+        "12_浅绿疗愈流程卡/IMG_7727.PNG"
+      ]
+    }
+  ]
+}
