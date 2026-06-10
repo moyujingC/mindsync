@@ -731,9 +731,11 @@
 
 .mw-history-record--default .mw-history-status-pill {
   min-width: auto;
+  min-height: 24px;
   gap: 3px;
   margin-left: 3px;
   margin-right: 3px;
+  align-self: center;
   padding-right: 1px;
   padding-left: 1px;
   border-color: transparent;
@@ -747,13 +749,13 @@
 }
 
 .mw-history-record--default .mw-history-status-pill__label {
-  font-size: 6.8px;
+  font-size: 6.7px;
 }
 
 .mw-history-record--default .mw-history-status-pill__icon,
 .mw-history-record--default .mw-history-status-pill__icon svg {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 .mw-history-record--default {
