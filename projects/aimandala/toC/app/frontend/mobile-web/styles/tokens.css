@@ -360,6 +360,7 @@
     var(--am-color-copper-400) 40%,
     var(--am-color-gold-300) 100%
   );
+  --am-upload-topbar-divider: rgba(20, 30, 56, 0.78);
   --am-shell-topbar-bg: linear-gradient(
     135deg,
     var(--am-color-ink-900) 0%,
