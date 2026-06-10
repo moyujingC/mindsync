@@ -56,6 +56,35 @@ export type WorkbenchOutputs = {
   layout: boolean;
 };
 
+const KNOWLEDGE_CARD_PROMPT_RULES = `【文字渲染规则 - 严格遵守】
+（以下规则适用于豆包/即梦等国内绘画AI模型，使用Google/nano banana pro等工具可忽略）
+只渲染提示词中用反引号 \`\` 明确标注的文字内容，原样呈现。
+凡是提示词中没有用反引号标注的地方，一律不得自行添加任何文字、字母、数字或符号。
+图标、插画、装饰元素可以自由发挥，但不得在其上附加任何未经指定的文字。`;
+
+const KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK = `## 整体风格说明（与本系列所有图保持一致）
+
+整体风格：手绘涂鸦笔记 (Sketchnote) 风格，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
+
+画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
+
+视觉风格：清新自然风
+
+背景：浅绿米白渐变，水彩晕染效果
+
+配色：草绿、天蓝、暖黄，深绿轮廓
+
+字体：清晰可辨的中文手写体风格`;
+
+const KNOWLEDGE_CARD_PROMPT_CUSTOM_STYLE_BLOCK = `## 当前项目定制补充（在保留以上风格骨架的前提下追加）
+
+- 保留清新自然风，不推翻原始风格设定
+- 整体饱和度再压低一点，避免过亮、过甜、过儿童化
+- 颜色关系更克制，允许加入少量雾蓝、灰白、浅暖灰作为辅助平衡
+- 版面优先服务信息阅读，不要把画面做成纯装饰海报
+- 手绘感可以保留，但不要过度可爱，不要太像儿童贴纸
+- 保持安静、专业、疗愈的阅读气质`;
+
 export function buildKnowledgeCardPrompt({
   articleTitle,
   cardIndex,
@@ -129,29 +158,15 @@ ${upperRendered || `- \`${cardSummary}\`（旁边画与主题相关的简笔画�
 ${lowerRendered ? `【补充信息区】（位于画面下半部分）：
 ${lowerRendered}` : ""}`;
 
-  return `【文字渲染规则 - 严格遵守】
-（以下规则适用于豆包/即梦等国内绘画AI模型，使用Google/nano banana pro等工具可忽略）
-只渲染提示词中用反引号 \`\` 明确标注的文字内容，原样呈现。
-凡是提示词中没有用反引号标注的地方，一律不得自行添加任何文字、字母、数字或符号。
-图标、插画、装饰元素可以自由发挥，但不得在其上附加任何未经指定的文字。
+  return `${KNOWLEDGE_CARD_PROMPT_RULES}
 
 ---
 
 【第${cardIndex}张图 - 独立完整的一张图，单独占据一个完整的3:4竖版画布，请勿与其他图合并】
 
-## 整体风格说明（与本系列所有图保持一致）
+${KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK}
 
-整体风格：手绘涂鸦笔记 (Sketchnote) 风格，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
-
-画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
-
-视觉风格：清新自然风
-
-背景：浅绿米白渐变，水彩晕染效果
-
-配色：草绿、天蓝、暖黄，深绿轮廓
-
-字体：清晰可辨的中文手写体风格
+${KNOWLEDGE_CARD_PROMPT_CUSTOM_STYLE_BLOCK}
 
 系列标识：右上角标注序号"${indexLabel}/${totalLabel}"
 
