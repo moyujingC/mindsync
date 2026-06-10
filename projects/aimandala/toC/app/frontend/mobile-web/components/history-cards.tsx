@@ -62,6 +62,7 @@ export interface HistoryRecordCardProps {
   variant?: "featured" | "default";
   thumbIndex?: number;
   statusLabelOverride?: string;
+  actionLabelOverride?: string;
   isBusy?: boolean;
   disabled?: boolean;
   onOpenRecord?: (interpretationId: string) => void;
@@ -73,19 +74,37 @@ export function HistoryRecordCard({
   variant = "default",
   thumbIndex = 0,
   statusLabelOverride,
+  actionLabelOverride,
   isBusy = false,
   disabled = false,
   onOpenRecord,
 }: HistoryRecordCardProps) {
   const progressPercent = Number.parseInt(item.progressLabel.replace(/\D/g, ""), 10);
   const isFeatured = variant === "featured";
+  const isPending = !item.recordReady;
   const thumbClassName = isFeatured
     ? `mw-history-record__thumb mw-history-record__thumb--featured${!item.recordReady ? " mw-history-record__thumb--featured-pending" : ""}`
     : `mw-history-record__thumb mw-history-record__thumb--${thumbIndex % 4}`;
   const iconGlyph = item.recordReady ? "♡" : "✧";
-  const statusLabel = isBusy
+  const ctaLabel = isBusy
     ? "打开中..."
-    : statusLabelOverride ?? (isFeatured ? (item.recordReady ? "待查看" : "生成中") : (item.recordReady ? "可查看" : "生成中"));
+    : actionLabelOverride ?? (item.focusReportType === "pro"
+      ? (item.recordReady ? "查看 Pro" : "查看进度")
+      : "查看 Lite");
+  const reportLabel = item.focusReportType === "pro" ? "Pro 完整解读" : "Lite 初步解读";
+  const statusSummary = isPending
+    ? `${reportLabel} · 生成中${Number.isNaN(progressPercent) ? "" : ` ${progressPercent}%`}`
+    : !isFeatured && item.focusReportType === "lite" && item.availableReportTypes.length === 1
+      ? `${reportLabel} · 可升级 Pro`
+      : `${reportLabel} · 已可查看`;
+  const helperCopy = isFeatured
+    ? (item.focusReportType === "pro"
+      ? (item.recordReady ? "Lite 基础上的深入解读" : "Lite 已可查看")
+      : "可继续升级 Pro")
+    : "";
+  const badgeLabel = isBusy
+    ? "打开中..."
+    : statusLabelOverride ?? ctaLabel;
 
   return (
     <article
@@ -104,12 +123,11 @@ export function HistoryRecordCard({
           <div className="mw-history-record__meta">
             <span className="mw-history-clock" aria-hidden="true" />
             <span>{item.subtitle.replace("创建于 ", "")}</span>
-            <strong className={`mw-history-version mw-history-version--${item.focusReportType}`}>
-              {item.focusReportType === "pro" ? "Pro" : "Lite"}
-            </strong>
           </div>
+          <p className="mw-history-record__status-line">{statusSummary}</p>
+          <p className="mw-history-record__helper-line">{helperCopy}</p>
         </div>
-        {!item.recordReady ? (
+        {isPending ? (
           <div className="mw-history-record__progress">
             <span>{Number.isNaN(progressPercent) ? item.progressLabel : `${progressPercent}%`}</span>
             <div>
@@ -131,7 +149,7 @@ export function HistoryRecordCard({
             <LucideIcon iconNode={ICON_LOADER} size={14} strokeWidth={1.9} className="am-lucide-spin" />
           )}
         </span>
-        <span className="mw-history-status-pill__label">{statusLabel}</span>
+        <span className="mw-history-status-pill__label">{badgeLabel}</span>
       </button>
     </article>
   );

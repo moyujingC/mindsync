@@ -8,10 +8,11 @@ import type { InterpretationListQuery, InterpretationRecordResponse } from "../.
 const historyThemeOptions: SharedTopicSelectorOption[] = [
   {
     value: "all",
-    label: "全面",
-    subLabel: "看看",
+    label: "不限",
+    subLabel: "议题",
     icon: [
-      ["path", { d: "m12 3.5 2.7 5.4 6 .9-4.4 4.2 1 6-5.3-2.8L6.7 20l1-6-4.4-4.2 6-.9Z", key: "star-1" }],
+      ["circle", { cx: "12", cy: "12", r: "7", key: "all-1" }],
+      ["path", { d: "M7.5 12h9", key: "all-2" }],
     ],
   },
   ...sharedTopicSelectorOptions,
@@ -72,7 +73,7 @@ export function MobileWebHistoryPage({
   const descriptor = createHistoryPageDescriptor(records);
   const activeTheme = historyQuery?.theme;
   const activeLimit = historyQuery?.limit ?? 20;
-  const pendingItems = descriptor.items.slice(0, 6);
+  const pendingItems = descriptor.items.slice(0, 5);
   const filteredItems = descriptor.items.filter((item) => {
     const matchesTheme = !activeTheme || item.theme === activeTheme;
     if (!matchesTheme) {
@@ -156,7 +157,6 @@ export function MobileWebHistoryPage({
                     imageUrl={imageUrl}
                     variant="featured"
                     thumbIndex={index}
-                    statusLabelOverride={item.recordReady ? "待查看" : "生成中"}
                     isBusy={isBusy}
                     disabled={filterBusy || actionBusy}
                     onOpenRecord={onOpenRecord}
@@ -169,26 +169,19 @@ export function MobileWebHistoryPage({
           )}
         </section>
 
-        <div className="mw-history-separator" aria-hidden="true">
-          <span />
-        </div>
-
         <section className="mw-history-all">
-          <h2>全部历史记录</h2>
-
-          <div className="mw-history-summary">
-            <article className="mw-history-summary__card mw-history-summary__card--ready">
-              <strong>{descriptor.summary.ready}</strong>
-              <span>可查看</span>
-            </article>
-            <article className="mw-history-summary__card mw-history-summary__card--pending">
-              <strong>{descriptor.summary.pending}</strong>
-              <span>生成中</span>
-            </article>
-          </div>
-
-          <div className="mw-history-separator mw-history-separator--compact" aria-hidden="true">
-            <span />
+          <div className="mw-history-all__header">
+            <h2>全部历史记录</h2>
+            <div className="mw-history-all__summary">
+              <article className="mw-history-all__summary-pill mw-history-all__summary-pill--ready">
+                <strong>{descriptor.summary.ready}</strong>
+                <span>可查看</span>
+              </article>
+              <article className="mw-history-all__summary-pill mw-history-all__summary-pill--pending">
+                <strong>{descriptor.summary.pending}</strong>
+                <span>生成中</span>
+              </article>
+            </div>
           </div>
 
           <section className="mw-history-filter-block">
@@ -247,9 +240,13 @@ export function MobileWebHistoryPage({
                     key={item.interpretationId}
                     item={item}
                     imageUrl={imageUrl}
-                    variant="featured"
+                    variant="default"
                     thumbIndex={index}
-                    statusLabelOverride={item.recordReady ? "可查看" : "生成中"}
+                    actionLabelOverride={
+                      item.focusReportType === "lite" && item.recordReady && item.availableReportTypes.length === 1
+                        ? "升级 Pro"
+                        : undefined
+                    }
                     isBusy={isBusy}
                     disabled={filterBusy || actionBusy}
                     onOpenRecord={onOpenRecord}
