@@ -25,7 +25,6 @@
   background: var(--am-upload-hero-bg);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  box-shadow: 0 1px 0 rgb(12 18 34);
 }
 
 .am-upload-hero__glow,
