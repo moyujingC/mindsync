@@ -221,13 +221,13 @@ export function buildGenerationTasks({
       const quoteText = selectedQuotes[0];
       tasks.push({
         articleTitle,
-        prompt: `为文章《${articleTitle}》生成一张公众号横版金句卡。核心文案是：“${quoteText}”。画面需留白、安静、疗愈，便于后续叠加文字。`,
+        prompt: `为文章《${articleTitle}》生成一张公众号横版金句底图。核心文案是：“${quoteText}”。画面需留白、安静、疗愈，便于后续叠加文字。`,
         negativePrompt: "高饱和、霓虹、复杂纹理、人物特写、卡通插画、杂乱文字",
         width: preset.w,
         height: preset.h,
         count: 1,
         purposeKey: "quote",
-        purposeLabel: "金句卡",
+        purposeLabel: "金句底图",
         presetKey: preset.k,
         presetLabel: preset.label,
         styleName: "蓝雾静读",

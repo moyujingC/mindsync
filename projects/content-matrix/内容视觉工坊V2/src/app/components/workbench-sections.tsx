@@ -222,7 +222,7 @@ export function WorkbenchLeftSidebar({
       >
         {[
           { k: "knowledge" as const, l: "知识卡片", n: "自动", auto: true },
-          { k: "quote" as const, l: "金句卡", n: "按勾选" },
+          { k: "quote" as const, l: "金句底图", n: "按勾选" },
           { k: "cover" as const, l: "公众号封面", n: "3" },
           { k: "inline" as const, l: "正文配图", n: "3" },
         ].map((item, index, arr) => (
@@ -439,7 +439,7 @@ export function WorkbenchLeftSidebar({
 
 function formatStatusScope(scope: string) {
   if (scope === "planning") return "内容拆解";
-  if (scope === "quote-generation") return "金句卡";
+  if (scope === "quote-generation") return "金句底图";
   if (scope === "inline-image-generation") return "正文配图";
   if (scope === "cover-generation") return "公众号封面";
   if (scope === "markdown-import") return "Markdown 导入";
@@ -927,7 +927,7 @@ function WorkbenchResultsPanel({
       <div className="grid grid-cols-2 gap-5 mt-5">
         <div>
           <ResultRow
-            label="金句卡横版（公众号）"
+            label="金句底图（公众号横版）"
             size={quotePreset ? `公众号正文 · ${quotePreset.w}×${quotePreset.h}` : "公众号正文 · 1080×608"}
             count={quoteGeneration?.images.length ?? 0}
           />
@@ -945,7 +945,7 @@ function WorkbenchResultsPanel({
             ) : null}
             {quoteBindingIsStale ? (
               <div style={{ color: "#8A5A46", marginTop: 2 }}>
-                当前展示的是上一轮所选金句结果，再次点击“生成金句卡”才会更新。
+                当前展示的是上一轮所选金句结果，再次点击“生成金句底图”才会更新。
               </div>
             ) : null}
           </div>
@@ -973,7 +973,7 @@ function WorkbenchResultsPanel({
                 <Quote size={20} strokeWidth={1.4} color="#3F4E62" />
                 <div style={{ color: "#2B3645", fontSize: 17, lineHeight: 1.55, letterSpacing: "0.02em" }}>
                 {((selectedQuotes.length > 0 ? plannedQuotes[selectedQuotes[0]] : null) ??
-                    "尚未生成金句卡")
+                    "尚未生成金句底图")
                     .split("，")
                     .map((line: string, index: number, list: string[]) => (
                       <span key={`${line}-${index}`}>
@@ -998,7 +998,7 @@ function WorkbenchResultsPanel({
                 border: "1px solid #8B6F44",
               }}
             >
-              重新生成金句卡
+              重新生成金句底图
             </Btn>
           </div>
         </div>
@@ -1167,7 +1167,7 @@ function QuoteSummaryCard({
               border: "1px solid #8B6F44",
             }}
           >
-            生成金句卡 · {selectedQuotes.length}
+            生成金句底图 · {selectedQuotes.length}
           </Btn>
         </div>
       </div>

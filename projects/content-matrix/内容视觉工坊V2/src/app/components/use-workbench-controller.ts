@@ -159,7 +159,7 @@ export function useWorkbenchController({
       modeText: "自动拆分",
     }),
     quote: buildOutputSummary({
-      label: "金句卡",
+      label: "金句底图",
       generatedCount: quoteGeneration?.images.length ?? 0,
       plannedCount: selectedQuotes.length,
       generatedText:
@@ -803,7 +803,7 @@ export function useWorkbenchController({
     if (resolvedIndexes.length === 0) {
       pushStatus("quote-generation", "error", "请先勾选至少 1 条候选金句", {
         phase: "failed",
-        currentStepLabel: "金句卡失败",
+        currentStepLabel: "金句底图失败",
         completedTasks: 0,
         totalTasks: 1,
       });
@@ -816,7 +816,7 @@ export function useWorkbenchController({
     if (!primaryQuote) {
       pushStatus("quote-generation", "error", "当前候选金句不可用，请先重新拆解", {
         phase: "failed",
-        currentStepLabel: "金句卡失败",
+        currentStepLabel: "金句底图失败",
         completedTasks: 0,
         totalTasks: 1,
       });
@@ -824,9 +824,9 @@ export function useWorkbenchController({
     }
 
     clearTaskError();
-    pushStatus("quote-generation", "info", "正在生成金句卡", {
+    pushStatus("quote-generation", "info", "正在生成金句底图", {
       phase: "generating",
-      currentStepLabel: "生成金句卡",
+      currentStepLabel: "生成金句底图",
       completedTasks: 0,
       totalTasks: 1,
     });
@@ -834,13 +834,13 @@ export function useWorkbenchController({
     try {
       const record = await postGenerateImages({
         articleTitle: currentArticle.title,
-        prompt: `为文章《${currentArticle.title}》生成一张公众号横版金句卡。核心文案是：“${primaryQuote}”。画面需留白、安静、疗愈，便于后续叠加文字。`,
+        prompt: `为文章《${currentArticle.title}》生成一张公众号横版金句底图。核心文案是：“${primaryQuote}”。画面需留白、安静、疗愈，便于后续叠加文字。`,
         negativePrompt: "高饱和、霓虹、复杂纹理、人物特写、卡通插画、杂乱文字",
         width: preset.w,
         height: preset.h,
         count: 1,
         purposeKey: "quote",
-        purposeLabel: "金句卡",
+        purposeLabel: "金句底图",
         presetKey: preset.k,
         presetLabel: preset.label,
         styleName: "蓝雾静读",
@@ -854,7 +854,7 @@ export function useWorkbenchController({
           generatedAtPlanningRevision: prev.replanRevision,
         },
       }));
-      pushStatus("quote-generation", "success", "金句卡已生成", {
+      pushStatus("quote-generation", "success", "金句底图已生成", {
         phase: "completed",
         currentStepLabel: "完成",
         completedTasks: 1,
@@ -864,10 +864,10 @@ export function useWorkbenchController({
       pushStatus(
         "quote-generation",
         "error",
-        error instanceof Error ? error.message : "金句卡生成失败",
+        error instanceof Error ? error.message : "金句底图生成失败",
         {
           phase: "failed",
-          currentStepLabel: "金句卡失败",
+          currentStepLabel: "金句底图失败",
           completedTasks: 0,
           totalTasks: 1,
         }
@@ -1249,7 +1249,7 @@ function buildTaskLabel(task: {
   if (task.purposeKey === "xhs_card" && task.cardLink?.index != null) {
     return `知识卡 ${String(task.cardLink.index).padStart(2, "0")}`;
   }
-  if (task.purposeKey === "quote") return "金句卡";
+  if (task.purposeKey === "quote") return "金句底图";
   if (task.purposeKey === "wx_inline") return "正文配图";
   if (task.purposeKey === "wx_cover") return "公众号封面";
   return task.purposeLabel;
@@ -1257,7 +1257,7 @@ function buildTaskLabel(task: {
 
 export function formatScopeLabel(scope: string) {
   if (scope === "planning") return "拆解失败";
-  if (scope === "quote-generation") return "金句卡失败";
+  if (scope === "quote-generation") return "金句底图失败";
   if (scope === "inline-image-generation") return "正文配图失败";
   if (scope === "cover-generation") return "公众号封面失败";
   if (scope === "markdown-import") return "导入失败";
