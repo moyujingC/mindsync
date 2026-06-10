@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MobileWebApp } from "./app";
 import { MiniappApp } from "../miniapp/app";
 import type { MiniappRouteId } from "../miniapp/routes";
-import { createPreviewAppProps } from "./fixtures";
+import { createPreviewAppProps, createPreviewHistoryRecords } from "./fixtures";
 import {
   createBrowserFileFromFixture,
   mobileWebDevFixturePresets,
@@ -291,8 +291,8 @@ export function MobileWebBrowserShell() {
     const seededRecords = seedGeneratedReportsForDebug(session.canonicalUserId);
     if (route === "history" && !previewHistoryRecords?.length && seededRecords.length > 0) {
       void refreshPreviewHistory(previewHistoryQuery, {
-        successLabel: "已载入本地调试历史",
-        successDetail: "当前历史页使用本地 seed 记录，便于直接调试列表、筛选和空态。",
+        successLabel: "已载入历史页对齐样例",
+        successDetail: "当前历史页使用预设样例数据，便于直接对齐 Figma 版的列表、筛选和状态层级。",
         successTone: "preview",
       });
     }
@@ -327,10 +327,12 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    const records = listGeneratedReportRecords(nextQuery);
+    const records = localDebugEnabled
+      ? createPreviewHistoryRecords()
+      : listGeneratedReportRecords(nextQuery);
     setPreviewHistoryRecords(records);
-    setPreviewHistoryStatusLabel(options?.successLabel ?? (records.length ? "已读取本地生成历史" : "暂无本地历史记录"));
-    setPreviewHistoryStatusDetail(options?.successDetail ?? (records.length ? "当前历史页展示本浏览器内生成过的 Lite / Pro 报告。" : "完成一次 Lite 或 Pro 解读后，这里会出现可回看的报告。"));
+    setPreviewHistoryStatusLabel(options?.successLabel ?? (records.length ? (localDebugEnabled ? "已载入 Figma 对齐历史样例" : "已读取本地生成历史") : "暂无本地历史记录"));
+    setPreviewHistoryStatusDetail(options?.successDetail ?? (records.length ? (localDebugEnabled ? "当前历史页使用预设样例数据，专门用于对齐首卡以下的视觉和信息层级。" : "当前历史页展示本浏览器内生成过的 Lite / Pro 报告。") : "完成一次 Lite 或 Pro 解读后，这里会出现可回看的报告。"));
     setPreviewHistoryStatusTone(options?.successTone ?? "preview");
     setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
   }
@@ -352,10 +354,10 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryRefreshing(true);
 
       if (!cancelled) {
-        setPreviewHistoryRecords(listGeneratedReportRecords(previewHistoryQuery));
+        setPreviewHistoryRecords(localDebugEnabled ? createPreviewHistoryRecords() : listGeneratedReportRecords(previewHistoryQuery));
         setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
-        setPreviewHistoryStatusLabel("已刷新本地历史记录");
-        setPreviewHistoryStatusDetail("当前历史页展示本浏览器内生成过的 Lite / Pro 报告。");
+        setPreviewHistoryStatusLabel(localDebugEnabled ? "已刷新历史样例" : "已刷新本地历史记录");
+        setPreviewHistoryStatusDetail(localDebugEnabled ? "当前历史页继续使用预设样例数据，方便稳定调试 Figma 对齐。" : "当前历史页展示本浏览器内生成过的 Lite / Pro 报告。");
         setPreviewHistoryStatusTone("preview");
       }
       setPreviewHistoryRefreshing(false);

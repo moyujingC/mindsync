@@ -1,3 +1,6 @@
+import mandalaTest01Url from "../../../../fixtures/toc-mvp/assets/mandala-test-01.JPG?url";
+import mandalaTest02Url from "../../../../fixtures/toc-mvp/assets/mandala-test-02.jpeg?url";
+
 import type { MobileWebAppProps } from "./app";
 import type { MobileWebRouteId } from "./routes";
 import type { MobileWebUploadDraft } from "./state";
@@ -121,136 +124,110 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
 }
 
 function createMockRecords(): InterpretationRecordResponse[] {
+  const imageSet = [mandalaTest01Url, mandalaTest02Url];
+  const createHistoryRecord = (
+    interpretationId: string,
+    theme: string,
+    createdAt: string,
+    options: {
+      status?: string;
+      generationStage?: string;
+      generationProgress?: number;
+      versionPurchased?: string[];
+      canUpgrade?: boolean;
+      autoDetected?: boolean;
+      radii?: { inner: number; middle: number };
+      imageIndex?: number;
+    } = {},
+  ): InterpretationRecordResponse => ({
+    interpretation_id: interpretationId,
+    user_id: "demo-user-id",
+    theme,
+    status: options.status ?? "completed",
+    generation_stage: options.generationStage ?? "report_ready",
+    generation_progress: options.generationProgress ?? 100,
+    version_purchased: options.versionPurchased ?? ["lite"],
+    three_circles: {
+      inner_radius: options.radii?.inner ?? 0.3,
+      middle_radius: options.radii?.middle ?? 0.64,
+    },
+    auto_detected: options.autoDetected ?? false,
+    can_upgrade: options.canUpgrade ?? true,
+    created_at: createdAt,
+    image_url: imageSet[options.imageIndex ?? 0] ?? imageSet[0],
+  });
+
   return [
-    {
-      interpretation_id: "demo-007",
-      user_id: "demo-user-id",
-      theme: "career_development",
-      status: "completed",
-      generation_stage: "report_ready",
-      generation_progress: 100,
-      version_purchased: ["lite", "pro"],
-      three_circles: {
-        inner_radius: 0.24,
-        middle_radius: 0.58,
-      },
-      auto_detected: true,
-      can_upgrade: false,
-      created_at: "2026-04-18T08:12:00+08:00",
-    },
-    {
-      interpretation_id: "demo-008",
-      user_id: "demo-user-id",
-      theme: "parent_child_relationship",
+    createHistoryRecord("r1-pro-intimate", "intimate_relationship", "2026-06-08T09:30:00+08:00", {
+      versionPurchased: ["lite", "pro"],
+      canUpgrade: false,
+      radii: { inner: 0.26, middle: 0.6 },
+      imageIndex: 0,
+    }),
+    createHistoryRecord("r2-lite-wealth-career", "wealth", "2026-06-05T14:22:00+08:00", {
+      versionPurchased: ["lite"],
+      canUpgrade: true,
+      radii: { inner: 0.29, middle: 0.62 },
+      imageIndex: 1,
+    }),
+    createHistoryRecord("r3-pro-personal-growth", "personal_growth", "2026-06-02T20:10:00+08:00", {
       status: "processing",
-      generation_stage: "generating_lite",
-      generation_progress: 52,
-      version_purchased: ["lite"],
-      three_circles: {
-        inner_radius: 0.33,
-        middle_radius: 0.68,
-      },
-      auto_detected: false,
-      can_upgrade: false,
-      created_at: "2026-04-17T21:06:00+08:00",
-    },
-    {
-      interpretation_id: "demo-001",
-      user_id: "demo-user-id",
-      theme: "intimate_relationship",
-      status: "completed",
-      generation_stage: "report_ready",
-      generation_progress: 100,
-      version_purchased: ["lite", "pro"],
-      three_circles: {
-        inner_radius: 0.26,
-        middle_radius: 0.6,
-      },
-      auto_detected: false,
-      can_upgrade: true,
-      created_at: "2026-04-17T09:30:00+08:00",
-    },
-    {
-      interpretation_id: "demo-002",
-      user_id: "demo-user-id",
-      theme: "intimate_relationship",
-      status: "completed",
-      generation_stage: "report_ready",
-      generation_progress: 100,
-      version_purchased: ["lite"],
-      three_circles: {
-        inner_radius: 0.31,
-        middle_radius: 0.67,
-      },
-      auto_detected: false,
-      can_upgrade: true,
-      created_at: "2026-04-17T09:30:00+08:00",
-    },
-    {
-      interpretation_id: "demo-003",
-      user_id: "demo-user-id",
-      theme: "wealth",
-      status: "completed",
-      generation_stage: "report_ready",
-      generation_progress: 100,
-      version_purchased: ["lite"],
-      three_circles: {
-        inner_radius: 0.29,
-        middle_radius: 0.62,
-      },
-      auto_detected: true,
-      can_upgrade: true,
-      created_at: "2026-04-16T14:22:00+08:00",
-    },
-    {
-      interpretation_id: "demo-004",
-      user_id: "demo-user-id",
-      theme: "personal_growth",
-      status: "processing",
-      generation_stage: "generating_pro",
-      generation_progress: 74,
-      version_purchased: ["lite", "pro"],
-      three_circles: {
-        inner_radius: 0.35,
-        middle_radius: 0.7,
-      },
-      auto_detected: false,
-      can_upgrade: false,
-      created_at: "2026-04-15T20:10:00+08:00",
-    },
-    {
-      interpretation_id: "demo-005",
-      user_id: "demo-user-id",
-      theme: "mother_relationship",
-      status: "completed",
-      generation_stage: "report_ready",
-      generation_progress: 100,
-      version_purchased: ["lite"],
-      three_circles: {
-        inner_radius: 0.28,
-        middle_radius: 0.61,
-      },
-      auto_detected: false,
-      can_upgrade: true,
-      created_at: "2026-03-28T19:18:00+08:00",
-    },
-    {
-      interpretation_id: "demo-006",
-      user_id: "demo-user-id",
-      theme: "father_relationship",
-      status: "completed",
-      generation_stage: "report_ready",
-      generation_progress: 100,
-      version_purchased: ["lite"],
-      three_circles: {
-        inner_radius: 0.32,
-        middle_radius: 0.66,
-      },
-      auto_detected: true,
-      can_upgrade: true,
-      created_at: "2026-03-12T08:45:00+08:00",
-    },
+      generationStage: "generating_pro",
+      generationProgress: 95,
+      versionPurchased: ["lite", "pro"],
+      canUpgrade: false,
+      radii: { inner: 0.35, middle: 0.7 },
+      imageIndex: 0,
+    }),
+    createHistoryRecord("r4-pro-parent-child", "parent_child_relationship", "2026-05-20T17:40:00+08:00", {
+      versionPurchased: ["lite", "pro"],
+      canUpgrade: false,
+      radii: { inner: 0.33, middle: 0.68 },
+      imageIndex: 1,
+    }),
+    createHistoryRecord("r5-lite-father", "father_relationship", "2026-05-12T08:15:00+08:00", {
+      versionPurchased: ["lite"],
+      canUpgrade: true,
+      autoDetected: true,
+      radii: { inner: 0.32, middle: 0.66 },
+      imageIndex: 0,
+    }),
+    createHistoryRecord("r6-lite-mother", "mother_relationship", "2026-05-28T11:05:00+08:00", {
+      versionPurchased: ["lite"],
+      canUpgrade: true,
+      radii: { inner: 0.28, middle: 0.61 },
+      imageIndex: 1,
+    }),
+    createHistoryRecord("r7-lite-body", "body_health", "2026-04-22T19:10:00+08:00", {
+      versionPurchased: ["lite"],
+      canUpgrade: true,
+      radii: { inner: 0.27, middle: 0.59 },
+      imageIndex: 0,
+    }),
+    createHistoryRecord("r8-pro-intimate-older", "intimate_relationship", "2026-04-08T16:40:00+08:00", {
+      versionPurchased: ["lite", "pro"],
+      canUpgrade: false,
+      radii: { inner: 0.25, middle: 0.57 },
+      imageIndex: 1,
+    }),
+    createHistoryRecord("r9-lite-wealth-older", "wealth", "2026-03-20T10:25:00+08:00", {
+      versionPurchased: ["lite"],
+      canUpgrade: true,
+      autoDetected: true,
+      radii: { inner: 0.3, middle: 0.63 },
+      imageIndex: 0,
+    }),
+    createHistoryRecord("r10-lite-parent-child-older", "parent_child_relationship", "2026-03-05T18:12:00+08:00", {
+      versionPurchased: ["lite"],
+      canUpgrade: true,
+      radii: { inner: 0.31, middle: 0.65 },
+      imageIndex: 1,
+    }),
   ];
+}
+
+export function createPreviewHistoryRecords(): InterpretationRecordResponse[] {
+  return createMockRecords();
 }
 
 export function createPreviewAppProps(

@@ -105,6 +105,8 @@ export function HistoryRecordCard({
   const reportLabel = item.focusReportType === "pro" ? "Pro 完整解读" : "Lite 初步解读";
   const statusSummary = isPending
     ? `${reportLabel} · 生成中${Number.isNaN(progressPercent) ? "" : ` ${progressPercent}%`}`
+    : !isFeatured && actionLabelOverride === "升级 Pro"
+      ? `${reportLabel} · 可升级 Pro`
     : `${reportLabel} · 已可查看`;
   const helperCopy = isFeatured
     ? (item.focusReportType === "pro"

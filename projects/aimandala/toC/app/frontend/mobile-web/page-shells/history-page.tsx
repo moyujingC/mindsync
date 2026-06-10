@@ -304,6 +304,7 @@ export function MobileWebHistoryPage({
               {filteredItems.map((item, index) => {
                 const imageUrl = getRecordImage(item.interpretationId);
                 const isBusy = actionBusy && activeRecordId === item.interpretationId;
+                const isPendingPreviewItem = pendingItems.some((pendingItem) => pendingItem.interpretationId === item.interpretationId);
 
                 return (
                   <HistoryRecordCard
@@ -312,6 +313,14 @@ export function MobileWebHistoryPage({
                     imageUrl={imageUrl}
                     variant="default"
                     thumbIndex={index}
+                    actionLabelOverride={
+                      item.focusReportType === "lite" &&
+                      item.recordReady &&
+                      item.availableReportTypes.length === 1 &&
+                      !isPendingPreviewItem
+                        ? "升级 Pro"
+                        : undefined
+                    }
                     isBusy={isBusy}
                     disabled={filterBusy || actionBusy}
                     onOpenRecord={onOpenRecord}
