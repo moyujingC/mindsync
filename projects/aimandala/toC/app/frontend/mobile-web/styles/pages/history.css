@@ -749,44 +749,44 @@
 }
 
 .mw-history-record--default .mw-history-status-pill__label {
-  font-size: 6.45px;
+  font-size: 6.55px;
 }
 
 .mw-history-record--default .mw-history-status-pill__icon,
 .mw-history-record--default .mw-history-status-pill__icon svg {
-  width: 4.5px;
-  height: 4.5px;
+  width: 4px;
+  height: 4px;
 }
 
 .mw-history-record--default {
-  min-height: 66px;
+  min-height: 64px;
 }
 
 .mw-history-record--default .mw-history-record__thumb {
-  flex-basis: 56px;
-  width: 56px;
+  flex-basis: 54px;
+  width: 54px;
   margin-left: 6px;
   border-radius: 7px;
 }
 
 .mw-history-record--default .mw-history-record__body {
-  padding: 5px 2px 5px 7px;
+  padding: 5px 1px 4px 6px;
 }
 
 .mw-history-record--default .mw-history-record__title-row h3 {
-  font-size: 10.75px;
+  font-size: 10.9px;
 }
 
 .mw-history-record--default .mw-history-record__meta {
-  font-size: 6.85px;
+  font-size: 6.95px;
 }
 
 .mw-history-record--default .mw-history-record__status-line {
-  font-size: 7.85px;
+  font-size: 7.95px;
 }
 
 .mw-history-record--default .mw-history-record__helper-line {
-  font-size: 6.1px;
+  font-size: 6.15px;
 }
 
 .mw-history-record--default .mw-history-record__progress {
@@ -878,9 +878,9 @@
 .mw-history-all__summary-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  min-height: 20px;
-  padding: 0 6px;
+  gap: 3px;
+  min-height: 18px;
+  padding: 0 5px;
   border: 1px solid rgb(var(--am-rgb-gold-300) / 0.18);
   border-radius: 999px;
   background: rgb(10 18 34 / 0.24);
@@ -896,7 +896,7 @@
 
 .mw-history-all__summary-pill span {
   color: var(--mw-history-section-copy);
-  font-size: 7px;
+  font-size: 6.9px;
   line-height: 1;
 }
 
@@ -958,13 +958,13 @@
 }
 
 .mw-history-filter-block {
-  margin-top: 10px;
+  margin-top: 9px;
 }
 
 .mw-history-filter-block h3 {
-  margin: 0 0 5px;
+  margin: 0 0 4px;
   color: var(--mw-history-filter-title);
-  font-size: calc(8.5px * var(--mw-history-ui-scale));
+  font-size: 8.4px;
   font-weight: 500;
   letter-spacing: 0.06em;
 }
@@ -972,17 +972,17 @@
 .mw-history-pill-row {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(4px * var(--mw-history-ui-scale));
+  gap: 4px;
 }
 
 .mw-history-pill {
-  min-height: calc(21px * var(--mw-history-ui-scale));
-  padding: 0 calc(8px * var(--mw-history-ui-scale));
+  min-height: 21px;
+  padding: 0 8px;
   border: 1px solid var(--mw-history-pill-border);
   border-radius: 999px;
   background: var(--mw-history-pill-bg);
   color: var(--mw-history-pill-text);
-  font-size: calc(8px * var(--mw-history-ui-scale));
+  font-size: 8.15px;
   font-weight: 500;
 }
 
@@ -999,18 +999,18 @@
 }
 
 .mw-history-pill--status {
-  font-size: 9px;
+  font-size: 8.7px;
 }
 
 .mw-history-pill--limit {
-  font-size: 9px;
+  font-size: 8.7px;
 }
 
 .mw-history-theme__scroll {
   display: flex;
-  gap: 6px;
-  margin-top: -2px;
-  padding-top: 2px;
+  gap: 5px;
+  margin-top: -1px;
+  padding-top: 1px;
   padding-bottom: 2px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -1022,10 +1022,10 @@
 
 .mw-history-theme__card {
   position: relative;
-  flex: 0 0 54px;
-  width: 54px;
-  height: 64px;
-  padding: 7px 4px 5px;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 61px;
+  padding: 6px 4px 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1091,16 +1091,16 @@
 
 .mw-history-theme__icon {
   display: block;
-  margin-top: 1px;
-  margin-bottom: 4px;
+  margin-top: 0;
+  margin-bottom: 3px;
   color: var(--am-text-brass);
   line-height: 0;
   filter: drop-shadow(0 1px 4px rgb(var(--am-rgb-gold-300) / 0.16));
 }
 
 .mw-history-theme__icon svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -1115,7 +1115,7 @@
   overflow: hidden;
   text-align: center;
   text-overflow: ellipsis;
-  font-size: 10.25px;
+  font-size: 10.1px;
   font-weight: 500;
   line-height: 1.05;
   letter-spacing: 0;
@@ -1158,7 +1158,7 @@
 }
 
 .mw-history-record-list--all {
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .mw-history-empty {
