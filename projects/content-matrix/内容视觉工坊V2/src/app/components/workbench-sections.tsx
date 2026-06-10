@@ -30,6 +30,7 @@ import {
 import { COVER_DRAFTS, ILLUSTRATIONS } from "./workbench-data";
 import { KnowledgeCardResults, ResultRow } from "./workbench-panels";
 import type { WorkbenchImportedMarkdownMeta, WorkbenchStatusMessage } from "../workspace";
+import { formatScopeLabel } from "./use-workbench-controller";
 
 export function WorkbenchLeftSidebar({
   inputMode,
@@ -362,7 +363,21 @@ export function WorkbenchLeftSidebar({
             lineHeight: 1.6,
           }}
         >
-          {statusState.text}
+          <div className="flex items-center justify-between gap-3">
+            <span style={{ color: statusState.level === "error" ? "#8A5A46" : COLORS.textFaint }}>
+              {statusState.level === "error"
+                ? formatScopeLabel(statusState.scope)
+                : formatStatusScope(statusState.scope)}
+            </span>
+            <span style={{ color: COLORS.textFaint, fontSize: 10.5 }}>
+              {new Date(statusState.timestamp).toLocaleTimeString("zh-CN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })}
+            </span>
+          </div>
+          <div className="mt-1">{statusState.text}</div>
         </div>
       ) : null}
 
@@ -420,6 +435,19 @@ export function WorkbenchLeftSidebar({
       </button>
     </aside>
   );
+}
+
+function formatStatusScope(scope: string) {
+  if (scope === "planning") return "内容拆解";
+  if (scope === "quote-generation") return "金句卡";
+  if (scope === "inline-image-generation") return "正文配图";
+  if (scope === "cover-generation") return "公众号封面";
+  if (scope === "markdown-import") return "Markdown 导入";
+  if (scope.startsWith("knowledge-card-")) {
+    const index = scope.replace("knowledge-card-", "");
+    return `知识卡 ${String(Number(index)).padStart(2, "0")}`;
+  }
+  return "当前任务";
 }
 
 export function WorkbenchCenterSection({

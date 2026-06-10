@@ -803,129 +803,152 @@ export function useWorkbenchController({
 
   async function handleStartGeneration() {
     clearTaskError();
+    pushStatus("planning", "info", "正在拆解内容", {
+      phase: "planning",
+      currentStepLabel: "拆解中",
+      completedTasks: 0,
+      totalTasks: 1,
+    });
+
+    let planning: PlannerResponse;
+    let nextRevision: number;
     try {
-      pushStatus("planning", "info", "正在拆解内容", {
-        phase: "planning",
-        currentStepLabel: "拆解中",
-        completedTasks: 0,
-        totalTasks: 1,
-      });
-      const { planning, nextRevision } = await runPlanning();
+      const planningResult = await runPlanning();
+      planning = planningResult.planning;
+      nextRevision = planningResult.nextRevision;
       pushStatus("planning", "success", "内容拆解已完成", {
         phase: "planning",
         currentStepLabel: "拆解完成",
         completedTasks: 1,
         totalTasks: 1,
       });
-
-      const resolvedQuoteIndexes = selectedQuotes.length > 0 ? selectedQuotes : [0];
-      const resolvedQuotes = resolvedQuoteIndexes
-        .map((index) => planning.analysis.keyQuotes[index] ?? planning.analysis.keyQuotes[0])
-        .filter(Boolean);
-      const tasks = buildGenerationTasks({
-        articleTitle: currentArticle.title,
-        articleBody: currentArticle.body,
-        planning,
-        selectedQuotes: resolvedQuotes,
-        outputs,
-        lockedKnowledgeCardIndexes,
-      });
-
-      if (tasks.length === 0) {
-        pushStatus("generation", "success", "当前没有需要生成的输出项", {
-          phase: "completed",
-          currentStepLabel: "完成",
+    } catch (error) {
+      pushStatus(
+        "planning",
+        "error",
+        error instanceof Error ? error.message : "内容拆解失败",
+        {
+          phase: "failed",
+          currentStepLabel: "拆解失败",
           completedTasks: 0,
-          totalTasks: 0,
-        });
-        if (outputs.layout) {
-          setActiveTab("wechat");
+          totalTasks: 1,
         }
-        return;
-      }
+      );
+      return;
+    }
 
-      const groupedRecords = new Map<GenerationPurposeKey, GenerationRecord>();
-      for (let index = 0; index < tasks.length; index += 1) {
-        const task = tasks[index];
-        const scope = toTaskScope(task);
-        pushStatus(scope, "info", `正在生成 ${buildTaskLabel(task)}`, {
-          phase: "generating",
-          currentStepLabel: buildTaskLabel(task),
-          completedTasks: index,
-          totalTasks: tasks.length,
-        });
+    const resolvedQuoteIndexes = selectedQuotes.length > 0 ? selectedQuotes : [0];
+    const resolvedQuotes = resolvedQuoteIndexes
+      .map((index) => planning.analysis.keyQuotes[index] ?? planning.analysis.keyQuotes[0])
+      .filter(Boolean);
+    const tasks = buildGenerationTasks({
+      articleTitle: currentArticle.title,
+      articleBody: currentArticle.body,
+      planning,
+      selectedQuotes: resolvedQuotes,
+      outputs,
+      lockedKnowledgeCardIndexes,
+    });
 
-        const record = bindInlineImages(await postGenerateImages(task), task.inlineLinks);
-
-        if (record.purposeKey === "xhs_card") {
-          const existing = groupedRecords.get(record.purposeKey) ?? knowledgeGeneration;
-          const mergedRecord = mergeRecordImages(existing, record);
-          groupedRecords.set(record.purposeKey, mergedRecord);
-          saveGenerationRecord(mergedRecord);
-          record.images.forEach((image) => {
-            if (image.cardLink?.index != null) {
-              updateKnowledgeCardStatus(image.cardLink.index, {
-                replaced: false,
-                regenerated: false,
-                needsRegeneration: false,
-              });
-            }
-          });
-        } else {
-          groupedRecords.set(record.purposeKey, record);
-          saveGenerationRecord(record);
-        }
-
-        if (record.purposeKey === "wx_cover") {
-          setWorkbenchState((prev) => ({
-            ...prev,
-            coverSelection: prev.coverSelection ?? {
-              selectedCoverIndex: 0,
-              updatedAt: new Date().toISOString(),
-            },
-          }));
-        }
-
-        if (record.purposeKey === "quote") {
-          setWorkbenchState((prev) => ({
-            ...prev,
-            quoteGenerationSelection: {
-              selectedQuoteIndexes: resolvedQuoteIndexes,
-              selectedQuoteTexts: resolvedQuotes,
-              generatedAtPlanningRevision: nextRevision,
-            },
-          }));
-        }
-
-        pushStatus(scope, "success", `${buildTaskLabel(task)} 已完成`, {
-          phase: "generating",
-          currentStepLabel: buildTaskLabel(task),
-          completedTasks: index + 1,
-          totalTasks: tasks.length,
-        });
-      }
-
-      pushStatus("generation", "success", `已完成 ${tasks.length} 个输出项`, {
+    if (tasks.length === 0) {
+      pushStatus("generation", "success", "当前没有需要生成的输出项", {
         phase: "completed",
         currentStepLabel: "完成",
-        completedTasks: tasks.length,
-        totalTasks: tasks.length,
+        completedTasks: 0,
+        totalTasks: 0,
       });
       if (outputs.layout) {
         setActiveTab("wechat");
       }
-    } catch (error) {
-      pushStatus(
-        "generation",
-        "error",
-        error instanceof Error ? error.message : "生成失败",
-        {
-          phase: "failed",
-          currentStepLabel: "生成失败",
-          completedTasks: workbenchState.taskState.completedTasks,
-          totalTasks: workbenchState.taskState.totalTasks,
-        }
-      );
+      return;
+    }
+
+    const groupedRecords = new Map<GenerationPurposeKey, GenerationRecord>();
+    for (let index = 0; index < tasks.length; index += 1) {
+      const task = tasks[index];
+      const scope = toTaskScope(task);
+      const taskLabel = buildTaskLabel(task);
+      pushStatus(scope, "info", `正在生成 ${taskLabel}`, {
+        phase: "generating",
+        currentStepLabel: taskLabel,
+        completedTasks: index,
+        totalTasks: tasks.length,
+      });
+
+      let record: GenerationRecord;
+      try {
+        record = bindInlineImages(await postGenerateImages(task), task.inlineLinks);
+      } catch (error) {
+        pushStatus(
+          scope,
+          "error",
+          error instanceof Error ? error.message : `${taskLabel} 生成失败`,
+          {
+            phase: "failed",
+            currentStepLabel: `${taskLabel}失败`,
+            completedTasks: index,
+            totalTasks: tasks.length,
+          }
+        );
+        return;
+      }
+
+      if (record.purposeKey === "xhs_card") {
+        const existing = groupedRecords.get(record.purposeKey) ?? knowledgeGeneration;
+        const mergedRecord = mergeRecordImages(existing, record);
+        groupedRecords.set(record.purposeKey, mergedRecord);
+        saveGenerationRecord(mergedRecord);
+        record.images.forEach((image) => {
+          if (image.cardLink?.index != null) {
+            updateKnowledgeCardStatus(image.cardLink.index, {
+              replaced: false,
+              regenerated: false,
+              needsRegeneration: false,
+            });
+          }
+        });
+      } else {
+        groupedRecords.set(record.purposeKey, record);
+        saveGenerationRecord(record);
+      }
+
+      if (record.purposeKey === "wx_cover") {
+        setWorkbenchState((prev) => ({
+          ...prev,
+          coverSelection: prev.coverSelection ?? {
+            selectedCoverIndex: 0,
+            updatedAt: new Date().toISOString(),
+          },
+        }));
+      }
+
+      if (record.purposeKey === "quote") {
+        setWorkbenchState((prev) => ({
+          ...prev,
+          quoteGenerationSelection: {
+            selectedQuoteIndexes: resolvedQuoteIndexes,
+            selectedQuoteTexts: resolvedQuotes,
+            generatedAtPlanningRevision: nextRevision,
+          },
+        }));
+      }
+
+      pushStatus(scope, "success", `${taskLabel} 已完成`, {
+        phase: "generating",
+        currentStepLabel: taskLabel,
+        completedTasks: index + 1,
+        totalTasks: tasks.length,
+      });
+    }
+
+    pushStatus("generation", "success", `已完成 ${tasks.length} 个输出项`, {
+      phase: "completed",
+      currentStepLabel: "完成",
+      completedTasks: tasks.length,
+      totalTasks: tasks.length,
+    });
+    if (outputs.layout) {
+      setActiveTab("wechat");
     }
   }
 
