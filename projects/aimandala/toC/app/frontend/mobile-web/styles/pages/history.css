@@ -333,7 +333,7 @@
   margin: 0;
   color: var(--mw-history-section-title);
   font-family: var(--am-font-display);
-  font-size: calc(11px * var(--mw-history-ui-scale));
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.06em;
 }
@@ -342,8 +342,8 @@
 .mw-history-featured__empty {
   margin: 5px 0 0;
   color: var(--mw-history-section-copy);
-  font-size: calc(7.5px * var(--mw-history-ui-scale));
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.7;
 }
 
 .mw-history-featured__empty {
