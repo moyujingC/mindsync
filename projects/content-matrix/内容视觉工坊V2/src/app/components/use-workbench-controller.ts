@@ -1042,6 +1042,7 @@ export function useWorkbenchController({
 
       const { title, body } = parseMarkdownArticle(rawText, file.name);
       const nextArticle = { title, body };
+      const importedAt = new Date().toISOString();
       setCurrentArticle(nextArticle);
       clearGenerationRecords(["xhs_card", "quote", "wx_cover", "wx_inline"]);
       setSelectedQuotes([]);
@@ -1056,27 +1057,52 @@ export function useWorkbenchController({
         importedMarkdownMeta: {
           fileName: file.name,
           wordCount: countCharacters(rawText),
-          importedAt: new Date().toISOString(),
+          importedAt,
         },
       }));
-      pushStatus("markdown-import", "info", "已导入 Markdown，正在刷新内容拆解", {
+
+      pushStatus("markdown-import", "success", "已导入 Markdown", {
+        phase: "idle",
+        currentStepLabel: "导入完成",
+        completedTasks: 0,
+        totalTasks: 0,
+      });
+
+      pushStatus("planning", "info", "正在根据新文章刷新内容拆解", {
         phase: "planning",
         currentStepLabel: "导入后重拆解",
         completedTasks: 0,
         totalTasks: 1,
       });
-      await runPlanningForArticle(nextArticle);
-      pushStatus(
-        "markdown-import",
-        "success",
-        "已导入 Markdown，并刷新内容拆解；旧出图结果已清空",
-        {
-          phase: "completed",
-          currentStepLabel: "完成",
-          completedTasks: 1,
-          totalTasks: 1,
-        }
-      );
+
+      try {
+        await runPlanningForArticle(nextArticle);
+        pushStatus(
+          "markdown-import",
+          "success",
+          "已导入 Markdown，并刷新内容拆解；旧出图结果已清空",
+          {
+            phase: "completed",
+            currentStepLabel: "完成",
+            completedTasks: 1,
+            totalTasks: 1,
+          }
+        );
+      } catch (error) {
+        pushStatus(
+          "planning",
+          "error",
+          `Markdown 已导入，但内容拆解刷新失败：${
+            error instanceof Error ? error.message : "请稍后重试"
+          }`,
+          {
+            phase: "failed",
+            currentStepLabel: "拆解失败",
+            completedTasks: 0,
+            totalTasks: 1,
+          }
+        );
+      }
     } catch (error) {
       pushStatus(
         "markdown-import",
