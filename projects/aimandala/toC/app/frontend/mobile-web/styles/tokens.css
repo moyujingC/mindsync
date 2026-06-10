@@ -827,7 +827,7 @@
     rgb(var(--am-rgb-copper-400) / 0.2) 70%,
     transparent
   );
-  --mw-history-intro-title: rgb(var(--am-rgb-sand-300) / 0.96);
+  --mw-history-intro-title: #f4f3f1;
   --mw-history-intro-copy: rgb(var(--am-rgb-sand-300) / 0.58);
   --mw-history-banner-strong: #f4c166;
   --mw-history-banner-copy: rgba(238, 232, 220, 0.62);
