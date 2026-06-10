@@ -87,6 +87,10 @@ function buildCardLayoutHint(index: number, total: number) {
   return "原因拆解型 / 分区信息卡";
 }
 
+function buildTitleVisualHint(title: string) {
+  return `放在醒目的浅绿色圆角横幅内，旁边画一个与“${title}”相关的简笔画插图`;
+}
+
 function buildCardTextBlocks(section: { heading: string; body: string[] }, title: string, summary: string) {
   const source = splitSentences(section.body.join(" "));
   const picked = source.filter((sentence) => sentence.length >= 12).slice(0, 4);
@@ -108,6 +112,82 @@ function buildCardTextBlocks(section: { heading: string; body: string[] }, title
 
 function buildIllustrationHints(title: string, textBlocks: string[]) {
   return textBlocks.slice(0, 4).map((block) => `与“${title} / ${block.slice(0, 10)}”相关的极简手绘符号`);
+}
+
+function buildContentSections(
+  layoutHint: string,
+  textBlocks: string[],
+  illustrationHints: string[]
+) {
+  const upperBlocks = textBlocks.slice(0, Math.max(1, Math.ceil(textBlocks.length / 2)));
+  const lowerBlocks = textBlocks.slice(upperBlocks.length);
+  const upperItems = upperBlocks.map((text, index) => ({
+    text,
+    illustration: illustrationHints[index] || "与该句含义相关的简笔画插图",
+  }));
+  const lowerItems = lowerBlocks.map((text, index) => ({
+    text,
+    illustration:
+      illustrationHints[index + upperBlocks.length] || "与该句含义相关的简笔画插图",
+  }));
+
+  if (layoutHint.includes("上下对比")) {
+    return [
+      {
+        name: "上半部分信息区",
+        position: "位于画面上半部分",
+        items: upperItems,
+      },
+      {
+        name: "下半部分信息区",
+        position: "位于画面下半部分",
+        items: lowerItems.length > 0 ? lowerItems : upperItems.slice(0, 1),
+      },
+    ];
+  }
+
+  if (layoutHint.includes("中心发散")) {
+    return [
+      {
+        name: "核心原则区",
+        position: "位于画面中心位置",
+        items: upperItems.slice(0, 1),
+      },
+      {
+        name: "行动指引区",
+        position: "围绕核心原则区分布",
+        items: lowerItems.length > 0 ? lowerItems : upperItems.slice(1),
+      },
+    ];
+  }
+
+  if (layoutHint.includes("原因拆解")) {
+    return [
+      {
+        name: "表层结果区",
+        position: "位于画面上半部分",
+        items: upperItems,
+      },
+      {
+        name: "深层原因区",
+        position: "位于画面下半部分",
+        items: lowerItems.length > 0 ? lowerItems : upperItems.slice(0, 1),
+      },
+    ];
+  }
+
+  return [
+    {
+      name: "核心观点区",
+      position: "位于画面上半部分中心位置",
+      items: upperItems,
+    },
+    {
+      name: "补充说明区",
+      position: "位于画面下半部分",
+      items: lowerItems.length > 0 ? lowerItems : upperItems.slice(0, 1),
+    },
+  ];
 }
 
 function classifySectionType(summary: string, quote?: string): WechatInlineSectionType {
@@ -161,14 +241,20 @@ export function planKnowledgeCardsFromArticle(
   const cardPlan = normalizedSections.map((section, index) => {
     const summarySource = cleanText(section.body.join(" ") || section.heading);
     const summary = summarySource.length > 54 ? `${summarySource.slice(0, 54)}…` : summarySource;
-    const textBlocks = buildCardTextBlocks(section, section.heading, summary || section.heading);
+    const title = section.heading || `知识卡 ${index + 1}`;
+    const layoutHint = buildCardLayoutHint(index, normalizedSections.length);
+    const textBlocks = buildCardTextBlocks(section, title, summary || title);
+    const illustrationHints = buildIllustrationHints(title, textBlocks);
     return {
       index: index + 1,
-      title: section.heading || `知识卡 ${index + 1}`,
+      title,
       summary: summary || "等待文章内容补充后再生成摘要。",
-      layoutHint: buildCardLayoutHint(index, normalizedSections.length),
+      theme: summary || title,
+      layoutHint,
       textBlocks,
-      illustrationHints: buildIllustrationHints(section.heading || `知识卡 ${index + 1}`, textBlocks),
+      illustrationHints,
+      titleVisualHint: buildTitleVisualHint(title),
+      contentSections: buildContentSections(layoutHint, textBlocks, illustrationHints),
       decorationHint: "使用分区框、箭头、便签和轻手绘装饰组织信息，避免堆成一段",
       endingLabel: index === normalizedSections.length - 1 ? "完结" : undefined,
     };
@@ -228,6 +314,8 @@ function buildPrompt(request: PlannerRequest) {
 3. 为每张卡片生成一句摘要
 3.1 为每张卡片生成 3-4 个可直接上图的简短信息点
 3.2 为每张卡片生成一个构图提示
+3.3 为每张卡片生成标题区的视觉描述
+3.4 为每张卡片生成 2-3 个内容区域，每个区域写清名称、位置、文案、对应插画描述
 4. 提炼 1-3 句重点句
 5. 生成一个封面主题和关键词
 6. 规划公众号正文配图，决定哪些小节需要配图，并给出每张图的用途和视觉方向
@@ -244,6 +332,9 @@ function buildPrompt(request: PlannerRequest) {
 - 每个信息点应尽量来自原文，不要改写成口号
 - 每个信息点长度控制在 12-36 字，适合直接渲染到卡片
 - 构图提示要像“上下对比型 / 原因拆解型 / 中心发散型 / 问题提出型”这种可执行描述
+- 内容区域要像“核心观点区 / 对比铺垫区 / 行动指引区”这种可直接放进图里的名字
+- 每个区域必须写清它位于画面什么位置
+- 每条文案都要绑定一个具体插画描述，写清楚画什么
 - 不要编造原文没有的观点
 - 正文配图不是知识卡片，不是封面，不是海报
 - 正文配图应优先对应文章里的 \`##\` 小节
@@ -278,9 +369,23 @@ ${request.rawText}
       "index": 1,
       "title": "卡片标题",
       "summary": "卡片摘要",
+      "theme": "本张图主题",
       "layoutHint": "上下对比型",
       "textBlocks": ["信息点1", "信息点2", "信息点3"],
       "illustrationHints": ["插图提示1", "插图提示2", "插图提示3"],
+      "titleVisualHint": "放在醒目的浅绿色圆角横幅内，旁边画一个相关简笔画插图",
+      "contentSections": [
+        {
+          "name": "核心观点区",
+          "position": "位于画面上半部分中心位置",
+          "items": [
+            {
+              "text": "内容文字1",
+              "illustration": "对应插画描述1"
+            }
+          ]
+        }
+      ],
       "decorationHint": "边框、箭头、分区等装饰建议",
       "endingLabel": "完结"
     }

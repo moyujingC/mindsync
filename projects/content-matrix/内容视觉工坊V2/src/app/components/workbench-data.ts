@@ -62,9 +62,12 @@ export function buildKnowledgeCardPrompt({
   cardTotal,
   cardTitle,
   cardSummary,
+  cardTheme,
   cardLayoutHint,
   cardTextBlocks,
   cardIllustrationHints,
+  cardTitleVisualHint,
+  cardContentSections,
   cardDecorationHint,
   cardEndingLabel,
   bodyPreview,
@@ -74,9 +77,19 @@ export function buildKnowledgeCardPrompt({
   cardTotal: number;
   cardTitle: string;
   cardSummary: string;
+  cardTheme?: string;
   cardLayoutHint?: string;
   cardTextBlocks?: string[];
   cardIllustrationHints?: string[];
+  cardTitleVisualHint?: string;
+  cardContentSections?: Array<{
+    name: string;
+    position: string;
+    items: Array<{
+      text: string;
+      illustration: string;
+    }>;
+  }>;
   cardDecorationHint?: string;
   cardEndingLabel?: string;
   bodyPreview: string;
@@ -99,6 +112,22 @@ export function buildKnowledgeCardPrompt({
     .join("\n");
   const totalLabel = String(cardTotal).padStart(2, "0");
   const indexLabel = String(cardIndex).padStart(2, "0");
+  const renderedSections =
+    cardContentSections && cardContentSections.length > 0
+      ? cardContentSections
+          .map((section) => {
+            const items = section.items
+              .map((item) => `- \`${item.text}\`（旁边画${item.illustration}）`)
+              .join("\n");
+            return `【${section.name}】（${section.position}）：
+${items}`;
+          })
+          .join("\n\n")
+      : `【核心信息区】（位于画面上半部分中心位置）：
+${upperRendered || `- \`${cardSummary}\`（旁边画与主题相关的简笔画插图）`}
+
+${lowerRendered ? `【补充信息区】（位于画面下半部分）：
+${lowerRendered}` : ""}`;
 
   return `【文字渲染规则 - 严格遵守】
 （以下规则适用于豆包/即梦等国内绘画AI模型，使用Google/nano banana pro等工具可忽略）
@@ -130,24 +159,20 @@ export function buildKnowledgeCardPrompt({
 
 ## 本张图内容
 
-主题：${cardSummary}
+主题：${cardTheme || cardSummary}
 
 构图：${cardLayoutHint || "竖向递进卡片型"}
 
 标题区（画面顶部15-20%）：
 - 标题文字：\`${cardTitle}\`
-- 视觉设计：放在醒目的浅绿色圆角横幅内，旁边画一个与“${cardTitle}”相关的简笔画插图
+- 视觉设计：${cardTitleVisualHint || `放在醒目的浅绿色圆角横幅内，旁边画一个与“${cardTitle}”相关的简笔画插图`}
 - 序号标识：右上角标注"${indexLabel}/${totalLabel}"
 
 内容与排版：
 
-【核心信息区】（位于画面上半部分中心位置）：
-${upperRendered || `- \`${cardSummary}\`（旁边画与主题相关的简笔画插图）`}
+${renderedSections}
 
-${lowerRendered ? `【补充信息区】（位于画面下半部分）：
-${lowerRendered}
-
-` : ""}整体装饰元素：
+整体装饰元素：
 - ${cardDecorationHint || "画面边缘点缀浅绿色装饰线条，不同信息区用轻分区框区分，元素间用简约箭头连接"}
 
 内容来源约束：
@@ -167,12 +192,89 @@ export function buildFallbackCardPlan(): CardPlan[] {
     index: index + 1,
     title: card.title,
     summary: card.desc,
+    theme: card.desc,
     layoutHint: index === 0 ? "问题提出型" : index === 1 ? "上下对比型" : index === 2 ? "原因拆解型" : "行动建议型",
     textBlocks: buildFallbackKnowledgeBlocks(index),
     illustrationHints: buildFallbackIllustrationHints(index),
+    titleVisualHint: "放在醒目的浅绿色圆角横幅内，旁边画一个相关主题的简笔画插图",
+    contentSections: buildFallbackContentSections(index),
     decorationHint: "使用轻分区框、箭头和便签感小元素组织信息",
     endingLabel: index === KNOWLEDGE_CARDS.length - 1 ? "完结" : undefined,
   }));
+}
+
+function buildFallbackContentSections(index: number) {
+  const blocks = buildFallbackKnowledgeBlocks(index);
+  const hints = buildFallbackIllustrationHints(index);
+  if (index === 1) {
+    return [
+      {
+        name: "过去状态区",
+        position: "位于画面上半部分",
+        items: [{ text: blocks[0], illustration: hints[0] }],
+      },
+      {
+        name: "现在状态区",
+        position: "位于画面下半部分",
+        items: blocks.slice(1).map((text, itemIndex) => ({
+          text,
+          illustration: hints[itemIndex + 1] || "相关简笔画插图",
+        })),
+      },
+    ];
+  }
+  if (index === 2) {
+    return [
+      {
+        name: "表层结果区",
+        position: "位于画面上半部分",
+        items: [{ text: blocks[0], illustration: hints[0] }],
+      },
+      {
+        name: "深层原因区",
+        position: "位于画面下半部分",
+        items: blocks.slice(1).map((text, itemIndex) => ({
+          text,
+          illustration: hints[itemIndex + 1] || "相关简笔画插图",
+        })),
+      },
+    ];
+  }
+  if (index === 3) {
+    return [
+      {
+        name: "核心原则区",
+        position: "位于画面中心位置",
+        items: [{ text: blocks[0], illustration: hints[0] }],
+      },
+      {
+        name: "行动指引区",
+        position: "围绕核心原则区分布",
+        items: blocks.slice(1).map((text, itemIndex) => ({
+          text,
+          illustration: hints[itemIndex + 1] || "相关简笔画插图",
+        })),
+      },
+    ];
+  }
+  return [
+    {
+      name: "核心观点区",
+      position: "位于画面上半部分中心位置",
+      items: blocks.slice(0, 2).map((text, itemIndex) => ({
+        text,
+        illustration: hints[itemIndex] || "相关简笔画插图",
+      })),
+    },
+    {
+      name: "对比铺垫区",
+      position: "位于画面下半部分",
+      items: blocks.slice(2).map((text, itemIndex) => ({
+        text,
+        illustration: hints[itemIndex + 2] || "相关简笔画插图",
+      })),
+    },
+  ];
 }
 
 function buildFallbackKnowledgeBlocks(index: number) {
@@ -292,9 +394,12 @@ export function buildGenerationTasks({
               cardTotal: planning.cardPlan.length,
               cardTitle: card.title,
               cardSummary: card.summary,
+              cardTheme: card.theme,
               cardLayoutHint: card.layoutHint,
               cardTextBlocks: card.textBlocks,
               cardIllustrationHints: card.illustrationHints,
+              cardTitleVisualHint: card.titleVisualHint,
+              cardContentSections: card.contentSections,
               cardDecorationHint: card.decorationHint,
               cardEndingLabel: card.endingLabel,
               bodyPreview,

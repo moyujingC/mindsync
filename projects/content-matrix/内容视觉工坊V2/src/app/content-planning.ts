@@ -6,9 +6,19 @@ export type CardPlan = {
   index: number;
   title: string;
   summary: string;
+  theme?: string;
   layoutHint?: string;
   textBlocks?: string[];
   illustrationHints?: string[];
+  titleVisualHint?: string;
+  contentSections?: Array<{
+    name: string;
+    position: string;
+    items: Array<{
+      text: string;
+      illustration: string;
+    }>;
+  }>;
   decorationHint?: string;
   endingLabel?: string;
 };
