@@ -10,17 +10,16 @@
 }
 
 .am-upload-hero {
-  --am-app-topbar-bleed: 16px;
   position: relative;
   min-height: 468px;
   padding: 0 16px 14px;
   background: var(--am-upload-hero-bg);
 }
 
-.am-upload-hero > .am-app-topbar {
+.am-upload-page > .am-app-topbar {
   position: sticky;
   top: 0;
-  z-index: var(--am-z-sticky);
+  z-index: calc(var(--am-z-sticky) + 1);
 }
 
 .am-upload-hero__glow,

@@ -1,8 +1,6 @@
 .mw-history-shell {
   min-height: 100vh;
   padding: 0;
-  overflow-x: hidden;
-  overflow-y: visible;
   border-radius: 40px 40px 34px 34px;
   background: var(--mw-history-shell-bg);
   color: var(--mw-history-shell-text);
@@ -18,8 +16,6 @@
   position: relative;
   min-height: 100vh;
   padding: 0 18px 34px;
-  overflow-x: hidden;
-  overflow-y: visible;
   background: var(--mw-history-page-bg);
   background-size: auto, auto, auto, auto, auto, 300px;
 }

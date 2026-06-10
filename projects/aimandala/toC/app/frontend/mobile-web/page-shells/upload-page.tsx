@@ -713,6 +713,18 @@ export function MobileWebUploadPage({
 
   return (
     <div className="am-page am-upload-page">
+      <SharedAppTopBar
+        title="上传曼陀罗画作"
+        backLabel="返回首页"
+        onBack={onBack}
+        trailing={environmentLabel ? (
+          <div className={`am-dev-pill am-dev-pill--${environmentTone} am-dev-pill--upload`}>
+            <strong>{environmentLabel}</strong>
+            <span>{environmentDetail}</span>
+          </div>
+        ) : undefined}
+      />
+
       <div className="am-upload-hero">
         <div className="am-upload-hero__glow am-upload-hero__glow--right" />
         <div className="am-upload-hero__glow am-upload-hero__glow--left" />
@@ -721,18 +733,6 @@ export function MobileWebUploadPage({
         <div className="am-upload-hero__spark am-upload-hero__spark--left" />
         <div className="am-upload-hero__spark am-upload-hero__spark--right" />
         <div className="am-upload-hero__spark am-upload-hero__spark--mid" />
-
-        <SharedAppTopBar
-          title="上传曼陀罗画作"
-          backLabel="返回首页"
-          onBack={onBack}
-          trailing={environmentLabel ? (
-            <div className={`am-dev-pill am-dev-pill--${environmentTone} am-dev-pill--upload`}>
-              <strong>{environmentLabel}</strong>
-              <span>{environmentDetail}</span>
-            </div>
-          ) : undefined}
-        />
 
         <div className="am-upload-preview-zone">
           <div className="am-upload-disc-shell">
