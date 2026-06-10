@@ -1,7 +1,8 @@
 .mw-history-shell {
   min-height: 100vh;
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   border-radius: 40px 40px 34px 34px;
   background: var(--mw-history-shell-bg);
   color: var(--mw-history-shell-text);
@@ -17,7 +18,8 @@
   position: relative;
   min-height: 100vh;
   padding: 0 18px 34px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   background: var(--mw-history-page-bg);
   background-size: auto, auto, auto, auto, auto, 300px;
 }
@@ -41,6 +43,9 @@
 
 .mw-history-topbar {
   margin: 0 -18px;
+  position: sticky;
+  top: 0;
+  z-index: calc(var(--am-z-sticky) + 1);
 }
 
 .mw-history-intro {

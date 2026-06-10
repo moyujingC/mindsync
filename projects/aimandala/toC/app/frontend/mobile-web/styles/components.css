@@ -6,10 +6,11 @@
   align-items: center;
   margin-right: calc(var(--am-app-topbar-bleed, 0px) * -1);
   margin-left: calc(var(--am-app-topbar-bleed, 0px) * -1);
-  padding: 12px 16px;
+  padding: 10px 16px;
   overflow: hidden;
   border-bottom: var(--am-shell-topbar-border);
   background: var(--am-shell-topbar-bg);
+  backdrop-filter: blur(14px);
   font-family: var(--am-font-body);
 }
 
@@ -43,9 +44,9 @@
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  padding: 4px;
+  width: 28px;
+  height: 28px;
+  padding: 3px;
   border: 0;
   border-radius: var(--am-radius-pill);
   background: transparent;
@@ -55,10 +56,10 @@
 .am-app-topbar__title {
   position: relative;
   z-index: 1;
-  margin: 0 0 0 12px;
+  margin: 0 0 0 10px;
   color: var(--am-text-accent);
   font-family: var(--am-font-display);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: 0.15em;
 }
@@ -66,8 +67,8 @@
 .am-app-topbar__spacer {
   position: relative;
   z-index: 1;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
 }
 
 .am-button-primary,
