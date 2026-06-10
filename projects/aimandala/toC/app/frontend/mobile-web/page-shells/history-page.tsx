@@ -245,19 +245,26 @@ export function MobileWebHistoryPage({
           )}
         </section>
 
+        <div className="mw-history-separator" aria-hidden="true">
+          <span />
+        </div>
+
         <section className="mw-history-all">
-          <div className="mw-history-all__header">
-            <h2>全部历史记录</h2>
-            <div className="mw-history-all__summary">
-              <article className="mw-history-all__summary-pill mw-history-all__summary-pill--ready">
-                <strong>{descriptor.summary.ready}</strong>
-                <span>可查看</span>
-              </article>
-              <article className="mw-history-all__summary-pill mw-history-all__summary-pill--pending">
-                <strong>{descriptor.summary.pending}</strong>
-                <span>生成中</span>
-              </article>
-            </div>
+          <h2>全部历史记录</h2>
+
+          <div className="mw-history-summary">
+            <article className="mw-history-summary__card mw-history-summary__card--ready">
+              <strong>{descriptor.summary.ready}</strong>
+              <span>可查看</span>
+            </article>
+            <article className="mw-history-summary__card">
+              <strong>{descriptor.summary.pending}</strong>
+              <span>生成中</span>
+            </article>
+          </div>
+
+          <div className="mw-history-separator mw-history-separator--compact" aria-hidden="true">
+            <span />
           </div>
 
           <section className="mw-history-filter-block">
@@ -295,7 +302,7 @@ export function MobileWebHistoryPage({
                 <button
                   key={"value" in option ? option.value : option.label}
                   type="button"
-                  className={`mw-history-pill mw-history-pill--limit${"value" in option && activeLimit === option.value ? " is-active" : ""}${"kind" in option ? " mw-history-pill--ghost" : ""}`}
+                  className={`mw-history-pill mw-history-pill--limit${"value" in option && activeLimit === option.value ? " is-active" : ""}`}
                   onClick={() => {
                     if ("value" in option) {
                       onLimitChange?.(option.value);

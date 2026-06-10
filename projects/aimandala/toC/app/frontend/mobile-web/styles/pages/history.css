@@ -943,9 +943,9 @@
   display: block;
   color: var(--mw-history-summary-strong);
   font-family: var(--am-font-display);
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .mw-history-summary__card--ready strong {
@@ -954,9 +954,9 @@
 
 .mw-history-summary__card span {
   display: block;
-  margin-top: 2px;
+  margin-top: 4px;
   color: var(--mw-history-summary-copy);
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .mw-history-filter-block {

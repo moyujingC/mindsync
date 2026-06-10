@@ -120,7 +120,7 @@ export function HistoryRecordCard({
   const reportLabel = item.focusReportType === "pro" ? "Pro 完整解读" : "Lite 初步解读";
   const statusSummary = isPending
     ? isFeatured
-      ? `${reportLabel} · 生成中${Number.isNaN(progressPercent) ? "" : ` ${progressPercent}%`}`
+      ? `${reportLabel} · 生成中`
       : `${reportLabel} · 生成中`
     : !isFeatured && actionLabelOverride === "升级 Pro"
       ? `${reportLabel} · 可升级 Pro`
@@ -181,11 +181,7 @@ export function HistoryRecordCard({
             >
               <span>{badgeLabel}</span>
               <span className="mw-history-record__featured-cta-icon" aria-hidden="true">
-                {item.recordReady ? (
-                  <LucideIcon iconNode={ICON_ARROW} size={12} strokeWidth={1.9} />
-                ) : (
-                  <LucideIcon iconNode={ICON_LOADER} size={12} strokeWidth={1.9} className="am-lucide-spin" />
-                )}
+                <LucideIcon iconNode={ICON_ARROW} size={12} strokeWidth={1.9} />
               </span>
             </button>
           </div>
@@ -210,7 +206,6 @@ export function HistoryRecordCard({
         <div className="mw-history-record__body mw-history-record__body--default">
           <div className="mw-history-record__header-row">
             <div className="mw-history-record__title-row mw-history-record__title-row--default">
-              <span className="mw-history-record__icon" aria-hidden="true">{iconGlyph}</span>
               <h3>{item.themeLabel}</h3>
             </div>
             <span className="mw-history-record__time">{item.subtitle.replace("创建于 ", "")}</span>
@@ -238,11 +233,7 @@ export function HistoryRecordCard({
         >
           <span className="mw-history-record__cta-inline-label">{badgeLabel}</span>
           <span className="mw-history-record__cta-inline-icon" aria-hidden="true">
-            {item.recordReady ? (
-              <LucideIcon iconNode={ICON_ARROW} size={13} strokeWidth={1.9} />
-            ) : (
-              <LucideIcon iconNode={ICON_LOADER} size={13} strokeWidth={1.9} className="am-lucide-spin" />
-            )}
+            <LucideIcon iconNode={ICON_ARROW} size={13} strokeWidth={1.9} />
           </span>
         </button>
       </article>
