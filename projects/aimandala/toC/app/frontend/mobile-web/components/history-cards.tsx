@@ -30,6 +30,10 @@ const ICON_EYE: IconNode = [
 ];
 
 const ICON_LOADER: IconNode = [["path", { d: "M21 12a9 9 0 1 1-6.219-8.56", key: "l1" }]];
+const ICON_ARROW: IconNode = [
+  ["path", { d: "M5 12h13", key: "a1" }],
+  ["path", { d: "m13 5 7 7-7 7", key: "a2" }],
+];
 
 function LucideIcon({
   iconNode,
@@ -104,7 +108,9 @@ export function HistoryRecordCard({
       : "查看 Lite");
   const reportLabel = item.focusReportType === "pro" ? "Pro 完整解读" : "Lite 初步解读";
   const statusSummary = isPending
-    ? `${reportLabel} · 生成中${Number.isNaN(progressPercent) ? "" : ` ${progressPercent}%`}`
+    ? isFeatured
+      ? `${reportLabel} · 生成中${Number.isNaN(progressPercent) ? "" : ` ${progressPercent}%`}`
+      : `${reportLabel} · 生成中`
     : !isFeatured && actionLabelOverride === "升级 Pro"
       ? `${reportLabel} · 可升级 Pro`
     : `${reportLabel} · 已可查看`;
@@ -136,7 +142,7 @@ export function HistoryRecordCard({
             <span>{item.subtitle.replace("创建于 ", "")}</span>
           </div>
           <p className="mw-history-record__status-line">{statusSummary}</p>
-          <p className="mw-history-record__helper-line">{helperCopy}</p>
+          {helperCopy ? <p className="mw-history-record__helper-line">{helperCopy}</p> : null}
         </div>
         {isPending ? (
           <div className="mw-history-record__progress">
@@ -155,7 +161,7 @@ export function HistoryRecordCard({
       >
         <span className="mw-history-status-pill__icon" aria-hidden="true">
           {item.recordReady ? (
-            <LucideIcon iconNode={ICON_EYE} size={14} strokeWidth={1.9} />
+            <LucideIcon iconNode={ICON_ARROW} size={14} strokeWidth={1.9} />
           ) : (
             <LucideIcon iconNode={ICON_LOADER} size={14} strokeWidth={1.9} className="am-lucide-spin" />
           )}
