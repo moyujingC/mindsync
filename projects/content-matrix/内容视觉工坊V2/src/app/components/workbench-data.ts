@@ -56,6 +56,62 @@ export type WorkbenchOutputs = {
   layout: boolean;
 };
 
+export function buildKnowledgeCardPrompt({
+  articleTitle,
+  cardIndex,
+  cardTitle,
+  cardSummary,
+  bodyPreview,
+}: {
+  articleTitle: string;
+  cardIndex: number;
+  cardTitle: string;
+  cardSummary: string;
+  bodyPreview: string;
+}) {
+  return `【文字渲染规则 - 严格遵守】
+只渲染提示词中用反引号 \`\` 明确标注的文字内容，原样呈现。
+凡是提示词中没有用反引号标注的地方，一律不得自行添加任何文字、字母、数字或符号。
+
+【第${cardIndex}张图 - 独立完整的一张图，单独占据一个完整的3:4竖版画布，请勿与其他图合并】
+
+整体风格说明：
+- 这是小红书知识卡，不是金句卡，不是纯主视觉海报
+- 每张图都必须是一张信息含量明确的完整知识卡
+- 保持当前产品的低饱和、雾蓝、克制、安静、专业气质
+- 画面是被整理过的知识信息板，不要做夸张插画海报
+
+画幅比例：独立的3:4竖版
+系列标识：右上角标注 \`${String(cardIndex).padStart(2, "0")}/04\`
+
+本张图内容：
+- 主标题放在画面顶部醒目区域：\`${cardTitle}\`
+- 核心摘要放在标题下方信息区：\`${cardSummary}\`
+- 根据文章《${articleTitle}》和这张卡片主题，自动补全 3 到 4 个简短信息点
+- 每个信息点控制在 18 到 36 字之间，放在独立信息容器内
+- 每个信息点都服务于解释标题，不要重复抒情，不要只写口号
+- 可以使用箭头、分区框、便签、序号、细线连接，但不要把内容挤成一整段
+
+内容来源约束：
+- 文章主题：${articleTitle}
+- 本张卡主题：${cardTitle}
+- 本张卡摘要：${cardSummary}
+- 文章上下文摘要：${bodyPreview}
+- 信息必须围绕当前卡片主题展开，不要偏到别的卡片
+
+版式要求：
+- 标题区占顶部 15% 到 20%
+- 中部为 3 到 4 个信息模块，信息层级清楚，便于扫描
+- 底部可有一行很轻的结论或提醒，但不要做成大金句
+- 整体更像高信息密度知识卡，而不是一句话观点卡
+
+避免：
+- 不要只生成一句大字标题加很少文字
+- 不要做金句卡
+- 不要做纯情绪插画
+- 不要高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版`;
+}
+
 export function buildFallbackCardPlan(): CardPlan[] {
   return KNOWLEDGE_CARDS.map((card, index) => ({
     index: index + 1,
@@ -133,7 +189,13 @@ export function buildGenerationTasks({
         .forEach((card) => {
           tasks.push({
             articleTitle,
-            prompt: `为文章《${articleTitle}》的第 ${card.index} 张小红书知识卡片生成主视觉。卡片标题：${card.title}。卡片摘要：${card.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。文章摘要：${bodyPreview}。`,
+            prompt: buildKnowledgeCardPrompt({
+              articleTitle,
+              cardIndex: card.index,
+              cardTitle: card.title,
+              cardSummary: card.summary,
+              bodyPreview,
+            }),
             negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
             width: preset.w,
             height: preset.h,

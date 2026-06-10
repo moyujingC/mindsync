@@ -17,6 +17,7 @@ import type {
 import {
   buildFallbackCardPlan,
   buildFallbackInlineImagePlan,
+  buildKnowledgeCardPrompt,
   buildGenerationTasks,
   mergeRecordImages,
   QUOTES,
@@ -482,7 +483,13 @@ export function useWorkbenchController({
     try {
       const record = await postGenerateImages({
         articleTitle: currentArticle.title,
-        prompt: `为文章《${currentArticle.title}》的第 ${resolvedCard.index} 张小红书知识卡片生成主视觉。卡片标题：${resolvedCard.title}。卡片摘要：${resolvedCard.summary}。整组基调仍然是低饱和、雾蓝、克制、适合知识传播，但这一张需要围绕当前卡片观点形成单卡视觉重心。`,
+        prompt: buildKnowledgeCardPrompt({
+          articleTitle: currentArticle.title,
+          cardIndex: resolvedCard.index,
+          cardTitle: resolvedCard.title,
+          cardSummary: resolvedCard.summary,
+          bodyPreview: currentArticle.body.replace(/\s+/g, " ").trim().slice(0, 140),
+        }),
         negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
         width: preset.w,
         height: preset.h,
