@@ -396,6 +396,26 @@
   filter: saturate(1.03) brightness(0.98);
 }
 
+.mw-history-record__thumb--featured-0 {
+  background-position: 50% 46%;
+}
+
+.mw-history-record__thumb--featured-1 {
+  background-position: 50% 58%;
+}
+
+.mw-history-record__thumb--featured-2 {
+  background-position: 50% 50%;
+}
+
+.mw-history-record__thumb--featured-3 {
+  background-position: 50% 42%;
+}
+
+.mw-history-record__thumb--featured-4 {
+  background-position: 50% 36%;
+}
+
 .mw-history-record__thumb--featured-pending {
   background-position: center, 52% 44%;
 }

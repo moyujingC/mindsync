@@ -98,7 +98,7 @@ export function HistoryRecordCard({
   const isFeatured = variant === "featured";
   const isPending = !item.recordReady;
   const thumbClassName = isFeatured
-    ? `mw-history-record__thumb mw-history-record__thumb--featured${!item.recordReady ? " mw-history-record__thumb--featured-pending" : ""}`
+    ? `mw-history-record__thumb mw-history-record__thumb--featured mw-history-record__thumb--featured-${thumbIndex % 5}${!item.recordReady ? " mw-history-record__thumb--featured-pending" : ""}`
     : `mw-history-record__thumb mw-history-record__thumb--${thumbIndex % 4}`;
   const iconGlyph = THEME_GLYPH_MAP[item.theme] ?? "✧";
   const ctaLabel = isBusy
