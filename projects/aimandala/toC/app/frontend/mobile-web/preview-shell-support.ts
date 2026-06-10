@@ -36,6 +36,9 @@ export const PREVIEW_ROUTE_OPTIONS: Array<{
   { label: "新版解读报告", value: "report" },
   { label: "历史", value: "history" },
   { label: "历史记录详情", value: "historyRecordDetail" },
+  { label: "详情-未升级 Pro", value: "historyRecordDetailNotUpgraded" },
+  { label: "详情-Pro 生成中", value: "historyRecordDetailGenerating" },
+  { label: "详情-Pro 已可查看", value: "historyRecordDetailViewable" },
 ];
 
 export const PREVIEW_POLLING_INTERVAL_MS = 1500;
@@ -112,6 +115,16 @@ export function createPreviewRouteInput(
         route,
         params: {
           interpretationId,
+          uploadDraft: draft,
+        },
+      };
+
+    case "historyRecordDetailNotUpgraded":
+    case "historyRecordDetailGenerating":
+    case "historyRecordDetailViewable":
+      return {
+        route,
+        params: {
           uploadDraft: draft,
         },
       };

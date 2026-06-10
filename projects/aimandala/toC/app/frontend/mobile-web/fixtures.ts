@@ -68,6 +68,31 @@ export function createPreviewDetectionFixture(): DetectCirclesResponse {
   return createMockDetection();
 }
 
+function getHistoryRecordDetailFixture(
+  route: MobileWebRouteId,
+  records: InterpretationRecordResponse[],
+): InterpretationRecordResponse {
+  switch (route) {
+    case "historyRecordDetailNotUpgraded":
+      return (
+        records.find((record) => record.version_purchased.includes("lite") && !record.version_purchased.includes("pro")) ??
+        records[0]
+      );
+    case "historyRecordDetailGenerating":
+      return (
+        records.find((record) => record.version_purchased.includes("pro") && record.generation_stage === "generating_pro") ??
+        records[0]
+      );
+    case "historyRecordDetailViewable":
+      return (
+        records.find((record) => record.version_purchased.includes("pro") && record.status === "completed") ??
+        records[0]
+      );
+    default:
+      return records[0];
+  }
+}
+
 function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
   return {
     interpretation_id: "demo-interpretation-id",
@@ -97,6 +122,38 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
 
 function createMockRecords(): InterpretationRecordResponse[] {
   return [
+    {
+      interpretation_id: "demo-007",
+      user_id: "demo-user-id",
+      theme: "career_development",
+      status: "completed",
+      generation_stage: "report_ready",
+      generation_progress: 100,
+      version_purchased: ["lite", "pro"],
+      three_circles: {
+        inner_radius: 0.24,
+        middle_radius: 0.58,
+      },
+      auto_detected: true,
+      can_upgrade: false,
+      created_at: "2026-04-18T08:12:00+08:00",
+    },
+    {
+      interpretation_id: "demo-008",
+      user_id: "demo-user-id",
+      theme: "parent_child_relationship",
+      status: "processing",
+      generation_stage: "generating_lite",
+      generation_progress: 52,
+      version_purchased: ["lite"],
+      three_circles: {
+        inner_radius: 0.33,
+        middle_radius: 0.68,
+      },
+      auto_detected: false,
+      can_upgrade: false,
+      created_at: "2026-04-17T21:06:00+08:00",
+    },
     {
       interpretation_id: "demo-001",
       user_id: "demo-user-id",
@@ -272,10 +329,16 @@ export function createPreviewAppProps(
       };
 
     case "historyRecordDetail":
+    case "historyRecordDetailNotUpgraded":
+    case "historyRecordDetailGenerating":
+    case "historyRecordDetailViewable":
       return {
         route,
         uploadDraft: draft,
-        record: (historyRecordsOverride ?? createMockRecords())[0],
+        record: getHistoryRecordDetailFixture(
+          route,
+          historyRecordsOverride ?? createMockRecords(),
+        ),
       };
   }
 }

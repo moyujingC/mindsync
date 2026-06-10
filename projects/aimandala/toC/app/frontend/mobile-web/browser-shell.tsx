@@ -30,7 +30,7 @@ import {
   resolveMobileWebSession,
   updateMobileWebSessionCanonicalUserId,
 } from "./identity";
-import { mobileWebRoutes, type MobileWebRouteId } from "./routes";
+import { isHistoryRecordDetailRoute, mobileWebRoutes, type MobileWebRouteId } from "./routes";
 import {
   getDraftReportVariant,
   hasDraftResolvedCircleRadii,
@@ -41,9 +41,11 @@ import {
   type MobileWebUploadDraft,
 } from "./state";
 import {
+  appendGeneratedReportForDebug,
   getGeneratedReportEntry,
   listGeneratedReportRecords,
   saveGeneratedReport,
+  seedGeneratedReportsForDebug,
 } from "./generated-report-store";
 import { ensureUploadedImagePath } from "./upload-runtime";
 import type { HistoryFilterId } from "./components/history-cards";
@@ -222,6 +224,7 @@ export function MobileWebBrowserShell() {
     useState<InterpretationVersion | null>(null);
   const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
+  const [historySeedAdding, setHistorySeedAdding] = useState(false);
   const [runtimeDebugState, setRuntimeDebugState] = useState<RuntimeDebugState | null>(null);
   const userId = session.canonicalUserId;
   const activePreviewImagePath = draft.uploadAsset?.runtimeImagePath ?? draft.imagePath;
@@ -279,6 +282,21 @@ export function MobileWebBrowserShell() {
     setUserIdInput(session.canonicalUserId);
     persistMobileWebSession(session);
   }, [session]);
+
+  useEffect(() => {
+    if (!localDebugEnabled) {
+      return;
+    }
+
+    const seededRecords = seedGeneratedReportsForDebug(session.canonicalUserId);
+    if (route === "history" && !previewHistoryRecords?.length && seededRecords.length > 0) {
+      void refreshPreviewHistory(previewHistoryQuery, {
+        successLabel: "已载入本地调试历史",
+        successDetail: "当前历史页使用本地 seed 记录，便于直接调试列表、筛选和空态。",
+        successTone: "preview",
+      });
+    }
+  }, [localDebugEnabled, previewHistoryQuery, previewHistoryRecords?.length, route, session.canonicalUserId]);
 
   function commitUserIdInput(nextValue: string) {
     setUserIdInput(nextValue);
@@ -374,6 +392,27 @@ export function MobileWebBrowserShell() {
       failureTone: "preview",
       preserveRecordsOnError: true,
     });
+  }
+
+  async function handleAppendHistorySeed() {
+    if (historySeedAdding) {
+      return;
+    }
+
+    setHistorySeedAdding(true);
+    try {
+      appendGeneratedReportForDebug(session.canonicalUserId);
+      await refreshPreviewHistory(previewHistoryQuery, {
+        successLabel: "已追加 1 条本地调试历史",
+        successDetail: "这条记录已写入当前浏览器的本地历史存储，可直接继续调试历史页。",
+        successTone: "preview",
+      });
+      if (route !== "history") {
+        setRoute("history");
+      }
+    } finally {
+      setHistorySeedAdding(false);
+    }
   }
 
   useEffect(() => {
@@ -879,6 +918,23 @@ export function MobileWebBrowserShell() {
                   </div>
                 </div>
 
+                <div className="field">
+                  <span>历史调试</span>
+                  <div className="browser-shell__fixture-list">
+                    <button
+                      type="button"
+                      className="mw-secondary-button mw-secondary-button--inline browser-shell__fixture-button"
+                      onClick={() => {
+                        void handleAppendHistorySeed();
+                      }}
+                      disabled={historySeedAdding}
+                    >
+                      <span>本地历史</span>
+                      <span>{historySeedAdding ? "追加中..." : "加 1 条数据"}</span>
+                    </button>
+                  </div>
+                </div>
+
                 <section className="browser-shell__status-card" aria-label="当前联调状态">
                   <header className="browser-shell__status-card-header">
                     <strong>当前联调状态</strong>
@@ -1072,7 +1128,7 @@ export function MobileWebBrowserShell() {
                 isUploading={previewFlowRunning && route === "upload"}
                 historyActionBusy={
                   previewFlowRunning &&
-                  (route === "history" || route === "historyRecordDetail")
+                  (route === "history" || isHistoryRecordDetailRoute(route))
                 }
                 activeHistoryRecordId={previewHistoryOpeningId}
                 activeHistoryRecordReportType={previewHistoryOpeningReportType}

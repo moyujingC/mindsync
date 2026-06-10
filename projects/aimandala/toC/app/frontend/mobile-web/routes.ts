@@ -5,7 +5,10 @@ export type MobileWebRouteId =
   | "loading"
   | "report"
   | "history"
-  | "historyRecordDetail";
+  | "historyRecordDetail"
+  | "historyRecordDetailNotUpgraded"
+  | "historyRecordDetailGenerating"
+  | "historyRecordDetailViewable";
 
 export interface MobileWebRouteDefinition {
   id: MobileWebRouteId;
@@ -25,4 +28,28 @@ export const mobileWebRoutes: MobileWebRouteDefinition[] = [
     path: "/history-record-detail",
     title: "历史记录详情",
   },
+  {
+    id: "historyRecordDetailNotUpgraded",
+    path: "/history-record-detail/not-upgraded",
+    title: "历史记录详情",
+  },
+  {
+    id: "historyRecordDetailGenerating",
+    path: "/history-record-detail/generating",
+    title: "历史记录详情",
+  },
+  {
+    id: "historyRecordDetailViewable",
+    path: "/history-record-detail/viewable",
+    title: "历史记录详情",
+  },
 ];
+
+export function isHistoryRecordDetailRoute(route: MobileWebRouteId): boolean {
+  return (
+    route === "historyRecordDetail" ||
+    route === "historyRecordDetailNotUpgraded" ||
+    route === "historyRecordDetailGenerating" ||
+    route === "historyRecordDetailViewable"
+  );
+}

@@ -1,9 +1,10 @@
 import { MobileWebAppShell } from "../app-shell";
 import { createHistoryRecordDetailPageDescriptor } from "../pages";
-import { mobileWebRoutes } from "../routes";
+import { mobileWebRoutes, type MobileWebRouteId } from "../routes";
 import type { InterpretationRecordResponse, InterpretationVersion } from "../../shared/types";
 
 export interface MobileWebHistoryRecordDetailPageProps {
+  route: MobileWebRouteId;
   record: InterpretationRecordResponse;
   openingReportType?: InterpretationVersion | null;
   environmentLabel?: string;
@@ -14,6 +15,7 @@ export interface MobileWebHistoryRecordDetailPageProps {
 }
 
 export function MobileWebHistoryRecordDetailPage({
+  route,
   record,
   openingReportType = null,
   environmentLabel,
@@ -26,9 +28,7 @@ export function MobileWebHistoryRecordDetailPage({
 
   return (
     <MobileWebAppShell
-      route={
-        mobileWebRoutes.find((route) => route.id === "historyRecordDetail") ?? mobileWebRoutes[0]
-      }
+      route={mobileWebRoutes.find((item) => item.id === route) ?? mobileWebRoutes[0]}
       environmentLabel={environmentLabel}
       environmentDetail={environmentDetail}
       environmentTone={environmentTone}

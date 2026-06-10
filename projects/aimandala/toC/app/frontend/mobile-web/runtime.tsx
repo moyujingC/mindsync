@@ -4,6 +4,7 @@ import { MobileWebApp } from "./app";
 import { resolveMobileWebCanonicalUserId } from "./identity";
 import { loadHistoryPage } from "./loaders";
 import type { HistoryFilterId } from "./components/history-cards";
+import { isHistoryRecordDetailRoute } from "./routes";
 import {
   resolveMobileWebRouteProps,
   type MobileWebRouteInput,
@@ -236,7 +237,7 @@ function getDraftFromInput(
   if (
     input.route === "report" ||
     input.route === "history" ||
-    input.route === "historyRecordDetail"
+    isHistoryRecordDetailRoute(input.route)
   ) {
     return input.params.uploadDraft ?? null;
   }
@@ -1304,7 +1305,7 @@ export function MobileWebRuntime({
       historyFilterBusy={runtimeHistoryBusy}
       historyActionBusy={
         runtimeBusy &&
-        (currentRuntimeProps.route === "history" || currentRuntimeProps.route === "historyRecordDetail")
+        (currentRuntimeProps.route === "history" || isHistoryRecordDetailRoute(currentRuntimeProps.route))
       }
       activeHistoryRecordId={runtimeHistoryOpeningId}
       activeHistoryRecordReportType={runtimeHistoryOpeningReportType}

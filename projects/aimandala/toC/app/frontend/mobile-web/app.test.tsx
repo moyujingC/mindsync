@@ -262,4 +262,56 @@ describe("MobileWebApp", () => {
     expect(html).toContain("版本演进");
     expect(html).toContain("Lite / Pro");
   });
+
+  it("historyRecordDetail 三种状态路由都可直接渲染", () => {
+    const notUpgraded = renderToStaticMarkup(
+      <MobileWebApp
+        route="historyRecordDetailNotUpgraded"
+        record={{
+          ...historyRecord,
+          interpretation_id: "detail-not-upgraded",
+          status: "completed",
+          generation_stage: "report_ready",
+          generation_progress: 100,
+          version_purchased: ["lite"],
+          can_upgrade: true,
+        }}
+      />,
+    );
+    const generating = renderToStaticMarkup(
+      <MobileWebApp
+        route="historyRecordDetailGenerating"
+        record={{
+          ...historyRecord,
+          interpretation_id: "detail-generating",
+          status: "processing",
+          generation_stage: "generating_pro",
+          generation_progress: 62,
+          version_purchased: ["lite", "pro"],
+          can_upgrade: false,
+        }}
+      />,
+    );
+    const viewable = renderToStaticMarkup(
+      <MobileWebApp
+        route="historyRecordDetailViewable"
+        record={{
+          ...historyRecord,
+          interpretation_id: "detail-viewable",
+          status: "completed",
+          generation_stage: "report_ready",
+          generation_progress: 100,
+          version_purchased: ["lite", "pro"],
+          can_upgrade: false,
+        }}
+      />,
+    );
+
+    expect(notUpgraded).toContain("打开 Lite 报告");
+    expect(notUpgraded).toContain("未购买");
+    expect(generating).toContain("查看 Pro 状态");
+    expect(generating).toContain("生成中");
+    expect(viewable).toContain("打开 Pro 报告");
+    expect(viewable).toContain("可查看");
+  });
 });

@@ -8,7 +8,7 @@ import { MobileWebReportEntryPage } from "./page-shells/report-entry-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
 import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { HistoryFilterId } from "./components/history-cards";
-import type { MobileWebRouteId } from "./routes";
+import { isHistoryRecordDetailRoute, type MobileWebRouteId } from "./routes";
 import type {
   DetectCirclesResponse,
   InterpretationListQuery,
@@ -235,11 +235,15 @@ export function MobileWebApp({
       );
 
     case "historyRecordDetail":
+    case "historyRecordDetailNotUpgraded":
+    case "historyRecordDetailGenerating":
+    case "historyRecordDetailViewable":
       if (!record) {
         return "Missing history record";
       }
       return (
         <MobileWebHistoryRecordDetailPage
+          route={route}
           record={record}
           openingReportType={activeHistoryRecordReportType}
           environmentLabel={environmentLabel}
@@ -251,6 +255,6 @@ export function MobileWebApp({
       );
 
     default:
-      return "Unknown route";
+      return isHistoryRecordDetailRoute(route) ? "Missing history record" : "Unknown route";
   }
 }
