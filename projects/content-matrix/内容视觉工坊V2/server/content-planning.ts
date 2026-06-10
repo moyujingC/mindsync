@@ -26,6 +26,13 @@ function cleanText(text: string) {
     .trim();
 }
 
+function splitSentences(text: string) {
+  return text
+    .split(/(?<=[。！？；])/)
+    .map((item) => cleanText(item))
+    .filter(Boolean);
+}
+
 function extractSections(rawText: string) {
   const chunks = rawText
     .split(/\n{2,}/)
@@ -71,6 +78,36 @@ function resolveTargetCardCount(
   if (request.splitStrategy === "less") return clamp(boundedSections - 1, request.minCards, request.maxCards);
   if (request.splitStrategy === "more") return clamp(boundedSections + 1, request.minCards, request.maxCards);
   return boundedSections;
+}
+
+function buildCardLayoutHint(index: number, total: number) {
+  if (index === 0) return "问题提出型 / 竖向递进卡";
+  if (index === total - 1) return "行动建议型 / 中心发散卡";
+  if (index === 1) return "上下对比型";
+  return "原因拆解型 / 分区信息卡";
+}
+
+function buildCardTextBlocks(section: { heading: string; body: string[] }, title: string, summary: string) {
+  const source = splitSentences(section.body.join(" "));
+  const picked = source.filter((sentence) => sentence.length >= 12).slice(0, 4);
+  if (picked.length >= 3) {
+    return picked;
+  }
+
+  const fallback = [
+    summary,
+    section.body[0] ? cleanText(section.body[0]).slice(0, 34) : "",
+    section.body[1] ? cleanText(section.body[1]).slice(0, 34) : "",
+  ].filter(Boolean);
+
+  return Array.from(new Set([title, ...fallback]))
+    .map((item) => cleanText(item))
+    .filter((item) => item.length >= 8)
+    .slice(0, 4);
+}
+
+function buildIllustrationHints(title: string, textBlocks: string[]) {
+  return textBlocks.slice(0, 4).map((block) => `与“${title} / ${block.slice(0, 10)}”相关的极简手绘符号`);
 }
 
 function classifySectionType(summary: string, quote?: string): WechatInlineSectionType {
@@ -124,10 +161,16 @@ export function planKnowledgeCardsFromArticle(
   const cardPlan = normalizedSections.map((section, index) => {
     const summarySource = cleanText(section.body.join(" ") || section.heading);
     const summary = summarySource.length > 54 ? `${summarySource.slice(0, 54)}…` : summarySource;
+    const textBlocks = buildCardTextBlocks(section, section.heading, summary || section.heading);
     return {
       index: index + 1,
       title: section.heading || `知识卡 ${index + 1}`,
       summary: summary || "等待文章内容补充后再生成摘要。",
+      layoutHint: buildCardLayoutHint(index, normalizedSections.length),
+      textBlocks,
+      illustrationHints: buildIllustrationHints(section.heading || `知识卡 ${index + 1}`, textBlocks),
+      decorationHint: "使用分区框、箭头、便签和轻手绘装饰组织信息，避免堆成一段",
+      endingLabel: index === normalizedSections.length - 1 ? "完结" : undefined,
     };
   });
 
@@ -183,6 +226,8 @@ function buildPrompt(request: PlannerRequest) {
 1. 判断适合拆成几张知识卡片
 2. 为每张卡片生成标题
 3. 为每张卡片生成一句摘要
+3.1 为每张卡片生成 3-4 个可直接上图的简短信息点
+3.2 为每张卡片生成一个构图提示
 4. 提炼 1-3 句重点句
 5. 生成一个封面主题和关键词
 6. 规划公众号正文配图，决定哪些小节需要配图，并给出每张图的用途和视觉方向
@@ -195,6 +240,10 @@ function buildPrompt(request: PlannerRequest) {
 - 拆卡策略偏好：${request.splitStrategy}
 - 标题必须短、清楚、适合做视觉卡片标题
 - 摘要是一句话，适合显示在工作台里
+- 每张卡必须有 3-4 个信息点，不要只给空泛观点
+- 每个信息点应尽量来自原文，不要改写成口号
+- 每个信息点长度控制在 12-36 字，适合直接渲染到卡片
+- 构图提示要像“上下对比型 / 原因拆解型 / 中心发散型 / 问题提出型”这种可执行描述
 - 不要编造原文没有的观点
 - 正文配图不是知识卡片，不是封面，不是海报
 - 正文配图应优先对应文章里的 \`##\` 小节
@@ -228,7 +277,12 @@ ${request.rawText}
     {
       "index": 1,
       "title": "卡片标题",
-      "summary": "卡片摘要"
+      "summary": "卡片摘要",
+      "layoutHint": "上下对比型",
+      "textBlocks": ["信息点1", "信息点2", "信息点3"],
+      "illustrationHints": ["插图提示1", "插图提示2", "插图提示3"],
+      "decorationHint": "边框、箭头、分区等装饰建议",
+      "endingLabel": "完结"
     }
   ],
   "inlineImagePlan": [

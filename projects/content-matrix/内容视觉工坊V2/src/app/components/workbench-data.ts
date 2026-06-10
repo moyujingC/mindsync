@@ -61,14 +61,37 @@ export function buildKnowledgeCardPrompt({
   cardIndex,
   cardTitle,
   cardSummary,
+  cardLayoutHint,
+  cardTextBlocks,
+  cardIllustrationHints,
+  cardDecorationHint,
+  cardEndingLabel,
   bodyPreview,
 }: {
   articleTitle: string;
   cardIndex: number;
   cardTitle: string;
   cardSummary: string;
+  cardLayoutHint?: string;
+  cardTextBlocks?: string[];
+  cardIllustrationHints?: string[];
+  cardDecorationHint?: string;
+  cardEndingLabel?: string;
   bodyPreview: string;
 }) {
+  const textBlocks = (cardTextBlocks || []).filter(Boolean).slice(0, 4);
+  const illustrationHints = (cardIllustrationHints || []).filter(Boolean).slice(0, textBlocks.length || 4);
+  const renderedTextBlocks =
+    textBlocks.length > 0
+      ? textBlocks
+          .map((block, index) => {
+            const hint = illustrationHints[index];
+            return `- 信息点 ${index + 1}：\`${block}\`${hint ? `（旁边可配 ${hint}）` : ""}`;
+          })
+          .join("\n")
+      : `- 根据文章《${articleTitle}》和这张卡片主题，补全 3 到 4 个简短信息点
+- 每个信息点控制在 18 到 36 字之间，放在独立信息容器内`;
+
   return `【文字渲染规则 - 严格遵守】
 只渲染提示词中用反引号 \`\` 明确标注的文字内容，原样呈现。
 凡是提示词中没有用反引号标注的地方，一律不得自行添加任何文字、字母、数字或符号。
@@ -87,10 +110,13 @@ export function buildKnowledgeCardPrompt({
 本张图内容：
 - 主标题放在画面顶部醒目区域：\`${cardTitle}\`
 - 核心摘要放在标题下方信息区：\`${cardSummary}\`
-- 根据文章《${articleTitle}》和这张卡片主题，自动补全 3 到 4 个简短信息点
-- 每个信息点控制在 18 到 36 字之间，放在独立信息容器内
+- 构图建议：${cardLayoutHint || "竖向信息卡 / 分区知识板"}
+- 以下信息点必须逐条渲染到独立信息容器中：
+${renderedTextBlocks}
 - 每个信息点都服务于解释标题，不要重复抒情，不要只写口号
 - 可以使用箭头、分区框、便签、序号、细线连接，但不要把内容挤成一整段
+- 装饰提示：${cardDecorationHint || "用克制的分区框、细线和轻装饰来组织信息，不要喧宾夺主"}
+${cardEndingLabel ? `- 画面底部可加轻量收口标识：\`${cardEndingLabel}\`` : ""}
 
 内容来源约束：
 - 文章主题：${articleTitle}
@@ -117,7 +143,54 @@ export function buildFallbackCardPlan(): CardPlan[] {
     index: index + 1,
     title: card.title,
     summary: card.desc,
+    layoutHint: index === 0 ? "问题提出型" : index === 1 ? "上下对比型" : index === 2 ? "原因拆解型" : "行动建议型",
+    textBlocks: buildFallbackKnowledgeBlocks(index),
+    illustrationHints: buildFallbackIllustrationHints(index),
+    decorationHint: "使用轻分区框、箭头和便签感小元素组织信息",
+    endingLabel: index === KNOWLEDGE_CARDS.length - 1 ? "完结" : undefined,
   }));
+}
+
+function buildFallbackKnowledgeBlocks(index: number) {
+  if (index === 0) {
+    return [
+      "持续切换会反复消耗上下文加载成本",
+      "表面做了很多事，实际精力被零碎请求抽空",
+      "疲惫常常来自隐性税收，而不是显眼的大任务",
+    ];
+  }
+  if (index === 1) {
+    return [
+      "专注的难点不是开始，而是持续拒绝干扰",
+      "目标越少，判断链路越短，执行越稳",
+      "咬牙坚持不等于真正聚焦",
+    ];
+  }
+  if (index === 2) {
+    return [
+      "环境、时段与恢复共同决定专注上限",
+      "长期能力需要节律，不靠一次性冲刺",
+      "把专注当能力培养，才会稳定复用",
+    ];
+  }
+  return [
+    "先只开一个任务窗口，减少并行切换",
+    "给深度时段设开始和结束边界",
+    "用渐进实验替代激进改造，降低反弹",
+  ];
+}
+
+function buildFallbackIllustrationHints(index: number) {
+  if (index === 0) {
+    return ["上下文切换的小脑图", "被拉扯的注意力箭头", "隐性消耗的计费感图标"];
+  }
+  if (index === 1) {
+    return ["减少目标的清单图标", "屏蔽干扰的挡板", "收束焦点的小圆点"];
+  }
+  if (index === 2) {
+    return ["节律感时间轴", "恢复与留白的呼吸感符号", "长期积累的小叶片"];
+  }
+  return ["单任务窗口", "时间边界线", "渐进实验的台阶"];
 }
 
 export function buildFallbackInlineImagePlan(): InlineImagePlan[] {
@@ -194,6 +267,11 @@ export function buildGenerationTasks({
               cardIndex: card.index,
               cardTitle: card.title,
               cardSummary: card.summary,
+              cardLayoutHint: card.layoutHint,
+              cardTextBlocks: card.textBlocks,
+              cardIllustrationHints: card.illustrationHints,
+              cardDecorationHint: card.decorationHint,
+              cardEndingLabel: card.endingLabel,
               bodyPreview,
             }),
             negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",

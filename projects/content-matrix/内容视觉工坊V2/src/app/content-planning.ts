@@ -6,6 +6,11 @@ export type CardPlan = {
   index: number;
   title: string;
   summary: string;
+  layoutHint?: string;
+  textBlocks?: string[];
+  illustrationHints?: string[];
+  decorationHint?: string;
+  endingLabel?: string;
 };
 
 export type InlineImagePlan = {
