@@ -952,6 +952,7 @@ function WorkbenchResultsPanel({
   inlineGeneration,
 }: any) {
   const [previewImage, setPreviewImage] = useState<{ imageUrl: string; alt: string } | null>(null);
+  const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const currentQuoteTexts = selectedQuotes
     .map((index: number) => plannedQuotes[index])
     .filter(Boolean);
@@ -976,19 +977,51 @@ function WorkbenchResultsPanel({
     setPreviewImage({ imageUrl, alt });
   }
 
-  function handleDownloadAll() {
-    downloadableImages.forEach((image, index) => {
+  async function downloadImage(url: string, filename: string) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`download failed: ${response.status}`);
+      }
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = image.imageUrl;
-      link.download = `content-visual-${String(index + 1).padStart(2, "0")}.png`;
+      link.href = objectUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
       link.target = "_blank";
       link.rel = "noreferrer";
       document.body.appendChild(link);
-      window.setTimeout(() => {
-        link.click();
-        document.body.removeChild(link);
-      }, index * 120);
-    });
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+
+  async function handleDownloadAll() {
+    if (downloadableImages.length === 0 || isDownloadingAll) return;
+    setIsDownloadingAll(true);
+    try {
+      for (let index = 0; index < downloadableImages.length; index += 1) {
+        const image = downloadableImages[index];
+        // Keep a short gap so the browser doesn't collapse multiple downloads.
+        // eslint-disable-next-line no-await-in-loop
+        await downloadImage(
+          image.imageUrl,
+          `content-visual-${String(index + 1).padStart(2, "0")}.png`
+        );
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((resolve) => window.setTimeout(resolve, 120));
+      }
+    } finally {
+      setIsDownloadingAll(false);
+    }
   }
 
   return (
@@ -1005,10 +1038,10 @@ function WorkbenchResultsPanel({
         <button
           className="flex items-center gap-1"
           style={{ color: COLORS.blue, fontSize: 12 }}
-          onClick={handleDownloadAll}
-          disabled={downloadableImages.length === 0}
+          onClick={() => void handleDownloadAll()}
+          disabled={downloadableImages.length === 0 || isDownloadingAll}
         >
-          全部下载 <ArrowUpRight size={12} strokeWidth={1.6} />
+          {isDownloadingAll ? "下载中" : "全部下载"} <ArrowUpRight size={12} strokeWidth={1.6} />
         </button>
       </div>
 
@@ -1281,6 +1314,22 @@ function WorkbenchResultsPanel({
                 }}
               />
             </div>
+          ) : null}
+          {previewImage ? (
+            <DialogFooter>
+              <Btn
+                variant="secondary"
+                size="md"
+                onClick={() =>
+                  void downloadImage(
+                    previewImage.imageUrl,
+                    `${(previewImage.alt || "preview").replace(/\s+/g, "-")}.png`
+                  )
+                }
+              >
+                下载当前图片
+              </Btn>
+            </DialogFooter>
           ) : null}
         </DialogContent>
       </Dialog>
