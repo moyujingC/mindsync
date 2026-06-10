@@ -56,6 +56,10 @@ type ReplanSummary = {
   staleKnowledgeCount: number;
 };
 
+function buildArticleSignature(article: WorkspaceArticle) {
+  return `${article.title.trim()}::${article.body.replace(/\s+/g, " ").trim()}`;
+}
+
 export function useWorkbenchController({
   currentArticle,
   setCurrentArticle,
@@ -629,13 +633,14 @@ export function useWorkbenchController({
     };
 
     const planning = await postPlanCards(request);
-    return savePlanningResult(planning);
+    return savePlanningResult(planning, article);
   }
 
-  function savePlanningResult(planning: PlannerResponse) {
+  function savePlanningResult(planning: PlannerResponse, article: WorkspaceArticle) {
     const nextRevision = replanRevision + 1;
     const nextPlanningState: PlanningState = {
       provider: planning.provider,
+      articleSignature: buildArticleSignature(article),
       cardPlan: planning.cardPlan,
       candidateQuotes: planning.analysis.keyQuotes,
       inlineImagePlan: planning.inlineImagePlan,
@@ -886,39 +891,68 @@ export function useWorkbenchController({
   }
 
   async function handleStartGeneration() {
-    clearTaskError();
-    pushStatus("planning", "info", "正在拆解内容", {
-      phase: "planning",
-      currentStepLabel: "拆解中",
-      completedTasks: 0,
-      totalTasks: 1,
-    });
-
     let planning: PlannerResponse;
     let nextRevision: number;
-    try {
-      const planningResult = await runPlanning();
-      planning = planningResult.planning;
-      nextRevision = planningResult.nextRevision;
-      pushStatus("planning", "success", "内容拆解已完成", {
+    const currentArticleSignature = buildArticleSignature(currentArticle);
+    const canReusePlanning =
+      planningState != null && planningState.articleSignature === currentArticleSignature;
+
+    if (canReusePlanning) {
+      planning = {
+        provider: planningState.provider,
+        analysis: {
+          imageGenerationSource: {
+            contentKind: "full-article-text",
+            strategy: planningState.strategySummary,
+          },
+          cardOutlineTitles: planningState.cardPlan.map((card) => card.title),
+          keyQuotes: planningState.candidateQuotes,
+          coverTheme: planningState.coverTheme,
+        },
+        cardPlan: planningState.cardPlan,
+        inlineImagePlan: planningState.inlineImagePlan,
+      };
+      nextRevision = replanRevision;
+      clearTaskError();
+      pushStatus("generation", "info", "复用当前拆解结果，直接开始出图", {
+        phase: "generating",
+        currentStepLabel: "准备出图",
+        completedTasks: 0,
+        totalTasks: 0,
+      });
+    } else {
+      clearTaskError();
+      pushStatus("planning", "info", "正在拆解内容", {
         phase: "planning",
-        currentStepLabel: "拆解完成",
-        completedTasks: 1,
+        currentStepLabel: "拆解中",
+        completedTasks: 0,
         totalTasks: 1,
       });
-    } catch (error) {
-      pushStatus(
-        "planning",
-        "error",
-        error instanceof Error ? error.message : "内容拆解失败",
-        {
-          phase: "failed",
-          currentStepLabel: "拆解失败",
-          completedTasks: 0,
+
+      try {
+        const planningResult = await runPlanning();
+        planning = planningResult.planning;
+        nextRevision = planningResult.nextRevision;
+        pushStatus("planning", "success", "内容拆解已完成", {
+          phase: "planning",
+          currentStepLabel: "拆解完成",
+          completedTasks: 1,
           totalTasks: 1,
-        }
-      );
-      return;
+        });
+      } catch (error) {
+        pushStatus(
+          "planning",
+          "error",
+          error instanceof Error ? error.message : "内容拆解失败",
+          {
+            phase: "failed",
+            currentStepLabel: "拆解失败",
+            completedTasks: 0,
+            totalTasks: 1,
+          }
+        );
+        return;
+      }
     }
 
     const resolvedQuoteIndexes = resolveValidSelectedQuoteIndexes(

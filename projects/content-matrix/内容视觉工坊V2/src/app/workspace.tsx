@@ -110,6 +110,7 @@ export type WorkspaceTab = "workbench" | "wechat" | "assets" | "image" | "sync";
 
 export type PlanningState = {
   provider: PlannerResponse["provider"];
+  articleSignature: string;
   cardPlan: CardPlan[];
   candidateQuotes: string[];
   inlineImagePlan: InlineImagePlan[];
