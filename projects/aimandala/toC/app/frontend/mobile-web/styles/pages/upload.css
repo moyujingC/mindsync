@@ -718,6 +718,10 @@
   color: var(--am-color-ink-800);
 }
 
+.am-theme-selector__check svg {
+  transform: scale(0.8);
+}
+
 .am-theme-selector__icon,
 .am-theme-selector__label,
 .am-theme-selector__sub {
