@@ -340,7 +340,7 @@
 .am-report-entry-card__bullets-title {
   margin-bottom: 4px;
   color: var(--am-report-entry-card-muted);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -350,7 +350,7 @@
   gap: 12px;
   align-items: flex-start;
   color: var(--am-report-entry-card-secondary);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.7;
 }
 

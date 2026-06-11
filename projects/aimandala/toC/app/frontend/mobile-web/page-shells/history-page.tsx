@@ -2,7 +2,7 @@ import { MobileWebAppShell } from "../app-shell";
 import { createHistoryPageDescriptor } from "../pages";
 import { mobileWebRoutes } from "../routes";
 import { HistoryRecordCard, type HistoryFilterId } from "../components/history-cards";
-import { SharedAppTopBar, SharedTopicSelector, type SharedTopicSelectorOption } from "../../shared/ui";
+import { SharedAppTopBar, SharedTopicSelector, sharedTopicSelectorOptions, type SharedTopicSelectorOption } from "../../shared/ui";
 import type { InterpretationListQuery, InterpretationRecordResponse } from "../../shared/types";
 
 const historyThemeOptions: SharedTopicSelectorOption[] = [
@@ -15,49 +15,8 @@ const historyThemeOptions: SharedTopicSelectorOption[] = [
       ["path", { d: "M7.5 12h9", key: "all-2" }],
     ],
   },
-  {
-    value: "father_relationship",
-    label: "父亲",
-    subLabel: "关系",
-    icon: [["path", { d: "M16 21a4 4 0 0 0-8 0", key: "us1" }], ["circle", { cx: "12", cy: "9", r: "3", key: "us2" }], ["path", { d: "M22 21a4 4 0 0 0-3-3.87", key: "us3" }], ["path", { d: "M2 21a4 4 0 0 1 3-3.87", key: "us4" }]],
-  },
-  {
-    value: "mother_relationship",
-    label: "母亲",
-    subLabel: "关系",
-    icon: [["path", { d: "M18 21a6 6 0 0 0-12 0", key: "u1" }], ["circle", { cx: "12", cy: "8", r: "4", key: "u2" }]],
-  },
-  {
-    value: "intimate_relationship",
-    label: "亲密",
-    subLabel: "关系",
-    icon: [["path", { d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z", key: "c3ymky" }]],
-  },
-  {
-    value: "parent_child_relationship",
-    label: "亲子",
-    subLabel: "关系",
-    icon: [["path", { d: "M9 12h6", key: "b1" }], ["path", { d: "M10 16h4", key: "b2" }], ["circle", { cx: "12", cy: "10", r: "5", key: "b3" }], ["path", { d: "M10 4.5c.8-1 2.2-1.5 3.5-1", key: "b4" }]],
-  },
-  {
-    value: "wealth_career_group",
-    label: "财富",
-    subLabel: "事业",
-    icon: [["circle", { cx: "8", cy: "8", r: "6", key: "3yglwk" }], ["path", { d: "M18.09 10.37A6 6 0 1 1 10.34 18", key: "t5s6rm" }], ["path", { d: "M7 6h1v4", key: "1obek4" }], ["path", { d: "m16.71 13.88.7.71-2.82 2.82", key: "1rbuyh" }]],
-  },
-  {
-    value: "body_health",
-    label: "身体",
-    subLabel: "健康",
-    icon: [["path", { d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2", key: "169zse" }]],
-  },
-  {
-    value: "personal_growth",
-    label: "个人",
-    subLabel: "成长",
-    icon: [["path", { d: "M2 21a8 8 0 0 1 12 0", key: "ur1" }], ["circle", { cx: "8", cy: "8", r: "4", key: "ur2" }], ["path", { d: "M14 21a6 6 0 0 1 8 0", key: "ur3" }], ["circle", { cx: "18", cy: "9", r: "3", key: "ur4" }]],
-  },
-] as const;
+  ...sharedTopicSelectorOptions,
+];
 
 const limitOptions = [
   { kind: "meta", label: "最近几月" },
@@ -80,16 +39,16 @@ function matchesHistoryThemeFilter(itemTheme: string, activeTheme?: string) {
     return true;
   }
 
-  if (activeTheme === "wealth_career_group") {
-    return itemTheme === "wealth" || itemTheme === "wealth_career" || itemTheme === "career_development";
+  if (activeTheme === "wealth") {
+    return itemTheme === "wealth" || itemTheme === "wealth_career";
   }
 
   return itemTheme === activeTheme;
 }
 
 function getHistoryThemeValue(activeTheme?: string) {
-  if (activeTheme === "wealth" || activeTheme === "wealth_career" || activeTheme === "career_development") {
-    return "wealth_career_group";
+  if (activeTheme === "wealth_career") {
+    return "wealth";
   }
 
   return activeTheme ?? "all";
