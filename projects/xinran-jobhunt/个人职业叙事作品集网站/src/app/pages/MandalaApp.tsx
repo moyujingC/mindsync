@@ -106,10 +106,22 @@ export default function MandalaApp() {
             accent={ACCENT}
             items={[
               {
-                title: "落地页",
+                title: "启动页",
                 src: "/works/mandala-app/landing.png",
-                alt: "一镜一梳落地页截图",
-                body: "首页先给出产品气质、价值承诺和单一主按钮，目标不是解释全部功能，而是让首次用户明确这是一款围绕曼陀罗解读展开的自我探索产品。",
+                alt: "一镜一梳启动页截图",
+                body: "启动页先给出产品气质、价值承诺和单一主按钮，目标不是解释全部功能，而是让首次用户明确这是一款围绕曼陀罗解读展开的自我探索产品。",
+              },
+              {
+                title: "方案选择",
+                src: "/works/mandala-app/plan-comparison.png",
+                alt: "一镜一梳 Lite 和 Pro 方案对比截图",
+                body: "用 Lite / Pro 两档方案把价格、内容范围和升级路径说清楚，帮助用户先建立预期，再决定是否深入。",
+              },
+              {
+                title: "常见问题",
+                src: "/works/mandala-app/faq.png",
+                alt: "一镜一梳常见问题截图",
+                body: "FAQ 页集中回答产品定义、画作要求、结果准确性、隐私保护和优惠券使用，减少高信任场景里的不确定感。",
               },
               {
                 title: "上传页",
@@ -118,19 +130,37 @@ export default function MandalaApp() {
                 body: "上传页把三圈边界调整、当前议题选择、创作意图和创作感受放在同一主路径里，体现这个产品不是简单传图，而是在组织图像证据和用户上下文。",
               },
               {
-                title: "付款页",
+                title: "支付页",
                 src: "/works/mandala-app/payment.png",
-                alt: "一镜一梳付款页截图",
+                alt: "一镜一梳支付页截图",
                 body: "付款页只承接 Lite 解读确认和最小支付动作，把版本、价格、适用场景和结果预期讲清楚，避免用户在高信任场景里被复杂商业动线打断。",
+              },
+              {
+                title: "历史列表",
+                src: "/works/mandala-app/history-list.png",
+                alt: "一镜一梳历史列表截图",
+                body: "历史页先展示已生成和待查看的解读记录，方便用户回看每次画作对应的结果，也让产品形成可复用的自我探索资产。",
+              },
+              {
+                title: "历史筛选",
+                src: "/works/mandala-app/history-filter.png",
+                alt: "一镜一梳历史筛选截图",
+                body: "历史筛选页提供状态、议题和时间范围的过滤能力，把记录管理做成可查找、可追踪的工作台，而不是简单的结果列表。",
+              },
+              {
+                title: "解读中",
+                src: "/works/mandala-app/loading.png",
+                alt: "一镜一梳解读中截图",
+                body: "解读中页面把进度、正在分析的步骤和知识提示展示出来，强化用户对生成过程的可见性，也降低等待时的不安感。",
               },
             ]}
           />
           <ModuleGrid
             accent={ACCENT}
             modules={[
-              { title: "主路径已落到页面层", body: "不是抽象流程图，而是真实可点开的落地页、上传页和支付页。" },
+              { title: "主路径已落到页面层", body: "不是抽象流程图，而是真实可点开的启动、上传、支付和历史页面。" },
               { title: "关键输入已结构化", body: "三圈边界、议题、创作意图和创作感受都已经在页面层承接。" },
-              { title: "付费转化点已明确", body: "Lite 解读确认页把价格、版本和行动按钮收束成单一决策面。" },
+              { title: "付费与回看都已闭环", body: "方案对比、付款确认、历史记录和筛选管理都已经在页面层打通。" },
             ]}
           />
         </div>
