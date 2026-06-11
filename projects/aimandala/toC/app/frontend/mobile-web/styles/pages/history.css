@@ -369,6 +369,8 @@
 
 .mw-history-record--featured {
   border-radius: 16px;
+  align-items: flex-start;
+  padding: 0 12px 20px 0;
 }
 
 .mw-history-record__thumb {
@@ -456,18 +458,19 @@
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__thumb,
 .mw-history-record--featured.mw-history-record--proReady .mw-history-record__thumb {
-  flex-basis: 84px;
-  width: 84px;
-  height: 84px;
-  margin-left: 12px;
-  border-radius: 10px;
+  flex-basis: 96px;
+  width: 96px;
+  height: 96px;
+  align-self: flex-start;
+  margin-left: 0;
+  border-radius: 0 0 10px 0;
 }
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__body,
 .mw-history-record--featured.mw-history-record--proReady .mw-history-record__body {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
+  justify-content: flex-start;
 }
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__copy,
@@ -486,7 +489,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 10px 12px 10px 14px;
+  padding: 13px 4px 20px 14px;
 }
 
 .mw-history-record__featured-header {
@@ -588,7 +591,7 @@
   display: flex;
   justify-content: flex-end;
   margin-top: auto;
-  padding-top: 9px;
+  padding-top: 10px;
 }
 
 .mw-history-record__featured-cta {
@@ -615,7 +618,11 @@
 }
 
 .mw-history-record__featured-progressbar {
-  padding: 0 12px 10px;
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  left: 22px;
+  padding: 0;
 }
 
 .mw-history-record__featured-progressbar i {
@@ -633,11 +640,12 @@
 
 .mw-history-record--featured.mw-history-record--pending .mw-history-record__thumb,
 .mw-history-record--featured.mw-history-record--proPending .mw-history-record__thumb {
-  flex-basis: 84px;
-  width: 84px;
-  height: 84px;
-  margin-left: 12px;
-  border-radius: 10px;
+  flex-basis: 96px;
+  width: 96px;
+  height: 96px;
+  align-self: flex-start;
+  margin-left: 0;
+  border-radius: 0 0 10px 0;
 }
 
 .mw-history-record__body--default {
