@@ -46,16 +46,16 @@ type WechatTheme = {
 };
 
 const DEFAULT_THEME: WechatTheme = {
-  titleColor: "#2B3645",
-  bodyColor: "#3F4754",
-  metaColor: "#A0A4AD",
-  accentColor: "#5B6E84",
-  blockBg: "#F1F4F7",
-  bodyFontSize: 14.5,
-  titleFontSize: 21,
-  headingFontSize: 16,
-  bodyLineHeight: 1.85,
-  quoteFontSize: 14,
+  titleColor: "#303543",
+  bodyColor: "#393D49",
+  metaColor: "#A8B1C4",
+  accentColor: "#6E7FA8",
+  blockBg: "#F0F3FA",
+  bodyFontSize: 16,
+  titleFontSize: 23,
+  headingFontSize: 24,
+  bodyLineHeight: 1.8,
+  quoteFontSize: 16,
 };
 
 export function WechatLayout() {
@@ -642,7 +642,8 @@ export function WechatLayout() {
                 color: activeTheme.titleColor,
                 fontSize: activeTheme.titleFontSize,
                 lineHeight: 1.45,
-                letterSpacing: "0.01em",
+                letterSpacing: 0,
+                fontWeight: 600,
               }}
             >
               {currentArticle.title}
@@ -710,7 +711,8 @@ export function WechatLayout() {
                       color: activeTheme.bodyColor,
                       fontSize: activeTheme.bodyFontSize,
                       lineHeight: activeTheme.bodyLineHeight,
-                      letterSpacing: "0.01em",
+                      letterSpacing: 0,
+                      textAlign: "justify",
                     }}
                   >
                     {block.text}
@@ -731,7 +733,7 @@ export function WechatLayout() {
                       lineHeight: activeTheme.bodyLineHeight,
                       background: activeTheme.blockBg,
                       padding: "10px 14px",
-                      borderRadius: "0 6px 6px 0",
+                      borderRadius: "0 8px 8px 0",
                     }}
                   >
                     {block.text}
@@ -769,7 +771,7 @@ export function WechatLayout() {
                         alt={block.label}
                         style={{
                           aspectRatio: "16/9",
-                          borderRadius: 6,
+                          borderRadius: 8,
                           width: "100%",
                           objectFit: "cover",
                         }}
@@ -798,24 +800,25 @@ export function WechatLayout() {
 
               return (
                 <div key={`section-${i}`} className="mt-6">
-                  <div
+                  <h2
                     style={{
-                      color: activeTheme.titleColor,
+                      margin: 0,
+                      color: activeTheme.accentColor,
                       fontSize: activeTheme.headingFontSize,
                       lineHeight: 1.5,
-                      letterSpacing: "0.02em",
-                      paddingLeft: 10,
-                      borderLeft: `3px solid ${activeTheme.accentColor}`,
+                      letterSpacing: 0,
+                      fontWeight: 600,
                     }}
                   >
                     {block.title}
-                  </div>
+                  </h2>
                   <div
                     style={{
                       color: activeTheme.bodyColor,
                       fontSize: activeTheme.bodyFontSize,
                       lineHeight: activeTheme.bodyLineHeight,
-                      marginTop: 10,
+                      marginTop: 15,
+                      textAlign: "justify",
                     }}
                   >
                     {block.body}
@@ -1140,7 +1143,7 @@ function buildWechatArticleHtml(
 
     if (block.type === "paragraph") {
       return `
-        <p style="margin:0 0 18px;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};">
+        <p style="margin:18px 0 0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;">
           ${escapeHtml(block.text)}
         </p>
       `;
@@ -1148,7 +1151,7 @@ function buildWechatArticleHtml(
 
     if (block.type === "quote") {
       return `
-        <blockquote style="margin:0 0 20px;padding:10px 14px;border-left:3px solid ${theme.accentColor};background:${theme.blockBg};color:${theme.accentColor};font-size:${theme.quoteFontSize}px;line-height:${theme.bodyLineHeight};border-radius:0 6px 6px 0;">
+        <blockquote style="margin:20px 0 12px;padding:10px 14px;border-left:3px solid ${theme.accentColor};background:${theme.blockBg};color:${theme.accentColor};font-size:${theme.quoteFontSize}px;line-height:${theme.bodyLineHeight};border-radius:0 8px 8px 0;">
           ${escapeHtml(block.text)}
         </blockquote>
       `;
@@ -1156,7 +1159,7 @@ function buildWechatArticleHtml(
 
     if (block.type === "note") {
       return `
-        <div style="margin:0 0 18px;padding:10px 12px;border:1px solid #ECEAE3;border-radius:6px;background:#FAF7F2;color:${theme.bodyColor};font-size:${Math.max(
+        <div style="margin:18px 0 0;padding:10px 12px;border:1px solid #ECEAE3;border-radius:8px;background:#FAF7F2;color:${theme.bodyColor};font-size:${Math.max(
           theme.bodyFontSize - 1,
           12
         )}px;line-height:${theme.bodyLineHeight};">
@@ -1170,13 +1173,13 @@ function buildWechatArticleHtml(
         ? inlineImageMap.get(block.sectionKey) ?? null
         : null;
       return `
-        <figure style="margin:24px 0 0;">
+        <figure style="margin:26px 0 12px;text-align:center;">
           ${
             inlineImageUrl
-              ? `<img src="${escapeHtml(inlineImageUrl)}" alt="${escapeHtml(block.label)}" style="display:block;width:100%;aspect-ratio:16/9;border-radius:6px;object-fit:cover;" />`
-              : `<div style="aspect-ratio:16/9;border-radius:6px;background:linear-gradient(160deg,#DCE5EE 0%,#B9C7D5 100%);"></div>`
+              ? `<img src="${escapeHtml(inlineImageUrl)}" alt="${escapeHtml(block.label)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:8px;object-fit:cover;background:#f0f3fa;" />`
+              : `<div style="aspect-ratio:16/9;border-radius:8px;background:linear-gradient(160deg,#DCE5EE 0%,#B9C7D5 100%);"></div>`
           }
-          <figcaption style="margin-top:8px;color:${theme.metaColor};font-size:10.5px;text-align:center;">
+          <figcaption style="margin-top:8px;color:${theme.metaColor};font-size:10.5px;line-height:1.6;text-align:center;">
             ${escapeHtml(block.label)}
           </figcaption>
         </figure>
@@ -1184,11 +1187,11 @@ function buildWechatArticleHtml(
     }
 
     return `
-      <section style="margin-top:24px;">
-        <h2 style="margin:0;padding-left:10px;border-left:3px solid ${theme.accentColor};color:${theme.titleColor};font-size:${theme.headingFontSize}px;line-height:1.5;letter-spacing:0.02em;font-weight:600;">
+      <section style="margin-top:34px;">
+        <h2 style="margin:0 0 15px;color:${theme.accentColor};font-size:${theme.headingFontSize}px;line-height:1.5;letter-spacing:0;font-weight:600;">
           ${escapeHtml(block.title)}
         </h2>
-        <p style="margin:10px 0 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};">
+        <p style="margin:0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;">
           ${escapeHtml(block.body)}
         </p>
       </section>
@@ -1196,18 +1199,18 @@ function buildWechatArticleHtml(
   }).join("");
 
   return `
-    <article style="max-width:720px;margin:0 auto;color:${theme.bodyColor};font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;">
-      <h1 style="margin:0 0 12px;color:${theme.titleColor};font-size:${theme.titleFontSize}px;line-height:1.45;letter-spacing:0.01em;font-weight:600;">
+    <section data-tool="moyujing-wechat-article" style="font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};color:${theme.bodyColor};background:#ffffff;padding:0 30px;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;">
+      <h1 style="margin:0 0 12px;color:${theme.titleColor};font-size:${theme.titleFontSize}px;line-height:1.45;font-weight:600;letter-spacing:0;">
         ${escapeHtml(title)}
       </h1>
-      <p style="margin:0 0 16px;color:${theme.metaColor};font-size:11px;line-height:1.6;">
+      <p style="margin:0 0 18px;color:${theme.metaColor};font-size:11px;line-height:1.6;">
         ${escapeHtml(meta)}
       </p>
       ${blocksHtml}
       <p style="margin:32px 0 0;padding-top:16px;border-top:1px solid #ECEAE3;color:${theme.metaColor};font-size:11px;line-height:1.6;">
         ${escapeHtml(ARTICLE_FOOTER)}
       </p>
-    </article>
+    </section>
   `.trim();
 }
 
