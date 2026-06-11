@@ -112,6 +112,14 @@ function createHistoryRecordDetailPreviewRecord(
         version_purchased: ["lite", "pro"],
         can_upgrade: false,
         created_at: "2026-06-08T09:30:00+08:00",
+        upgrade_history: [
+          {
+            from: "lite",
+            to: "pro",
+            price_diff: 39,
+            at: "2026-06-08T10:12:00+08:00",
+          },
+        ],
       };
     case "viewable":
       return {
@@ -123,6 +131,15 @@ function createHistoryRecordDetailPreviewRecord(
         version_purchased: ["lite", "pro"],
         can_upgrade: false,
         created_at: "2026-06-08T09:30:00+08:00",
+        upgrade_history: [
+          {
+            from: "lite",
+            to: "pro",
+            price_diff: 39,
+            at: "2026-06-08T10:12:00+08:00",
+          },
+        ],
+        pro_ready_at: "2026-06-08T10:34:00+08:00",
       };
   }
 }
@@ -131,10 +148,10 @@ function resolveHistoryRecordDetailPreview(
   state: HistoryRecordDetailPreviewState,
   uploadDraft?: MobileWebUploadDraft,
 ): MobileWebAppProps {
-  const record =
-    listGeneratedReportRecords({ limit: 100 }).find((candidate) =>
-      matchesHistoryRecordDetailPreviewState(candidate, state),
-    ) ?? createHistoryRecordDetailPreviewRecord(state);
+  const record = createHistoryRecordDetailPreviewRecord(state);
+  const matchedEntry = listGeneratedReportRecords({ limit: 100 }).find((candidate) =>
+    matchesHistoryRecordDetailPreviewState(candidate, state),
+  );
 
   return {
     route:
@@ -144,7 +161,9 @@ function resolveHistoryRecordDetailPreview(
           ? "historyRecordDetailGenerating"
           : "historyRecordDetailViewable",
     record,
-    uploadDraft: getGeneratedReportEntry(record.interpretation_id)?.draft ?? uploadDraft,
+    uploadDraft: matchedEntry
+      ? getGeneratedReportEntry(matchedEntry.interpretation_id)?.draft ?? uploadDraft
+      : uploadDraft,
   };
 }
 

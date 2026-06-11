@@ -115,12 +115,18 @@ function getUpgradeHistoryTime(
   return firstUpgrade?.at ? formatHistoryCreatedAt(firstUpgrade.at) : undefined;
 }
 
+function getProReadyTime(record: InterpretationRecordResponse): string | undefined {
+  const proReadyAt = (record as InterpretationRecordResponse & { pro_ready_at?: string | null }).pro_ready_at;
+  return proReadyAt ? formatHistoryCreatedAt(proReadyAt) : undefined;
+}
+
 function buildTimeline(
   record: InterpretationRecordResponse,
   state: HistoryRecordDetailState,
 ): HistoryRecordDetailTimelineEntryDescriptor[] {
   const createdAtLabel = formatHistoryCreatedAt(record.created_at);
   const upgradeAtLabel = getUpgradeHistoryTime(record);
+  const proReadyAtLabel = getProReadyTime(record);
   const timeline: HistoryRecordDetailTimelineEntryDescriptor[] = [
     {
       id: "lite-ready",
@@ -143,6 +149,7 @@ function buildTimeline(
     timeline.push({
       id: "pro-ready",
       label: "Pro 深入解读已为你完成",
+      time: proReadyAtLabel,
       state: "done",
     });
   } else if (state === "generating") {

@@ -1337,8 +1337,8 @@
   --mw-history-detail-faint: rgb(232 220 200 / 0.4);
   display: grid;
   align-content: start;
-  gap: 24px;
-  padding: 24px 20px 48px;
+  gap: 18px;
+  padding: 14px 20px 48px;
 }
 
 .mw-history-detail-summary,
@@ -1553,6 +1553,7 @@
   z-index: 1;
   display: grid;
   gap: 0;
+  margin-top: 28px;
 }
 
 .mw-history-detail-flow__heading {
@@ -1646,7 +1647,7 @@
 .mw-history-detail-step__actions .mw-primary-button,
 .mw-history-detail-step__actions .mw-secondary-button {
   min-width: 100%;
-  min-height: 42px;
+  min-height: 45px;
   gap: 8px;
   font-family: var(--am-font-display);
   font-size: 14px;
@@ -1683,7 +1684,7 @@
 
 .mw-history-detail-step.is-compact {
   gap: 10px;
-  padding-block: 14px;
+  padding-block: 16px;
   border-color: rgb(168 196 160 / 0.12);
   background: linear-gradient(160deg, rgb(22 32 30 / 0.5) 0%, rgb(18 26 28 / 0.4) 100%);
   box-shadow: none;
@@ -1825,6 +1826,9 @@
   display: grid;
   gap: 6px;
   padding: 20px;
+  border-color: rgb(232 220 200 / 0.06);
+  background: linear-gradient(160deg, rgb(22 30 48 / 0.4) 0%, rgb(18 26 42 / 0.3) 100%);
+  box-shadow: none;
 }
 
 .mw-history-detail-timeline h3 {
@@ -1855,7 +1859,7 @@
   display: grid;
   grid-template-columns: 18px minmax(0, 1fr);
   gap: 12px;
-  min-height: 44px;
+  min-height: 50px;
 }
 
 .mw-history-detail-timeline__rail {
@@ -1878,13 +1882,13 @@
 .mw-history-detail-timeline__line {
   position: absolute;
   top: 16px;
-  bottom: -6px;
+  bottom: -10px;
   width: 1px;
   background: rgb(232 220 200 / 0.12);
 }
 
 .mw-history-detail-timeline__content {
-  padding-bottom: 12px;
+  padding-bottom: 20px;
 }
 
 .mw-history-detail-timeline__label,

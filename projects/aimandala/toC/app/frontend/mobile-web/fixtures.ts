@@ -138,24 +138,44 @@ function createMockRecords(): InterpretationRecordResponse[] {
       autoDetected?: boolean;
       radii?: { inner: number; middle: number };
       imageIndex?: number;
+      upgradeAt?: string;
+      proReadyAt?: string;
     } = {},
-  ): InterpretationRecordResponse => ({
-    interpretation_id: interpretationId,
-    user_id: "demo-user-id",
-    theme,
-    status: options.status ?? "completed",
-    generation_stage: options.generationStage ?? "report_ready",
-    generation_progress: options.generationProgress ?? 100,
-    version_purchased: options.versionPurchased ?? ["lite"],
-    three_circles: {
-      inner_radius: options.radii?.inner ?? 0.3,
-      middle_radius: options.radii?.middle ?? 0.64,
-    },
-    auto_detected: options.autoDetected ?? false,
-    can_upgrade: options.canUpgrade ?? true,
-    created_at: createdAt,
-    image_url: imageSet[options.imageIndex ?? 0] ?? imageSet[0],
-  });
+  ): InterpretationRecordResponse => {
+    const record: InterpretationRecordResponse & { pro_ready_at?: string } = {
+      interpretation_id: interpretationId,
+      user_id: "demo-user-id",
+      theme,
+      status: options.status ?? "completed",
+      generation_stage: options.generationStage ?? "report_ready",
+      generation_progress: options.generationProgress ?? 100,
+      version_purchased: options.versionPurchased ?? ["lite"],
+      three_circles: {
+        inner_radius: options.radii?.inner ?? 0.3,
+        middle_radius: options.radii?.middle ?? 0.64,
+      },
+      auto_detected: options.autoDetected ?? false,
+      can_upgrade: options.canUpgrade ?? true,
+      created_at: createdAt,
+      image_url: imageSet[options.imageIndex ?? 0] ?? imageSet[0],
+    };
+
+    if (options.upgradeAt) {
+      record.upgrade_history = [
+        {
+          from: "lite",
+          to: "pro",
+          price_diff: 39,
+          at: options.upgradeAt,
+        },
+      ];
+    }
+    if (options.proReadyAt) {
+      record.pro_ready_at = options.proReadyAt;
+    }
+
+    return record;
+  };
 
   return [
     createHistoryRecord("r1-pro-intimate", "intimate_relationship", "2026-06-08T09:30:00+08:00", {
@@ -163,6 +183,8 @@ function createMockRecords(): InterpretationRecordResponse[] {
       canUpgrade: false,
       radii: { inner: 0.26, middle: 0.6 },
       imageIndex: 0,
+      upgradeAt: "2026-06-08T10:12:00+08:00",
+      proReadyAt: "2026-06-08T10:34:00+08:00",
     }),
     createHistoryRecord("r2-lite-wealth-career", "wealth", "2026-06-05T14:22:00+08:00", {
       versionPurchased: ["lite"],
@@ -178,12 +200,15 @@ function createMockRecords(): InterpretationRecordResponse[] {
       canUpgrade: false,
       radii: { inner: 0.35, middle: 0.7 },
       imageIndex: 0,
+      upgradeAt: "2026-06-02T20:22:00+08:00",
     }),
     createHistoryRecord("r4-pro-parent-child", "parent_child_relationship", "2026-05-20T17:40:00+08:00", {
       versionPurchased: ["lite", "pro"],
       canUpgrade: false,
       radii: { inner: 0.33, middle: 0.68 },
       imageIndex: 1,
+      upgradeAt: "2026-05-20T18:08:00+08:00",
+      proReadyAt: "2026-05-20T18:26:00+08:00",
     }),
     createHistoryRecord("r5-lite-father", "father_relationship", "2026-05-12T08:15:00+08:00", {
       versionPurchased: ["lite"],
