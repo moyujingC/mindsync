@@ -456,11 +456,11 @@
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__thumb,
 .mw-history-record--featured.mw-history-record--proReady .mw-history-record__thumb {
-  flex-basis: 100px;
-  width: 100px;
-  height: 112px;
-  margin-left: 0;
-  border-radius: 0;
+  flex-basis: 84px;
+  width: 84px;
+  height: 84px;
+  margin-left: 12px;
+  border-radius: 10px;
 }
 
 .mw-history-record--featured.mw-history-record--ready .mw-history-record__body,
@@ -633,11 +633,11 @@
 
 .mw-history-record--featured.mw-history-record--pending .mw-history-record__thumb,
 .mw-history-record--featured.mw-history-record--proPending .mw-history-record__thumb {
-  flex-basis: 100px;
-  width: 100px;
-  height: 112px;
-  margin-left: 0;
-  border-radius: 0;
+  flex-basis: 84px;
+  width: 84px;
+  height: 84px;
+  margin-left: 12px;
+  border-radius: 10px;
 }
 
 .mw-history-record__body--default {
