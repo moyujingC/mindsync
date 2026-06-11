@@ -837,6 +837,7 @@
   width: 56px;
   margin-left: 12px;
   border-radius: 8px;
+  opacity: 0.8;
 }
 
 .mw-history-record--default .mw-history-record__body {
