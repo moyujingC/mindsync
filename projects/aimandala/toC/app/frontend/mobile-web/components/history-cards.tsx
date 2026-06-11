@@ -125,11 +125,6 @@ export function HistoryRecordCard({
     : !isFeatured && actionLabelOverride === "升级 Pro"
       ? `${reportLabel} · 可升级 Pro`
     : `${reportLabel} · 已可查看`;
-  const helperCopy = isFeatured
-    ? (item.focusReportType === "pro"
-      ? (item.recordReady ? "Lite 基础上的深入解读" : "Lite 已可查看")
-      : "可继续升级 Pro")
-    : "";
   const badgeLabel = isBusy
     ? "打开中..."
     : statusLabelOverride ?? ctaLabel;
@@ -168,7 +163,6 @@ export function HistoryRecordCard({
                   </span>
                 ) : null}
               </div>
-              {helperCopy ? <p className="mw-history-record__helper-line mw-history-record__helper-line--featured">{helperCopy}</p> : null}
             </div>
           </div>
 
