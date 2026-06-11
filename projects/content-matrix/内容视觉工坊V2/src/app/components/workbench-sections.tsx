@@ -1,4 +1,5 @@
 import { useId, useState } from "react";
+import JSZip from "jszip";
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -31,6 +32,7 @@ import { COVER_DRAFTS, ILLUSTRATIONS } from "./workbench-data";
 import { KnowledgeCardResults, ResultRow } from "./workbench-panels";
 import type { CardPlan } from "../content-planning";
 import type { WorkbenchImportedMarkdownMeta, WorkbenchStatusMessage } from "../workspace";
+import { downloadGeneratedImage } from "../api";
 import { formatScopeLabel } from "./use-workbench-controller";
 
 export function WorkbenchLeftSidebar({
@@ -811,6 +813,7 @@ export function WorkbenchCenterSection({
         </div>
 
         <WorkbenchResultsPanel
+          currentArticle={currentArticle}
           latestGeneration={latestGeneration}
           plannedCards={plannedCards}
           knowledgePreset={knowledgePreset}
@@ -931,6 +934,7 @@ export function WorkbenchEditorDialog({
 }
 
 function WorkbenchResultsPanel({
+  currentArticle,
   latestGeneration,
   plannedCards,
   knowledgePreset,
@@ -966,6 +970,7 @@ function WorkbenchResultsPanel({
   const [previewImage, setPreviewImage] = useState<{ imageUrl: string; alt: string } | null>(null);
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [isExportingReleasePack, setIsExportingReleasePack] = useState(false);
+  const [exportFeedback, setExportFeedback] = useState<string>("");
   const currentQuoteTexts = selectedQuotes
     .map((index: number) => plannedQuotes[index])
     .filter(Boolean);
@@ -993,6 +998,20 @@ function WorkbenchResultsPanel({
       };
     })
     .filter(Boolean);
+  const fallbackKnowledgeImages = plannedCards
+    .map((card) => {
+      const image = knowledgeImagesByCard.get(card.index);
+      if (!image) return null;
+      return {
+        kind: "knowledge" as const,
+        cardIndex: card.index,
+        title: card.title,
+        imageUrl: image.imageUrl,
+      };
+    })
+    .filter(Boolean);
+  const exportKnowledgeImages =
+    finalizedKnowledgeImages.length > 0 ? finalizedKnowledgeImages : fallbackKnowledgeImages;
   const releaseCoverIndex =
     finalizedCoverIndex != null
       ? finalizedCoverIndex
@@ -1026,7 +1045,7 @@ function WorkbenchResultsPanel({
             releaseCoverIndex === finalizedCoverIndex ? "公众号封面（已定稿）" : "公众号封面（当前已选）",
         }
       : null,
-    ...finalizedKnowledgeImages.map((item: any) => ({
+    ...exportKnowledgeImages.map((item: any) => ({
       kind: item.kind,
       imageUrl: item.imageUrl,
       filename: `release-knowledge-card-${String(item.cardIndex).padStart(2, "0")}.png`,
@@ -1067,19 +1086,9 @@ function WorkbenchResultsPanel({
 
   async function downloadImage(url: string, filename: string) {
     try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`download failed: ${response.status}`);
-      }
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = objectUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+      const blob = await downloadGeneratedImage(url);
+      downloadBlob(blob, filename);
+      setExportFeedback(`已开始下载：${filename}`);
     } catch {
       const link = document.createElement("a");
       link.href = url;
@@ -1089,11 +1098,11 @@ function WorkbenchResultsPanel({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setExportFeedback(`已尝试打开原图地址：${filename}`);
     }
   }
 
-  function downloadTextFile(content: string, filename: string) {
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  function downloadBlob(blob: Blob, filename: string) {
     const objectUrl = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = objectUrl;
@@ -1104,21 +1113,46 @@ function WorkbenchResultsPanel({
     window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
   }
 
+  function downloadTextFile(content: string, filename: string) {
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    downloadBlob(blob, filename);
+  }
+
+  async function buildZipBlob(files: Array<{ filename: string; blob: Blob }>) {
+    const zip = new JSZip();
+    for (const file of files) {
+      zip.file(file.filename, file.blob);
+    }
+    return await zip.generateAsync({ type: "blob" });
+  }
+
+  function slugifyFilename(value: string) {
+    return value
+      .trim()
+      .replace(/[\\/:*?"<>|]+/g, "-")
+      .replace(/\s+/g, "-")
+      .slice(0, 48);
+  }
+
   async function handleDownloadAll() {
     if (downloadableImages.length === 0 || isDownloadingAll) return;
     setIsDownloadingAll(true);
+    setExportFeedback("");
     try {
-      for (let index = 0; index < downloadableImages.length; index += 1) {
-        const image = downloadableImages[index];
-        // Keep a short gap so the browser doesn't collapse multiple downloads.
-        // eslint-disable-next-line no-await-in-loop
-        await downloadImage(
-          image.imageUrl,
-          `content-visual-${String(index + 1).padStart(2, "0")}.png`
-        );
-        // eslint-disable-next-line no-await-in-loop
-        await new Promise((resolve) => window.setTimeout(resolve, 120));
-      }
+      const files = await Promise.all(
+        downloadableImages.map(async (image, index) => ({
+          filename: `content-visual-${String(index + 1).padStart(2, "0")}.png`,
+          blob: await downloadGeneratedImage(image.imageUrl),
+        }))
+      );
+      const zipBlob = await buildZipBlob(files);
+      downloadBlob(
+        zipBlob,
+        `${slugifyFilename(currentArticle.title || "content-visual")}-all-assets.zip`
+      );
+      setExportFeedback(`已打包 ${files.length} 个文件，开始下载 zip 压缩包`);
+    } catch (error) {
+      setExportFeedback(error instanceof Error ? `全部下载失败：${error.message}` : "全部下载失败");
     } finally {
       setIsDownloadingAll(false);
     }
@@ -1127,6 +1161,7 @@ function WorkbenchResultsPanel({
   async function handleExportReleasePack() {
     if (releaseAssets.length === 0 || isExportingReleasePack) return;
     setIsExportingReleasePack(true);
+    setExportFeedback("");
     try {
       const manifestLines = [
         `文章标题：${currentArticle.title}`,
@@ -1138,21 +1173,40 @@ function WorkbenchResultsPanel({
               ? `已定稿 #${releaseCoverIndex + 1}`
               : `当前已选 #${releaseCoverIndex + 1}`
         }`,
-        `知识卡定稿：${finalizedKnowledgeImages.length} 张`,
+        `知识卡：${
+          finalizedKnowledgeImages.length > 0
+            ? `定稿 ${finalizedKnowledgeImages.length} 张`
+            : `未定稿，改为导出当前结果 ${exportKnowledgeImages.length} 张`
+        }`,
         `金句底图：${quoteGeneration?.images[0] ? "已包含" : "无"}`,
         `正文配图：${releaseInlineImages.length} 张`,
         "",
         "素材清单：",
         ...releaseAssets.map((item, index) => `${index + 1}. ${item.label} -> ${item.filename}`),
       ];
-      downloadTextFile(manifestLines.join("\n"), "release-assets-manifest.txt");
-      for (let index = 0; index < releaseAssets.length; index += 1) {
-        const asset = releaseAssets[index];
-        // eslint-disable-next-line no-await-in-loop
-        await downloadImage(asset.imageUrl, asset.filename);
-        // eslint-disable-next-line no-await-in-loop
-        await new Promise((resolve) => window.setTimeout(resolve, 120));
-      }
+      const manifestBlob = new Blob([manifestLines.join("\n")], {
+        type: "text/plain;charset=utf-8",
+      });
+      const assetFiles = await Promise.all(
+        releaseAssets.map(async (asset) => ({
+          filename: asset.filename,
+          blob: await downloadGeneratedImage(asset.imageUrl),
+        }))
+      );
+      const files = [
+        { filename: "release-assets-manifest.txt", blob: manifestBlob },
+        ...assetFiles,
+      ];
+      const zipBlob = await buildZipBlob(files);
+      downloadBlob(
+        zipBlob,
+        `${slugifyFilename(currentArticle.title || "content-visual")}-release-assets.zip`
+      );
+      setExportFeedback(`已打包 ${files.length} 个定稿文件，开始下载 zip 压缩包`);
+    } catch (error) {
+      setExportFeedback(
+        error instanceof Error ? `导出定稿失败：${error.message}` : "导出定稿失败"
+      );
     } finally {
       setIsExportingReleasePack(false);
     }
@@ -1197,15 +1251,30 @@ function WorkbenchResultsPanel({
         }}
       >
         <div style={{ color: COLORS.textFaint, fontSize: 11.5 }}>
-          定稿导出会优先带出封面定稿、知识卡定稿，并附一份发布素材清单。
+          定稿导出会优先带出封面定稿、知识卡定稿；如果还没定稿，会退回当前可用结果，并附一份发布素材清单。
         </div>
         <div className="flex items-center gap-2 text-right" style={{ color: COLORS.textMid, fontSize: 11.5 }}>
           <span>封面 {releaseCoverImage ? 1 : 0}</span>
-          <span>知识卡 {finalizedKnowledgeImages.length}</span>
+          <span>知识卡 {exportKnowledgeImages.length}</span>
           <span>金句 {quoteGeneration?.images[0] ? 1 : 0}</span>
           <span>配图 {releaseInlineImages.length}</span>
         </div>
       </div>
+
+      {exportFeedback ? (
+        <div
+          className="mb-4 rounded-md px-3.5 py-2.5"
+          style={{
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.borderSoft}`,
+            color: COLORS.textMid,
+            fontSize: 11.5,
+            lineHeight: 1.6,
+          }}
+        >
+          {exportFeedback}
+        </div>
+      ) : null}
 
       {latestGeneration ? (
         <div

@@ -67,6 +67,57 @@ function localGenerateImagesApi() {
   }
 }
 
+function localDownloadImageApi() {
+  return {
+    name: 'local-download-image-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/download-image', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'GET') {
+          next()
+          return
+        }
+
+        try {
+          const requestUrl = new URL(req.url || '', 'http://localhost')
+          const targetUrl = requestUrl.searchParams.get('url')
+          if (!targetUrl) {
+            res.statusCode = 400
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({
+              error: 'missing-url',
+              message: '缺少图片地址',
+            }))
+            return
+          }
+
+          const upstream = await fetch(targetUrl)
+          if (!upstream.ok) {
+            res.statusCode = upstream.status
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({
+              error: 'download-image-failed',
+              message: `图片下载失败: ${upstream.status}`,
+            }))
+            return
+          }
+
+          const arrayBuffer = await upstream.arrayBuffer()
+          res.statusCode = 200
+          res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/octet-stream')
+          res.end(Buffer.from(arrayBuffer))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'download-image-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
 function localPlanCardsApi() {
   return {
     name: 'local-plan-cards-api',
@@ -114,6 +165,7 @@ export default defineConfig(({ mode }) => {
       figmaAssetResolver(),
       localPlanCardsApi(),
       localGenerateImagesApi(),
+      localDownloadImageApi(),
       // The React and Tailwind plugins are both required for Make, even if
       // Tailwind is not being actively used – do not remove them
       react(),

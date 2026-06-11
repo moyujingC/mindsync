@@ -71,3 +71,21 @@ export async function postGenerateImages(request: GenerateImagesRequest) {
 
   return payload as GenerationRecord;
 }
+
+export async function downloadGeneratedImage(url: string) {
+  if (url.startsWith("data:")) {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("读取内嵌图片失败");
+    }
+    return await response.blob();
+  }
+
+  const response = await fetch(`/api/download-image?url=${encodeURIComponent(url)}`);
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => null)) as ApiErrorPayload | null;
+    throw new Error(readApiErrorMessage(payload || {}, "下载图片失败"));
+  }
+
+  return await response.blob();
+}
