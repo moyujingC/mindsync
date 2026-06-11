@@ -164,7 +164,7 @@ export function MobileWebHistoryRecordDetailPage({
       environmentDetail={environmentDetail}
       environmentTone={environmentTone}
     >
-      <div className="mw-history-page mw-history-detail-page">
+      <div className="mw-history-page mw-history-detail-shell">
         <SharedAppTopBar
           title="解读详情"
           backLabel="返回历史记录"
@@ -173,157 +173,159 @@ export function MobileWebHistoryRecordDetailPage({
           style={{ ["--am-app-topbar-bleed" as string]: "0px" }}
         />
 
-        <section className="mw-history-detail-summary">
-          <div
-            className={`mw-history-detail-summary__thumb${descriptor.imageUrl ? " has-image" : ""}`}
-            style={{
-              ["--mw-history-detail-thumb-image" as string]: `url(${descriptor.imageUrl ?? historyDetailThumb})`,
-            }}
-            aria-hidden="true"
-          />
+        <div className="mw-history-detail-page">
+          <section className="mw-history-detail-summary">
+            <div
+              className={`mw-history-detail-summary__thumb${descriptor.imageUrl ? " has-image" : ""}`}
+              style={{
+                ["--mw-history-detail-thumb-image" as string]: `url(${descriptor.imageUrl ?? historyDetailThumb})`,
+              }}
+              aria-hidden="true"
+            />
 
-          <div className="mw-history-detail-summary__copy">
-            <p className="mw-history-detail-summary__eyebrow">本次议题</p>
-            <h2>{descriptor.themeLabel}</h2>
-            <p className="mw-history-detail-summary__time">
-              <ClockIcon />
-              <span>{descriptor.createdAtLabel}</span>
-            </p>
-          </div>
+            <div className="mw-history-detail-summary__copy">
+              <p className="mw-history-detail-summary__eyebrow">本次议题</p>
+              <h2>{descriptor.themeLabel}</h2>
+              <p className="mw-history-detail-summary__time">
+                <ClockIcon />
+                <span>{descriptor.createdAtLabel}</span>
+              </p>
+            </div>
 
-          <div className="mw-history-detail-summary__divider" aria-hidden="true" />
+            <div className="mw-history-detail-summary__divider" aria-hidden="true" />
 
-          <div className="mw-history-detail-summary__meta">
-            <div className="mw-history-detail-summary__field">
-              <span className="mw-history-detail-summary__label">当前状态</span>
-              <HistoryRecordDetailStatusBadge
-                tone={
-                  descriptor.state === "viewable"
-                    ? "gold"
-                    : descriptor.state === "generating"
+            <div className="mw-history-detail-summary__meta">
+              <div className="mw-history-detail-summary__field">
+                <span className="mw-history-detail-summary__label">当前状态</span>
+                <HistoryRecordDetailStatusBadge
+                  tone={
+                    descriptor.state === "viewable"
                       ? "gold"
-                      : "jade"
-                }
-                label={descriptor.summaryStatusLabel}
-                spinning={descriptor.state === "generating"}
-              />
-            </div>
-            <div className="mw-history-detail-summary__field mw-history-detail-summary__field--end">
-              <span className="mw-history-detail-summary__label">版本进度</span>
-              <span className={`mw-history-detail-track mw-history-detail-track--${descriptor.state}`}>
-                <span>Lite</span>
-                <span className="mw-history-detail-track__arrow" aria-hidden="true">→</span>
-                <span>Pro</span>
-              </span>
-            </div>
-          </div>
-        </section>
-
-        <section className="mw-history-detail-flow">
-          <div className="mw-history-detail-flow__heading">
-            <span aria-hidden="true" />
-            <strong>解读进度</strong>
-          </div>
-
-          <article className={`mw-history-detail-step mw-history-detail-step--lite${descriptor.liteStep.compact ? " is-compact" : ""}`}>
-            <header className="mw-history-detail-step__header">
-              <div>
-                <p className="mw-history-detail-step__index">{descriptor.liteStep.stepLabel}</p>
-                <h3>{descriptor.liteStep.title}</h3>
+                      : descriptor.state === "generating"
+                        ? "gold"
+                        : "jade"
+                  }
+                  label={descriptor.summaryStatusLabel}
+                  spinning={descriptor.state === "generating"}
+                />
               </div>
-              <HistoryRecordDetailStatusBadge
-                tone={descriptor.liteStep.statusTone}
-                label={descriptor.liteStep.statusLabel}
-              />
-            </header>
-
-            {descriptor.liteStep.compact ? null : (
-              <p className="mw-history-detail-step__body">{descriptor.liteStep.description}</p>
-            )}
-
-            <div className="mw-history-detail-step__actions">
-              <button
-                type="button"
-                className={
-                  descriptor.liteStep.actionEmphasis === "inline"
-                    ? "mw-history-detail-link"
-                    : "mw-secondary-button"
-                }
-                disabled={liteBusy}
-                onClick={() => onOpenReportType?.("lite")}
-              >
-                {descriptor.liteStep.actionEmphasis === "inline" ? (
-                  <>
-                    <EyeIcon />
-                    <span>{liteBusy ? "打开中..." : descriptor.liteStep.actionLabel}</span>
-                    <ChevronRightIcon size={13} />
-                  </>
-                ) : (
-                  <>
-                    <EyeIcon />
-                    <span>{liteBusy ? "打开中..." : descriptor.liteStep.actionLabel}</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </article>
-
-          <div
-            className={`mw-history-detail-connector${descriptor.state === "not-upgraded" ? " is-pending" : ""}`}
-            aria-hidden="true"
-          />
-
-          <article className={`mw-history-detail-step mw-history-detail-step--pro mw-history-detail-step--${descriptor.state}`}>
-            <header className="mw-history-detail-step__header">
-              <div>
-                <p className="mw-history-detail-step__index">{descriptor.proStep.stepLabel}</p>
-                <h3>{descriptor.proStep.title}</h3>
+              <div className="mw-history-detail-summary__field mw-history-detail-summary__field--end">
+                <span className="mw-history-detail-summary__label">版本进度</span>
+                <span className={`mw-history-detail-track mw-history-detail-track--${descriptor.state}`}>
+                  <span>Lite</span>
+                  <span className="mw-history-detail-track__arrow" aria-hidden="true">→</span>
+                  <span>Pro</span>
+                </span>
               </div>
-              <HistoryRecordDetailStatusBadge
-                tone={descriptor.proStep.statusTone}
-                label={descriptor.proStep.statusLabel}
-                spinning={descriptor.proStep.showSpinner}
-              />
-            </header>
+            </div>
+          </section>
 
-            <p className="mw-history-detail-step__body">{descriptor.proStep.description}</p>
+          <section className="mw-history-detail-flow">
+            <div className="mw-history-detail-flow__heading">
+              <span aria-hidden="true" />
+              <strong>解读进度</strong>
+            </div>
 
-            {descriptor.proStep.progressPercent != null ? (
-              <div className="mw-history-detail-progress">
-                <div className="mw-history-detail-progress__track">
-                  <i style={{ width: `${descriptor.proStep.progressPercent}%` }} />
+            <article className={`mw-history-detail-step mw-history-detail-step--lite${descriptor.liteStep.compact ? " is-compact" : ""}`}>
+              <header className="mw-history-detail-step__header">
+                <div>
+                  <p className="mw-history-detail-step__index">{descriptor.liteStep.stepLabel}</p>
+                  <h3>{descriptor.liteStep.title}</h3>
                 </div>
-                <div className="mw-history-detail-progress__meta">
-                  <span>{descriptor.proStep.progressHint}</span>
-                  <span>{descriptor.proStep.progressPercent}%</span>
-                </div>
+                <HistoryRecordDetailStatusBadge
+                  tone={descriptor.liteStep.statusTone}
+                  label={descriptor.liteStep.statusLabel}
+                />
+              </header>
+
+              {descriptor.liteStep.compact ? null : (
+                <p className="mw-history-detail-step__body">{descriptor.liteStep.description}</p>
+              )}
+
+              <div className="mw-history-detail-step__actions">
+                <button
+                  type="button"
+                  className={
+                    descriptor.liteStep.actionEmphasis === "inline"
+                      ? "mw-history-detail-link"
+                      : "mw-secondary-button"
+                  }
+                  disabled={liteBusy}
+                  onClick={() => onOpenReportType?.("lite")}
+                >
+                  {descriptor.liteStep.actionEmphasis === "inline" ? (
+                    <>
+                      <EyeIcon />
+                      <span>{liteBusy ? "打开中..." : descriptor.liteStep.actionLabel}</span>
+                      <ChevronRightIcon size={13} />
+                    </>
+                  ) : (
+                    <>
+                      <EyeIcon />
+                      <span>{liteBusy ? "打开中..." : descriptor.liteStep.actionLabel}</span>
+                    </>
+                  )}
+                </button>
               </div>
-            ) : null}
+            </article>
 
-            <div className="mw-history-detail-step__actions">
-              <button
-                type="button"
-                className={
-                  descriptor.proStep.actionEmphasis === "primary"
-                    ? "mw-primary-button"
-                    : "mw-secondary-button"
-                }
-                disabled={proBusy}
-                onClick={() => onOpenReportType?.("pro")}
-              >
-                {descriptor.proStep.showSpinner && !proBusy ? <LoaderIcon spinning /> : null}
-                <span>{proBusy ? "打开中..." : descriptor.proStep.actionLabel}</span>
-                {descriptor.proStep.actionEmphasis === "primary" ? <ChevronRightIcon /> : null}
-              </button>
-            </div>
-          </article>
-        </section>
+            <div
+              className={`mw-history-detail-connector${descriptor.state === "not-upgraded" ? " is-pending" : ""}`}
+              aria-hidden="true"
+            />
 
-        <section className="mw-history-detail-timeline">
-          <h3>{descriptor.timelineTitle}</h3>
-          <p>{descriptor.timelineSubtitle}</p>
-          <HistoryRecordDetailTimeline items={descriptor.timeline} />
-        </section>
+            <article className={`mw-history-detail-step mw-history-detail-step--pro mw-history-detail-step--${descriptor.state}`}>
+              <header className="mw-history-detail-step__header">
+                <div>
+                  <p className="mw-history-detail-step__index">{descriptor.proStep.stepLabel}</p>
+                  <h3>{descriptor.proStep.title}</h3>
+                </div>
+                <HistoryRecordDetailStatusBadge
+                  tone={descriptor.proStep.statusTone}
+                  label={descriptor.proStep.statusLabel}
+                  spinning={descriptor.proStep.showSpinner}
+                />
+              </header>
+
+              <p className="mw-history-detail-step__body">{descriptor.proStep.description}</p>
+
+              {descriptor.proStep.progressPercent != null ? (
+                <div className="mw-history-detail-progress">
+                  <div className="mw-history-detail-progress__track">
+                    <i style={{ width: `${descriptor.proStep.progressPercent}%` }} />
+                  </div>
+                  <div className="mw-history-detail-progress__meta">
+                    <span>{descriptor.proStep.progressHint}</span>
+                    <span>{descriptor.proStep.progressPercent}%</span>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="mw-history-detail-step__actions">
+                <button
+                  type="button"
+                  className={
+                    descriptor.proStep.actionEmphasis === "primary"
+                      ? "mw-primary-button"
+                      : "mw-secondary-button"
+                  }
+                  disabled={proBusy}
+                  onClick={() => onOpenReportType?.("pro")}
+                >
+                  {descriptor.proStep.showSpinner && !proBusy ? <LoaderIcon spinning /> : null}
+                  <span>{proBusy ? "打开中..." : descriptor.proStep.actionLabel}</span>
+                  {descriptor.proStep.actionEmphasis === "primary" ? <ChevronRightIcon /> : null}
+                </button>
+              </div>
+            </article>
+          </section>
+
+          <section className="mw-history-detail-timeline">
+            <h3>{descriptor.timelineTitle}</h3>
+            <p>{descriptor.timelineSubtitle}</p>
+            <HistoryRecordDetailTimeline items={descriptor.timeline} />
+          </section>
+        </div>
       </div>
     </MobileWebAppShell>
   );

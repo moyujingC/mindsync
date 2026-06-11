@@ -1323,6 +1323,14 @@
   opacity: 0.48;
 }
 
+.mw-history-detail-shell {
+  padding: 0;
+}
+
+.mw-history-detail-shell .mw-history-topbar {
+  margin-inline: 0;
+}
+
 .mw-history-detail-page {
   --mw-history-detail-text: rgb(237 228 212);
   --mw-history-detail-muted: rgb(232 220 200 / 0.6);
@@ -1921,8 +1929,16 @@
     padding-inline: 16px;
   }
 
+  .mw-history-detail-shell {
+    padding-inline: 0;
+  }
+
   .mw-history-topbar {
     margin-inline: -16px;
+  }
+
+  .mw-history-detail-shell .mw-history-topbar {
+    margin-inline: 0;
   }
 
   .mw-history-record {
