@@ -546,6 +546,11 @@
   box-shadow: 0 0 8px rgb(var(--am-rgb-gold-300) / 0.35);
 }
 
+.mw-history-record__featured-dot.is-ready.is-lite {
+  background: radial-gradient(circle, rgb(168 196 160 / 0.94), rgb(104 146 118 / 0.46));
+  box-shadow: 0 0 8px rgb(168 196 160 / 0.34);
+}
+
 .mw-history-record__featured-dot.is-pending {
   color: var(--am-color-gold-300);
 }

@@ -149,7 +149,12 @@ export function HistoryRecordCard({
           </div>
 
           <div className="mw-history-record__featured-status">
-            <span className={`mw-history-record__featured-dot${isPending ? " is-pending" : " is-ready"}`} aria-hidden="true">
+            <span
+              className={`mw-history-record__featured-dot${isPending ? " is-pending" : " is-ready"}${
+                item.focusReportType === "lite" ? " is-lite" : " is-pro"
+              }`}
+              aria-hidden="true"
+            >
               {isPending ? (
                 <LucideIcon iconNode={ICON_LOADER} size={11} strokeWidth={1.9} className="am-lucide-spin" />
               ) : null}
