@@ -1680,6 +1680,17 @@
   letter-spacing: 0.18em;
 }
 
+.mw-history-detail-step__actions .mw-primary-button {
+  background: linear-gradient(135deg, rgb(var(--am-rgb-gold-300)) 0%, var(--am-color-gold-350) 100%);
+  color: #1a1208;
+  box-shadow: 0 4px 20px rgb(var(--am-rgb-gold-300) / 0.18);
+}
+
+.mw-history-detail-step__actions .mw-primary-button::before,
+.mw-history-detail-step__actions .mw-primary-button::after {
+  content: none;
+}
+
 .mw-history-detail-step__actions .mw-secondary-button {
   border-color: rgb(var(--am-rgb-gold-300) / 0.22);
 }
