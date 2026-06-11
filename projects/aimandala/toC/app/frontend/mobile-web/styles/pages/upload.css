@@ -708,18 +708,14 @@
   position: absolute;
   top: 5px;
   right: 5px;
-  width: 18px;
-  height: 18px;
+  width: 14.4px;
+  height: 14.4px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--am-radius-pill);
   background: var(--am-upload-theme-check-bg);
   color: var(--am-color-ink-800);
-}
-
-.am-theme-selector__check svg {
-  transform: scale(0.8);
 }
 
 .am-theme-selector__icon,
