@@ -357,6 +357,21 @@ export function MobileWebHistoryPage({
               </button>
             </section>
           )}
+
+          <div className="mw-history-footer-action">
+            <button
+              type="button"
+              className="mw-history-footer-action__button"
+              onClick={onBackToUpload}
+              disabled={filterBusy || actionBusy}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19 12H5" />
+                <path d="m12 19-7-7 7-7" />
+              </svg>
+              <span>返回上传页</span>
+            </button>
+          </div>
         </section>
       </div>
     </MobileWebAppShell>
