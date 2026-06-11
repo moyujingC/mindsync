@@ -969,14 +969,12 @@
 }
 
 .mw-history-summary__card--ready {
-  border-color: rgb(168 196 160 / 0.52);
-  box-shadow:
-    0 0 0 1px rgb(168 196 160 / 0.14) inset,
-    0 0 14px rgb(168 196 160 / 0.28);
+  border-color: rgb(168 196 160 / 0.32);
+  box-shadow: var(--mw-history-summary-card-shadow);
 }
 
 .mw-history-summary__card--ready::before {
-  background: linear-gradient(90deg, transparent, rgb(168 196 160 / 0.82), transparent);
+  background: linear-gradient(90deg, transparent, rgb(168 196 160 / 0.48), transparent);
 }
 
 .mw-history-summary__card strong {
