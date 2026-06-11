@@ -636,6 +636,12 @@
 .mw-history-record--featured.mw-history-record--pending,
 .mw-history-record--featured.mw-history-record--proPending {
   min-height: 112px;
+  padding-bottom: 8px;
+}
+
+.mw-history-record--featured.mw-history-record--pending .mw-history-record__featured-progressbar,
+.mw-history-record--featured.mw-history-record--proPending .mw-history-record__featured-progressbar {
+  bottom: 7px;
 }
 
 .mw-history-record--featured.mw-history-record--pending .mw-history-record__thumb,
