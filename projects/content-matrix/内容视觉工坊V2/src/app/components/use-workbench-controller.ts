@@ -1,5 +1,5 @@
 import { useRef, useState, type ChangeEvent } from "react";
-import { postGenerateImages, postPlanCards } from "../api";
+import { postGenerateImages, postPlanCards, postPlanCover } from "../api";
 import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
 import {
@@ -944,7 +944,140 @@ export function useWorkbenchController({
     }
   }
 
+  async function handleGenerateCoverOnly() {
+    const preset = coverPreset;
+    if (!preset) {
+      pushStatus("cover-generation", "error", "缺少公众号封面尺寸预设", {
+        phase: "failed",
+        currentStepLabel: "公众号封面失败",
+        completedTasks: 0,
+        totalTasks: 1,
+      });
+      return;
+    }
+
+    clearTaskError();
+    pushStatus("cover-planning", "info", "阶段一：正在生成公众号封面文案", {
+      phase: "planning",
+      currentStepLabel: "封面文案规划",
+      completedTasks: 0,
+      totalTasks: 1,
+    });
+
+    let coverPlan;
+    try {
+      coverPlan = await postPlanCover({
+        articleTitle: currentArticle.title,
+        rawText: currentArticle.body,
+        coverStyleName: "极简纸本公众号封面",
+        coverStyleGuide: PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
+        coverReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
+      });
+    } catch (error) {
+      pushStatus(
+        "cover-planning",
+        "error",
+        error instanceof Error ? error.message : "公众号封面文案规划失败",
+        {
+          phase: "failed",
+          currentStepLabel: "封面文案失败",
+          completedTasks: 0,
+          totalTasks: 1,
+        }
+      );
+      return;
+    }
+
+    pushStatus("cover-planning", "success", "阶段一完成：已生成 3 条封面候选文案", {
+      phase: "planning",
+      currentStepLabel: "封面文案完成",
+      completedTasks: 1,
+      totalTasks: 1,
+    });
+
+    const tasks = coverPlan.coverPlan.map((candidate) => ({
+      articleTitle: currentArticle.title,
+      prompt: candidate.promptText,
+      negativePrompt:
+        "高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、知识卡片布局、信息图、多段正文、多图拼接、额外文字、水印",
+      width: preset.w,
+      height: preset.h,
+      count: 1,
+      purposeKey: "wx_cover",
+      purposeLabel: "公众号封面",
+      presetKey: preset.k,
+      presetLabel: preset.label,
+      styleName: "极简纸本公众号封面",
+      coverLink: {
+        index: candidate.index,
+        title: candidate.title,
+      },
+    }));
+
+    let mergedCoverRecord = coverGeneration;
+    for (let index = 0; index < tasks.length; index += 1) {
+      const task = tasks[index];
+      const taskLabel = `公众号封面 ${task.coverLink.index}`;
+      pushStatus("cover-generation", "info", `阶段二：正在生成 ${taskLabel}`, {
+        phase: "generating",
+        currentStepLabel: taskLabel,
+        completedTasks: index,
+        totalTasks: tasks.length,
+      });
+
+      let record: GenerationRecord;
+      try {
+        record = await postGenerateImages(task);
+      } catch (error) {
+        pushStatus(
+          "cover-generation",
+          "error",
+          error instanceof Error ? error.message : `${taskLabel} 生成失败`,
+          {
+            phase: "failed",
+            currentStepLabel: `${taskLabel}失败`,
+            completedTasks: index,
+            totalTasks: tasks.length,
+          }
+        );
+        return;
+      }
+
+      mergedCoverRecord = mergeRecordImages(mergedCoverRecord, record);
+      saveGenerationRecord(mergedCoverRecord);
+      pushStatus("cover-generation", "success", `${taskLabel} 已完成`, {
+        phase: "generating",
+        currentStepLabel: taskLabel,
+        completedTasks: index + 1,
+        totalTasks: tasks.length,
+      });
+    }
+
+    setWorkbenchState((prev) => ({
+      ...prev,
+      coverSelection: {
+        selectedCoverIndex: 0,
+        updatedAt: new Date().toISOString(),
+      },
+    }));
+
+    pushStatus("cover-generation", "success", "公众号封面已完成", {
+      phase: "completed",
+      currentStepLabel: "完成",
+      completedTasks: tasks.length,
+      totalTasks: tasks.length,
+    });
+  }
+
   async function handleStartGeneration() {
+    const onlyCoverSelected =
+      outputs.cover && !outputs.knowledge && !outputs.quote && !outputs.inline && !outputs.layout;
+
+    if (onlyCoverSelected) {
+      await handleGenerateCoverOnly();
+      return;
+    }
+
     let planning: PlannerResponse;
     let nextRevision: number;
     const currentArticleSignature = buildArticleSignature(currentArticle);

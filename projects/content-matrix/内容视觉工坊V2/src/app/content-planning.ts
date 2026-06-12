@@ -91,3 +91,34 @@ export type PlannerResponse = {
   cardPlan: CardPlan[];
   inlineImagePlan: InlineImagePlan[];
 };
+
+export type CoverCandidatePlan = {
+  index: number;
+  title: string;
+  composition: string;
+  visualMetaphor: string;
+  promptText: string;
+};
+
+export type CoverPlannerRequest = {
+  articleTitle: string;
+  rawText: string;
+  coverStyleName?: string;
+  coverStyleGuide?: string;
+  coverReferenceImages?: Array<{
+    label: string;
+    url: string;
+    note?: string;
+  }>;
+};
+
+export type CoverPlannerResponse = {
+  provider: "local-fallback" | "llm";
+  coverTheme: {
+    title: string;
+    keywords: string;
+    direction: string;
+    visualMetaphor: string;
+  };
+  coverPlan: CoverCandidatePlan[];
+};

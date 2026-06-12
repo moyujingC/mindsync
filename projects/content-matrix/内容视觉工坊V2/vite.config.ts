@@ -6,6 +6,8 @@ import type { Connect } from 'vite'
 import {
   planCardsWithLLM,
   planKnowledgeCardsFromArticle,
+  planWechatCoverFromArticle,
+  planWechatCoverWithLLM,
 } from './server/content-planning'
 import { generateImagesWithModel } from './server/image-generation'
 
@@ -157,6 +159,45 @@ function localPlanCardsApi() {
   }
 }
 
+function localPlanCoverApi() {
+  return {
+    name: 'local-plan-cover-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/plan-cover', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'POST') {
+          next()
+          return
+        }
+
+        try {
+          const body = await jsonBodyParser(req)
+          let planned
+
+          try {
+            planned = await planWechatCoverWithLLM(body)
+          } catch (error) {
+            console.warn('[plan-cover] falling back to local planner:', error instanceof Error ? error.message : error)
+            planned = {
+              provider: 'local-fallback',
+              ...planWechatCoverFromArticle(body),
+            }
+          }
+
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify(planned))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'plan-cover-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
 export default defineConfig(({ mode }) => {
   Object.assign(process.env, loadEnv(mode, __dirname, ''))
 
@@ -164,6 +205,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       figmaAssetResolver(),
       localPlanCardsApi(),
+      localPlanCoverApi(),
       localGenerateImagesApi(),
       localDownloadImageApi(),
       // The React and Tailwind plugins are both required for Make, even if

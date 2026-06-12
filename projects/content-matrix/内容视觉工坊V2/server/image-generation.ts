@@ -156,6 +156,8 @@ export async function generateImagesWithModel(request: GenerateImagesRequest) {
           width: request.width,
           height: request.height,
           cardLink: request.cardLink,
+          inlineLink: request.inlineLink,
+          coverLink: request.coverLink,
         };
       })
       .filter(Boolean) ?? [];

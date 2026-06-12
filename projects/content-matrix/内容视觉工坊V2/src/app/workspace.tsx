@@ -44,6 +44,10 @@ export type GeneratedImageItem = {
     title: string;
     summary: string;
   };
+  coverLink?: {
+    index: number;
+    title: string;
+  };
 };
 
 export type GenerationPurposeKey =

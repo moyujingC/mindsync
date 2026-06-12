@@ -1,4 +1,9 @@
-import type { PlannerRequest, PlannerResponse } from "./content-planning";
+import type {
+  CoverPlannerRequest,
+  CoverPlannerResponse,
+  PlannerRequest,
+  PlannerResponse,
+} from "./content-planning";
 import type { GenerationRecord } from "./workspace";
 
 export type GenerateImagesRequest = {
@@ -30,6 +35,10 @@ export type GenerateImagesRequest = {
     title: string;
     summary: string;
   };
+  coverLink?: {
+    index: number;
+    title: string;
+  };
 };
 
 type ApiErrorPayload = {
@@ -60,6 +69,23 @@ export async function postPlanCards(request: PlannerRequest) {
   }
 
   return payload as PlannerResponse;
+}
+
+export async function postPlanCover(request: CoverPlannerRequest) {
+  const response = await fetch("/api/plan-cover", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  const payload = await readApiJson<CoverPlannerResponse>(response);
+  if (!response.ok) {
+    throw new Error(readApiErrorMessage(payload, "公众号封面文案规划失败"));
+  }
+
+  return payload as CoverPlannerResponse;
 }
 
 export async function postGenerateImages(request: GenerateImagesRequest) {

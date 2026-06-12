@@ -1,4 +1,7 @@
 import type {
+  CoverCandidatePlan,
+  CoverPlannerRequest,
+  CoverPlannerResponse,
   PlannerRequest,
   PlannerResponse,
   SplitStrategy,
@@ -51,6 +54,10 @@ function resolveCoverStyleGuide(request: PlannerRequest) {
   return request.coverStyleGuide?.trim() || PAPER_INFO_BOARD_COVER_STYLE_GUIDE;
 }
 
+function resolveCoverOnlyStyleGuide(request: CoverPlannerRequest) {
+  return request.coverStyleGuide?.trim() || PAPER_INFO_BOARD_COVER_STYLE_GUIDE;
+}
+
 function renderReferenceImages(
   imagesInput:
     | Array<{
@@ -90,6 +97,12 @@ function buildInjectedInlineImageBase(request: PlannerRequest) {
 function buildInjectedCoverBase(request: PlannerRequest) {
   return WECHAT_COVER_GENERATOR_BASE
     .replace("{{STYLE_GUIDE}}", resolveCoverStyleGuide(request))
+    .replace("{{REFERENCE_IMAGES}}", renderReferenceImages(request.coverReferenceImages));
+}
+
+function buildInjectedCoverOnlyBase(request: CoverPlannerRequest) {
+  return WECHAT_COVER_GENERATOR_BASE
+    .replace("{{STYLE_GUIDE}}", resolveCoverOnlyStyleGuide(request))
     .replace("{{REFERENCE_IMAGES}}", renderReferenceImages(request.coverReferenceImages));
 }
 
@@ -670,6 +683,92 @@ function pickKeyQuotes(rawText: string) {
   return [...quoteBlocks, ...boldSnippets, ...paragraphSnippets].filter(Boolean).slice(0, 3);
 }
 
+function buildCoverCandidates({
+  articleTitle,
+  coverTitle,
+  keywords,
+  direction,
+  visualMetaphor,
+  styleGuide,
+  referenceImages,
+}: {
+  articleTitle: string;
+  coverTitle: string;
+  keywords: string;
+  direction: string;
+  visualMetaphor: string;
+  styleGuide: string;
+  referenceImages: string;
+}): CoverCandidatePlan[] {
+  const candidates = [
+    {
+      title: "标题左置",
+      composition:
+        "标题左置，占画面左侧 45%-55%；右侧用一个克制的纸本隐喻物件承接主题，背景保留大面积温白纸面。",
+      elementHint: `一张主纸片、少量胶带、一个与“${visualMetaphor}”相关的低饱和小物件或小图框。`,
+      focus: "标题可读，纸本质感明确，主题隐喻清楚。",
+    },
+    {
+      title: "中心纸片",
+      composition:
+        "中心纸片承载标题，背后只有轻微纸张叠层和低饱和色块，右下角放一个小型隐喻物件。",
+      elementHint: "中心标题纸片、浅雾蓝/浅卡其色块、铅笔或便签边角。",
+      focus: "更安静，更适合知识型公众号。",
+    },
+    {
+      title: "错位纸张",
+      composition:
+        "标题区与主体物件错位，标题放在中左纸片上，右侧或下方用边角纸张层次和轻扫描感制造入口气质。",
+      elementHint: `错位纸片、回形针或胶带、一个象征“${keywords}”的简洁物件。`,
+      focus: "入口感稍强，但不能商业营销化。",
+    },
+  ];
+
+  return candidates.map((candidate, index) => ({
+    index: index + 1,
+    title: candidate.title,
+    composition: candidate.composition,
+    visualMetaphor,
+    promptText: `【公众号封面图 - 候选 ${index + 1}，横版 900×383】
+
+用途：公众号文章《${articleTitle}》首发封面。
+
+## 文字渲染规则
+
+只渲染反引号中的文字。不得自行添加未经指定的文字、字母、数字、栏目名、日期、水印或符号。
+
+## 视觉风格
+
+${styleGuide}
+
+${referenceImages}
+
+## 文章入口判断
+
+封面主题：${coverTitle}
+
+关键词：${keywords}
+
+视觉隐喻：${visualMetaphor}
+
+情绪方向：${direction}
+
+## 本张候选
+
+构图：${candidate.composition}
+
+标题文字：\`${articleTitle}\`
+
+画面元素：${candidate.elementHint}
+
+重点：${candidate.focus}
+
+## 禁止
+
+不要知识卡片布局，不要小红书竖版卡片，不要信息图，不要段落文字，不要人物大头，不要复杂拼贴，不要高饱和营销海报。`,
+  }));
+}
+
 export function planKnowledgeCardsFromArticle(
   request: PlannerRequest
 ): Omit<PlannerResponse, "provider"> {
@@ -799,6 +898,131 @@ export function planKnowledgeCardsFromArticle(
     cardPlan,
     inlineImagePlan,
   }, request);
+}
+
+export function planWechatCoverFromArticle(
+  request: CoverPlannerRequest
+): Omit<CoverPlannerResponse, "provider"> {
+  const styleGuide = resolveCoverOnlyStyleGuide(request);
+  const referenceImages = renderReferenceImages(request.coverReferenceImages);
+  const keyQuotes = pickKeyQuotes(request.rawText);
+  const cleanTitle = request.articleTitle.trim() || "公众号文章封面";
+  const keywords = keyQuotes.join(" / ") || cleanText(request.rawText).slice(0, 42) || cleanTitle;
+  const coverTitle = cleanTitle;
+  const direction = "克制、清醒、留白，有轻微疲惫感但不消极，适合知识型公众号首发入口";
+  const visualMetaphor = `用纸本文稿、便签、胶带和一个安静桌面物件表达“${cleanTitle}”的入口感`;
+
+  return {
+    coverTheme: {
+      title: coverTitle,
+      keywords,
+      direction,
+      visualMetaphor,
+    },
+    coverPlan: buildCoverCandidates({
+      articleTitle: cleanTitle,
+      coverTitle,
+      keywords,
+      direction,
+      visualMetaphor,
+      styleGuide,
+      referenceImages,
+    }),
+  };
+}
+
+function buildCoverOnlyPrompt(request: CoverPlannerRequest) {
+  return `
+你只负责公众号封面阶段一：文生文。
+不要做知识卡拆解，不要提取金句卡，不要规划正文配图。
+
+【公众号封面提示词生成器】
+
+${buildInjectedCoverOnlyBase(request)}
+
+文章标题：${request.articleTitle}
+封面风格名称：${request.coverStyleName || "极简纸本公众号封面"}
+
+文章全文：
+${request.rawText}
+
+请只返回 JSON，不要输出 Markdown 代码块，不要额外解释：
+{
+  "coverTheme": {
+    "title": "必须使用文章原标题",
+    "keywords": "关键词1 / 关键词2 / 关键词3",
+    "direction": "封面的情绪和入口气质",
+    "visualMetaphor": "封面的具体视觉隐喻"
+  },
+  "coverPlan": [
+    {
+      "index": 1,
+      "title": "候选标题左置",
+      "composition": "本候选的构图说明",
+      "visualMetaphor": "本候选的视觉隐喻",
+      "promptText": "只生成这一张封面图的完整绘图提示词，横版 900×383，只包含一个封面，不要拼接多候选"
+    }
+  ]
+}
+
+硬性要求：
+- coverPlan 必须正好 3 条。
+- 每条 promptText 只能生成一张独立公众号封面，不能写“三张候选”，不能让模型把多张拼到一张图。
+- 标题必须使用文章原标题，不得改写，不得添加导语、摘要、副标题、作者名、日期或水印。
+- 封面不是知识卡，不要信息图，不要多段正文。`.trim();
+}
+
+export async function planWechatCoverWithLLM(
+  request: CoverPlannerRequest
+): Promise<CoverPlannerResponse> {
+  const apiKey = requireEnv("AITECHFLUX_API_KEY");
+  const baseUrl = process.env.AITECHFLUX_BASE_URL?.trim() || "https://aitechflux.com/v1";
+  const model = process.env.AITECHFLUX_PLAN_MODEL?.trim() || "deepseek-v4-pro";
+
+  const response = await fetch(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.35,
+      messages: [
+        {
+          role: "system",
+          content:
+            "你是公众号封面文生文规划器，只返回 JSON。不要做知识卡、金句卡或正文配图拆解。coverPlan 必须 3 条，每条是一张独立封面图的 promptText。",
+        },
+        {
+          role: "user",
+          content: buildCoverOnlyPrompt(request),
+        },
+      ],
+    }),
+  });
+
+  const payload = (await response.json()) as ChatCompletionResponse;
+  if (!response.ok) {
+    throw new Error(payload.error?.message || `封面规划接口失败: ${response.status}`);
+  }
+
+  const content = payload.choices?.[0]?.message?.content;
+  if (!content) {
+    throw new Error("封面规划接口没有返回内容");
+  }
+
+  const parsed = JSON.parse(extractJson(content)) as Omit<CoverPlannerResponse, "provider">;
+  const fallback = planWechatCoverFromArticle(request);
+  return {
+    provider: "llm",
+    coverTheme: {
+      ...fallback.coverTheme,
+      ...parsed.coverTheme,
+      title: request.articleTitle,
+    },
+    coverPlan: parsed.coverPlan?.length === 3 ? parsed.coverPlan : fallback.coverPlan,
+  };
 }
 
 function buildPrompt(request: PlannerRequest) {
