@@ -201,7 +201,6 @@ function HistoryRecordDetailStepCard({
     "mw-history-detail-step",
     `mw-history-detail-step--${step.reportType}`,
     stateClassName,
-    step.compact ? "is-compact" : "",
   ].filter(Boolean).join(" ");
 
   return (
@@ -218,9 +217,7 @@ function HistoryRecordDetailStepCard({
         />
       </header>
 
-      {step.compact ? null : (
-        <p className="mw-history-detail-step__body">{step.description}</p>
-      )}
+      <p className="mw-history-detail-step__body">{step.description}</p>
 
       {step.progressPercent != null ? (
         <div className="mw-history-detail-progress">

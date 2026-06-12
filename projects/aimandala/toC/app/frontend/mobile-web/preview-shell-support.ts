@@ -28,10 +28,12 @@ export const DEFAULT_PREVIEW_DRAFT: MobileWebUploadDraft = {
 export const PREVIEW_ROUTE_OPTIONS: Array<{
   label: string;
   value: MobileWebRouteId;
-}> = mobileWebRoutes.map((route) => ({
-  label: route.previewLabel ?? route.title,
-  value: route.id,
-}));
+}> = mobileWebRoutes
+  .filter((route) => route.id !== "historyRecordDetail")
+  .map((route) => ({
+    label: route.previewLabel ?? route.title,
+    value: route.id,
+  }));
 
 export const PREVIEW_POLLING_INTERVAL_MS = 1500;
 export const PREVIEW_POLLING_MAX_ATTEMPTS = 8;

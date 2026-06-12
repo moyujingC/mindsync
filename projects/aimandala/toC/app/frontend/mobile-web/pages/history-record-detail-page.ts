@@ -23,7 +23,6 @@ export interface HistoryRecordDetailStepDescriptor {
   actionLabel: string;
   actionEmphasis: "primary" | "secondary" | "inline";
   showSpinner?: boolean;
-  compact?: boolean;
   progressPercent?: number;
   progressHint?: string;
 }
@@ -202,8 +201,7 @@ export function createHistoryRecordDetailPageDescriptor(
       statusTone: "jade",
       description: "这是本次解读的第一步，帮你快速看见画面中的初步象征与线索。",
       actionLabel: "查看 Lite",
-      actionEmphasis: state === "viewable" ? "inline" : "secondary",
-      compact: state === "viewable",
+      actionEmphasis: "secondary",
     },
     proStep: {
       reportType: "pro",

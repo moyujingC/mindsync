@@ -314,5 +314,8 @@ describe("MobileWebApp", () => {
     expect(generating).toContain("生成中");
     expect(viewable).toContain("查看 Pro");
     expect(viewable).toContain("已可查看");
+    expect(viewable).toContain("这是本次解读的第一步");
+    expect(viewable).toContain("mw-history-detail-step--lite");
+    expect(viewable).not.toContain("is-compact");
   });
 });
