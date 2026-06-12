@@ -40,6 +40,12 @@ export type PlannerRequest = {
   articleTitle: string;
   rawText: string;
   knowledgeCardStyleName: string;
+  knowledgeCardStyleGuide?: string;
+  knowledgeCardReferenceImages?: Array<{
+    label: string;
+    url: string;
+    note?: string;
+  }>;
   inlineImageStyleName: string;
   cardRatio: string;
   cardWidth: number;

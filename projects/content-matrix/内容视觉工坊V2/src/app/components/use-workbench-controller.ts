@@ -56,6 +56,23 @@ type ReplanSummary = {
   staleKnowledgeCount: number;
 };
 
+const DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE = `视觉风格：蓝雾静读 · 手绘知识卡
+
+整体风格：
+在手绘涂鸦笔记 / Sketchnote 的信息组织方式上，降低饱和度和可爱感，偏安静、专业、疗愈。
+
+背景：
+浅绿米白渐变为主，可加入少量雾蓝、灰白、浅暖灰。
+
+配色：
+草绿、天蓝、暖黄为基础，但整体压低饱和度；深绿或深灰蓝用于轮廓和重点文字。
+
+字体：
+清晰可辨的中文手写体风格，不能花哨，优先保证可读性。
+
+限制：
+不要科技霓虹，不要儿童贴纸感，不要营销海报感，不要复杂装饰。`;
+
 function buildArticleSignature(article: WorkspaceArticle) {
   return `${article.title.trim()}::${article.body.replace(/\s+/g, " ").trim()}`;
 }
@@ -651,6 +668,8 @@ export function useWorkbenchController({
       articleTitle: article.title,
       rawText: article.body,
       knowledgeCardStyleName: "蓝雾静读",
+      knowledgeCardStyleGuide: DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE,
+      knowledgeCardReferenceImages: [],
       inlineImageStyleName: "留白水墨",
       cardRatio: knowledgePreset?.aspect || "3:4",
       cardWidth: knowledgePreset?.w || 1280,

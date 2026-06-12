@@ -4,6 +4,9 @@ import type {
   SplitStrategy,
   WechatInlineSectionType,
 } from "../src/app/content-planning";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 type ChatCompletionResponse = {
   choices?: Array<{
@@ -15,6 +18,81 @@ type ChatCompletionResponse = {
     message?: string;
   };
 };
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const KNOWLEDGE_CARD_GENERATOR_BASE = fs.readFileSync(
+  path.join(__dirname, "prompts/knowledge-card-generator-base.md"),
+  "utf8"
+);
+
+const DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE = `视觉风格：蓝雾静读 · 手绘知识卡
+
+整体风格：
+在手绘涂鸦笔记 / Sketchnote 的信息组织方式上，降低饱和度和可爱感，偏安静、专业、疗愈。
+
+背景：
+浅绿米白渐变为主，可加入少量雾蓝、灰白、浅暖灰。
+
+配色：
+草绿、天蓝、暖黄为基础，但整体压低饱和度；深绿或深灰蓝用于轮廓和重点文字。
+
+字体：
+清晰可辨的中文手写体风格，不能花哨，优先保证可读性。
+
+限制：
+不要科技霓虹，不要儿童贴纸感，不要营销海报感，不要复杂装饰。`;
+
+function resolveKnowledgeCardStyleGuide(request: PlannerRequest) {
+  return request.knowledgeCardStyleGuide?.trim() || DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE;
+}
+
+function renderReferenceImages(request: PlannerRequest) {
+  const images = request.knowledgeCardReferenceImages?.filter((item) => item.url?.trim()) ?? [];
+  if (images.length === 0) {
+    return `参考图：无。本次仅使用文字风格设定，不要凭空假设具体参考图。`;
+  }
+
+  return [
+    "参考图（可选，作为风格与构图参考，不要照抄其中的文字内容）：",
+    ...images.map((image, index) => {
+      const label = image.label?.trim() || `参考图 ${index + 1}`;
+      const note = image.note?.trim() ? `；参考重点：${image.note.trim()}` : "";
+      return `- ${label}：${image.url.trim()}${note}`;
+    }),
+  ].join("\n");
+}
+
+function buildInjectedGeneratorBase(request: PlannerRequest) {
+  return KNOWLEDGE_CARD_GENERATOR_BASE
+    .replace("{{STYLE_GUIDE}}", resolveKnowledgeCardStyleGuide(request))
+    .replace("{{REFERENCE_IMAGES}}", renderReferenceImages(request));
+}
+
+function attachExternalStyleGuideToPromptText(promptText: string | undefined, request: PlannerRequest) {
+  const source = promptText?.trim() || "";
+  const appendix = `## 外挂视觉风格设定（必须遵守）
+
+${resolveKnowledgeCardStyleGuide(request)}
+
+${renderReferenceImages(request)}`;
+
+  if (!source) return appendix;
+  if (source.includes("## 外挂视觉风格设定")) return source;
+  return `${source}
+
+${appendix}`;
+}
+
+function attachExternalStyleGuide(response: Omit<PlannerResponse, "provider">, request: PlannerRequest) {
+  return {
+    ...response,
+    cardPlan: response.cardPlan.map((card) => ({
+      ...card,
+      promptText: attachExternalStyleGuideToPromptText(card.promptText, request),
+    })),
+  };
+}
 
 function cleanText(text: string) {
   return text
@@ -110,6 +188,8 @@ ${items}`;
 }
 
 function buildKnowledgeCardPromptText({
+  styleGuide,
+  referenceImages,
   cardIndex,
   cardTotal,
   cardTitle,
@@ -120,6 +200,8 @@ function buildKnowledgeCardPromptText({
   decorationHint,
   endingLabel,
 }: {
+  styleGuide: string;
+  referenceImages: string;
   cardIndex: number;
   cardTotal: number;
   cardTitle: string;
@@ -153,11 +235,9 @@ function buildKnowledgeCardPromptText({
 
 画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
 
-视觉风格：清新自然风
+${styleGuide}
 
-背景：浅绿米白渐变，水彩晕染效果
-
-配色：草绿、天蓝、暖黄，深绿轮廓
+${referenceImages}
 
 字体：清晰可辨的中文手写体风格
 
@@ -329,6 +409,8 @@ function pickKeyQuotes(rawText: string) {
 export function planKnowledgeCardsFromArticle(
   request: PlannerRequest
 ): Omit<PlannerResponse, "provider"> {
+  const styleGuide = resolveKnowledgeCardStyleGuide(request);
+  const referenceImages = renderReferenceImages(request);
   const sections = extractSections(request.rawText);
   const targetCount = resolveTargetCardCount(sections.length, request);
   const normalizedSections =
@@ -354,6 +436,8 @@ export function planKnowledgeCardsFromArticle(
       title,
       summary: summary || "等待文章内容补充后再生成摘要。",
       promptText: buildKnowledgeCardPromptText({
+        styleGuide,
+        referenceImages,
         cardIndex: index + 1,
         cardTotal: normalizedSections.length,
         cardTitle: title,
@@ -401,7 +485,7 @@ export function planKnowledgeCardsFromArticle(
     more: "偏多",
   };
 
-  return {
+  return attachExternalStyleGuide({
     analysis: {
       imageGenerationSource: {
         contentKind: "full-article-text",
@@ -416,74 +500,30 @@ export function planKnowledgeCardsFromArticle(
     },
     cardPlan,
     inlineImagePlan,
-  };
+  }, request);
 }
 
 function buildPrompt(request: PlannerRequest) {
   return `
-你现在不是普通内容策划助手，而是“知识卡片提示词生成器（3:4竖版专用 - 独立多图模式）”。
-你的首要任务不是总结文章，也不是做泛化拆解，而是按照一套已经打磨过的知识卡绘图提示词模板，为每一张知识卡生成可直接投喂绘图模型的完整 promptText。
+下面是知识卡片提示词生成器的运行版基座。它保留原教程的拆分规则、构图库、输出流程和代码块模板；视觉风格库已经移除，改为注入“视觉风格设定”和可选参考图。
 
-你必须优先保证：
-1. promptText 像成熟的绘图提示词，而不是工作笔记
-2. 每张卡都是独立完整的一张图，不是拼图，不是摘要条目
-3. 每条显示文字都适合直接上图
-4. 每条文字都要绑定具体插画描述
-5. 区域名、区域位置、构图、标题区、装饰元素都要明确
+${buildInjectedGeneratorBase(request)}
 
-你要复用的模板风格有这些关键特征，必须体现在每张卡的 promptText 里：
-- 开头必须有“【文字渲染规则 - 严格遵守】”
-- 必须明确“【第X张图 - 独立完整的一张图，单独占据一个完整的3:4竖版画布，请勿与其他图合并】”
-- 必须有“## 整体风格说明（与本系列所有图保持一致）”
-- 必须有“## 本张图内容”
-- 必须有“标题区（画面顶部15-20%）”
-- 必须有“内容与排版：”
-- 内容区必须拆成 2-3 个明确区域，而不是一串信息点
-- 每条文案必须写成：\`文字\`（旁边画某种具体简笔画插图）
-- 结尾必须有“整体装饰元素：”
-- 最后一张卡可以追加“结尾特殊标识：”
-
-这套 promptText 的目标风格不是克制极简海报，而是“手绘涂鸦知识卡 / sketchnote 信息图”。
-不要把它写成我们产品内部的面板说明，也不要写成抽象审美描述。
-
-请根据全文内容完成：
-1. 判断适合拆成几张知识卡片
-2. 为每张卡片生成标题
-3. 为每张卡片生成一句摘要
-4. 为每张卡片生成完整 promptText，这是最重要的产物
-5. 从 promptText 反推出结构化字段：theme / layoutHint / textBlocks / illustrationHints / contentSections
-6. 提炼 1-3 句重点句
-7. 生成一个封面主题和关键词
-8. 规划公众号正文配图，决定哪些小节需要配图，并给出每张图的用途和视觉方向
-
-必须返回 JSON，不要输出额外解释。
-
-要求：
-- 输出语言为中文
-- 卡片数量控制在 ${request.minCards}-${request.maxCards} 张
-- 拆卡策略偏好：${request.splitStrategy}
-- promptText 是主字段，其他字段服务于 promptText，不要反过来
-- 标题必须短、清楚、适合做视觉卡片标题
-- 摘要是一句话，适合显示在工作台里
-- 每张卡必须有 3-4 个信息点，不要只给空泛观点
-- 每个信息点应尽量来自原文，不要改写成口号
-- 每个信息点长度控制在 12-36 字，适合直接渲染到图里
-- 构图提示要优先使用具体构图名，例如“竖向递进卡片型 / 上下对比型 / 根系结构型 / 中心发散型”
-- 内容区域要像“核心观点区 / 对比铺垫区 / 行动指引区 / 表层结果区 / 深层原因区”这种可直接放进图里的名字
-- 每个区域必须写清它位于画面什么位置
-- 每条文案都要绑定一个具体插画描述，写清楚画什么
-- 不要把文案压缩成空泛金句
-- 不要写成产品式说明文
-- 不要偷换成我们自己的风格体系语言
-- 不要编造原文没有的观点
-- 正文配图不是知识卡片，不是封面，不是海报
-- 正文配图应优先对应文章里的 \`##\` 小节
-- 不是每个小节都必须配图，按需要决定，控制在 1-4 张
-- 配图要服务阅读节奏，不要让图抢掉正文中心
+请使用上面的生成器规则处理这篇文章，并额外遵守以下系统约束：
+- 必须返回 JSON，不要输出 Markdown 代码块，不要输出额外解释。
+- 卡片数量控制在 ${request.minCards}-${request.maxCards} 张。
+- 拆卡策略偏好：${request.splitStrategy}。
+- 每张卡的 promptText 是主产物，必须是完整绘图提示词，可以直接投喂绘图模型。
+- 每张卡必须是独立完整的一张 3:4 竖版图，不允许把多张卡合并到一张图。
+- 每张卡保留 3-4 个信息点，信息点要尽量来自原文，不要压缩成空泛金句。
+- 每条需要上图的文字都必须放在反引号里。
+- 每条文字都要绑定具体插画描述。
+- promptText 中的“整体风格说明”必须使用注入的视觉风格设定；如果有参考图，只作为风格、配色、构图参考，不要复制参考图里的文字。
+- 正文配图不是知识卡片，不是封面，不是海报；只规划 1-4 张，服务长文阅读节奏。
 
 文章标题：${request.articleTitle}
-知识卡风格参考：${request.knowledgeCardStyleName}
-正文配图风格参考：${request.inlineImageStyleName}
+知识卡风格名称：${request.knowledgeCardStyleName}
+正文配图风格名称：${request.inlineImageStyleName}
 卡片比例：${request.cardRatio}
 卡片尺寸：${request.cardWidth}x${request.cardHeight}
 
@@ -604,6 +644,6 @@ export async function planCardsWithLLM(request: PlannerRequest): Promise<Planner
   const parsed = JSON.parse(extractJson(content)) as Omit<PlannerResponse, "provider">;
   return {
     provider: "llm",
-    ...parsed,
+    ...attachExternalStyleGuide(parsed, request),
   };
 }
