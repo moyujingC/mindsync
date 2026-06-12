@@ -1481,11 +1481,14 @@
   display: grid;
   gap: 8px;
   min-width: 0;
+  margin-top: -10px;
+  font-weight: 500;
 }
 
 .mw-history-detail-summary__field--end {
   justify-items: end;
   text-align: right;
+  margin-top: -7px;
 }
 
 .mw-history-detail-badge {
@@ -1493,13 +1496,14 @@
   align-items: center;
   gap: 6px;
   width: fit-content;
-  min-height: 24px;
+  height: 18px;
+  min-height: 18px;
   padding: 0 10px;
   border: 1px solid rgb(var(--am-rgb-gold-300) / 0.2);
   border-radius: 999px;
   background: rgb(255 255 255 / 0.04);
   color: var(--am-text-primary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.08em;
@@ -1536,9 +1540,11 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin-top: -12px;
   color: var(--am-text-primary);
   font-family: var(--am-font-display);
   font-size: 12px;
+  font-weight: 500;
   line-height: 1.2;
   letter-spacing: 0.12em;
   white-space: nowrap;
@@ -1681,10 +1687,14 @@
 .mw-history-detail-step__actions .mw-primary-button,
 .mw-history-detail-step__actions .mw-secondary-button {
   min-width: 100%;
-  min-height: 45px;
+  height: 36px;
+  min-height: 36px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   gap: 8px;
   font-family: var(--am-font-display);
   font-size: 14px;
+  font-weight: 600;
   letter-spacing: 0.18em;
 }
 
