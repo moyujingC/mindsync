@@ -789,8 +789,8 @@
   position: relative;
   overflow: hidden;
   padding: 0;
-  background: var(--am-surface-primary);
-  border-top: 1px solid var(--am-upload-bottom-panel-border);
+  background: var(--am-upload-form-surface);
+  border-top: 0;
 }
 
 .am-upload-bottom-panel::before {
