@@ -64,23 +64,23 @@ const KNOWLEDGE_CARD_PROMPT_RULES = `【文字渲染规则 - 严格遵守】
 
 const KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK = `## 整体风格说明（与本系列所有图保持一致）
 
-整体风格：手绘涂鸦笔记 (Sketchnote) 风格，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
+整体风格：极简纸本信息板，像一张整理好的纸本研究板，使用纸张拼贴、便签、小图框、胶带、色板和铅笔元素
 
 画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
 
-视觉风格：蓝雾静读 · 手绘知识卡
+视觉风格：极简纸本信息板
 
-背景：浅绿米白渐变为主，可加入少量雾蓝、灰白、浅暖灰
+背景：温白、浅米白或浅灰白纸张底，轻微纸纹、扫描感和纸张阴影
 
-配色：草绿、天蓝、暖黄为基础，但整体压低饱和度；深绿或深灰蓝用于轮廓和重点文字
+配色：米白、纸灰、浅雾蓝、灰蓝、浅卡其、暖灰、深墨黑，强调色保持低饱和
 
-字体：清晰可辨的中文手写体风格`;
+字体：中文标题清楚有质感，可用粗宋体/现代 serif 感或高质感黑体；信息点可像打印体或清晰手写注释`;
 
 const KNOWLEDGE_CARD_PROMPT_CUSTOM_STYLE_BLOCK = `## 当前项目硬性约束
 
 - 版面优先服务信息阅读，不要把画面做成纯装饰海报
-- 手绘感可以保留，但不要过度可爱，不要太像儿童贴纸
-- 不要科技霓虹，不要儿童贴纸感，不要营销海报感，不要复杂装饰`;
+- 保持纸本拼贴质感，但不要复杂到失去留白
+- 不要手绘涂鸦儿童感，不要卡通贴纸感，不要科技霓虹，不要营销海报感`;
 
 export function buildKnowledgeCardPrompt({
   articleTitle,
@@ -442,7 +442,7 @@ export function buildGenerationTasks({
             purposeLabel: "小红书知识卡片 / 图文配图",
             presetKey: preset.k,
             presetLabel: preset.label,
-            styleName: "蓝雾静读",
+            styleName: "极简纸本信息板",
             cardLink: {
               index: card.index,
               title: card.title,
@@ -511,7 +511,7 @@ export function buildGenerationTasks({
           purposeLabel: "公众号正文配图",
           presetKey: preset.k,
           presetLabel: preset.label,
-          styleName: "留白水墨",
+          styleName: "极简纸本正文配图",
           inlineLink: {
             index: inlineIndex,
             sectionKey: item.sectionKey,

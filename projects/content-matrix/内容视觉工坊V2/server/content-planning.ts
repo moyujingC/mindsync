@@ -4,6 +4,10 @@ import type {
   SplitStrategy,
   WechatInlineSectionType,
 } from "../src/app/content-planning";
+import {
+  PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
+  PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
+} from "../src/app/style-guides";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,46 +34,12 @@ const WECHAT_INLINE_IMAGE_GENERATOR_BASE = fs.readFileSync(
   "utf8"
 );
 
-const DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE = `视觉风格：蓝雾静读 · 手绘知识卡
-
-整体风格：
-在手绘涂鸦笔记 / Sketchnote 的信息组织方式上，降低饱和度和可爱感，偏安静、专业、疗愈。
-
-背景：
-浅绿米白渐变为主，可加入少量雾蓝、灰白、浅暖灰。
-
-配色：
-草绿、天蓝、暖黄为基础，但整体压低饱和度；深绿或深灰蓝用于轮廓和重点文字。
-
-字体：
-清晰可辨的中文手写体风格，不能花哨，优先保证可读性。
-
-限制：
-不要科技霓虹，不要儿童贴纸感，不要营销海报感，不要复杂装饰。`;
-
-const DEFAULT_INLINE_IMAGE_STYLE_GUIDE = `视觉风格：留白水墨 · 公众号正文小插图
-
-整体风格：
-适合插入公众号长文正文的安静小插图，低饱和、留白充足、轻隐喻，不做封面感和知识卡片感。
-
-背景：
-白底或浅灰白底，可有很轻的雾蓝、浅暖灰、水墨淡痕或纸感纹理。
-
-配色：
-雾蓝、灰白、浅暖灰、淡墨色为主，只允许少量低饱和绿或暖黄作为提示色。
-
-构图：
-主体少，空间干净，有呼吸感；画面可以有一个人物背影、一个桌面物件、一个空间隐喻或一个低科技装置。
-
-限制：
-不要大标题，不要知识卡布局，不要多段文字，不要强营销封面，不要科技霓虹，不要夸张负面情绪。`;
-
 function resolveKnowledgeCardStyleGuide(request: PlannerRequest) {
-  return request.knowledgeCardStyleGuide?.trim() || DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE;
+  return request.knowledgeCardStyleGuide?.trim() || PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE;
 }
 
 function resolveInlineImageStyleGuide(request: PlannerRequest) {
-  return request.inlineImageStyleGuide?.trim() || DEFAULT_INLINE_IMAGE_STYLE_GUIDE;
+  return request.inlineImageStyleGuide?.trim() || PAPER_INFO_BOARD_INLINE_STYLE_GUIDE;
 }
 
 function renderReferenceImages(

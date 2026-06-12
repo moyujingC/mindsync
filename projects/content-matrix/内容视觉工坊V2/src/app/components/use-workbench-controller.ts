@@ -2,6 +2,11 @@ import { useRef, useState, type ChangeEvent } from "react";
 import { postGenerateImages, postPlanCards } from "../api";
 import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
+import {
+  PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
+  PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
+  PAPER_INFO_BOARD_REFERENCE_IMAGES,
+} from "../style-guides";
 import type {
   GeneratedImageItem,
   GenerationPurposeKey,
@@ -55,40 +60,6 @@ type ReplanSummary = {
   preservedKnowledgeCount: number;
   staleKnowledgeCount: number;
 };
-
-const DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE = `视觉风格：蓝雾静读 · 手绘知识卡
-
-整体风格：
-在手绘涂鸦笔记 / Sketchnote 的信息组织方式上，降低饱和度和可爱感，偏安静、专业、疗愈。
-
-背景：
-浅绿米白渐变为主，可加入少量雾蓝、灰白、浅暖灰。
-
-配色：
-草绿、天蓝、暖黄为基础，但整体压低饱和度；深绿或深灰蓝用于轮廓和重点文字。
-
-字体：
-清晰可辨的中文手写体风格，不能花哨，优先保证可读性。
-
-限制：
-不要科技霓虹，不要儿童贴纸感，不要营销海报感，不要复杂装饰。`;
-
-const DEFAULT_INLINE_IMAGE_STYLE_GUIDE = `视觉风格：留白水墨 · 公众号正文小插图
-
-整体风格：
-适合插入公众号长文正文的安静小插图，低饱和、留白充足、轻隐喻，不做封面感和知识卡片感。
-
-背景：
-白底或浅灰白底，可有很轻的雾蓝、浅暖灰、水墨淡痕或纸感纹理。
-
-配色：
-雾蓝、灰白、浅暖灰、淡墨色为主，只允许少量低饱和绿或暖黄作为提示色。
-
-构图：
-主体少，空间干净，有呼吸感；画面可以有一个人物背影、一个桌面物件、一个空间隐喻或一个低科技装置。
-
-限制：
-不要大标题，不要知识卡布局，不要多段文字，不要强营销封面，不要科技霓虹，不要夸张负面情绪。`;
 
 function buildArticleSignature(article: WorkspaceArticle) {
   return `${article.title.trim()}::${article.body.replace(/\s+/g, " ").trim()}`;
@@ -574,7 +545,7 @@ export function useWorkbenchController({
         purposeLabel: "小红书知识卡片 / 图文配图",
         presetKey: preset.k,
         presetLabel: preset.label,
-        styleName: "蓝雾静读",
+        styleName: "极简纸本信息板",
         cardLink: {
           index: resolvedCard.index,
           title: resolvedCard.title,
@@ -684,12 +655,12 @@ export function useWorkbenchController({
     const request: PlannerRequest = {
       articleTitle: article.title,
       rawText: article.body,
-      knowledgeCardStyleName: "蓝雾静读",
-      knowledgeCardStyleGuide: DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE,
-      knowledgeCardReferenceImages: [],
-      inlineImageStyleName: "留白水墨",
-      inlineImageStyleGuide: DEFAULT_INLINE_IMAGE_STYLE_GUIDE,
-      inlineImageReferenceImages: [],
+      knowledgeCardStyleName: "极简纸本信息板",
+      knowledgeCardStyleGuide: PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
+      knowledgeCardReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
+      inlineImageStyleName: "极简纸本正文配图",
+      inlineImageStyleGuide: PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
+      inlineImageReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
       cardRatio: knowledgePreset?.aspect || "3:4",
       cardWidth: knowledgePreset?.w || 1280,
       cardHeight: knowledgePreset?.h || 1706,
