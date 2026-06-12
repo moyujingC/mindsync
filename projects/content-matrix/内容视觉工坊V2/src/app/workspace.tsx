@@ -47,6 +47,7 @@ export type GeneratedImageItem = {
   coverLink?: {
     index: number;
     title: string;
+    variant?: "large" | "thumb";
   };
 };
 

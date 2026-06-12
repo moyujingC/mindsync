@@ -226,7 +226,7 @@ export function WorkbenchLeftSidebar({
         {[
           { k: "knowledge" as const, l: "知识卡片", n: "自动", auto: true },
           { k: "quote" as const, l: "金句底图", n: "按勾选" },
-          { k: "cover" as const, l: "公众号封面", n: "3" },
+          { k: "cover" as const, l: "公众号封面", n: "3 组" },
           { k: "inline" as const, l: "正文配图", n: "3" },
         ].map((item, index, arr) => (
           <CompactToggle
@@ -989,6 +989,12 @@ function WorkbenchResultsPanel({
       JSON.stringify(generatedQuoteTexts) !== JSON.stringify(currentQuoteTexts));
   const selectedCoverIndex = coverSelection?.selectedCoverIndex ?? 0;
   const finalizedCoverIndex = coverSelection?.finalizedCoverIndex ?? null;
+  const getCoverImage = (index: number, variant: "large" | "thumb") =>
+    coverGeneration?.images.find(
+      (image) =>
+        image.coverLink?.index === index + 1 &&
+        (image.coverLink.variant || "large") === variant
+    );
   const finalizedKnowledgeImages = plannedCards
     .map((card) => {
       const status = knowledgeCardStatuses[String(card.index)];
@@ -1019,11 +1025,13 @@ function WorkbenchResultsPanel({
   const releaseCoverIndex =
     finalizedCoverIndex != null
       ? finalizedCoverIndex
-      : coverGeneration?.images[selectedCoverIndex]
+      : getCoverImage(selectedCoverIndex, "large") || getCoverImage(selectedCoverIndex, "thumb")
         ? selectedCoverIndex
         : null;
-  const releaseCoverImage =
-    releaseCoverIndex != null ? coverGeneration?.images[releaseCoverIndex] ?? null : null;
+  const releaseCoverLarge =
+    releaseCoverIndex != null ? getCoverImage(releaseCoverIndex, "large") ?? null : null;
+  const releaseCoverThumb =
+    releaseCoverIndex != null ? getCoverImage(releaseCoverIndex, "thumb") ?? null : null;
   const releaseInlineImages = plannedInlineImages
     .map((item: any, index: number) => {
       const image = inlineGeneration?.images[index];
@@ -1037,16 +1045,32 @@ function WorkbenchResultsPanel({
     })
     .filter(Boolean);
   const releaseAssets = [
-    releaseCoverImage
+    releaseCoverLarge
       ? {
           kind: "cover" as const,
-          imageUrl: releaseCoverImage.imageUrl,
+          imageUrl: releaseCoverLarge.imageUrl,
           filename:
             releaseCoverIndex === finalizedCoverIndex
-              ? "release-cover-final.png"
-              : "release-cover-selected.png",
+              ? "release-cover-large-final.png"
+              : "release-cover-large-selected.png",
           label:
-            releaseCoverIndex === finalizedCoverIndex ? "公众号封面（已定稿）" : "公众号封面（当前已选）",
+            releaseCoverIndex === finalizedCoverIndex
+              ? "公众号大封面（已定稿）"
+              : "公众号大封面（当前已选）",
+        }
+      : null,
+    releaseCoverThumb
+      ? {
+          kind: "cover" as const,
+          imageUrl: releaseCoverThumb.imageUrl,
+          filename:
+            releaseCoverIndex === finalizedCoverIndex
+              ? "release-cover-thumb-final.png"
+              : "release-cover-thumb-selected.png",
+          label:
+            releaseCoverIndex === finalizedCoverIndex
+              ? "公众号小封面（已定稿）"
+              : "公众号小封面（当前已选）",
         }
       : null,
     ...exportKnowledgeImages.map((item: any) => ({
@@ -1431,8 +1455,8 @@ function WorkbenchResultsPanel({
         </div>
         <div>
           <ResultRow
-            label="公众号封面大图"
-            size={coverPreset ? `列表封面 · ${coverPreset.w}×${coverPreset.h}` : "列表封面 · 900×383"}
+            label="公众号封面组合"
+            size="大图 900×383 + 小图 383×383"
             count={3}
           />
           <div className="space-y-2 mt-2.5">
@@ -1448,27 +1472,79 @@ function WorkbenchResultsPanel({
                 <button
                   onClick={() => handleSelectCover(index)}
                   className="w-full flex items-center overflow-hidden text-left"
-                  style={{ height: 56 }}
+                  style={{ minHeight: 82 }}
                 >
-                  {coverGeneration?.images[index] ? (
-                    <img
-                      src={coverGeneration.images[index].imageUrl}
-                      alt={`封面 ${index + 1}`}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handlePreviewImage(coverGeneration.images[index].imageUrl, `封面 ${index + 1}`);
-                      }}
-                      style={{ width: 130, height: "100%", objectFit: "cover", cursor: "zoom-in" }}
-                    />
-                  ) : (
-                    <FoggyArt hue={index} variant={item.variant} style={{ width: 130, height: "100%" }} />
-                  )}
+                  <div
+                    className="flex items-center gap-1.5 shrink-0 p-2"
+                    style={{ width: 178, height: 82, background: COLORS.surface }}
+                  >
+                    {getCoverImage(index, "large") ? (
+                      <img
+                        src={getCoverImage(index, "large")?.imageUrl}
+                        alt={`封面大图 ${index + 1}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          const image = getCoverImage(index, "large");
+                          if (image) handlePreviewImage(image.imageUrl, `封面大图 ${index + 1}`);
+                        }}
+                        style={{
+                          width: 116,
+                          height: 50,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                          cursor: "zoom-in",
+                          border: `1px solid ${COLORS.borderSoft}`,
+                        }}
+                      />
+                    ) : (
+                      <FoggyArt
+                        hue={index}
+                        variant={item.variant}
+                        style={{
+                          width: 116,
+                          height: 50,
+                          borderRadius: 4,
+                          border: `1px solid ${COLORS.borderSoft}`,
+                        }}
+                      />
+                    )}
+                    {getCoverImage(index, "thumb") ? (
+                      <img
+                        src={getCoverImage(index, "thumb")?.imageUrl}
+                        alt={`封面小图 ${index + 1}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          const image = getCoverImage(index, "thumb");
+                          if (image) handlePreviewImage(image.imageUrl, `封面小图 ${index + 1}`);
+                        }}
+                        style={{
+                          width: 50,
+                          height: 50,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                          cursor: "zoom-in",
+                          border: `1px solid ${COLORS.borderSoft}`,
+                        }}
+                      />
+                    ) : (
+                      <FoggyArt
+                        hue={index + 1}
+                        variant={item.variant}
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 4,
+                          border: `1px solid ${COLORS.borderSoft}`,
+                        }}
+                      />
+                    )}
+                  </div>
                   <div className="flex-1 px-3 min-w-0">
                     <div style={{ color: COLORS.text, fontSize: 12.5 }} className="truncate">
                       {item.title}
                     </div>
                     <div style={{ color: COLORS.textFaint, fontSize: 11 }} className="truncate">
-                      {item.note}
+                      {item.note} · 大小封面一组
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">

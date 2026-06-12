@@ -139,7 +139,7 @@ export function useWorkbenchController({
   const estimatedCredits =
     (outputs.knowledge ? unlockedPlannedCards.length : 0) +
     (outputs.quote ? selectedQuotes.length : 0) +
-    (outputs.cover ? 3 : 0) +
+    (outputs.cover ? 6 : 0) +
     (outputs.inline ? plannedInlineImages.length : 0);
 
   const latestGenerationTime = latestGeneration
@@ -945,8 +945,9 @@ export function useWorkbenchController({
   }
 
   async function handleGenerateCoverOnly() {
-    const preset = coverPreset;
-    if (!preset) {
+    const largePreset = coverPreset;
+    const thumbPreset = findPreset("wx-thumb")?.preset;
+    if (!largePreset || !thumbPreset) {
       pushStatus("cover-generation", "error", "缺少公众号封面尺寸预设", {
         phase: "failed",
         currentStepLabel: "公众号封面失败",
@@ -995,29 +996,57 @@ export function useWorkbenchController({
       totalTasks: 1,
     });
 
-    const tasks = coverPlan.coverPlan.map((candidate) => ({
-      articleTitle: currentArticle.title,
-      prompt: candidate.promptText,
-      negativePrompt:
-        "高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、知识卡片布局、信息图、多段正文、多图拼接、额外文字、水印",
-      width: preset.w,
-      height: preset.h,
-      count: 1,
-      purposeKey: "wx_cover",
-      purposeLabel: "公众号封面",
-      presetKey: preset.k,
-      presetLabel: preset.label,
-      styleName: "极简纸本公众号封面",
-      coverLink: {
-        index: candidate.index,
-        title: candidate.title,
+    const tasks = coverPlan.coverPlan.flatMap((candidate) => [
+      {
+        articleTitle: currentArticle.title,
+        prompt: candidate.promptText,
+        negativePrompt:
+          "高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、知识卡片布局、信息图、多段正文、多图拼接、额外文字、水印",
+        width: largePreset.w,
+        height: largePreset.h,
+        count: 1,
+        purposeKey: "wx_cover",
+        purposeLabel: "公众号封面大图",
+        presetKey: largePreset.k,
+        presetLabel: largePreset.label,
+        styleName: "极简纸本公众号封面",
+        coverLink: {
+          index: candidate.index,
+          title: candidate.title,
+          variant: "large" as const,
+        },
       },
-    }));
+      {
+        articleTitle: currentArticle.title,
+        prompt: `${candidate.promptText}
+
+## 小封面适配
+
+本次只生成公众号转发小图，独立方形 383×383。不要把 900×383 大封面裁成长方形，也不要拼接大小封面。保留同一视觉主题，但重构为方形构图：标题仍用 \`${currentArticle.title}\`，文字更集中，主体物件更少，边缘留白更稳。`,
+        negativePrompt:
+          "横版大封面、长条构图、高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、知识卡片布局、信息图、多段正文、多图拼接、额外文字、水印",
+        width: thumbPreset.w,
+        height: thumbPreset.h,
+        count: 1,
+        purposeKey: "wx_cover",
+        purposeLabel: "公众号转发小图",
+        presetKey: thumbPreset.k,
+        presetLabel: thumbPreset.label,
+        styleName: "极简纸本公众号封面",
+        coverLink: {
+          index: candidate.index,
+          title: candidate.title,
+          variant: "thumb" as const,
+        },
+      },
+    ]);
 
     let mergedCoverRecord = coverGeneration;
     for (let index = 0; index < tasks.length; index += 1) {
       const task = tasks[index];
-      const taskLabel = `公众号封面 ${task.coverLink.index}`;
+      const taskLabel = `公众号封面 ${task.coverLink.index} · ${
+        task.coverLink.variant === "thumb" ? "小图" : "大图"
+      }`;
       pushStatus("cover-generation", "info", `阶段二：正在生成 ${taskLabel}`, {
         phase: "generating",
         currentStepLabel: taskLabel,

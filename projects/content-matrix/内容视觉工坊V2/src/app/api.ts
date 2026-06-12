@@ -38,6 +38,7 @@ export type GenerateImagesRequest = {
   coverLink?: {
     index: number;
     title: string;
+    variant?: "large" | "thumb";
   };
 };
 

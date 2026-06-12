@@ -374,12 +374,16 @@ export function mergeRecordImages(
     return incoming;
   }
 
-  const resolveIndex = (item: GenerationRecord["images"][number]) =>
-    incoming.purposeKey === "xhs_card"
-      ? item.cardLink?.index
-      : incoming.purposeKey === "wx_cover"
-        ? item.coverLink?.index
-        : item.inlineLink?.index;
+  const resolveIndex = (item: GenerationRecord["images"][number]) => {
+    if (incoming.purposeKey === "xhs_card") return item.cardLink?.index;
+    if (incoming.purposeKey === "wx_cover") {
+      if (item.coverLink?.index == null) return undefined;
+      return item.coverLink.variant === "thumb"
+        ? item.coverLink.index + 0.5
+        : item.coverLink.index;
+    }
+    return item.inlineLink?.index;
+  };
 
   return {
     ...(existing || incoming),
