@@ -366,22 +366,27 @@ export function mergeRecordImages(
   existing: GenerationRecord | undefined,
   incoming: GenerationRecord
 ) {
-  if (incoming.purposeKey !== "xhs_card") {
+  if (incoming.purposeKey !== "xhs_card" && incoming.purposeKey !== "wx_inline") {
     return incoming;
   }
+
+  const resolveIndex = (item: GenerationRecord["images"][number]) =>
+    incoming.purposeKey === "xhs_card"
+      ? item.cardLink?.index
+      : item.inlineLink?.index;
 
   return {
     ...(existing || incoming),
     ...incoming,
-    images: sortImagesByCardIndex([
+    images: [
       ...(existing?.images.filter(
         (item) =>
           !incoming.images.some(
-            (nextItem) => nextItem.cardLink?.index === item.cardLink?.index
+            (nextItem) => resolveIndex(nextItem) === resolveIndex(item)
           )
       ) || []),
       ...incoming.images,
-    ]),
+    ].sort((a, b) => (resolveIndex(a) ?? 999) - (resolveIndex(b) ?? 999)),
     createdAt: new Date().toISOString(),
   } satisfies GenerationRecord;
 }
@@ -491,26 +496,37 @@ export function buildGenerationTasks({
   if (outputs.inline) {
     const preset = findPreset(DEFAULT_PRESET_KEYS.wechatInline)?.preset;
     if (preset) {
-      const inlineThemes = planning.inlineImagePlan
-        .map((item) => `${item.sectionHeading}：${item.visualDirection}`)
-        .join("；");
-      tasks.push({
-        articleTitle,
-        prompt: `为文章《${articleTitle}》生成 ${planning.inlineImagePlan.length} 张公众号正文配图。当前配图规划：${inlineThemes}。要求适合段落间穿插，风格安静、克制、雾蓝主色，具备抽象自然意象。文章摘要：${bodyPreview}。`,
-        negativePrompt: "高饱和、霓虹、复杂场景、卡通、重文字、噪点过多",
-        width: preset.w,
-        height: preset.h,
-        count: planning.inlineImagePlan.length,
-        purposeKey: "wx_inline",
-        purposeLabel: "公众号正文配图",
-        presetKey: preset.k,
-        presetLabel: preset.label,
-        styleName: "留白水墨",
-        inlineLinks: planning.inlineImagePlan.map((item) => ({
-          sectionKey: item.sectionKey,
-          sectionHeading: item.sectionHeading,
-          sectionSummary: item.sectionSummary,
-        })),
+      planning.inlineImagePlan.forEach((item, index) => {
+        const inlineIndex = item.index ?? index + 1;
+        tasks.push({
+          articleTitle,
+          prompt:
+            item.promptText ||
+            `为文章《${articleTitle}》生成第 ${inlineIndex} 张公众号正文配图。小节：${item.sectionHeading}。视觉方向：${item.visualDirection}。视觉隐喻：${item.visualMetaphor || "围绕小节主题做安静、克制的正文小插图"}。文章摘要：${bodyPreview}。`,
+          negativePrompt: "高饱和、霓虹、复杂场景、卡通、重文字、信息图、知识卡片、大标题海报、营销封面感",
+          width: preset.w,
+          height: preset.h,
+          count: 1,
+          purposeKey: "wx_inline",
+          purposeLabel: "公众号正文配图",
+          presetKey: preset.k,
+          presetLabel: preset.label,
+          styleName: "留白水墨",
+          inlineLink: {
+            index: inlineIndex,
+            sectionKey: item.sectionKey,
+            sectionHeading: item.sectionHeading,
+            sectionSummary: item.sectionSummary,
+          },
+          inlineLinks: [
+            {
+              index: inlineIndex,
+              sectionKey: item.sectionKey,
+              sectionHeading: item.sectionHeading,
+              sectionSummary: item.sectionSummary,
+            },
+          ],
+        });
       });
     }
   }

@@ -25,6 +25,7 @@ export type CardPlan = {
 };
 
 export type InlineImagePlan = {
+  index: number;
   sectionKey: string;
   sectionHeading: string;
   sectionType: WechatInlineSectionType;
@@ -33,6 +34,8 @@ export type InlineImagePlan = {
   sectionSummary: string;
   sectionQuote?: string;
   visualDirection: string;
+  visualMetaphor?: string;
+  promptText?: string;
   rationale: string;
 };
 
@@ -47,6 +50,12 @@ export type PlannerRequest = {
     note?: string;
   }>;
   inlineImageStyleName: string;
+  inlineImageStyleGuide?: string;
+  inlineImageReferenceImages?: Array<{
+    label: string;
+    url: string;
+    note?: string;
+  }>;
   cardRatio: string;
   cardWidth: number;
   cardHeight: number;

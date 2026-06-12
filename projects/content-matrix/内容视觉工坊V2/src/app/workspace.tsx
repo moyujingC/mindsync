@@ -34,6 +34,7 @@ export type GeneratedImageItem = {
   width: number;
   height: number;
   inlineLink?: {
+    index?: number;
     sectionKey: string;
     sectionHeading: string;
     sectionSummary: string;

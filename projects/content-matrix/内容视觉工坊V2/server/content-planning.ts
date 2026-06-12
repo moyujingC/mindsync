@@ -25,6 +25,10 @@ const KNOWLEDGE_CARD_GENERATOR_BASE = fs.readFileSync(
   path.join(__dirname, "prompts/knowledge-card-generator-base.md"),
   "utf8"
 );
+const WECHAT_INLINE_IMAGE_GENERATOR_BASE = fs.readFileSync(
+  path.join(__dirname, "prompts/wechat-inline-image-generator-base.md"),
+  "utf8"
+);
 
 const DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE = `视觉风格：蓝雾静读 · 手绘知识卡
 
@@ -43,12 +47,41 @@ const DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE = `视觉风格：蓝雾静读 · 手�
 限制：
 不要科技霓虹，不要儿童贴纸感，不要营销海报感，不要复杂装饰。`;
 
+const DEFAULT_INLINE_IMAGE_STYLE_GUIDE = `视觉风格：留白水墨 · 公众号正文小插图
+
+整体风格：
+适合插入公众号长文正文的安静小插图，低饱和、留白充足、轻隐喻，不做封面感和知识卡片感。
+
+背景：
+白底或浅灰白底，可有很轻的雾蓝、浅暖灰、水墨淡痕或纸感纹理。
+
+配色：
+雾蓝、灰白、浅暖灰、淡墨色为主，只允许少量低饱和绿或暖黄作为提示色。
+
+构图：
+主体少，空间干净，有呼吸感；画面可以有一个人物背影、一个桌面物件、一个空间隐喻或一个低科技装置。
+
+限制：
+不要大标题，不要知识卡布局，不要多段文字，不要强营销封面，不要科技霓虹，不要夸张负面情绪。`;
+
 function resolveKnowledgeCardStyleGuide(request: PlannerRequest) {
   return request.knowledgeCardStyleGuide?.trim() || DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE;
 }
 
-function renderReferenceImages(request: PlannerRequest) {
-  const images = request.knowledgeCardReferenceImages?.filter((item) => item.url?.trim()) ?? [];
+function resolveInlineImageStyleGuide(request: PlannerRequest) {
+  return request.inlineImageStyleGuide?.trim() || DEFAULT_INLINE_IMAGE_STYLE_GUIDE;
+}
+
+function renderReferenceImages(
+  imagesInput:
+    | Array<{
+        label: string;
+        url: string;
+        note?: string;
+      }>
+    | undefined
+) {
+  const images = imagesInput?.filter((item) => item.url?.trim()) ?? [];
   if (images.length === 0) {
     return `参考图：无。本次仅使用文字风格设定，不要凭空假设具体参考图。`;
   }
@@ -66,7 +99,13 @@ function renderReferenceImages(request: PlannerRequest) {
 function buildInjectedGeneratorBase(request: PlannerRequest) {
   return KNOWLEDGE_CARD_GENERATOR_BASE
     .replace("{{STYLE_GUIDE}}", resolveKnowledgeCardStyleGuide(request))
-    .replace("{{REFERENCE_IMAGES}}", renderReferenceImages(request));
+    .replace("{{REFERENCE_IMAGES}}", renderReferenceImages(request.knowledgeCardReferenceImages));
+}
+
+function buildInjectedInlineImageBase(request: PlannerRequest) {
+  return WECHAT_INLINE_IMAGE_GENERATOR_BASE
+    .replace("{{STYLE_GUIDE}}", resolveInlineImageStyleGuide(request))
+    .replace("{{REFERENCE_IMAGES}}", renderReferenceImages(request.inlineImageReferenceImages));
 }
 
 function attachExternalStyleGuideToPromptText(promptText: string | undefined, request: PlannerRequest) {
@@ -75,7 +114,7 @@ function attachExternalStyleGuideToPromptText(promptText: string | undefined, re
 
 ${resolveKnowledgeCardStyleGuide(request)}
 
-${renderReferenceImages(request)}`;
+${renderReferenceImages(request.knowledgeCardReferenceImages)}`;
 
   if (!source) return appendix;
   if (source.includes("## 外挂视觉风格设定")) return source;
@@ -91,7 +130,43 @@ function attachExternalStyleGuide(response: Omit<PlannerResponse, "provider">, r
       ...card,
       promptText: attachExternalStyleGuideToPromptText(card.promptText, request),
     })),
+    inlineImagePlan: response.inlineImagePlan.map((item, index) => ({
+      ...item,
+      index: item.index ?? index + 1,
+      promptText: attachInlineImageStyleGuideToPromptText(item.promptText, item, index, request),
+    })),
   };
+}
+
+function attachInlineImageStyleGuideToPromptText(
+  promptText: string | undefined,
+  item: { sectionHeading: string; sectionSummary: string; visualDirection: string },
+  index: number,
+  request: PlannerRequest
+) {
+  const source = promptText?.trim();
+  const appendix = `## 外挂正文配图风格设定（必须遵守）
+
+${resolveInlineImageStyleGuide(request)}
+
+${renderReferenceImages(request.inlineImageReferenceImages)}`;
+
+  if (source?.includes("## 外挂正文配图风格设定")) return source;
+  if (source) return `${source}
+
+${appendix}`;
+
+  return buildInlineImagePromptText({
+    articleTitle: request.articleTitle,
+    imageIndex: index + 1,
+    imageTotal: Math.max(1, request.maxCards),
+    sectionHeading: item.sectionHeading,
+    sectionSummary: item.sectionSummary,
+    sectionType: "concept",
+    visualDirection: item.visualDirection,
+    styleGuide: resolveInlineImageStyleGuide(request),
+    referenceImages: renderReferenceImages(request.inlineImageReferenceImages),
+  });
 }
 
 function cleanText(text: string) {
@@ -388,6 +463,91 @@ function buildVisualDirection(sectionType: WechatInlineSectionType, sectionTheme
   return `围绕“${sectionTheme}”做抽象概念意象图，安静、克制、有人文思考感。`;
 }
 
+function buildVisualMetaphor(sectionType: WechatInlineSectionType, sectionTheme: string) {
+  if (sectionType === "quote") return `用一盏小灯、半开的窗和安静桌面承接“${sectionTheme}”的观点感`;
+  if (sectionType === "method") return `用收束线团、关闭标签页或划定边界的动作表达“${sectionTheme}”`;
+  if (sectionType === "transition") return `用门、桥、雾中小路或翻页动作表达“${sectionTheme}”的转场`;
+  return `用低科技装置、桌面物件或空间光影把“${sectionTheme}”变成可感知的隐喻`;
+}
+
+function buildInlineImagePromptText({
+  articleTitle,
+  imageIndex,
+  imageTotal,
+  sectionHeading,
+  sectionSummary,
+  sectionType,
+  visualDirection,
+  visualMetaphor,
+  styleGuide,
+  referenceImages,
+}: {
+  articleTitle: string;
+  imageIndex: number;
+  imageTotal: number;
+  sectionHeading: string;
+  sectionSummary: string;
+  sectionType: WechatInlineSectionType;
+  visualDirection: string;
+  visualMetaphor?: string;
+  styleGuide: string;
+  referenceImages: string;
+}) {
+  const indexLabel = String(imageIndex).padStart(2, "0");
+  const totalLabel = String(imageTotal).padStart(2, "0");
+  const anchorMap: Record<WechatInlineSectionType, string> = {
+    concept: "概念隐喻",
+    quote: "观点判断",
+    method: "方法动作",
+    transition: "段落转场",
+  };
+  const metaphor = visualMetaphor || buildVisualMetaphor(sectionType, sectionHeading);
+
+  return `【公众号正文配图 - 独立完整的一张图】
+
+用途：插入公众号文章《${articleTitle}》正文中，服务小节「${sectionHeading}」的阅读节奏。
+
+画幅比例：公众号正文横版 1080×608。
+
+序号：${indexLabel}/${totalLabel}
+
+## 视觉风格
+
+${styleGuide}
+
+${referenceImages}
+
+## 本张图要表达
+
+小节主题：${sectionHeading}
+
+认知锚点：${anchorMap[sectionType]}
+
+小节摘要：${sectionSummary}
+
+情绪方向：${visualDirection}
+
+画面隐喻：${metaphor}
+
+## 构图
+
+横版构图，主体位于画面偏左或偏下三分之一，右侧或上方保留大面积呼吸留白；光线柔和，背景干净，像公众号文章中段落之间的一次停顿。
+
+## 画面元素
+
+- 主体：围绕“${sectionHeading}”设计一个具体小物件、人物背影或低科技装置
+- 辅助元素：1-3 个低饱和辅助元素，用来补足语义，不要堆满
+- 空间关系：主体和辅助元素之间要形成清楚的方向或张力，但整体安静
+
+## 中文标注
+
+默认无文字；如需要标注，只允许 1-3 个极短中文手写标注词，必须逐个用反引号包裹。
+
+## 禁止
+
+不要知识卡片，不要信息图，不要大标题海报，不要多段文字，不要复杂流程图，不要营销封面感，不要夸张负面情绪。`;
+}
+
 function pickKeyQuotes(rawText: string) {
   const quoteBlocks = rawText
     .split(/\r?\n/)
@@ -410,7 +570,9 @@ export function planKnowledgeCardsFromArticle(
   request: PlannerRequest
 ): Omit<PlannerResponse, "provider"> {
   const styleGuide = resolveKnowledgeCardStyleGuide(request);
-  const referenceImages = renderReferenceImages(request);
+  const referenceImages = renderReferenceImages(request.knowledgeCardReferenceImages);
+  const inlineStyleGuide = resolveInlineImageStyleGuide(request);
+  const inlineReferenceImages = renderReferenceImages(request.inlineImageReferenceImages);
   const sections = extractSections(request.rawText);
   const targetCount = resolveTargetCardCount(sections.length, request);
   const normalizedSections =
@@ -461,20 +623,37 @@ export function planKnowledgeCardsFromArticle(
 
   const keyQuotes = pickKeyQuotes(request.rawText);
   const firstTitle = cardPlan[0]?.title || request.articleTitle || "文章主观点";
-  const inlineImagePlan = cardPlan.slice(0, 3).map((card) => {
+  const inlineImagePlan = cardPlan.slice(0, 3).map((card, index) => {
     const sectionQuote = keyQuotes.find(
       (quote) => card.summary.includes(quote) || quote.includes(card.summary.slice(0, 12))
     );
     const sectionType = classifySectionType(card.summary, sectionQuote);
+    const visualDirection = buildVisualDirection(sectionType, card.title);
+    const visualMetaphor = buildVisualMetaphor(sectionType, card.title);
 
     return {
+      index: index + 1,
+      sectionKey: `inline-${index + 1}-${card.title.replace(/\s+/g, "-").toLowerCase()}`,
       sectionHeading: card.title,
       sectionType,
       sectionTheme: card.title,
       sectionKeywords: [card.title, firstTitle, ...keyQuotes].filter(Boolean).slice(0, 5),
       sectionSummary: card.summary,
       sectionQuote,
-      visualDirection: buildVisualDirection(sectionType, card.title),
+      visualDirection,
+      visualMetaphor,
+      promptText: buildInlineImagePromptText({
+        articleTitle: request.articleTitle,
+        imageIndex: index + 1,
+        imageTotal: Math.min(3, cardPlan.length),
+        sectionHeading: card.title,
+        sectionSummary: card.summary,
+        sectionType,
+        visualDirection,
+        visualMetaphor,
+        styleGuide: inlineStyleGuide,
+        referenceImages: inlineReferenceImages,
+      }),
       rationale: `放在“${card.title}”这一节附近，用来给长文阅读换气，并轻量强化当前段落主题。`,
     };
   });
@@ -505,9 +684,19 @@ export function planKnowledgeCardsFromArticle(
 
 function buildPrompt(request: PlannerRequest) {
   return `
-下面是知识卡片提示词生成器的运行版基座。它保留原教程的拆分规则、构图库、输出流程和代码块模板；视觉风格库已经移除，改为注入“视觉风格设定”和可选参考图。
+下面有两套并列的运行版基座：
+1. 小红书知识卡片提示词生成器：用于拆知识卡和生成知识卡 promptText。
+2. 公众号正文配图提示词生成器：用于先生成正文配图文案 / 绘图指令，再交给文生图。
+
+两者不能混用。正文配图不是知识卡片。
+
+【小红书知识卡片提示词生成器】
 
 ${buildInjectedGeneratorBase(request)}
+
+【公众号正文配图提示词生成器】
+
+${buildInjectedInlineImageBase(request)}
 
 请使用上面的生成器规则处理这篇文章，并额外遵守以下系统约束：
 - 必须返回 JSON，不要输出 Markdown 代码块，不要输出额外解释。
@@ -519,7 +708,9 @@ ${buildInjectedGeneratorBase(request)}
 - 每条需要上图的文字都必须放在反引号里。
 - 每条文字都要绑定具体插画描述。
 - promptText 中的“整体风格说明”必须使用注入的视觉风格设定；如果有参考图，只作为风格、配色、构图参考，不要复制参考图里的文字。
+- 正文配图必须先生成配图文案 / 绘图指令，也就是 inlineImagePlan[].promptText。
 - 正文配图不是知识卡片，不是封面，不是海报；只规划 1-4 张，服务长文阅读节奏。
+- 正文配图必须按“观点 / 流程 / 情绪 / 隐喻 / 方法动作”寻找认知锚点，每张图只表达一个锚点。
 
 文章标题：${request.articleTitle}
 知识卡风格名称：${request.knowledgeCardStyleName}
@@ -573,6 +764,8 @@ ${request.rawText}
   ],
   "inlineImagePlan": [
     {
+      "index": 1,
+      "sectionKey": "inline-1",
       "sectionHeading": "文章中的某个小节标题",
       "sectionType": "concept",
       "sectionTheme": "这一张图要表达的主题",
@@ -580,6 +773,8 @@ ${request.rawText}
       "sectionSummary": "这一节的简短摘要",
       "sectionQuote": "可选重点句，没有就留空字符串",
       "visualDirection": "这张图该怎么画，偏什么气质",
+      "visualMetaphor": "这张图使用的具体视觉隐喻",
+      "promptText": "完整公众号正文配图绘图提示词",
       "rationale": "为什么这一节需要配图，以及它应该承担什么作用"
     }
   ]

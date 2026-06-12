@@ -444,6 +444,10 @@ function formatStatusScope(scope: string) {
   if (scope === "planning") return "内容拆解";
   if (scope === "quote-generation") return "金句底图";
   if (scope === "inline-image-generation") return "正文配图";
+  if (scope.startsWith("inline-image-")) {
+    const index = scope.replace("inline-image-", "");
+    return `正文配图 ${String(Number(index)).padStart(2, "0")}`;
+  }
   if (scope === "cover-generation") return "公众号封面";
   if (scope === "markdown-import") return "Markdown 导入";
   if (scope.startsWith("knowledge-card-")) {

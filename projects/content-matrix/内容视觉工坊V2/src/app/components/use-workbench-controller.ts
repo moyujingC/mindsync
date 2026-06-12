@@ -73,6 +73,23 @@ const DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE = `视觉风格：蓝雾静读 · 手�
 限制：
 不要科技霓虹，不要儿童贴纸感，不要营销海报感，不要复杂装饰。`;
 
+const DEFAULT_INLINE_IMAGE_STYLE_GUIDE = `视觉风格：留白水墨 · 公众号正文小插图
+
+整体风格：
+适合插入公众号长文正文的安静小插图，低饱和、留白充足、轻隐喻，不做封面感和知识卡片感。
+
+背景：
+白底或浅灰白底，可有很轻的雾蓝、浅暖灰、水墨淡痕或纸感纹理。
+
+配色：
+雾蓝、灰白、浅暖灰、淡墨色为主，只允许少量低饱和绿或暖黄作为提示色。
+
+构图：
+主体少，空间干净，有呼吸感；画面可以有一个人物背影、一个桌面物件、一个空间隐喻或一个低科技装置。
+
+限制：
+不要大标题，不要知识卡布局，不要多段文字，不要强营销封面，不要科技霓虹，不要夸张负面情绪。`;
+
 function buildArticleSignature(article: WorkspaceArticle) {
   return `${article.title.trim()}::${article.body.replace(/\s+/g, " ").trim()}`;
 }
@@ -671,6 +688,8 @@ export function useWorkbenchController({
       knowledgeCardStyleGuide: DEFAULT_KNOWLEDGE_CARD_STYLE_GUIDE,
       knowledgeCardReferenceImages: [],
       inlineImageStyleName: "留白水墨",
+      inlineImageStyleGuide: DEFAULT_INLINE_IMAGE_STYLE_GUIDE,
+      inlineImageReferenceImages: [],
       cardRatio: knowledgePreset?.aspect || "3:4",
       cardWidth: knowledgePreset?.w || 1280,
       cardHeight: knowledgePreset?.h || 1706,
@@ -711,6 +730,7 @@ export function useWorkbenchController({
     record: GenerationRecord,
     inlineLinks:
       | Array<{
+          index?: number;
           sectionKey: string;
           sectionHeading: string;
           sectionSummary: string;
@@ -727,6 +747,7 @@ export function useWorkbenchController({
         ...image,
         inlineLink: inlineLinks[index]
           ? {
+              index: inlineLinks[index].index,
               sectionKey: inlineLinks[index].sectionKey,
               sectionHeading: inlineLinks[index].sectionHeading,
               sectionSummary: inlineLinks[index].sectionSummary,
@@ -1076,8 +1097,15 @@ export function useWorkbenchController({
           }
         });
       } else {
-        groupedRecords.set(record.purposeKey, record);
-        saveGenerationRecord(record);
+        if (record.purposeKey === "wx_inline") {
+          const existing = groupedRecords.get(record.purposeKey) ?? inlineGeneration;
+          const mergedRecord = mergeRecordImages(existing, record);
+          groupedRecords.set(record.purposeKey, mergedRecord);
+          saveGenerationRecord(mergedRecord);
+        } else {
+          groupedRecords.set(record.purposeKey, record);
+          saveGenerationRecord(record);
+        }
       }
 
       if (record.purposeKey === "wx_cover") {
@@ -1324,12 +1352,13 @@ function buildReplanSummaryText(summary: ReplanSummary) {
 function toTaskScope(task: {
   purposeKey: string;
   cardLink?: { index: number };
+  inlineLink?: { index?: number };
 }) {
   if (task.purposeKey === "xhs_card") {
     return `knowledge-card-${task.cardLink?.index ?? "unknown"}`;
   }
   if (task.purposeKey === "quote") return "quote-generation";
-  if (task.purposeKey === "wx_inline") return "inline-image-generation";
+  if (task.purposeKey === "wx_inline") return `inline-image-${task.inlineLink?.index ?? "unknown"}`;
   if (task.purposeKey === "wx_cover") return "cover-generation";
   return "generation";
 }
@@ -1338,12 +1367,15 @@ function buildTaskLabel(task: {
   purposeLabel: string;
   purposeKey: string;
   cardLink?: { index: number };
+  inlineLink?: { index?: number };
 }) {
   if (task.purposeKey === "xhs_card" && task.cardLink?.index != null) {
     return `知识卡 ${String(task.cardLink.index).padStart(2, "0")}`;
   }
   if (task.purposeKey === "quote") return "金句底图";
-  if (task.purposeKey === "wx_inline") return "正文配图";
+  if (task.purposeKey === "wx_inline") {
+    return `正文配图 ${String(task.inlineLink?.index ?? 0).padStart(2, "0")}`;
+  }
   if (task.purposeKey === "wx_cover") return "公众号封面";
   return task.purposeLabel;
 }
@@ -1352,6 +1384,10 @@ export function formatScopeLabel(scope: string) {
   if (scope === "planning") return "拆解失败";
   if (scope === "quote-generation") return "金句底图失败";
   if (scope === "inline-image-generation") return "正文配图失败";
+  if (scope.startsWith("inline-image-")) {
+    const index = scope.replace("inline-image-", "");
+    return `正文配图第 ${Number(index)} 张失败`;
+  }
   if (scope === "cover-generation") return "公众号封面失败";
   if (scope === "markdown-import") return "导入失败";
   if (scope.startsWith("knowledge-card-")) {

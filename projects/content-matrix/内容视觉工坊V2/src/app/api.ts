@@ -14,10 +14,17 @@ export type GenerateImagesRequest = {
   presetLabel: string;
   styleName: string;
   inlineLinks?: Array<{
+    index?: number;
     sectionKey: string;
     sectionHeading: string;
     sectionSummary: string;
   }>;
+  inlineLink?: {
+    index?: number;
+    sectionKey: string;
+    sectionHeading: string;
+    sectionSummary: string;
+  };
   cardLink?: {
     index: number;
     title: string;
