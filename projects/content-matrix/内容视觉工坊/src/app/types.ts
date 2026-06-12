@@ -1,5 +1,6 @@
 export type InputMode = "md" | "text";
 export type MarkdownHeadingMode = "hash1-primary" | "hash2-primary";
+export type AppTabKey = "workspace" | "style-library" | "asset-library" | "sync-history";
 
 export type CardGenerationState = "idle" | "processing" | "ok" | "failed";
 export type ImageGenerationMode = "reference-edit" | "prompt-only";

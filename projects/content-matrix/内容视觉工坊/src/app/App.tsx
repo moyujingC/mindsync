@@ -8,9 +8,11 @@ import { Button } from "./components/ui/button";
 import { PanelLeft, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadLatestWechatEditorImport, parseWechatEditorPastePayload, saveWechatEditorImport } from "./lib/wechatEditorImport";
-import type { SavedWechatEditorImport, WechatEditorImportSummary } from "./types";
+import type { AppTabKey, SavedWechatEditorImport, WechatEditorImportSummary } from "./types";
+import { StyleLibraryPage } from "./components/StyleLibraryPage";
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState<AppTabKey>("workspace");
   const [wechatEditorImportSummary, setLocalWechatEditorImportSummary] = useState<WechatEditorImportSummary | null>(null);
   const [savedWechatEditorImport, setSavedWechatEditorImport] = useState<SavedWechatEditorImport | null>(null);
   const { layout, isTablet, setInputMode, toggleLeftPanel, toggleRightPanel, closePanels } = useWorkspaceLayout();
@@ -82,7 +84,8 @@ export default function App() {
 
   return (
     <div className="size-full flex flex-col bg-background text-foreground" style={{ fontFamily: "var(--font-sans-cn)" }}>
-      <TopNav />
+      <TopNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {activeTab === "workspace" ? (
       <div className="flex-1 min-h-0 flex relative overflow-hidden">
         {isTablet && (
           <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
@@ -153,6 +156,15 @@ export default function App() {
           onClose={closePanels}
         />
       </div>
+      ) : activeTab === "style-library" ? (
+        <StyleLibraryPage data={workspace} />
+      ) : (
+        <div className="flex-1 min-h-0 px-8 py-8">
+          <div className="rounded-xl border border-border bg-card/60 p-8 text-sm text-muted-foreground">
+            这个标签页先留空，后续再补对应能力。
+          </div>
+        </div>
+      )}
     </div>
   );
 }

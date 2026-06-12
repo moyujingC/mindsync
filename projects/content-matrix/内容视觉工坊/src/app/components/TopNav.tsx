@@ -1,7 +1,20 @@
 import { ChevronDown, History, Settings, HelpCircle, Search } from "lucide-react";
 import { Separator } from "./ui/separator";
+import type { AppTabKey } from "../types";
 
-export function TopNav() {
+interface TopNavProps {
+  activeTab: AppTabKey;
+  onTabChange: (tab: AppTabKey) => void;
+}
+
+const tabs: Array<{ key: AppTabKey; label: string }> = [
+  { key: "workspace", label: "工作台" },
+  { key: "style-library", label: "风格资产" },
+  { key: "asset-library", label: "素材库" },
+  { key: "sync-history", label: "同步记录" },
+];
+
+export function TopNav({ activeTab, onTabChange }: TopNavProps) {
   return (
     <header className="h-12 border-b border-border bg-card/80 backdrop-blur-md flex items-center px-5 gap-4 shrink-0">
       <div className="flex items-center gap-2.5">
@@ -14,10 +27,20 @@ export function TopNav() {
       <Separator orientation="vertical" className="h-4 mx-1" />
 
       <nav className="flex items-center gap-0.5 text-[12.5px]">
-        <button className="px-2.5 py-1 rounded-md bg-accent text-accent-foreground" style={{ fontWeight: 500 }}>工作台</button>
-        <button className="px-2.5 py-1 rounded-md text-muted-foreground hover:text-foreground transition-colors">素材库</button>
-        <button className="px-2.5 py-1 rounded-md text-muted-foreground hover:text-foreground transition-colors">风格资产</button>
-        <button className="px-2.5 py-1 rounded-md text-muted-foreground hover:text-foreground transition-colors">同步记录</button>
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => onTabChange(tab.key)}
+            className={`px-2.5 py-1 rounded-md transition-colors ${
+              activeTab === tab.key
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            style={activeTab === tab.key ? { fontWeight: 500 } : undefined}
+          >
+            {tab.label}
+          </button>
+        ))}
       </nav>
 
       <div className="flex-1 max-w-[320px] ml-3">
