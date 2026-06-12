@@ -92,6 +92,10 @@ body {
   overscroll-behavior: none;
 }
 
+.browser-shell__phone > .am-upload-page {
+  overflow: hidden;
+}
+
 .browser-shell__devbar {
   width: min(100%, 1400px);
   margin: 0 auto;

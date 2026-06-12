@@ -362,9 +362,9 @@
   );
   --am-shell-topbar-bg: linear-gradient(
     135deg,
-    rgba(14, 22, 40, 0.95) 0%,
-    rgba(21, 32, 56, 0.9) 50%,
-    rgba(14, 22, 40, 0.95) 100%
+    #121d35 0%,
+    #182642 50%,
+    #121d35 100%
   );
   --am-shell-topbar-border: 1px solid rgb(var(--am-rgb-gold-300) / 0.18);
   --am-shell-topbar-icon: rgb(var(--am-rgb-sand-300) / 0.5);

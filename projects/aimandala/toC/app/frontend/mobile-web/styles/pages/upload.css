@@ -8,7 +8,11 @@
   --am-upload-hero-adaptive-height: calc(
     100dvh - var(--am-upload-topbar-height) - var(--am-upload-form-target-height) - var(--am-layout-bottom-sheet-gap)
   );
+  height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
   background: var(--am-surface-primary);
 }
 
