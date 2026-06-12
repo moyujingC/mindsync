@@ -34,6 +34,8 @@ secrets/
 node_modules/
 projects/relayhub/console/dist/
 projects/research-center/research/心理疗愈app/心理疗愈AI产品观察室/dist/
+projects/content-matrix/内容视觉工坊/dist/
+projects/content-matrix/内容视觉工坊V2/dist/
 projects/relayhub/control-plane/data/
 projects/aimandala/toC/app/backend/data/
 projects/content-matrix/内容视觉工坊/outputs/
