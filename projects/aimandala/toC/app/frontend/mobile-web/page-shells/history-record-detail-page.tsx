@@ -1,5 +1,6 @@
+import type { ReactNode } from "react";
 import { MobileWebAppShell } from "../app-shell";
-import { createHistoryRecordDetailPageDescriptor } from "../pages";
+import { createHistoryRecordDetailPageDescriptor, type HistoryRecordDetailStepDescriptor } from "../pages";
 import { mobileWebRoutes, type MobileWebRouteId } from "../routes";
 import { SharedAppTopBar } from "../../shared/ui";
 import type { InterpretationRecordResponse, InterpretationVersion } from "../../shared/types";
@@ -130,6 +131,118 @@ function HistoryRecordDetailTimeline({
   );
 }
 
+function HistoryRecordDetailCard({
+  as: Component = "section",
+  className,
+  children,
+}: {
+  as?: "article" | "section";
+  className: string;
+  children: ReactNode;
+}) {
+  return <Component className={className}>{children}</Component>;
+}
+
+function HistoryRecordDetailStepAction({
+  step,
+  busy,
+  onOpenReportType,
+}: {
+  step: HistoryRecordDetailStepDescriptor;
+  busy: boolean;
+  onOpenReportType?: (reportType: InterpretationVersion) => void;
+}) {
+  const label = busy ? "打开中..." : step.actionLabel;
+  const isInline = step.actionEmphasis === "inline";
+  const buttonClassName = isInline
+    ? "mw-history-detail-link"
+    : step.actionEmphasis === "primary"
+      ? "mw-primary-button"
+      : "mw-secondary-button";
+
+  return (
+    <div className="mw-history-detail-step__actions">
+      <button
+        type="button"
+        className={buttonClassName}
+        disabled={busy}
+        onClick={() => onOpenReportType?.(step.reportType)}
+      >
+        {isInline ? (
+          <>
+            <EyeIcon />
+            <span>{label}</span>
+            <ChevronRightIcon size={13} />
+          </>
+        ) : (
+          <>
+            {step.showSpinner && !busy ? <LoaderIcon spinning /> : step.reportType === "lite" ? <EyeIcon /> : null}
+            <span>{label}</span>
+            {step.actionEmphasis === "primary" ? <ChevronRightIcon /> : null}
+          </>
+        )}
+      </button>
+    </div>
+  );
+}
+
+function HistoryRecordDetailStepCard({
+  step,
+  stateClassName,
+  busy,
+  onOpenReportType,
+}: {
+  step: HistoryRecordDetailStepDescriptor;
+  stateClassName?: string;
+  busy: boolean;
+  onOpenReportType?: (reportType: InterpretationVersion) => void;
+}) {
+  const className = [
+    "mw-history-detail-step",
+    `mw-history-detail-step--${step.reportType}`,
+    stateClassName,
+    step.compact ? "is-compact" : "",
+  ].filter(Boolean).join(" ");
+
+  return (
+    <HistoryRecordDetailCard as="article" className={className}>
+      <header className="mw-history-detail-step__header">
+        <div>
+          <p className="mw-history-detail-step__index">{step.stepLabel}</p>
+          <h3>{step.title}</h3>
+        </div>
+        <HistoryRecordDetailStatusBadge
+          tone={step.statusTone}
+          label={step.statusLabel}
+          spinning={step.showSpinner}
+        />
+      </header>
+
+      {step.compact ? null : (
+        <p className="mw-history-detail-step__body">{step.description}</p>
+      )}
+
+      {step.progressPercent != null ? (
+        <div className="mw-history-detail-progress">
+          <div className="mw-history-detail-progress__track">
+            <i style={{ width: `${step.progressPercent}%` }} />
+          </div>
+          <div className="mw-history-detail-progress__meta">
+            <span>{step.progressHint}</span>
+            <span>{step.progressPercent}%</span>
+          </div>
+        </div>
+      ) : null}
+
+      <HistoryRecordDetailStepAction
+        step={step}
+        busy={busy}
+        onOpenReportType={onOpenReportType}
+      />
+    </HistoryRecordDetailCard>
+  );
+}
+
 export interface MobileWebHistoryRecordDetailPageProps {
   route: MobileWebRouteId;
   record: InterpretationRecordResponse;
@@ -174,7 +287,7 @@ export function MobileWebHistoryRecordDetailPage({
         />
 
         <div className="mw-history-detail-page">
-          <section className="mw-history-detail-summary">
+          <HistoryRecordDetailCard className="mw-history-detail-summary">
             <div
               className={`mw-history-detail-summary__thumb${descriptor.imageUrl ? " has-image" : ""}`}
               style={{
@@ -218,7 +331,7 @@ export function MobileWebHistoryRecordDetailPage({
                 </span>
               </div>
             </div>
-          </section>
+          </HistoryRecordDetailCard>
 
           <section className="mw-history-detail-flow">
             <div className="mw-history-detail-flow__heading">
@@ -226,105 +339,30 @@ export function MobileWebHistoryRecordDetailPage({
               <strong>解读进度</strong>
             </div>
 
-            <article className={`mw-history-detail-step mw-history-detail-step--lite${descriptor.liteStep.compact ? " is-compact" : ""}`}>
-              <header className="mw-history-detail-step__header">
-                <div>
-                  <p className="mw-history-detail-step__index">{descriptor.liteStep.stepLabel}</p>
-                  <h3>{descriptor.liteStep.title}</h3>
-                </div>
-                <HistoryRecordDetailStatusBadge
-                  tone={descriptor.liteStep.statusTone}
-                  label={descriptor.liteStep.statusLabel}
-                />
-              </header>
-
-              {descriptor.liteStep.compact ? null : (
-                <p className="mw-history-detail-step__body">{descriptor.liteStep.description}</p>
-              )}
-
-              <div className="mw-history-detail-step__actions">
-                <button
-                  type="button"
-                  className={
-                    descriptor.liteStep.actionEmphasis === "inline"
-                      ? "mw-history-detail-link"
-                      : "mw-secondary-button"
-                  }
-                  disabled={liteBusy}
-                  onClick={() => onOpenReportType?.("lite")}
-                >
-                  {descriptor.liteStep.actionEmphasis === "inline" ? (
-                    <>
-                      <EyeIcon />
-                      <span>{liteBusy ? "打开中..." : descriptor.liteStep.actionLabel}</span>
-                      <ChevronRightIcon size={13} />
-                    </>
-                  ) : (
-                    <>
-                      <EyeIcon />
-                      <span>{liteBusy ? "打开中..." : descriptor.liteStep.actionLabel}</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </article>
+            <HistoryRecordDetailStepCard
+              step={descriptor.liteStep}
+              busy={liteBusy}
+              onOpenReportType={onOpenReportType}
+            />
 
             <div
               className={`mw-history-detail-connector${descriptor.state === "not-upgraded" ? " is-pending" : ""}`}
               aria-hidden="true"
             />
 
-            <article className={`mw-history-detail-step mw-history-detail-step--pro mw-history-detail-step--${descriptor.state}`}>
-              <header className="mw-history-detail-step__header">
-                <div>
-                  <p className="mw-history-detail-step__index">{descriptor.proStep.stepLabel}</p>
-                  <h3>{descriptor.proStep.title}</h3>
-                </div>
-                <HistoryRecordDetailStatusBadge
-                  tone={descriptor.proStep.statusTone}
-                  label={descriptor.proStep.statusLabel}
-                  spinning={descriptor.proStep.showSpinner}
-                />
-              </header>
-
-              <p className="mw-history-detail-step__body">{descriptor.proStep.description}</p>
-
-              {descriptor.proStep.progressPercent != null ? (
-                <div className="mw-history-detail-progress">
-                  <div className="mw-history-detail-progress__track">
-                    <i style={{ width: `${descriptor.proStep.progressPercent}%` }} />
-                  </div>
-                  <div className="mw-history-detail-progress__meta">
-                    <span>{descriptor.proStep.progressHint}</span>
-                    <span>{descriptor.proStep.progressPercent}%</span>
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="mw-history-detail-step__actions">
-                <button
-                  type="button"
-                  className={
-                    descriptor.proStep.actionEmphasis === "primary"
-                      ? "mw-primary-button"
-                      : "mw-secondary-button"
-                  }
-                  disabled={proBusy}
-                  onClick={() => onOpenReportType?.("pro")}
-                >
-                  {descriptor.proStep.showSpinner && !proBusy ? <LoaderIcon spinning /> : null}
-                  <span>{proBusy ? "打开中..." : descriptor.proStep.actionLabel}</span>
-                  {descriptor.proStep.actionEmphasis === "primary" ? <ChevronRightIcon /> : null}
-                </button>
-              </div>
-            </article>
+            <HistoryRecordDetailStepCard
+              step={descriptor.proStep}
+              stateClassName={`mw-history-detail-step--${descriptor.state}`}
+              busy={proBusy}
+              onOpenReportType={onOpenReportType}
+            />
           </section>
 
-          <section className="mw-history-detail-timeline">
+          <HistoryRecordDetailCard className="mw-history-detail-timeline">
             <h3>{descriptor.timelineTitle}</h3>
             <p>{descriptor.timelineSubtitle}</p>
             <HistoryRecordDetailTimeline items={descriptor.timeline} />
-          </section>
+          </HistoryRecordDetailCard>
         </div>
       </div>
     </MobileWebAppShell>
