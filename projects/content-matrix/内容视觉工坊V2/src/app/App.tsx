@@ -7,6 +7,7 @@ import {
   Settings,
   Search,
 } from "lucide-react";
+import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Workbench } from "./components/workbench";
 import { WechatLayout } from "./components/wechat-layout";
 import { StyleAssets } from "./components/style-assets";
@@ -24,10 +25,71 @@ const TABS = [
 
 export default function App() {
   return (
-    <WorkspaceProvider>
-      <AppShell />
-    </WorkspaceProvider>
+    <AppErrorBoundary>
+      <WorkspaceProvider>
+        <AppShell />
+      </WorkspaceProvider>
+    </AppErrorBoundary>
   );
+}
+
+class AppErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null; stack: string }
+> {
+  state = { error: null as Error | null, stack: "" };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error, stack: "" };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    this.setState({ error, stack: info.componentStack });
+  }
+
+  render() {
+    if (!this.state.error) return this.props.children;
+
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          padding: 32,
+          background: "#F2F0EB",
+          color: "#2E3340",
+          fontFamily:
+            '"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 760,
+            border: "1px solid #E0D8C8",
+            background: "#FBFAF7",
+            borderRadius: 8,
+            padding: 20,
+          }}
+        >
+          <div style={{ fontSize: 16, fontWeight: 600 }}>页面运行出错</div>
+          <div style={{ marginTop: 8, color: "#8A5A44", fontSize: 13 }}>
+            {this.state.error.message}
+          </div>
+          {this.state.stack ? (
+            <pre
+              style={{
+                marginTop: 16,
+                whiteSpace: "pre-wrap",
+                fontSize: 12,
+                color: "#6B7280",
+              }}
+            >
+              {this.state.stack}
+            </pre>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
 }
 
 function AppShell() {

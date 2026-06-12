@@ -230,7 +230,7 @@ const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>(() =>
-    readStoredJson(STORAGE_KEYS.activeTab, "workbench")
+    normalizeWorkspaceTab(readStoredJson(STORAGE_KEYS.activeTab, "workbench"))
   );
   const [currentArticle, setCurrentArticle] = useState<WorkspaceArticle>(() =>
     readStoredJson(STORAGE_KEYS.article, DEFAULT_ARTICLE)
@@ -397,6 +397,19 @@ function readStoredJson<T>(key: string, fallback: T): T {
   } catch {
     return fallback;
   }
+}
+
+function normalizeWorkspaceTab(value: unknown): WorkspaceTab {
+  if (
+    value === "workbench" ||
+    value === "wechat" ||
+    value === "assets" ||
+    value === "image" ||
+    value === "sync"
+  ) {
+    return value;
+  }
+  return "workbench";
 }
 
 function buildArticleMeta(body: string) {

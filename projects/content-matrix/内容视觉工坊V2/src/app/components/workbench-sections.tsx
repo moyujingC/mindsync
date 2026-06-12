@@ -1282,7 +1282,7 @@ function WorkbenchResultsPanel({
           定稿导出会优先带出封面定稿、知识卡定稿；如果还没定稿，会退回当前可用结果，并附一份发布素材清单。
         </div>
         <div className="flex items-center gap-2 text-right" style={{ color: COLORS.textMid, fontSize: 11.5 }}>
-          <span>封面 {releaseCoverImage ? 1 : 0}</span>
+          <span>封面 {[releaseCoverLarge, releaseCoverThumb].filter(Boolean).length}</span>
           <span>知识卡 {exportKnowledgeImages.length}</span>
           <span>金句 {quoteGeneration?.images[0] ? 1 : 0}</span>
           <span>配图 {releaseInlineImages.length}</span>
