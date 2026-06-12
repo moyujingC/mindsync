@@ -1658,6 +1658,10 @@
   color: rgb(168 196 160);
 }
 
+.mw-history-detail-step--lite .mw-history-detail-step__index {
+  color: rgb(168 196 160 / 0.7);
+}
+
 .mw-history-detail-step--pro .mw-history-detail-step__header h3 {
   font-size: 17px;
 }
