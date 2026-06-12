@@ -110,7 +110,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 14px;
+  margin-top: 20px;
 }
 
 .am-upload-disc-shell {
@@ -556,6 +556,8 @@
 .am-upload-form-surface {
   position: relative;
   overflow: hidden;
+  min-height: calc(100vh - 48px - 468px - var(--am-layout-bottom-sheet-gap));
+  min-height: calc(100dvh - 48px - 468px - var(--am-layout-bottom-sheet-gap));
   padding: 16px 22px 16px;
   border-radius: 28px 28px 0 0;
   background: var(--am-upload-form-surface);
