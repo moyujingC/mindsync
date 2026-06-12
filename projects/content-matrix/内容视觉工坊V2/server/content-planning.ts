@@ -703,6 +703,8 @@ function buildCoverCandidates({
   const candidates = [
     {
       title: "标题左置",
+      thumbKeyword: "效率",
+      thumbShape: "circle" as const,
       composition:
         "标题左置，占画面左侧 45%-55%；右侧用一个克制的纸本隐喻物件承接主题，背景保留大面积温白纸面。",
       elementHint: `一张主纸片、少量胶带、一个与“${visualMetaphor}”相关的低饱和小物件或小图框。`,
@@ -710,6 +712,8 @@ function buildCoverCandidates({
     },
     {
       title: "中心纸片",
+      thumbKeyword: "收口",
+      thumbShape: "square" as const,
       composition:
         "中心纸片承载标题，背后只有轻微纸张叠层和低饱和色块，右下角放一个小型隐喻物件。",
       elementHint: "中心标题纸片、浅雾蓝/浅卡其色块、铅笔或便签边角。",
@@ -717,6 +721,8 @@ function buildCoverCandidates({
     },
     {
       title: "错位纸张",
+      thumbKeyword: "边界",
+      thumbShape: "circle" as const,
       composition:
         "标题区与主体物件错位，标题放在中左纸片上，右侧或下方用边角纸张层次和轻扫描感制造入口气质。",
       elementHint: `错位纸片、回形针或胶带、一个象征“${keywords}”的简洁物件。`,
@@ -729,6 +735,8 @@ function buildCoverCandidates({
     title: candidate.title,
     composition: candidate.composition,
     visualMetaphor,
+    thumbKeyword: candidate.thumbKeyword,
+    thumbShape: candidate.thumbShape,
     promptText: `【公众号封面图 - 候选 ${index + 1}，横版 900×383】
 
 用途：公众号文章《${articleTitle}》首发封面。
@@ -960,6 +968,8 @@ ${request.rawText}
       "title": "候选标题左置",
       "composition": "本候选的构图说明",
       "visualMetaphor": "本候选的视觉隐喻",
+      "thumbKeyword": "2到4个字的小封面关键词",
+      "thumbShape": "circle 或 square",
       "promptText": "只生成这一张封面图的完整绘图提示词，横版 900×383，只包含一个封面，不要拼接多候选"
     }
   ]
@@ -968,6 +978,8 @@ ${request.rawText}
 硬性要求：
 - coverPlan 必须正好 3 条。
 - 每条 promptText 只能生成一张独立公众号封面，不能写“三张候选”，不能让模型把多张拼到一张图。
+- 每条必须给出 thumbKeyword，用于程序生成公众号小封面。thumbKeyword 只能 2-4 个中文字符。
+- thumbShape 只能是 circle 或 square。
 - 标题必须使用文章原标题，不得改写，不得添加导语、摘要、副标题、作者名、日期或水印。
 - 封面不是知识卡，不要信息图，不要多段正文。`.trim();
 }

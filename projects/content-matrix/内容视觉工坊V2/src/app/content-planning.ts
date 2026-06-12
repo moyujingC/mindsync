@@ -97,6 +97,8 @@ export type CoverCandidatePlan = {
   title: string;
   composition: string;
   visualMetaphor: string;
+  thumbKeyword?: string;
+  thumbShape?: "circle" | "square";
   promptText: string;
 };
 

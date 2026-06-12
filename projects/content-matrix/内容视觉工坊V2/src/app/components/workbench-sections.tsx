@@ -1456,7 +1456,7 @@ function WorkbenchResultsPanel({
         <div>
           <ResultRow
             label="公众号封面组合"
-            size="大图 900×383 + 小图 383×383"
+            size="大图 AI · 小图程序生成"
             count={3}
           />
           <div className="space-y-2 mt-2.5">
@@ -1544,7 +1544,7 @@ function WorkbenchResultsPanel({
                       {item.title}
                     </div>
                     <div style={{ color: COLORS.textFaint, fontSize: 11 }} className="truncate">
-                      {item.note} · 大小封面一组
+                      {item.note} · 大图 + 小封面标签
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">

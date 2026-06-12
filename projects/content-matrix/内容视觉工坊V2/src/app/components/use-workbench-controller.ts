@@ -139,7 +139,7 @@ export function useWorkbenchController({
   const estimatedCredits =
     (outputs.knowledge ? unlockedPlannedCards.length : 0) +
     (outputs.quote ? selectedQuotes.length : 0) +
-    (outputs.cover ? 6 : 0) +
+    (outputs.cover ? 3 : 0) +
     (outputs.inline ? plannedInlineImages.length : 0);
 
   const latestGenerationTime = latestGeneration
@@ -946,8 +946,7 @@ export function useWorkbenchController({
 
   async function handleGenerateCoverOnly() {
     const largePreset = coverPreset;
-    const thumbPreset = findPreset("wx-thumb")?.preset;
-    if (!largePreset || !thumbPreset) {
+    if (!largePreset) {
       pushStatus("cover-generation", "error", "缺少公众号封面尺寸预设", {
         phase: "failed",
         currentStepLabel: "公众号封面失败",
@@ -996,8 +995,7 @@ export function useWorkbenchController({
       totalTasks: 1,
     });
 
-    const tasks = coverPlan.coverPlan.flatMap((candidate) => [
-      {
+    const tasks = coverPlan.coverPlan.map((candidate) => ({
         articleTitle: currentArticle.title,
         prompt: candidate.promptText,
         negativePrompt:
@@ -1015,38 +1013,28 @@ export function useWorkbenchController({
           title: candidate.title,
           variant: "large" as const,
         },
-      },
-      {
-        articleTitle: currentArticle.title,
-        prompt: `${candidate.promptText}
-
-## 小封面适配
-
-本次只生成公众号转发小图，独立方形 383×383。不要把 900×383 大封面裁成长方形，也不要拼接大小封面。保留同一视觉主题，但重构为方形构图：标题仍用 \`${currentArticle.title}\`，文字更集中，主体物件更少，边缘留白更稳。`,
-        negativePrompt:
-          "横版大封面、长条构图、高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、知识卡片布局、信息图、多段正文、多图拼接、额外文字、水印",
-        width: thumbPreset.w,
-        height: thumbPreset.h,
-        count: 1,
-        purposeKey: "wx_cover",
-        purposeLabel: "公众号转发小图",
-        presetKey: thumbPreset.k,
-        presetLabel: thumbPreset.label,
-        styleName: "极简纸本公众号封面",
-        coverLink: {
-          index: candidate.index,
-          title: candidate.title,
-          variant: "thumb" as const,
+        thumbImage: {
+          id: `programmatic-cover-thumb-${candidate.index}-${Date.now().toString(36)}`,
+          imageUrl: buildProgrammaticWechatThumb({
+            keyword: resolveCoverThumbKeyword(candidate.thumbKeyword, candidate.title),
+            shape: candidate.thumbShape || (candidate.index % 2 === 0 ? "square" : "circle"),
+            tone: candidate.index,
+          }),
+          prompt: "程序生成小封面：底色 + 几何形状 + 关键词",
+          width: 383,
+          height: 383,
+          coverLink: {
+            index: candidate.index,
+            title: candidate.title,
+            variant: "thumb" as const,
+          },
         },
-      },
-    ]);
+      }));
 
     let mergedCoverRecord = coverGeneration;
     for (let index = 0; index < tasks.length; index += 1) {
       const task = tasks[index];
-      const taskLabel = `公众号封面 ${task.coverLink.index} · ${
-        task.coverLink.variant === "thumb" ? "小图" : "大图"
-      }`;
+      const taskLabel = `公众号封面 ${task.coverLink.index} · 大图`;
       pushStatus("cover-generation", "info", `阶段二：正在生成 ${taskLabel}`, {
         phase: "generating",
         currentStepLabel: taskLabel,
@@ -1072,7 +1060,10 @@ export function useWorkbenchController({
         return;
       }
 
-      mergedCoverRecord = mergeRecordImages(mergedCoverRecord, record);
+      mergedCoverRecord = mergeRecordImages(mergedCoverRecord, {
+        ...record,
+        images: [...record.images, task.thumbImage],
+      });
       saveGenerationRecord(mergedCoverRecord);
       pushStatus("cover-generation", "success", `${taskLabel} 已完成`, {
         phase: "generating",
@@ -1582,4 +1573,52 @@ function toDisplayTime(iso: string) {
     minute: "2-digit",
     hour12: false,
   });
+}
+
+function resolveCoverThumbKeyword(keyword: string | undefined, fallback: string) {
+  const source = (keyword || fallback || "封面")
+    .replace(/[「」《》【】"'“”‘’|｜·,，.。:：;；!?！？\s]/g, "")
+    .trim();
+  if (!source) return "封面";
+  return Array.from(source).slice(0, 4).join("");
+}
+
+function buildProgrammaticWechatThumb({
+  keyword,
+  shape,
+  tone,
+}: {
+  keyword: string;
+  shape: "circle" | "square";
+  tone: number;
+}) {
+  const palettes = [
+    { bg: "#F5F0E6", fg: "#59569B", border: "#484580", text: "#FFFFFF" },
+    { bg: "#F4F1EA", fg: "#6E8196", border: "#4F6478", text: "#FFFFFF" },
+    { bg: "#F1ECE3", fg: "#8B6F44", border: "#6F5838", text: "#FFFFFF" },
+  ];
+  const palette = palettes[(tone - 1 + palettes.length) % palettes.length];
+  const shapeMarkup =
+    shape === "circle"
+      ? `<circle cx="191.5" cy="191.5" r="106" fill="${palette.fg}" stroke="${palette.border}" stroke-width="8"/>`
+      : `<rect x="76" y="76" width="231" height="231" rx="28" fill="${palette.bg}" stroke="${palette.border}" stroke-width="12"/>
+<rect x="102" y="102" width="179" height="179" rx="18" fill="${palette.fg}" opacity="0.96"/>`;
+
+  const fontSize = keyword.length <= 2 ? 64 : keyword.length === 3 ? 52 : 44;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="383" height="383" viewBox="0 0 383 383">
+<rect width="383" height="383" fill="${palette.bg}"/>
+<path d="M28 28H355V355H28Z" fill="none" stroke="#E4DBCA" stroke-width="2"/>
+${shapeMarkup}
+<text x="191.5" y="205" text-anchor="middle" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif" font-size="${fontSize}" font-weight="700" fill="${palette.text}" letter-spacing="2">${escapeSvgText(keyword)}</text>
+</svg>`;
+
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+function escapeSvgText(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
