@@ -10,12 +10,12 @@ import { Btn, Tag, COLORS, FoggyArt, Panel } from "./ui-kit";
 
 const IMAGE_STYLES = [
   {
-    name: "蓝雾静读",
-    desc: "低饱和雾蓝、灰白与暖灰，强调留白与单点光源。",
-    scope: ["公众号封面", "知识卡片"],
-    palette: ["#5B6E84", "#94A8BC", "#C8D2DD", "#EEF2F6"],
-    variant: "mountain",
-    hue: 0,
+    name: "极简纸本信息板",
+    desc: "纸张拼贴、便签、胶带、色板与铅笔元素，适合知识卡和金句底图。",
+    scope: ["知识卡片", "正文配图", "金句底图"],
+    palette: ["#35312B", "#8EA0AA", "#D7CDBA", "#F4F1EA"],
+    variant: "grid",
+    hue: 1,
     isDefault: true,
   },
   {
@@ -72,24 +72,24 @@ const LAYOUT_STYLES = [
 
 const QUOTE_TPLS = [
   {
-    name: "竖版 · 主图",
-    use: "公众号 · 朋友圈分享",
+    name: "纸本文稿",
+    use: "预设底图 · 适合长金句。",
     hasQR: true,
     fits: ["公众号", "朋友圈"],
     variant: "mountain",
     hue: 0,
   },
   {
-    name: "方形 · 居中文字",
-    use: "通用社交分享，不挑场景。",
+    name: "双栏纸片",
+    use: "预设底图 · 适合对照型金句。",
     hasQR: false,
     fits: ["公众号", "小红书", "朋友圈"],
     variant: "circle",
     hue: 3,
   },
   {
-    name: "横版 · 留白引言",
-    use: "适合长金句，二维码靠右下。",
+    name: "中心留白",
+    use: "预设底图 · 适合短句和标题式金句。",
     hasQR: true,
     fits: ["公众号"],
     variant: "wave",
@@ -425,7 +425,7 @@ export function StyleAssets() {
             kicker="03 / QUOTE"
             title="金句卡模板"
             count={`${QUOTE_TPLS.length} 个模板 · 含二维码 / 不含`}
-            desc="独立于知识卡片。用于金句卡片的版式选择，按比例与是否含二维码区分。"
+            desc="独立于知识卡片。每个风格可预存 2-3 张金句底图，生成时直接绑定，不必频繁文生图。"
             tools={[{ label: "按平台筛选" }]}
             action={
               <Btn variant="secondary" size="sm">

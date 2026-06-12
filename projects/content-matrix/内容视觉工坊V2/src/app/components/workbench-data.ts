@@ -454,23 +454,8 @@ export function buildGenerationTasks({
   }
 
   if (outputs.quote) {
-    const preset = findPreset(DEFAULT_PRESET_KEYS.quoteCard)?.preset;
-    if (preset && selectedQuotes.length > 0) {
-      const quoteText = selectedQuotes[0];
-      tasks.push({
-        articleTitle,
-        prompt: `为文章《${articleTitle}》生成一张公众号横版金句底图。核心文案是：“${quoteText}”。画面需留白、安静、疗愈，便于后续叠加文字。`,
-        negativePrompt: "高饱和、霓虹、复杂纹理、人物特写、卡通插画、杂乱文字",
-        width: preset.w,
-        height: preset.h,
-        count: 1,
-        purposeKey: "quote",
-        purposeLabel: "金句底图",
-        presetKey: preset.k,
-        presetLabel: preset.label,
-        styleName: "蓝雾静读",
-      });
-    }
+    // 金句底图是风格资产，不在一键生成里频繁调用文生图。
+    // 用户点击“生成金句底图”时会从当前风格的预设底图中绑定一张。
   }
 
   if (outputs.cover) {

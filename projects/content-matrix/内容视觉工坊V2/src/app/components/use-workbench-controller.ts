@@ -5,6 +5,7 @@ import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
 import {
   PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
   PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
+  PAPER_INFO_BOARD_QUOTE_BACKGROUNDS,
   PAPER_INFO_BOARD_REFERENCE_IMAGES,
 } from "../style-guides";
 import type {
@@ -878,27 +879,37 @@ export function useWorkbenchController({
     }
 
     clearTaskError();
-    pushStatus("quote-generation", "info", "正在生成金句底图", {
+    pushStatus("quote-generation", "info", "正在绑定预设金句底图", {
       phase: "generating",
-      currentStepLabel: "生成金句底图",
+      currentStepLabel: "绑定金句底图",
       completedTasks: 0,
       totalTasks: 1,
     });
 
     try {
-      const record = await postGenerateImages({
-        articleTitle: currentArticle.title,
-        prompt: `为文章《${currentArticle.title}》生成一张公众号横版金句底图。核心文案是：“${primaryQuote}”。画面需留白、安静、疗愈，便于后续叠加文字。`,
-        negativePrompt: "高饱和、霓虹、复杂纹理、人物特写、卡通插画、杂乱文字",
-        width: preset.w,
-        height: preset.h,
-        count: 1,
+      const background =
+        PAPER_INFO_BOARD_QUOTE_BACKGROUNDS[
+          resolvedIndexes[0] % PAPER_INFO_BOARD_QUOTE_BACKGROUNDS.length
+        ];
+      const record: GenerationRecord = {
+        id: `quote-bg-${Date.now().toString(36)}`,
+        source: "general-image",
+        title: currentArticle.title,
         purposeKey: "quote",
         purposeLabel: "金句底图",
-        presetKey: preset.k,
         presetLabel: preset.label,
-        styleName: "蓝雾静读",
-      });
+        styleName: background.styleName,
+        images: [
+          {
+            id: background.id,
+            imageUrl: background.url,
+            prompt: `使用预设金句底图「${background.label}」绑定金句：“${primaryQuote}”。${background.note}`,
+            width: background.width,
+            height: background.height,
+          },
+        ],
+        createdAt: new Date().toISOString(),
+      };
       saveGenerationRecord(record);
       setWorkbenchState((prev) => ({
         ...prev,
@@ -908,7 +919,7 @@ export function useWorkbenchController({
           generatedAtPlanningRevision: prev.replanRevision,
         },
       }));
-      pushStatus("quote-generation", "success", "金句底图已生成", {
+      pushStatus("quote-generation", "success", `已使用预设底图：${background.label}`, {
         phase: "completed",
         currentStepLabel: "完成",
         completedTasks: 1,

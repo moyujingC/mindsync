@@ -4,6 +4,16 @@ export type StyleReferenceImage = {
   note?: string;
 };
 
+export type QuoteBackgroundAsset = {
+  id: string;
+  styleName: string;
+  label: string;
+  url: string;
+  width: number;
+  height: number;
+  note: string;
+};
+
 export const PAPER_INFO_BOARD_REFERENCE_IMAGES: StyleReferenceImage[] = [
   {
     label: "极简纸本信息板 01",
@@ -82,3 +92,33 @@ export const PAPER_INFO_BOARD_INLINE_STYLE_GUIDE = `视觉风格：极简纸本�
 
 限制：
 不要知识卡布局，不要信息图，不要大标题海报，不要多段文字，不要复杂流程图，不要封面感，不要强叙事漫画。`;
+
+export const PAPER_INFO_BOARD_QUOTE_BACKGROUNDS: QuoteBackgroundAsset[] = [
+  {
+    id: "paper-info-board-quote-01",
+    styleName: "极简纸本信息板",
+    label: "纸本文稿",
+    url: "/assets/quote-backgrounds/paper-info-board/quote-bg-01.svg",
+    width: 1080,
+    height: 608,
+    note: "左侧文稿纸 + 中央留白，适合长金句。",
+  },
+  {
+    id: "paper-info-board-quote-02",
+    styleName: "极简纸本信息板",
+    label: "双栏纸片",
+    url: "/assets/quote-backgrounds/paper-info-board/quote-bg-02.svg",
+    width: 1080,
+    height: 608,
+    note: "双栏纸片 + 小图框，适合对照型金句。",
+  },
+  {
+    id: "paper-info-board-quote-03",
+    styleName: "极简纸本信息板",
+    label: "中心留白",
+    url: "/assets/quote-backgrounds/paper-info-board/quote-bg-03.svg",
+    width: 1080,
+    height: 608,
+    note: "中心大留白 + 右侧纸片，适合短句和标题式金句。",
+  },
+];
