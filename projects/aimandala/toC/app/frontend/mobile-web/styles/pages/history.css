@@ -1817,7 +1817,9 @@
 .mw-history-detail-step--pro.mw-history-detail-step--generating,
 .mw-history-detail-step--pro.mw-history-detail-step--not-upgraded {
   border-color: rgb(var(--am-rgb-gold-300) / 0.18);
-  background: linear-gradient(160deg, rgb(30 40 65 / 0.85) 0%, rgb(20 30 50 / 0.7) 100%);
+  background:
+    radial-gradient(ellipse at 75% 16%, rgb(var(--am-rgb-gold-300) / 0.16) 0%, transparent 54%),
+    linear-gradient(160deg, rgb(38 43 61 / 0.86) 0%, rgb(23 30 48 / 0.74) 100%);
   box-shadow: 0 4px 30px rgb(var(--am-rgb-gold-300) / 0.1);
 }
 
