@@ -89,7 +89,7 @@ body {
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  overscroll-behavior: contain;
+  overscroll-behavior: none;
 }
 
 .browser-shell__devbar {

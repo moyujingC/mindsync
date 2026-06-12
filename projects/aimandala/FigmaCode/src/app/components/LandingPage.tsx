@@ -11,7 +11,7 @@ import {
   Minus,
 } from "lucide-react";
 import combLogoFlat from "figma:asset/dd21b372c423cb06578216b853db653316e94fcc.png";
-import combLogoJade from "../../imports/logo-niwu.png";
+import combLogoJade from "../../imports/logo-niwu-hero.png";
 import dunhuangPattern from "figma:asset/176d69efc81b256182be2c6f62c7d48ce8cbe05b.png";
 
 /* ─── Floating golden particles ─── */

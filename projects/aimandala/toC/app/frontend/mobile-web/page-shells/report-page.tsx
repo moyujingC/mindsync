@@ -260,7 +260,7 @@ export function MobileWebReportPage({
       .filter(Boolean)
       .join(" · ") || "完整解读 · 视觉草稿 · 运行摘要";
   const reportToneLabel = isProReport ? "一梳 Pro 版" : "一镜 Lite 版";
-  const followupEnabled = isReportFollowupEnabled() && !isLoading && !isError && Boolean(state.report?.report);
+  const followupEnabled = isProReport && isReportFollowupEnabled() && !isLoading && !isError && Boolean(state.report?.report);
   const reportPatternStyle = {
     ["--am-pattern-image" as string]: `url(${brandPattern})`,
   } as CSSProperties;

@@ -88,7 +88,7 @@
   --am-layout-max-content: 420px;
   --am-layout-preview-disc: 264px;
   --am-layout-hero-logo: 220px;
-  --am-layout-bottom-sheet-gap: -8px;
+  --am-layout-bottom-sheet-gap: -66px;
 
   /* Z tokens */
   --am-z-base: 1;
@@ -1289,7 +1289,7 @@
   --am-dev-surface-stage-success: rgba(235, 246, 240, 0.9);
   --am-dev-surface-stage-running: rgba(255, 246, 230, 0.9);
   --am-dev-surface-stage-error: rgba(255, 238, 235, 0.9);
-  --am-dev-shell-canvas: #b8b8b8;
+  --am-dev-shell-canvas: #d0c7be;
   --am-dev-shell-review: linear-gradient(
     180deg,
     rgba(35, 49, 86, 0.92) 0%,

@@ -94,10 +94,43 @@ function EntryArrowGlyph() {
 
 function SparklesGlyph() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 3.5 13.7 8l4.8 1.7-4.8 1.7L12 16l-1.7-4.6-4.8-1.7L10.3 8 12 3.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M18.5 14.5 19.3 17l2.2.8-2.2.8-.8 2.4-.8-2.4-2.2-.8 2.2-.8.8-2.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M5 15.5 5.6 17l1.4.5-1.4.5L5 19.5 4.4 18 3 17.5l1.4-.5.6-1.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M8.2 6.2h7.2c1 0 1.8.8 1.8 1.8v7.4c0 1-.8 1.8-1.8 1.8H8.2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.2 6.2c-1.3 0-2.3 1-2.3 2.3s1 2.3 2.3 2.3"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.2 17.2c-1.3 0-2.3-1-2.3-2.3s1-2.3 2.3-2.3"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15.8 6.2c1.3 0 2.3 1 2.3 2.3s-1 2.3-2.3 2.3"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15.8 17.2c1.3 0 2.3-1 2.3-2.3s-1-2.3-2.3-2.3"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M10.3 9.2h3.4M10.3 12h3.8M10.3 14.8h2.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }

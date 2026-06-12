@@ -17,6 +17,8 @@ import {
   Users,
   Check,
   Eye,
+  ChevronRight,
+  LayoutGrid,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import dunhuangPattern from "figma:asset/176d69efc81b256182be2c6f62c7d48ce8cbe05b.png";
@@ -38,6 +40,7 @@ interface HistoryRecord {
   id: string;
   theme: ThemeKey;
   createdAt: string;
+  date: string; // ISO date for filtering
   reportType: ReportType;
   status: RecordStatus;
   statusNote: string;
@@ -47,68 +50,29 @@ interface HistoryRecord {
 }
 
 /* ─── Mock data ─── */
+const IMG_A = "https://images.unsplash.com/photo-1741166237257-d694c313def0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5kYWxhJTIwYXJ0JTIwY29sb3JmdWwlMjBzeW1tZXRyaWNhbHxlbnwxfHx8fDE3NzY0MjgwNzR8MA&ixlib=rb-4.1.0&q=80&w=1080";
+const IMG_B = "https://images.unsplash.com/photo-1623492962519-ac982cffae56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0aWJldGFuJTIwbWFuZGFsYSUyMHRyYWRpdGlvbmFsJTIwcGFpbnRpbmd8ZW58MXx8fHwxNzc2NDI4MDc1fDA&ixlib=rb-4.1.0&q=80&w=1080";
+const IMG_C = "https://images.unsplash.com/photo-1773037317299-c9cf9b28c5d1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5kYWxhJTIwbWVkaXRhdGlvbiUyMGNpcmN1bGFyJTIwcGF0dGVybnxlbnwxfHx8fDE3NzY0MjgwNzV8MA&ixlib=rb-4.1.0&q=80&w=1080";
+const IMG_D = "https://images.unsplash.com/photo-1776058825001-7ca51338f738?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYWNyZWQlMjBnZW9tZXRyeSUyMG1hbmRhbGElMjBzcGlyaXR1YWx8ZW58MXx8fHwxNzc2NDI4MDc1fDA&ixlib=rb-4.1.0&q=80&w=1080";
+const IMG_E = "https://images.unsplash.com/photo-1664403489326-0591c36be436?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5kYWxhJTIwYXJ0JTIwaW50cmljYXRlJTIwZGV0YWlsZWR8ZW58MXx8fHwxNzc2NDI4MDc2fDA&ixlib=rb-4.1.0&q=80&w=1080";
+
 const MOCK_RECORDS: HistoryRecord[] = [
-  {
-    id: "r1",
-    theme: "\u4eb2\u5bc6\u5173\u7cfb",
-    createdAt: "04/17 09:30",
-    reportType: "Pro",
-    status: "viewable",
-    statusNote: "",
-    viewed: false,
-    mandalaImage: "https://images.unsplash.com/photo-1741166237257-d694c313def0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5kYWxhJTIwYXJ0JTIwY29sb3JmdWwlMjBzeW1tZXRyaWNhbHxlbnwxfHx8fDE3NzY0MjgwNzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-  },
-  {
-    id: "r1b",
-    theme: "\u4eb2\u5bc6\u5173\u7cfb",
-    createdAt: "04/17 09:30",
-    reportType: "Lite",
-    status: "viewable",
-    statusNote: "",
-    viewed: false,
-    mandalaImage: "https://images.unsplash.com/photo-1741166237257-d694c313def0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5kYWxhJTIwYXJ0JTIwY29sb3JmdWwlMjBzeW1tZXRyaWNhbHxlbnwxfHx8fDE3NzY0MjgwNzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-  },
-  {
-    id: "r2",
-    theme: "\u8d22\u5bcc\u4e8b\u4e1a",
-    createdAt: "04/16 14:22",
-    reportType: "Lite",
-    status: "viewable",
-    statusNote: "",
-    viewed: false,
-    mandalaImage: "https://images.unsplash.com/photo-1623492962519-ac982cffae56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0aWJldGFuJTIwbWFuZGFsYSUyMHRyYWRpdGlvbmFsJTIwcGFpbnRpbmd8ZW58MXx8fHwxNzc2NDI4MDc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-  },
-  {
-    id: "r3",
-    theme: "\u4e2a\u4eba\u6210\u957f",
-    createdAt: "04/15 20:10",
-    reportType: "Pro",
-    status: "generating",
-    statusNote: "",
-    viewed: false,
-    progress: 45,
-    mandalaImage: "https://images.unsplash.com/photo-1773037317299-c9cf9b28c5d1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5kYWxhJTIwbWVkaXRhdGlvbiUyMGNpcmN1bGFyJTIwcGF0dGVybnxlbnwxfHx8fDE3NzY0MjgwNzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-  },
-  {
-    id: "r4",
-    theme: "\u6bcd\u4eb2\u5173\u7cfb",
-    createdAt: "04/14 11:05",
-    reportType: "Lite",
-    status: "viewable",
-    statusNote: "",
-    viewed: true,
-    mandalaImage: "https://images.unsplash.com/photo-1776058825001-7ca51338f738?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYWNyZWQlMjBnZW9tZXRyeSUyMG1hbmRhbGElMjBzcGlyaXR1YWx8ZW58MXx8fHwxNzc2NDI4MDc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-  },
-  {
-    id: "r5",
-    theme: "\u5168\u9762\u770b\u770b",
-    createdAt: "04/12 08:45",
-    reportType: "Pro",
-    status: "viewable",
-    statusNote: "",
-    viewed: true,
-    mandalaImage: "https://images.unsplash.com/photo-1664403489326-0591c36be436?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW5kYWxhJTIwYXJ0JTIwaW50cmljYXRlJTIwZGV0YWlsZWR8ZW58MXx8fHwxNzc2NDI4MDc2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-  },
+  { id: "r1-pro", theme: "\u4eb2\u5bc6\u5173\u7cfb", createdAt: "06/08 09:30", date: "2026-06-08T09:30:00", reportType: "Pro", status: "viewable", statusNote: "", viewed: false, mandalaImage: IMG_A },
+  { id: "r1-lite", theme: "\u4eb2\u5bc6\u5173\u7cfb", createdAt: "06/08 09:30", date: "2026-06-08T09:30:00", reportType: "Lite", status: "viewable", statusNote: "", viewed: false, mandalaImage: IMG_A },
+
+  { id: "r2-lite", theme: "\u8d22\u5bcc\u4e8b\u4e1a", createdAt: "06/05 14:22", date: "2026-06-05T14:22:00", reportType: "Lite", status: "viewable", statusNote: "", viewed: false, mandalaImage: IMG_B },
+
+  { id: "r3-lite", theme: "\u4e2a\u4eba\u6210\u957f", createdAt: "06/02 20:10", date: "2026-06-02T20:10:00", reportType: "Lite", status: "viewable", statusNote: "", viewed: true, mandalaImage: IMG_C },
+  { id: "r3-pro", theme: "\u4e2a\u4eba\u6210\u957f", createdAt: "06/02 20:10", date: "2026-06-02T20:10:00", reportType: "Pro", status: "generating", statusNote: "", viewed: false, progress: 45, mandalaImage: IMG_C },
+
+  { id: "r4-lite", theme: "\u6bcd\u4eb2\u5173\u7cfb", createdAt: "05/28 11:05", date: "2026-05-28T11:05:00", reportType: "Lite", status: "viewable", statusNote: "", viewed: true, mandalaImage: IMG_D },
+
+  { id: "r5-lite", theme: "\u4eb2\u5b50\u5173\u7cfb", createdAt: "05/20 17:40", date: "2026-05-20T17:40:00", reportType: "Lite", status: "viewable", statusNote: "", viewed: true, mandalaImage: IMG_E },
+  { id: "r5-pro", theme: "\u4eb2\u5b50\u5173\u7cfb", createdAt: "05/20 17:40", date: "2026-05-20T17:40:00", reportType: "Pro", status: "viewable", statusNote: "", viewed: false, mandalaImage: IMG_E },
+
+  { id: "r6-lite", theme: "\u7236\u4eb2\u5173\u7cfb", createdAt: "05/12 08:15", date: "2026-05-12T08:15:00", reportType: "Lite", status: "viewable", statusNote: "", viewed: false, mandalaImage: IMG_A },
+
+  { id: "r8-lite", theme: "\u8eab\u4f53\u5065\u5eb7", createdAt: "04/22 19:10", date: "2026-04-22T19:10:00", reportType: "Lite", status: "viewable", statusNote: "", viewed: true, mandalaImage: IMG_B },
 ];
 
 /* ─── Status filter pills ─── */
@@ -118,12 +82,12 @@ type RecentMonths = 1 | 3 | 6 | 12;
 
 /* ─── Theme options (matches Upload ThemeSelector) ─── */
 const THEME_OPTIONS: {
-  id: ThemeKey;
+  id: ThemeKey | "all";
   icon: LucideIcon;
   label: string;
   sub: string;
 }[] = [
-  { id: "\u5168\u9762\u770b\u770b", icon: Star, label: "\u5168\u9762", sub: "\u770b\u770b" },
+  { id: "all", icon: LayoutGrid, label: "\u4e0d\u9650", sub: "\u8bae\u9898" },
   { id: "\u7236\u4eb2\u5173\u7cfb", icon: User, label: "\u7236\u4eb2", sub: "\u5173\u7cfb" },
   { id: "\u6bcd\u4eb2\u5173\u7cfb", icon: User, label: "\u6bcd\u4eb2", sub: "\u5173\u7cfb" },
   { id: "\u4eb2\u5bc6\u5173\u7cfb", icon: Users, label: "\u4eb2\u5bc6", sub: "\u5173\u7cfb" },
@@ -492,89 +456,279 @@ function StatusIndicator({ record }: { record: HistoryRecord }) {
   );
 }
 
+type HistoryDescriptor = {
+  liteState: "viewable" | "none";
+  proState: "viewable" | "generating" | "none";
+  label: string;
+  action: string;
+  tone: "fresh" | "loading" | "calm";
+  target: HistoryRecord;
+};
+
+const describeHistory = (
+  record: HistoryRecord,
+  sibling?: HistoryRecord
+): HistoryDescriptor => {
+  const lite =
+    record.reportType === "Lite"
+      ? record
+      : sibling?.reportType === "Lite"
+        ? sibling
+        : undefined;
+  const pro =
+    record.reportType === "Pro"
+      ? record
+      : sibling?.reportType === "Pro"
+        ? sibling
+        : undefined;
+
+  const proGenerating = pro?.status === "generating";
+  const proViewable = pro?.status === "viewable";
+  const liteViewable = lite?.status === "viewable";
+  const liteState: HistoryDescriptor["liteState"] = liteViewable ? "viewable" : "none";
+
+  if (proGenerating && pro) {
+    return {
+      liteState,
+      proState: "generating",
+      label: "Pro \u5b8c\u6574\u89e3\u8bfb \u00b7 \u751f\u6210\u4e2d",
+      action: "\u67e5\u770b\u8fdb\u5ea6",
+      tone: "loading",
+      target: pro,
+    };
+  }
+  if (proViewable && pro) {
+    const anyUnread = (!!lite && !lite.viewed) || !pro.viewed;
+    return {
+      liteState,
+      proState: "viewable",
+      label: anyUnread
+        ? "Pro \u5b8c\u6574\u89e3\u8bfb \u00b7 \u5df2\u53ef\u67e5\u770b"
+        : "Pro \u5b8c\u6574\u89e3\u8bfb",
+      action: "\u67e5\u770b Pro",
+      tone: anyUnread ? "fresh" : "calm",
+      target: pro,
+    };
+  }
+  if (lite?.status === "generating") {
+    return {
+      liteState: "none",
+      proState: "none",
+      label: "Lite \u521d\u6b65\u89e3\u8bfb \u00b7 \u751f\u6210\u4e2d",
+      action: "\u67e5\u770b\u8fdb\u5ea6",
+      tone: "loading",
+      target: lite,
+    };
+  }
+  const liteUnread = !!lite && !lite.viewed;
+  return {
+    liteState: "viewable",
+    proState: "none",
+    label: liteUnread
+      ? "Lite \u521d\u6b65\u89e3\u8bfb \u00b7 \u5df2\u53ef\u67e5\u770b"
+      : "Lite \u521d\u6b65\u89e3\u8bfb \u00b7 \u53ef\u5347\u7ea7 Pro",
+    action: liteUnread ? "\u67e5\u770b Lite" : "\u5347\u7ea7 Pro",
+    tone: liteUnread ? "fresh" : "calm",
+    target: lite ?? record,
+  };
+}
+
 /* ─── Record Card (horizontal with left thumbnail) ─── */
 const RecordCard = forwardRef<
   HTMLButtonElement,
   {
     record: HistoryRecord;
+    sibling?: HistoryRecord;
     index: number;
     onOpen: (r: HistoryRecord) => void;
   }
->(function RecordCard({ record, index, onOpen }, ref) {
-  const tc = themeColors(record.theme);
+>(function RecordCard({ record, sibling, index, onOpen }, ref) {
+  const summary = describeHistory(record, sibling);
+  const isLoading = summary.tone === "loading";
+  const isFresh = summary.tone === "fresh";
+  const liteOn = summary.liteState === "viewable";
+  const proOn = summary.proState === "viewable";
+  const proGen = summary.proState === "generating";
+
+  const liteColor = "#A8C4A0";
+  const proColor = "#D4A054";
+  const dimColor = "rgba(232,220,200,0.22)";
+
   return (
     <motion.button
       ref={ref}
-      className="w-full rounded-2xl overflow-hidden relative text-left cursor-pointer flex"
+      className="w-full rounded-xl overflow-hidden relative text-left cursor-pointer flex items-stretch"
       style={{
         background:
-          "linear-gradient(160deg, rgba(22,35,60,0.85) 0%, rgba(28,42,72,0.65) 50%, rgba(22,35,60,0.75) 100%)",
+          "linear-gradient(160deg, rgba(20,30,52,0.7) 0%, rgba(24,36,60,0.5) 100%)",
         borderWidth: "1px",
         borderStyle: "solid",
-        borderColor: "rgba(212,160,84,0.15)",
-        boxShadow: `0 2px 20px ${tc.glow}, 0 0 40px rgba(17,26,48,0.5)`,
-        height: "100px",
+        borderColor: isFresh
+          ? "rgba(212,160,84,0.22)"
+          : "rgba(138,124,108,0.16)",
+        boxShadow: "0 1px 6px rgba(8,14,28,0.4)",
+        height: "84px",
       }}
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={() => onOpen(record)}
+      transition={{ duration: 0.35, delay: index * 0.04 }}
+      whileTap={{ scale: 0.99 }}
+      onClick={() => onOpen(summary.target)}
     >
-      {/* Mandala Thumbnail - Left */}
-      <div className="relative flex-shrink-0" style={{ width: "100px", height: "100px" }}>
+      {/* Small thumbnail \u2014 quieter, lower visual weight */}
+      <div
+        className="relative flex-shrink-0 self-center ml-3 rounded-lg overflow-hidden"
+        style={{
+          width: "60px",
+          height: "60px",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: "rgba(212,160,84,0.14)",
+        }}
+      >
         <img
           src={record.mandalaImage}
           alt={`${record.theme}\u66fc\u9640\u7f57`}
           className="w-full h-full object-cover"
+          style={{ opacity: 0.7 }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(90deg, transparent 50%, rgba(22,35,60,0.6) 100%)",
+              "linear-gradient(180deg, rgba(20,30,52,0.18) 0%, rgba(20,30,52,0.5) 100%)",
           }}
         />
       </div>
 
-      {/* Info - Right */}
-      <div className="flex-1 flex flex-col justify-center px-3.5 py-2.5 min-w-0">
-        <div className="flex items-center gap-2 mb-1.5">
-          <span style={{ fontSize: "14px", lineHeight: 1, color: "#D4A054" }}>
-            {tc.icon}
-          </span>
+      {/* Info \u2014 text-forward, two compact rows */}
+      <div className="flex-1 flex flex-col justify-center pl-3 pr-2 py-2 min-w-0">
+        {/* Row 1: \u8bae\u9898 + \u65f6\u95f4 */}
+        <div className="flex items-baseline justify-between gap-2 mb-1.5">
           <h3
+            className="truncate"
             style={{
               fontFamily: "'Noto Serif SC', serif",
-              fontSize: "15px",
-              fontWeight: 600,
+              fontSize: "14px",
+              fontWeight: 500,
               color: "#EDE4D4",
               letterSpacing: "0.04em",
             }}
           >
             {record.theme}
           </h3>
-        </div>
-        <div className="flex items-center gap-2.5">
           <span
-            className="flex items-center gap-1"
             style={{
-              fontSize: "11px",
+              fontSize: "10.5px",
               fontFamily: "'Noto Sans SC', sans-serif",
-              color: "rgba(232,220,200,0.6)",
+              color: "rgba(232,220,200,0.4)",
+              flexShrink: 0,
+              letterSpacing: "0.02em",
+              fontVariantNumeric: "tabular-nums",
             }}
           >
-            <Clock size={10} />
             {record.createdAt}
           </span>
-          <TypeBadge type={record.reportType} />
+        </div>
+
+        {/* Row 2: Lite \u2192 Pro progression + label */}
+        <div className="flex items-center gap-2 min-w-0">
+          {/* Mini track: Lite \u25cf \u2500\u2500 \u25cf Pro */}
+          <div className="flex items-center flex-shrink-0" style={{ gap: "3px" }}>
+            <span
+              className="rounded-full"
+              style={{
+                width: "6px",
+                height: "6px",
+                background: liteOn ? liteColor : "transparent",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: liteOn ? liteColor : dimColor,
+                opacity: liteOn ? 0.9 : 1,
+              }}
+            />
+            <span
+              style={{
+                width: "10px",
+                height: "1px",
+                background: proOn || proGen
+                  ? "rgba(212,160,84,0.45)"
+                  : "rgba(232,220,200,0.16)",
+              }}
+            />
+            {proGen ? (
+              <motion.span
+                className="rounded-full"
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  background: proColor,
+                  boxShadow: `0 0 4px ${proColor}`,
+                }}
+                animate={{ opacity: [0.45, 0.95, 0.45] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              />
+            ) : (
+              <span
+                className="rounded-full"
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  background: proOn ? proColor : "transparent",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderColor: proOn ? proColor : dimColor,
+                  boxShadow: proOn && isFresh ? `0 0 4px ${proColor}` : "none",
+                  opacity: proOn ? 0.9 : 1,
+                }}
+              />
+            )}
+          </div>
+
+          {/* Status label */}
+          <span
+            className="truncate"
+            style={{
+              fontFamily: "'Noto Sans SC', sans-serif",
+              fontSize: "11.5px",
+              color: isFresh
+                ? "rgba(232,220,200,0.75)"
+                : isLoading
+                  ? "rgba(232,220,200,0.68)"
+                  : "rgba(232,220,200,0.5)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            {summary.label}
+          </span>
         </div>
       </div>
 
-      {/* Status */}
-      <div className="flex items-center pr-3 flex-shrink-0">
-        <StatusIndicator record={record} />
+      {/* Right CTA \u2014 light, text-only */}
+      <div
+        className="flex items-center flex-shrink-0 pr-3 pl-1 gap-0.5"
+        style={{ alignSelf: "center" }}
+      >
+        <span
+          style={{
+            fontFamily: "'Noto Sans SC', sans-serif",
+            fontSize: "11px",
+            color: isFresh
+              ? "rgba(212,160,84,0.85)"
+              : "rgba(232,220,200,0.5)",
+            letterSpacing: "0.06em",
+          }}
+        >
+          {summary.action}
+        </span>
+        <ChevronRight
+          size={13}
+          style={{
+            color: isFresh
+              ? "rgba(212,160,84,0.7)"
+              : "rgba(232,220,200,0.4)",
+          }}
+        />
       </div>
     </motion.button>
   );
@@ -616,13 +770,120 @@ function FilterPill({
   );
 }
 
+/* ─── Pending card: version line + primary action ─── */
+type PendingTone = "fresh" | "loading" | "calm";
+
+function describePending(
+  record: HistoryRecord,
+  sibling?: HistoryRecord
+): {
+  line: string;
+  hint: string;
+  tone: PendingTone;
+  action: string;
+} {
+  const liteRec =
+    record.reportType === "Lite"
+      ? record
+      : sibling?.reportType === "Lite"
+        ? sibling
+        : undefined;
+  const proRec =
+    record.reportType === "Pro"
+      ? record
+      : sibling?.reportType === "Pro"
+        ? sibling
+        : undefined;
+
+  // Pro 生成中
+  if (proRec?.status === "generating") {
+    return {
+      line: "Pro 完整解读 · 生成中",
+      hint: "Lite 已可查看",
+      tone: "loading",
+      action: "查看进度",
+    };
+  }
+  // Pro 可查看（未读）
+  if (proRec && proRec.status === "viewable" && !proRec.viewed) {
+    return {
+      line: "Pro 完整解读 · 已可查看",
+      hint: "Lite 基础上的深入解读",
+      tone: "fresh",
+      action: "查看 Pro",
+    };
+  }
+  // Lite 生成中（兜底）
+  if (liteRec?.status === "generating") {
+    return {
+      line: "Lite 初步解读 · 生成中",
+      hint: "稍候即可查看",
+      tone: "loading",
+      action: "查看进度",
+    };
+  }
+  // Lite 可查看，未升级 Pro
+  if (liteRec && liteRec.status === "viewable" && !liteRec.viewed) {
+    return {
+      line: "Lite 初步解读 · 已可查看",
+      hint: "可继续升级 Pro",
+      tone: "fresh",
+      action: "查看 Lite",
+    };
+  }
+  // 兜底
+  return {
+    line: "解读 · 已可查看",
+    hint: "",
+    tone: "calm",
+    action: "查看",
+  };
+}
+
+function PendingDot({ tone }: { tone: PendingTone }) {
+  if (tone === "loading") {
+    return (
+      <Loader2
+        size={11}
+        className="animate-spin"
+        style={{ color: "#E0B46A" }}
+      />
+    );
+  }
+  const color = tone === "fresh" ? "#E0B46A" : "rgba(232,220,200,0.55)";
+  return (
+    <motion.span
+      style={{
+        width: 7,
+        height: 7,
+        borderRadius: "50%",
+        background: `radial-gradient(circle, ${color} 0%, rgba(200,120,80,0.4) 100%)`,
+        boxShadow: tone === "fresh" ? `0 0 8px ${color}` : "none",
+        display: "inline-block",
+      }}
+      animate={
+        tone === "fresh"
+          ? { opacity: [0.55, 1, 0.55], scale: [1, 1.15, 1] }
+          : {}
+      }
+      transition={
+        tone === "fresh"
+          ? { duration: 2.4, repeat: Infinity, ease: "easeInOut" }
+          : {}
+      }
+    />
+  );
+}
+
 /* ─── Mandala Record Card ─── */
 function MandalaRecordCard({
   record,
+  sibling,
   index,
   onOpen,
 }: {
   record: HistoryRecord;
+  sibling?: HistoryRecord;
   index: number;
   onOpen: (r: HistoryRecord) => void;
 }) {
@@ -647,35 +908,35 @@ function MandalaRecordCard({
   }, [isGenerating]);
 
   const tc = themeColors(record.theme);
+  const info = describePending(record, sibling);
+  const showProgress = info.tone === "loading";
 
   return (
-    <motion.button
-      className="w-full rounded-2xl overflow-hidden relative text-left cursor-pointer flex flex-col"
+    <motion.div
+      className="w-full rounded-2xl overflow-hidden relative flex flex-col"
       style={{
         background:
           "linear-gradient(160deg, rgba(22,35,60,0.85) 0%, rgba(28,42,72,0.65) 50%, rgba(22,35,60,0.75) 100%)",
         borderWidth: "1px",
         borderStyle: "solid",
-        borderColor: "rgba(212,160,84,0.15)",
+        borderColor: "rgba(212,160,84,0.2)",
         boxShadow: `0 2px 20px ${tc.glow}, 0 0 40px rgba(17,26,48,0.5)`,
       }}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={() => !isGenerating && onOpen(record)}
-      disabled={isGenerating}
     >
-      {/* Horizontal layout: thumbnail left + info right */}
-      <div className="flex" style={{ height: "100px" }}>
-        {/* Mandala Thumbnail - Left */}
-        <div className="relative flex-shrink-0" style={{ width: "100px", height: "100px" }}>
+      <div className="flex" style={{ minHeight: "112px" }}>
+        {/* Mandala thumbnail */}
+        <div
+          className="relative flex-shrink-0"
+          style={{ width: "100px", height: "112px" }}
+        >
           <img
             src={record.mandalaImage}
             alt={`${record.theme}\u66fc\u9640\u7f57`}
             className="w-full h-full object-cover"
-            style={{ opacity: isGenerating ? 0.5 : 1 }}
+            style={{ opacity: isGenerating ? 0.55 : 1 }}
           />
           <div
             className="absolute inset-0"
@@ -684,63 +945,124 @@ function MandalaRecordCard({
                 "linear-gradient(90deg, transparent 50%, rgba(22,35,60,0.6) 100%)",
             }}
           />
-          {/* Generating overlay on thumbnail */}
-          {isGenerating && (
-            <div className="absolute inset-0 flex items-center justify-center" style={{ background: "rgba(14,22,40,0.4)" }}>
-              
-            </div>
-          )}
         </div>
 
-        {/* Info - Right */}
-        <div className="flex-1 flex flex-col justify-center px-3.5 py-2.5 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span style={{ fontSize: "14px", lineHeight: 1, color: "#D4A054" }}>
+        {/* 4-layer info column */}
+        <div className="flex-1 flex flex-col px-3.5 py-2.5 min-w-0">
+          {/* Layer 1 \u2014 \u8bae\u9898 */}
+          <div className="flex items-center gap-2">
+            <span style={{ fontSize: "13px", lineHeight: 1, color: "#D4A054" }}>
               {tc.icon}
             </span>
             <h3
+              className="truncate"
               style={{
                 fontFamily: "'Noto Serif SC', serif",
                 fontSize: "15px",
                 fontWeight: 600,
                 color: "#EDE4D4",
                 letterSpacing: "0.04em",
+                lineHeight: 1.2,
               }}
             >
               {record.theme}
             </h3>
           </div>
-          <div className="flex items-center gap-2.5 mb-1">
-            <span
-              className="flex items-center gap-1"
-              style={{
-                fontSize: "11px",
-                fontFamily: "'Noto Sans SC', sans-serif",
-                color: "rgba(232,220,200,0.6)",
-              }}
-            >
-              <Clock size={10} />
-              {record.createdAt}
+
+          {/* Layer 2 \u2014 \u65f6\u95f4 */}
+          <span
+            className="flex items-center gap-1 mt-0.5"
+            style={{
+              fontSize: "11px",
+              fontFamily: "'Noto Sans SC', sans-serif",
+              color: "rgba(232,220,200,0.5)",
+            }}
+          >
+            <Clock size={10} />
+            {record.createdAt}
+          </span>
+
+          {/* Layer 3 \u2014 \u5f53\u524d\u72b6\u6001\uff08\u7edf\u4e00\u53e5\u5f0f + \u526f\u63d0\u793a\uff1b\u751f\u6210\u4e2d\u65f6\u8fdb\u5ea6\u6570\u5b57\u72ec\u7acb\u663e\u793a\uff09 */}
+          <div className="flex items-start gap-1.5 mt-1.5">
+            <span className="flex-shrink-0 mt-[3px]">
+              <PendingDot tone={info.tone} />
             </span>
-            <TypeBadge type={record.reportType} />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2">
+                <p
+                  className="truncate"
+                  style={{
+                    fontFamily: "'Noto Sans SC', sans-serif",
+                    fontSize: "12.5px",
+                    fontWeight: 500,
+                    color:
+                      info.tone === "calm"
+                        ? "rgba(232,220,200,0.7)"
+                        : "#EDE4D4",
+                    letterSpacing: "0.02em",
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {info.line}
+                </p>
+                {showProgress && (
+                  <span
+                    className="flex-shrink-0 tabular-nums"
+                    style={{
+                      fontFamily: "'Noto Sans SC', sans-serif",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: "#E0B46A",
+                      letterSpacing: "0.02em",
+                    }}
+                  >
+                    {Math.round(currentProgress)}%
+                  </span>
+                )}
+              </div>
+              {info.hint && (
+                <p
+                  className="truncate"
+                  style={{
+                    fontSize: "10.5px",
+                    color: "rgba(232,220,200,0.4)",
+                    lineHeight: 1.4,
+                    marginTop: 1,
+                  }}
+                >
+                  {info.hint}
+                </p>
+              )}
+            </div>
           </div>
-          {isGenerating && (
-            <span
+
+          {/* Layer 4 \u2014 \u4e3b\u64cd\u4f5c\u6309\u94ae */}
+          <div className="flex justify-end mt-2">
+            <button
+              className="inline-flex items-center gap-1 rounded-full active:scale-95 transition"
               style={{
-                fontSize: "11px",
+                padding: "5px 13px",
+                fontSize: "12px",
                 fontFamily: "'Noto Sans SC', sans-serif",
                 fontWeight: 500,
-                color: "#E0B46A",
+                color: "#F5EFE2",
+                background:
+                  "linear-gradient(135deg, #9B4030 0%, #C87850 50%, #D4A054 100%)",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "rgba(212,160,84,0.45)",
+                boxShadow: "0 2px 10px rgba(200,120,80,0.22)",
+                letterSpacing: "0.06em",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen(record);
               }}
             >
-              {Math.round(currentProgress)}%
-            </span>
-          )}
-        </div>
-
-        {/* Status */}
-        <div className="flex items-center pr-3 flex-shrink-0">
-          <StatusIndicator record={record} />
+              {info.action}
+              <ChevronRight size={12} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -750,11 +1072,8 @@ function MandalaRecordCard({
           <div
             className="relative rounded-full overflow-hidden"
             style={{
-              height: "4px",
+              height: "3px",
               background: "rgba(22,35,60,0.8)",
-              borderWidth: "1px",
-              borderStyle: "solid",
-              borderColor: "rgba(212,160,84,0.15)",
             }}
           >
             <motion.div
@@ -771,7 +1090,7 @@ function MandalaRecordCard({
           </div>
         </div>
       )}
-    </motion.button>
+    </motion.div>
   );
 }
 
@@ -784,9 +1103,19 @@ function PendingReviewSection({
   onOpen: (r: HistoryRecord) => void;
 }) {
   // Filter: generating OR (viewable AND not viewed)
-  const pendingRecords = records.filter(
+  const rawPending = records.filter(
     (r) => r.status === "generating" || (r.status === "viewable" && !r.viewed)
   );
+  // Dedup by (theme + createdAt): one card per session. Prefer Pro since it's the more advanced step.
+  const sessionMap = new Map<string, HistoryRecord>();
+  for (const r of rawPending) {
+    const key = `${r.theme}__${r.createdAt}`;
+    const existing = sessionMap.get(key);
+    if (!existing || (existing.reportType === "Lite" && r.reportType === "Pro")) {
+      sessionMap.set(key, r);
+    }
+  }
+  const pendingRecords = Array.from(sessionMap.values());
 
   if (pendingRecords.length === 0) {
     return (
@@ -847,6 +1176,12 @@ function PendingReviewSection({
           <MandalaRecordCard
             key={record.id}
             record={record}
+            sibling={records.find(
+              (s) =>
+                s.id !== record.id &&
+                s.theme === record.theme &&
+                s.createdAt === record.createdAt
+            )}
             index={i}
             onOpen={onOpen}
           />
@@ -861,7 +1196,7 @@ export function HistoryPage() {
   const navigate = useNavigate();
   const [records] = useState<HistoryRecord[]>(MOCK_RECORDS);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [themeFilter, setThemeFilter] = useState<string>("\u5168\u9762\u770b\u770b");
+  const [themeFilter, setThemeFilter] = useState<string>("all");
   const [timeMode, setTimeMode] = useState<TimeFilterMode>("recent");
   const [recentMonths, setRecentMonths] = useState<RecentMonths>(3);
   const [startDate, setStartDate] = useState("");
@@ -1558,7 +1893,7 @@ export function HistoryPage() {
                       letterSpacing: "0.08em",
                     }}
                   >
-                    {"\u4e3b\u9898"}
+                    {"\u8bae\u9898"}
                   </p>
                   <div
                     className="flex gap-2.5 overflow-x-auto pb-3"
@@ -1571,33 +1906,39 @@ export function HistoryPage() {
                   >
                     {THEME_OPTIONS.map((theme) => {
                       const isSelected = themeFilter === theme.id;
+                      const isAll = theme.id === "all";
                       const Icon = theme.icon;
                       return (
                         <button
                           key={theme.id}
-                          onClick={() =>
-                            setThemeFilter(
-                              themeFilter === theme.id ? "all" : theme.id
-                            )
-                          }
+                          onClick={() => setThemeFilter(theme.id)}
                           className="flex-shrink-0 flex flex-col items-center justify-center rounded-lg transition-all relative overflow-hidden"
                           style={{
                             width: "62px",
                             height: "72px",
-                            background: isSelected
-                              ? "linear-gradient(135deg, rgba(200,120,80,0.18) 0%, rgba(212,160,84,0.12) 50%, rgba(200,120,80,0.1) 100%)"
-                              : "rgba(22,35,60,0.6)",
+                            background: isAll
+                              ? isSelected
+                                ? "linear-gradient(135deg, rgba(232,220,200,0.08) 0%, rgba(180,170,150,0.06) 100%)"
+                                : "rgba(22,35,60,0.35)"
+                              : isSelected
+                                ? "linear-gradient(135deg, rgba(200,120,80,0.18) 0%, rgba(212,160,84,0.12) 50%, rgba(200,120,80,0.1) 100%)"
+                                : "rgba(22,35,60,0.6)",
                             borderWidth: "1px",
-                            borderStyle: "solid",
-                            borderColor: isSelected
-                              ? "rgba(212,160,84,0.45)"
-                              : "rgba(138,124,108,0.15)",
-                            boxShadow: isSelected
-                              ? "0 2px 16px rgba(212,160,84,0.15)"
-                              : "none",
+                            borderStyle: isAll ? "dashed" : "solid",
+                            borderColor: isAll
+                              ? isSelected
+                                ? "rgba(232,220,200,0.4)"
+                                : "rgba(232,220,200,0.18)"
+                              : isSelected
+                                ? "rgba(212,160,84,0.45)"
+                                : "rgba(138,124,108,0.15)",
+                            boxShadow:
+                              isSelected && !isAll
+                                ? "0 2px 16px rgba(212,160,84,0.15)"
+                                : "none",
                           }}
                         >
-                          {isSelected && (
+                          {isSelected && !isAll && (
                             <div
                               className="absolute inset-0 pointer-events-none"
                               style={{
@@ -1610,7 +1951,9 @@ export function HistoryPage() {
                             <div
                               className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center"
                               style={{
-                                backgroundColor: "rgba(212,160,84,0.6)",
+                                backgroundColor: isAll
+                                  ? "rgba(232,220,200,0.4)"
+                                  : "rgba(212,160,84,0.6)",
                               }}
                             >
                               <Check
@@ -1624,9 +1967,13 @@ export function HistoryPage() {
                             <Icon
                               size={18}
                               color={
-                                isSelected
-                                  ? "#D4A054"
-                                  : "rgba(232,220,200,0.4)"
+                                isAll
+                                  ? isSelected
+                                    ? "rgba(232,220,200,0.85)"
+                                    : "rgba(232,220,200,0.45)"
+                                  : isSelected
+                                    ? "#D4A054"
+                                    : "rgba(232,220,200,0.4)"
                               }
                               strokeWidth={1.5}
                             />
@@ -1636,9 +1983,13 @@ export function HistoryPage() {
                             style={{
                               fontFamily: "'Noto Sans SC', sans-serif",
                               fontSize: "12px",
-                              color: isSelected
-                                ? "#EDE4D4"
-                                : "rgba(232,220,200,0.5)",
+                              color: isAll
+                                ? isSelected
+                                  ? "rgba(232,220,200,0.9)"
+                                  : "rgba(232,220,200,0.55)"
+                                : isSelected
+                                  ? "#EDE4D4"
+                                  : "rgba(232,220,200,0.5)",
                               lineHeight: 1.3,
                             }}
                           >
@@ -1649,9 +2000,13 @@ export function HistoryPage() {
                             style={{
                               fontFamily: "'Noto Sans SC', sans-serif",
                               fontSize: "12px",
-                              color: isSelected
-                                ? "rgba(212,160,84,0.75)"
-                                : "rgba(232,220,200,0.35)",
+                              color: isAll
+                                ? isSelected
+                                  ? "rgba(232,220,200,0.55)"
+                                  : "rgba(232,220,200,0.35)"
+                                : isSelected
+                                  ? "rgba(212,160,84,0.75)"
+                                  : "rgba(232,220,200,0.35)",
                               lineHeight: 1.3,
                             }}
                           >
@@ -1765,16 +2120,35 @@ export function HistoryPage() {
                 <GoldSeparator />
 
                 {/* ─── Record list ─── */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                   <AnimatePresence mode="popLayout">
-                    {filtered.map((r, i) => (
-                      <RecordCard
-                        key={r.id}
-                        record={r}
-                        index={i}
-                        onOpen={handleOpen}
-                      />
-                    ))}
+                    {(() => {
+                      const siblingMap = new Map<string, HistoryRecord>();
+                      for (const r of filtered) {
+                        const k = `${r.theme}__${r.createdAt}`;
+                        const ex = siblingMap.get(k);
+                        if (!ex || (ex.reportType === "Lite" && r.reportType === "Pro")) {
+                          siblingMap.set(k, r);
+                        }
+                      }
+                      const dedup = Array.from(siblingMap.values());
+                      const findSibling = (r: HistoryRecord) =>
+                        filtered.find(
+                          (x) =>
+                            x.id !== r.id &&
+                            x.theme === r.theme &&
+                            x.createdAt === r.createdAt
+                        );
+                      return dedup.map((r, i) => (
+                        <RecordCard
+                          key={r.id}
+                          record={r}
+                          sibling={findSibling(r)}
+                          index={i}
+                          onOpen={handleOpen}
+                        />
+                      ));
+                    })()}
                   </AnimatePresence>
 
                   {filtered.length === 0 && (

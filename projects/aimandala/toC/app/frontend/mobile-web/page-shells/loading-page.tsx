@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import loadingMeditationVideo from "../assets/3.2 耐心等候（冥想）.mp4";
-import loadingMeditationPoster from "../assets/loading-meditation.webp";
+import loadingMeditationPoster from "../assets/loading-meditation-user.png";
 import brandPattern from "../assets/pattern.webp";
 import { SharedAppTopBar } from "../../shared/ui/app-top-bar";
 import type { MandalaFlowState } from "../../shared/types";
@@ -10,7 +9,6 @@ export interface MobileWebLoadingPageProps {
   state: MandalaFlowState;
   isPro?: boolean;
   onBack?: () => void;
-  onClose?: () => void;
   onLeaveLater?: () => void;
 }
 
@@ -246,15 +244,6 @@ function FloatingParticlesSmall() {
   );
 }
 
-function LoadingCloseIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M7 7L17 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M17 7L7 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 function LoadingDoneIcon() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -303,7 +292,6 @@ export function MobileWebLoadingPage({
   state,
   isPro = false,
   onBack,
-  onClose,
   onLeaveLater,
 }: MobileWebLoadingPageProps) {
   const [tipIndex, setTipIndex] = useState(0);
@@ -320,9 +308,8 @@ export function MobileWebLoadingPage({
   }, []);
 
   const loadingUi = useMemo(() => resolveLoadingUiState(state, isPro), [state, isPro]);
-  const { currentMessage, currentStageIndex, progress, stages, speedNote } = loadingUi;
-  const versionTitle = isPro ? "Pro 版完整解读" : "Lite 版基础解读";
-  const showLeaveLater = false;
+  const { currentStageIndex, progress, stages } = loadingUi;
+  const showLeaveLater = typeof onLeaveLater === "function";
   const estimatedSeconds = Math.max(
     0,
     (isPro ? 120 : 90) - Math.floor((progress / 100) * (isPro ? 120 : 90)),
@@ -331,14 +318,9 @@ export function MobileWebLoadingPage({
   return (
     <div className="am-page am-loading-page">
       <SharedAppTopBar
-        title="一镜一梳"
+        title="解读中"
         backLabel="返回上传页"
         onBack={onBack}
-        trailing={(
-          <button type="button" className="am-icon-button" onClick={onClose} aria-label="关闭">
-            <LoadingCloseIcon />
-          </button>
-        )}
       />
 
       <div className="am-loading-body" style={loadingPatternStyle}>
@@ -350,25 +332,14 @@ export function MobileWebLoadingPage({
 
         <div className="am-loading-visual-ring">
           <div className="am-loading-visual-ring__outer" />
-          <video
+          <img
             className="am-loading-video am-loading-video--media"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            poster={loadingMeditationPoster}
-            aria-label="曼曼冥想中"
-          >
-            <source src={loadingMeditationVideo} type="video/mp4" />
-          </video>
+            src={loadingMeditationPoster}
+            alt="曼陀罗冥想主视觉"
+          />
         </div>
 
         <div className="am-loading-copy">
-          <div className={`am-loading-version am-loading-version--${isPro ? "pro" : "lite"}`}>
-            <LoadingVersionIcon isPro={isPro} />
-            <span>{versionTitle}</span>
-          </div>
           <h1>正在解读中...</h1>
         </div>
 
@@ -379,34 +350,36 @@ export function MobileWebLoadingPage({
           </div>
           <div className="am-loading-progress-track">
             <div className="am-loading-progress-fill" style={{ width: `${progress}%` }} />
-            <div className="am-loading-progress-shimmer" style={{ left: `calc(${Math.max(0, Math.min(progress, 100))}% - 20px)` }} />
+            <div
+              className="am-loading-progress-shimmer"
+              style={{
+                left: `calc(${Math.max(0, Math.min(progress, 100))}% - (var(--am-loading-progress-shimmer-width) / 2))`,
+              }}
+            />
           </div>
-          <div className="am-loading-progress-text">{currentMessage}</div>
           {progress < 100 && estimatedSeconds > 0 ? (
-            <div className="am-loading-progress-note">预计还需约 {Math.ceil(estimatedSeconds / 10) * 10} 秒</div>
+            <div className="am-loading-progress-note">
+              <span className="am-loading-progress-note__line">
+                预计还需约{Math.ceil(estimatedSeconds / 10) * 10}秒，可选择先
+                {showLeaveLater ? (
+                  <button
+                    type="button"
+                    className="am-loading-progress-exit am-loading-progress-exit--inline"
+                    onClick={onLeaveLater}
+                  >
+                    退出
+                  </button>
+                ) : (
+                  "退出"
+                )}
+                本页
+              </span>
+              <span>稍后到「历史解读」页面查看</span>
+            </div>
           ) : (
             <div className="am-loading-progress-note">即将完成，请稍候</div>
           )}
-          <div className={`am-loading-speed-note am-loading-speed-note--${isPro ? "pro" : "lite"}`}>
-            {speedNote}
-          </div>
         </div>
-
-        {showLeaveLater ? (
-          <div className="am-loading-action-card">
-            <div className="am-loading-action-card__copy">
-              <strong>不用一直停留在这里</strong>
-              <p>当前版本会在本页同步等待报告返回。你也可以先返回上传页调整输入后重新生成。</p>
-            </div>
-            <button
-              type="button"
-              className="am-loading-action-button"
-              onClick={onLeaveLater}
-            >
-              返回上传页
-            </button>
-          </div>
-        ) : null}
 
         <div className="am-loading-log-card">
           <div className="am-loading-log-title">正在分析：</div>

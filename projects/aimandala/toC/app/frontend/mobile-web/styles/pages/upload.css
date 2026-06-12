@@ -539,7 +539,7 @@
 .am-upload-bottom-sheet {
   position: relative;
   z-index: 2;
-  margin-top: -12px;
+  margin-top: var(--am-layout-bottom-sheet-gap);
   background: linear-gradient(
     180deg,
     var(--am-upload-bottom-sheet-fill) 0,

@@ -5,6 +5,8 @@ import { LoadingPage } from "./components/LoadingPage";
 import { ReportPage } from "./components/ReportPage";
 import { HistoryPage } from "./components/HistoryPage";
 import { SelectPlanPage } from "./components/SelectPlanPage";
+import { ConfirmPaymentPage } from "./components/ConfirmPaymentPage";
+import { HistoryRecordDetailPage } from "./components/HistoryRecordDetailPage";
 
 export const router = createBrowserRouter([
   {
@@ -30,5 +32,21 @@ export const router = createBrowserRouter([
   {
     path: "/select-plan",
     Component: SelectPlanPage,
+  },
+  {
+    path: "/confirm-payment",
+    Component: ConfirmPaymentPage,
+  },
+  {
+    path: "/history-record-detail/not-upgraded",
+    Component: HistoryRecordDetailPage,
+  },
+  {
+    path: "/history-record-detail/generating",
+    Component: HistoryRecordDetailPage,
+  },
+  {
+    path: "/history-record-detail/viewable",
+    Component: HistoryRecordDetailPage,
   },
 ]);
