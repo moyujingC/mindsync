@@ -3,6 +3,7 @@ import { postGenerateImages, postPlanCards } from "../api";
 import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
 import {
+  PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
   PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
   PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
   PAPER_INFO_BOARD_QUOTE_BACKGROUNDS,
@@ -662,6 +663,9 @@ export function useWorkbenchController({
       inlineImageStyleName: "极简纸本正文配图",
       inlineImageStyleGuide: PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
       inlineImageReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
+      coverStyleName: "极简纸本公众号封面",
+      coverStyleGuide: PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
+      coverReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
       cardRatio: knowledgePreset?.aspect || "3:4",
       cardWidth: knowledgePreset?.w || 1280,
       cardHeight: knowledgePreset?.h || 1706,

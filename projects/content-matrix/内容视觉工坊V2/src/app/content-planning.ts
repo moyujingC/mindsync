@@ -56,6 +56,13 @@ export type PlannerRequest = {
     url: string;
     note?: string;
   }>;
+  coverStyleName?: string;
+  coverStyleGuide?: string;
+  coverReferenceImages?: Array<{
+    label: string;
+    url: string;
+    note?: string;
+  }>;
   cardRatio: string;
   cardWidth: number;
   cardHeight: number;
@@ -76,6 +83,9 @@ export type PlannerResponse = {
     coverTheme: {
       title: string;
       keywords: string;
+      direction?: string;
+      visualMetaphor?: string;
+      promptText?: string;
     };
   };
   cardPlan: CardPlan[];

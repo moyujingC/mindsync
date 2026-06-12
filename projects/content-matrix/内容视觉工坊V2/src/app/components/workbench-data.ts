@@ -462,10 +462,11 @@ export function buildGenerationTasks({
     const preset = findPreset(DEFAULT_PRESET_KEYS.wechatCover)?.preset;
     if (preset) {
       const coverTheme = planning.analysis.coverTheme;
+      const fallbackCoverPrompt = `为公众号文章《${articleTitle}》生成 3 张封面候选图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。封面只做入口图，不做知识卡，不放正文段落。保留清晰标题区，使用极简纸本信息板风格：温白纸面、纸张拼贴、便签、胶带、低饱和雾蓝与暖灰。文章摘要：${bodyPreview}。`;
       tasks.push({
         articleTitle,
-        prompt: `为公众号文章《${articleTitle}》生成 3 张封面候选图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。方向克制、留白、低饱和雾蓝与暖灰，适合知识型内容封面。文章摘要：${bodyPreview}。`,
-        negativePrompt: "高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、文字",
+        prompt: coverTheme.promptText?.trim() || fallbackCoverPrompt,
+        negativePrompt: "高饱和、霓虹、强商业营销感、人物大头、复杂拼贴、知识卡片布局、信息图、多段正文、额外文字、水印",
         width: preset.w,
         height: preset.h,
         count: 3,
@@ -473,7 +474,7 @@ export function buildGenerationTasks({
         purposeLabel: "公众号封面",
         presetKey: preset.k,
         presetLabel: preset.label,
-        styleName: "蓝雾静读",
+        styleName: "极简纸本公众号封面",
       });
     }
   }

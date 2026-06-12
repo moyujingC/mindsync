@@ -5,6 +5,7 @@ import type {
   WechatInlineSectionType,
 } from "../src/app/content-planning";
 import {
+  PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
   PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
   PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
 } from "../src/app/style-guides";
@@ -33,6 +34,10 @@ const WECHAT_INLINE_IMAGE_GENERATOR_BASE = fs.readFileSync(
   path.join(__dirname, "prompts/wechat-inline-image-generator-base.md"),
   "utf8"
 );
+const WECHAT_COVER_GENERATOR_BASE = fs.readFileSync(
+  path.join(__dirname, "prompts/wechat-cover-generator-base.md"),
+  "utf8"
+);
 
 function resolveKnowledgeCardStyleGuide(request: PlannerRequest) {
   return request.knowledgeCardStyleGuide?.trim() || PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE;
@@ -40,6 +45,10 @@ function resolveKnowledgeCardStyleGuide(request: PlannerRequest) {
 
 function resolveInlineImageStyleGuide(request: PlannerRequest) {
   return request.inlineImageStyleGuide?.trim() || PAPER_INFO_BOARD_INLINE_STYLE_GUIDE;
+}
+
+function resolveCoverStyleGuide(request: PlannerRequest) {
+  return request.coverStyleGuide?.trim() || PAPER_INFO_BOARD_COVER_STYLE_GUIDE;
 }
 
 function renderReferenceImages(
@@ -78,6 +87,12 @@ function buildInjectedInlineImageBase(request: PlannerRequest) {
     .replace("{{REFERENCE_IMAGES}}", renderReferenceImages(request.inlineImageReferenceImages));
 }
 
+function buildInjectedCoverBase(request: PlannerRequest) {
+  return WECHAT_COVER_GENERATOR_BASE
+    .replace("{{STYLE_GUIDE}}", resolveCoverStyleGuide(request))
+    .replace("{{REFERENCE_IMAGES}}", renderReferenceImages(request.coverReferenceImages));
+}
+
 function attachExternalStyleGuideToPromptText(promptText: string | undefined, request: PlannerRequest) {
   const source = promptText?.trim() || "";
   const appendix = `## 外挂视觉风格设定（必须遵守）
@@ -96,6 +111,10 @@ ${appendix}`;
 function attachExternalStyleGuide(response: Omit<PlannerResponse, "provider">, request: PlannerRequest) {
   return {
     ...response,
+    analysis: {
+      ...response.analysis,
+      coverTheme: attachCoverStyleGuideToCoverTheme(response.analysis.coverTheme, request),
+    },
     cardPlan: response.cardPlan.map((card) => ({
       ...card,
       promptText: attachExternalStyleGuideToPromptText(card.promptText, request),
@@ -105,6 +124,45 @@ function attachExternalStyleGuide(response: Omit<PlannerResponse, "provider">, r
       index: item.index ?? index + 1,
       promptText: attachInlineImageStyleGuideToPromptText(item.promptText, item, index, request),
     })),
+  };
+}
+
+function attachCoverStyleGuideToCoverTheme(
+  coverTheme: PlannerResponse["analysis"]["coverTheme"],
+  request: PlannerRequest
+) {
+  const promptText = coverTheme.promptText?.trim();
+  const nextCoverTheme = {
+    ...coverTheme,
+    direction: coverTheme.direction || "公众号首发封面，克制、留白、标题清楚",
+    visualMetaphor: coverTheme.visualMetaphor || coverTheme.title,
+  };
+
+  if (promptText?.includes("## 外挂公众号封面风格设定")) {
+    return nextCoverTheme;
+  }
+
+  const appendix = `## 外挂公众号封面风格设定（必须遵守）
+
+${resolveCoverStyleGuide(request)}
+
+${renderReferenceImages(request.coverReferenceImages)}`;
+
+  return {
+    ...nextCoverTheme,
+    promptText: promptText
+      ? `${promptText}
+
+${appendix}`
+      : buildWechatCoverPromptText({
+          articleTitle: request.articleTitle,
+          coverTitle: coverTheme.title,
+          keywords: coverTheme.keywords,
+          direction: nextCoverTheme.direction,
+          visualMetaphor: nextCoverTheme.visualMetaphor,
+          styleGuide: resolveCoverStyleGuide(request),
+          referenceImages: renderReferenceImages(request.coverReferenceImages),
+        }),
   };
 }
 
@@ -518,6 +576,82 @@ ${referenceImages}
 不要知识卡片，不要信息图，不要大标题海报，不要多段文字，不要复杂流程图，不要营销封面感，不要夸张负面情绪。`;
 }
 
+function buildWechatCoverPromptText({
+  articleTitle,
+  coverTitle,
+  keywords,
+  direction,
+  visualMetaphor,
+  styleGuide,
+  referenceImages,
+}: {
+  articleTitle: string;
+  coverTitle: string;
+  keywords: string;
+  direction: string;
+  visualMetaphor: string;
+  styleGuide: string;
+  referenceImages: string;
+}) {
+  return `【公众号封面图 - 3 张候选，横版 900×383】
+
+用途：公众号文章《${articleTitle}》首发封面。
+
+## 文字渲染规则
+
+只渲染反引号中的文字。不得自行添加未经指定的文字、字母、数字、栏目名、日期、水印或符号。
+
+## 共同风格
+
+${styleGuide}
+
+${referenceImages}
+
+## 文章入口判断
+
+封面主题：${coverTitle}
+
+关键词：${keywords}
+
+视觉隐喻：${visualMetaphor}
+
+情绪方向：${direction}
+
+## 候选 1
+
+构图：标题左置，占画面左侧 45%-55%；右侧用一个克制的纸本隐喻物件承接主题，背景保留大面积温白纸面。
+
+标题文字：\`${articleTitle}\`
+
+画面元素：一张主纸片、少量胶带、一个与“${visualMetaphor}”相关的低饱和小物件或小图框。
+
+重点：标题可读，纸本质感明确，主题隐喻清楚。
+
+## 候选 2
+
+构图：中心纸片承载标题，背后只有轻微纸张叠层和低饱和色块，右下角放一个小型隐喻物件。
+
+标题文字：\`${articleTitle}\`
+
+画面元素：中心标题纸片、浅雾蓝/浅卡其色块、铅笔或便签边角。
+
+重点：更安静，更适合知识型公众号。
+
+## 候选 3
+
+构图：标题区与主体物件错位，标题放在中左纸片上，右侧或下方用边角纸张层次和轻扫描感制造入口气质。
+
+标题文字：\`${articleTitle}\`
+
+画面元素：错位纸片、回形针或胶带、一个象征“${keywords}”的简洁物件。
+
+重点：入口感稍强，但不能商业营销化。
+
+## 禁止
+
+不要知识卡片布局，不要小红书竖版卡片，不要信息图，不要段落文字，不要人物大头，不要复杂拼贴，不要高饱和营销海报。`;
+}
+
 function pickKeyQuotes(rawText: string) {
   const quoteBlocks = rawText
     .split(/\r?\n/)
@@ -593,6 +727,10 @@ export function planKnowledgeCardsFromArticle(
 
   const keyQuotes = pickKeyQuotes(request.rawText);
   const firstTitle = cardPlan[0]?.title || request.articleTitle || "文章主观点";
+  const coverTitle = firstTitle.replace(/^一[、.·]\s*/, "");
+  const coverKeywords = keyQuotes.join(" / ") || firstTitle;
+  const coverDirection = "克制、清醒、留白，有轻微疲惫感但不消极，适合知识型公众号首发入口";
+  const coverVisualMetaphor = `用纸本文稿、便签和一个与“${coverTitle}”相关的安静桌面物件表达文章入口`;
   const inlineImagePlan = cardPlan.slice(0, 3).map((card, index) => {
     const sectionQuote = keyQuotes.find(
       (quote) => card.summary.includes(quote) || quote.includes(card.summary.slice(0, 12))
@@ -643,8 +781,19 @@ export function planKnowledgeCardsFromArticle(
       cardOutlineTitles: cardPlan.map((card) => card.title),
       keyQuotes,
       coverTheme: {
-        title: firstTitle.replace(/^一[、.·]\s*/, ""),
-        keywords: keyQuotes.join(" / ") || firstTitle,
+        title: coverTitle,
+        keywords: coverKeywords,
+        direction: coverDirection,
+        visualMetaphor: coverVisualMetaphor,
+        promptText: buildWechatCoverPromptText({
+          articleTitle: request.articleTitle,
+          coverTitle,
+          keywords: coverKeywords,
+          direction: coverDirection,
+          visualMetaphor: coverVisualMetaphor,
+          styleGuide: resolveCoverStyleGuide(request),
+          referenceImages: renderReferenceImages(request.coverReferenceImages),
+        }),
       },
     },
     cardPlan,
@@ -654,11 +803,12 @@ export function planKnowledgeCardsFromArticle(
 
 function buildPrompt(request: PlannerRequest) {
   return `
-下面有两套并列的运行版基座：
+下面有三套并列的运行版基座：
 1. 小红书知识卡片提示词生成器：用于拆知识卡和生成知识卡 promptText。
 2. 公众号正文配图提示词生成器：用于先生成正文配图文案 / 绘图指令，再交给文生图。
+3. 公众号封面提示词生成器：用于生成 analysis.coverTheme.promptText。
 
-两者不能混用。正文配图不是知识卡片。
+三者不能混用。正文配图不是知识卡片，公众号封面也不是知识卡片。
 
 【小红书知识卡片提示词生成器】
 
@@ -667,6 +817,10 @@ ${buildInjectedGeneratorBase(request)}
 【公众号正文配图提示词生成器】
 
 ${buildInjectedInlineImageBase(request)}
+
+【公众号封面提示词生成器】
+
+${buildInjectedCoverBase(request)}
 
 请使用上面的生成器规则处理这篇文章，并额外遵守以下系统约束：
 - 必须返回 JSON，不要输出 Markdown 代码块，不要输出额外解释。
@@ -681,10 +835,13 @@ ${buildInjectedInlineImageBase(request)}
 - 正文配图必须先生成配图文案 / 绘图指令，也就是 inlineImagePlan[].promptText。
 - 正文配图不是知识卡片，不是封面，不是海报；只规划 1-4 张，服务长文阅读节奏。
 - 正文配图必须按“观点 / 流程 / 情绪 / 隐喻 / 方法动作”寻找认知锚点，每张图只表达一个锚点。
+- 公众号封面必须生成 analysis.coverTheme.promptText，封面只做入口图，不做知识拆解，不做正文配图，不放多段正文。
+- 封面标题必须使用文章原标题，不要改写，不要增加导语、摘要、副标题、日期、作者或水印。
 
 文章标题：${request.articleTitle}
 知识卡风格名称：${request.knowledgeCardStyleName}
 正文配图风格名称：${request.inlineImageStyleName}
+公众号封面风格名称：${request.coverStyleName || "极简纸本公众号封面"}
 卡片比例：${request.cardRatio}
 卡片尺寸：${request.cardWidth}x${request.cardHeight}
 
@@ -702,7 +859,10 @@ ${request.rawText}
     "keyQuotes": ["重点句1", "重点句2"],
     "coverTheme": {
       "title": "封面主题",
-      "keywords": "关键词1 / 关键词2 / 关键词3"
+      "keywords": "关键词1 / 关键词2 / 关键词3",
+      "direction": "封面的情绪和入口气质",
+      "visualMetaphor": "封面的具体视觉隐喻",
+      "promptText": "完整公众号封面绘图提示词，包含 3 张候选构图"
     }
   },
   "cardPlan": [
