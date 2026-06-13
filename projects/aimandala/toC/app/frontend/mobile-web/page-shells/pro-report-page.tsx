@@ -176,6 +176,18 @@ function getModuleText(module?: ReportDocumentModule | null): string {
   return [module.subtitle, module.body].filter(Boolean).join("\n").trim();
 }
 
+function getStructuredString(
+  source: Record<string, unknown> | null | undefined,
+  keys: string[],
+): string | null {
+  if (!source) return null;
+  for (const key of keys) {
+    const value = source[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return null;
+}
+
 function moduleMatches(module: ReportDocumentModule, keywords: string[]): boolean {
   const source = `${module.type ?? ""} ${module.title}`.toLowerCase();
   return keywords.some((keyword) => source.includes(keyword.toLowerCase()));
@@ -658,6 +670,22 @@ function ProReportModuleShell({
   );
 }
 
+function ProFollowupIndex({
+  count,
+}: {
+  count: number;
+}) {
+  return (
+    <div className="am-pro-followup-index" aria-label={`本报告有 ${count} 条追问`}>
+      <span>
+        <FollowupGlyph />
+        本报告有 {count} 条追问
+      </span>
+      <button type="button">收起 ^</button>
+    </div>
+  );
+}
+
 function ProMainlineCard({ text }: { text: string }) {
   return (
     <article className="am-pro-mainline-card">
@@ -1052,14 +1080,24 @@ export function MobileWebProReportPage({
   const hasProReport = state.report?.version === "pro" && documentSections.length > 0;
   const isError = state.step === "error" && Boolean(state.lastError);
   const isGenerating = !hasProReport && !isError;
+  const structuredDate = getStructuredString(state.report?.structured, [
+    "generated_at",
+    "generatedAt",
+    "created_at",
+    "createdAt",
+    "date",
+  ]);
   const generatedAt = useMemo(
-    () =>
-      new Date().toLocaleDateString("zh-CN", {
+    () => {
+      const sourceDate = structuredDate ? new Date(structuredDate) : new Date();
+      const validDate = Number.isNaN(sourceDate.getTime()) ? new Date() : sourceDate;
+      return validDate.toLocaleDateString("zh-CN", {
         year: "numeric",
         month: "long",
         day: "numeric",
-      }),
-    [],
+      });
+    },
+    [structuredDate],
   );
   const pageStyle = {
     "--am-pattern-image": `url(${brandPattern})`,
@@ -1206,6 +1244,8 @@ export function MobileWebProReportPage({
 
               {hasProReport ? (
                 <>
+                  <ProFollowupIndex count={4} />
+
                   <ProReportModuleShell index="01" title="深层主线" accent="#D4A054">
                     <ProMainlineCard text={mainlineText} />
                   </ProReportModuleShell>

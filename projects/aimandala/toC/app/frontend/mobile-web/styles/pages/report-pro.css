@@ -486,6 +486,38 @@
   gap: 10px;
 }
 
+.am-pro-followup-index {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 28px;
+  margin: -3px 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(200, 160, 102, 0.28);
+  color: #8A6E3C;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.am-pro-followup-index span,
+.am-pro-followup-index button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.am-pro-followup-index svg {
+  color: rgba(196, 120, 80, 0.85);
+}
+
+.am-pro-followup-index button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8A6E3C;
+  font-size: 12px;
+}
+
 .am-pro-template-module {
   margin-bottom: 10px;
 }
