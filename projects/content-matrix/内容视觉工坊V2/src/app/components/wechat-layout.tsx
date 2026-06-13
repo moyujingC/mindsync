@@ -320,24 +320,13 @@ export function WechatLayout() {
       );
       const plainText = buildWechatArticleText(currentArticle.title, currentArticleBlocks);
 
-      if (
-        typeof ClipboardItem !== "undefined" &&
-        navigator.clipboard &&
-        "write" in navigator.clipboard
-      ) {
-        const item = new ClipboardItem({
-          "text/html": new Blob([html], { type: "text/html" }),
-          "text/plain": new Blob([plainText], { type: "text/plain" }),
-        });
-        await navigator.clipboard.write([item]);
-      } else if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(plainText);
-      } else {
-        throw new Error("Clipboard API unavailable");
+      if (!copyWechatArticleWithCopyEvent(html, plainText)) {
+        await copyWechatArticleToClipboard(html, plainText);
       }
 
       setStatusMessage("公众号正文已复制，可直接粘贴到公众号编辑器");
-    } catch {
+    } catch (error) {
+      console.warn("[wechat-copy] failed", error);
       setStatusMessage("复制失败，请确认浏览器已允许访问剪贴板");
     } finally {
       setIsCopying(false);
@@ -1123,6 +1112,92 @@ function formatSavedAt(isoString: string) {
   const hh = String(date.getHours()).padStart(2, "0");
   const mm = String(date.getMinutes()).padStart(2, "0");
   return `${hh}:${mm}`;
+}
+
+async function copyWechatArticleToClipboard(html: string, plainText: string) {
+  try {
+    if (
+      typeof ClipboardItem !== "undefined" &&
+      navigator.clipboard &&
+      "write" in navigator.clipboard
+    ) {
+      const item = new ClipboardItem({
+        "text/html": new Blob([html], { type: "text/html" }),
+        "text/plain": new Blob([plainText], { type: "text/plain" }),
+      });
+      await navigator.clipboard.write([item]);
+      return;
+    }
+  } catch {
+    // Fall through to the selection-based copy path.
+  }
+
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(plainText);
+    return;
+  }
+
+  if (copyPlainTextWithSelection(plainText)) {
+    return;
+  }
+
+  throw new Error("Clipboard unavailable");
+}
+
+function copyWechatArticleWithCopyEvent(html: string, plainText: string) {
+  let copied = false;
+  const handleCopy = (event: ClipboardEvent) => {
+    if (!event.clipboardData) return;
+    event.clipboardData.setData("text/html", html);
+    event.clipboardData.setData("text/plain", plainText);
+    event.preventDefault();
+    copied = true;
+  };
+
+  document.addEventListener("copy", handleCopy, { once: true });
+  const marker = document.createElement("textarea");
+  try {
+    marker.value = plainText || " ";
+    marker.setAttribute("readonly", "true");
+    marker.style.position = "fixed";
+    marker.style.left = "-9999px";
+    marker.style.top = "0";
+    marker.style.width = "1px";
+    marker.style.height = "1px";
+    marker.style.opacity = "0";
+    document.body.appendChild(marker);
+
+    window.focus();
+    marker.focus();
+    marker.select();
+
+    const commandSucceeded = document.execCommand("copy");
+    return copied && commandSucceeded;
+  } finally {
+    document.removeEventListener("copy", handleCopy);
+    if (marker.parentNode) {
+      document.body.removeChild(marker);
+    }
+  }
+}
+
+function copyPlainTextWithSelection(text: string) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  textarea.style.top = "0";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+
+  let copied = false;
+  try {
+    copied = document.execCommand("copy");
+  } finally {
+    document.body.removeChild(textarea);
+  }
+  return copied;
 }
 
 function buildWechatArticleHtml(
