@@ -686,7 +686,7 @@ export function WechatLayout() {
                       letterSpacing: "0.14em",
                     }}
                   >
-                    {block.text}
+                    {renderInlineMarkdown(block.text)}
                   </div>
                 );
               }
@@ -704,7 +704,7 @@ export function WechatLayout() {
                       textAlign: "justify",
                     }}
                   >
-                    {block.text}
+                    {renderInlineMarkdown(block.text)}
                   </div>
                 );
               }
@@ -725,7 +725,7 @@ export function WechatLayout() {
                       borderRadius: "0 8px 8px 0",
                     }}
                   >
-                    {block.text}
+                    {renderInlineMarkdown(block.text)}
                   </div>
                 );
               }
@@ -810,7 +810,7 @@ export function WechatLayout() {
                       textAlign: "justify",
                     }}
                   >
-                    {block.body}
+                    {renderInlineMarkdown(block.body)}
                   </div>
                 </div>
               );
@@ -1101,6 +1101,34 @@ function escapeHtml(text: string) {
     .replaceAll(">", "&gt;");
 }
 
+function stripInlineMarkdown(text: string) {
+  return text.replace(/\*\*([^*]+)\*\*/g, "$1");
+}
+
+function renderInlineMarkdown(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, index) => {
+    const match = part.match(/^\*\*([^*]+)\*\*$/);
+    if (!match) return part;
+    return (
+      <strong key={`${match[1]}-${index}`} style={{ fontWeight: 700 }}>
+        {match[1]}
+      </strong>
+    );
+  });
+}
+
+function inlineMarkdownToHtml(text: string) {
+  return text
+    .split(/(\*\*[^*]+\*\*)/g)
+    .map((part) => {
+      const match = part.match(/^\*\*([^*]+)\*\*$/);
+      if (!match) return escapeHtml(part);
+      return `<strong style="font-weight:700;">${escapeHtml(match[1])}</strong>`;
+    })
+    .join("");
+}
+
 function sanitizePreviewHtml(html: string) {
   const doc = new DOMParser().parseFromString(html, "text/html");
   doc.querySelectorAll("script,style").forEach((node) => node.remove());
@@ -1115,6 +1143,10 @@ function formatSavedAt(isoString: string) {
 }
 
 async function copyWechatArticleToClipboard(html: string, plainText: string) {
+  if (copyPlainTextWithSelection(plainText)) {
+    return;
+  }
+
   try {
     if (
       typeof ClipboardItem !== "undefined" &&
@@ -1134,10 +1166,6 @@ async function copyWechatArticleToClipboard(html: string, plainText: string) {
 
   if (navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(plainText);
-    return;
-  }
-
-  if (copyPlainTextWithSelection(plainText)) {
     return;
   }
 
@@ -1211,7 +1239,7 @@ function buildWechatArticleHtml(
     if (block.type === "eyebrow") {
       return `
         <p style="margin:18px 0 8px;color:${theme.accentColor};font-size:11.5px;letter-spacing:0.14em;">
-          ${escapeHtml(block.text)}
+          ${inlineMarkdownToHtml(block.text)}
         </p>
       `;
     }
@@ -1219,7 +1247,7 @@ function buildWechatArticleHtml(
     if (block.type === "paragraph") {
       return `
         <p style="margin:18px 0 0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;">
-          ${escapeHtml(block.text)}
+          ${inlineMarkdownToHtml(block.text)}
         </p>
       `;
     }
@@ -1227,7 +1255,7 @@ function buildWechatArticleHtml(
     if (block.type === "quote") {
       return `
         <blockquote style="margin:20px 0 12px;padding:10px 14px;border-left:3px solid ${theme.accentColor};background:${theme.blockBg};color:${theme.accentColor};font-size:${theme.quoteFontSize}px;line-height:${theme.bodyLineHeight};border-radius:0 8px 8px 0;">
-          ${escapeHtml(block.text)}
+          ${inlineMarkdownToHtml(block.text)}
         </blockquote>
       `;
     }
@@ -1238,7 +1266,7 @@ function buildWechatArticleHtml(
           theme.bodyFontSize - 1,
           12
         )}px;line-height:${theme.bodyLineHeight};">
-          ${escapeHtml(block.text)}
+          ${inlineMarkdownToHtml(block.text)}
         </div>
       `;
     }
@@ -1267,7 +1295,7 @@ function buildWechatArticleHtml(
           ${escapeHtml(block.title)}
         </h2>
         <p style="margin:0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;">
-          ${escapeHtml(block.body)}
+          ${inlineMarkdownToHtml(block.body)}
         </p>
       </section>
     `;
@@ -1300,12 +1328,12 @@ function buildWechatArticleText(title: string, blocks: ArticleBlock[]) {
         block.type === "eyebrow" ||
         block.type === "note"
       ) {
-        return [block.text, ""];
+        return [stripInlineMarkdown(block.text), ""];
       }
       if (block.type === "image") {
         return [`[图片] ${block.label}`, ""];
       }
-      return [block.title, block.body, ""];
+      return [block.title, stripInlineMarkdown(block.body), ""];
     }),
     ARTICLE_FOOTER,
   ].join("\n");
