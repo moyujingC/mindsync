@@ -115,7 +115,7 @@ describe("MobileWebApp", () => {
     expect(html).toContain("重新上传画作");
   });
 
-  it("report 主路由默认渲染追问入口", () => {
+  it("report 主路由默认不渲染 Lite 追问入口", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="report"
@@ -129,8 +129,47 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("对这份报告有疑问，可以问曼曼");
-    expect(html).toContain("输入你想继续追问的报告问题");
+    expect(html).toContain("解读报告(Lite版)");
+    expect(html).not.toContain("输入你想继续追问的问题");
+  });
+
+  it("reportPro 路由渲染 Pro 报告与段落级追问", () => {
+    const proFlowState: MandalaFlowState = {
+      ...flowState,
+      step: "proReady",
+      status: {
+        ...flowState.status!,
+        version_purchased: ["lite", "pro"],
+        can_upgrade: false,
+      },
+      report: {
+        ...flowState.report!,
+        version: "pro",
+        title: "Pro 解读报告",
+        report:
+          "# Pro 解读报告\n## 深层主线\n你正在把注意力收回自己身上。\n\n## 深度解读\n画面中的收束感提示你正在保护真实感受。\n\n## 三圈能量\n内圈较稳，中圈有重复。\n\n## 模式形成原因\n你习惯先确认安全，再表达需要。\n\n## 调节建议\n这周可以先做一次小而真实的表达。",
+      },
+    };
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="reportPro"
+        flowState={proFlowState}
+        uploadDraft={{
+          imagePath: "/tmp/sample.png",
+          theme: "wealth",
+          reportType: "pro",
+          reportVariant: "pro",
+          paintingIntention: "",
+          paintingFeeling: "",
+        }}
+      />,
+    );
+
+    expect(html).toContain("Pro版完整解读");
+    expect(html).toContain("追问");
+    expect(html).toContain("请输入你想追问的问题");
+    expect(html).toContain("追问记录");
+    expect(html).not.toContain("AI 助手随时为你解答");
   });
 
   it("report 错误态不渲染正文占位和上传调试信息", () => {

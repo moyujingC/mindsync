@@ -111,7 +111,7 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
     },
     report:
       version === "pro"
-        ? "# 一镜：冰封的太阳 - Pro版\n## 核心画像\n你的内在能量很强，但表达端仍带着明显的收束和保护。你不是没有热情，而是热情长期被谨慎包裹。\n\n## 三圈能量分析\n内圈更强，说明你对自己的真实感受并不陌生；中外圈的迟疑，更多发生在关系与外界互动层。\n\n## 当前失衡\n你现在更像是火被压住，而不是火不够。持续消耗、思虑偏多，会让行动感变弱。\n\n## 下一步建议\n先做小步表达，少做完美准备。让一个真实动作先发生，比继续在脑内推演更重要。"
+        ? "# 一镜：冰封的太阳 - Pro版\n## 深层主线\n你的内在能量很强，但表达端仍带着明显的收束和保护。你不是没有热情，而是热情长期被谨慎包裹。\n\n## 深度解读\n画面里的明亮部分像是想要被看见的生命力，外层的冷色和停顿感则像一层边界。它们共同呈现出一种既想靠近、又会先观察安全感的模式。\n\n## 三圈能量\n内圈更强，说明你对自己的真实感受并不陌生；中外圈的迟疑，更多发生在关系与外界互动层。真正需要先调整的，未必是内在感受，而是它进入关系时的表达方式。\n\n## 模式形成原因\n这个模式更像长期形成的自我保护：你已经习惯先把感受收好，等确认环境足够安全再慢慢释放。它帮助你维持稳定，也让真实需要容易被延后。\n\n## 调节建议\n先做小步表达，少做完美准备。让一个真实动作先发生，比继续在脑内推演更重要。"
         : "这是一份本地预览报告，用来支撑 mobile-web 页面开发。\n\n它不代表最终解读文案，只负责让布局、层次和状态在开发壳里先稳定下来。",
     ai_qa_context:
       version === "pro"
@@ -313,10 +313,31 @@ export function createPreviewAppProps(
       };
 
     case "report":
+    case "reportLite":
       return {
         route,
         uploadDraft: draft,
         flowState: flowStateOverride ?? baseFlowState,
+      };
+
+    case "reportPro":
+      return {
+        route,
+        uploadDraft: {
+          ...draft,
+          reportType: "pro",
+          reportVariant: "pro",
+        },
+        flowState: flowStateOverride ?? {
+          ...baseFlowState,
+          step: "proReady",
+          status: {
+            ...createMockStatus(),
+            version_purchased: ["lite", "pro"],
+            can_upgrade: false,
+          },
+          report: createMockReport("pro"),
+        },
       };
 
     case "history":

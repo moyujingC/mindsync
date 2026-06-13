@@ -86,11 +86,16 @@ export function createPreviewRouteInput(
       };
 
     case "report":
+    case "reportLite":
+    case "reportPro":
       return {
         route,
         params: {
           interpretationId,
-          uploadDraft: draft,
+          uploadDraft:
+            route === "reportPro"
+              ? { ...draft, reportType: "pro", reportVariant: "pro" }
+              : { ...draft, reportType: "lite", reportVariant: "lite" },
         },
       };
 

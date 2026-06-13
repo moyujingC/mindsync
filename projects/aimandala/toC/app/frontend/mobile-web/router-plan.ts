@@ -48,6 +48,8 @@ export type MobileWebRouteInput =
   | { route: "reportEntry"; params: UploadRouteInput }
   | { route: "loading"; params: LiteReportRouteInput }
   | { route: "report"; params: ExistingReportRouteInput }
+  | { route: "reportLite"; params: ExistingReportRouteInput }
+  | { route: "reportPro"; params: ExistingReportRouteInput }
   | { route: "history"; params: HistoryRouteInput }
   | { route: "historyRecordDetail"; params: HistoryRecordDetailRouteInput }
   | { route: "historyRecordDetailNotUpgraded"; params: HistoryRecordDetailPreviewRouteInput }
@@ -216,10 +218,12 @@ export async function resolveMobileWebRouteProps(
       };
     }
 
-    case "report": {
+    case "report":
+    case "reportLite":
+    case "reportPro": {
       const report = await loadExistingReportPage(input.params.interpretationId);
       return {
-        route: "report",
+        route: input.route,
         flowState: report.state,
         uploadDraft: input.params.uploadDraft,
       };
@@ -276,5 +280,11 @@ function assertNever(input: never): never {
 }
 
 export function isReportLikeRoute(route: MobileWebRouteId): boolean {
-  return route === "loading" || route === "report" || isHistoryRecordDetailRoute(route);
+  return (
+    route === "loading" ||
+    route === "report" ||
+    route === "reportLite" ||
+    route === "reportPro" ||
+    isHistoryRecordDetailRoute(route)
+  );
 }

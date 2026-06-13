@@ -1,18 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type * as ApiConfigModule from "../../shared/api/config";
-
-const { isReportFollowupEnabledMock } = vi.hoisted(() => ({
-  isReportFollowupEnabledMock: vi.fn(),
-}));
-
-vi.mock("../../shared/api/config", async () => {
-  const actual = await vi.importActual<typeof ApiConfigModule>("../../shared/api/config");
-  return {
-    ...actual,
-    isReportFollowupEnabled: isReportFollowupEnabledMock,
-  };
-});
+import { describe, expect, it } from "vitest";
 
 import { MobileWebReportPage } from "./report-page";
 import type { MandalaFlowState } from "../../shared/types";
@@ -59,26 +46,11 @@ const flowState: MandalaFlowState = {
 };
 
 describe("MobileWebReportPage followup", () => {
-  beforeEach(() => {
-    isReportFollowupEnabledMock.mockReset();
-    isReportFollowupEnabledMock.mockReturnValue(false);
-  });
-
-  it("feature flag off 时不显示追问入口", () => {
+  it("Lite 报告页不显示追问入口", () => {
     const html = renderToStaticMarkup(<MobileWebReportPage state={flowState} />);
 
     expect(html).not.toContain("对这份报告有疑问，可以问曼曼");
-  });
-
-  it("feature flag on 时显示追问范围、输入提示和边界说明", () => {
-    isReportFollowupEnabledMock.mockReturnValue(true);
-
-    const html = renderToStaticMarkup(<MobileWebReportPage state={flowState} />);
-
-    expect(html).toContain("对这份报告有疑问，可以问曼曼");
-    expect(html).toContain("可以问：这段报告是什么意思");
-    expect(html).toContain("输入你想继续追问的报告问题");
-    expect(html).toContain("不能替代专业心理咨询、医疗建议、财务建议或重大现实决策");
+    expect(html).not.toContain("输入你想继续追问的报告问题");
   });
 
   it("可以按运行时传入的升级文案渲染底部动作", () => {

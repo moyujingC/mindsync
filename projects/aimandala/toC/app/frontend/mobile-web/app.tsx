@@ -6,6 +6,7 @@ import { MobileWebHistoryPage } from "./page-shells/history-page";
 import { MobileWebHistoryRecordDetailPage } from "./page-shells/history-record-detail-page";
 import { MobileWebReportEntryPage } from "./page-shells/report-entry-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
+import { MobileWebProReportPage } from "./page-shells/pro-report-page";
 import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { HistoryFilterId } from "./components/history-cards";
 import { isHistoryRecordDetailRoute, type MobileWebRouteId } from "./routes";
@@ -103,6 +104,7 @@ export function MobileWebApp({
   onLoadingLeaveLater,
   onReportPrimaryAction,
   onReportSecondaryAction,
+  onReportBackAction,
   reportPrimaryDisabled = false,
   reportPrimaryLabel,
   reportSecondaryLabel,
@@ -182,12 +184,43 @@ export function MobileWebApp({
           state={flowState}
           isPro={uploadDraft ? getDraftReportVariant(uploadDraft) === "pro" : false}
           onBack={onReportSecondaryAction}
-          onClose={onReportSecondaryAction}
           onLeaveLater={onLoadingLeaveLater}
         />
       );
 
     case "report":
+      if (!flowState) {
+        return "Missing flow state";
+      }
+      if (flowState.report?.version === "pro" || flowState.step === "proReady") {
+        return (
+          <MobileWebProReportPage
+            state={flowState}
+            uploadDraft={uploadDraft}
+            onBackAction={onReportBackAction ?? onReportSecondaryAction}
+            onRestartAction={onReportSecondaryAction}
+            onRetryAction={onReportPrimaryAction}
+          />
+        );
+      }
+      return (
+        <MobileWebReportPage
+          route={route}
+          state={flowState}
+          uploadDraft={uploadDraft}
+          environmentLabel={environmentLabel}
+          environmentDetail={environmentDetail}
+          environmentTone={environmentTone}
+          onPrimaryAction={onReportPrimaryAction}
+          onSecondaryAction={onReportSecondaryAction}
+          primaryDisabled={reportPrimaryDisabled}
+          primaryLabel={reportPrimaryLabel}
+          secondaryLabel={reportSecondaryLabel}
+          footerHint={reportFooterHint}
+        />
+      );
+
+    case "reportLite":
       if (!flowState) {
         return "Missing flow state";
       }
@@ -205,6 +238,20 @@ export function MobileWebApp({
           primaryLabel={reportPrimaryLabel}
           secondaryLabel={reportSecondaryLabel}
           footerHint={reportFooterHint}
+        />
+      );
+
+    case "reportPro":
+      if (!flowState) {
+        return "Missing flow state";
+      }
+      return (
+        <MobileWebProReportPage
+          state={flowState}
+          uploadDraft={uploadDraft}
+          onBackAction={onReportBackAction ?? onReportSecondaryAction}
+          onRestartAction={onReportSecondaryAction}
+          onRetryAction={onReportPrimaryAction}
         />
       );
 

@@ -1,6 +1,5 @@
 import {
   Fragment,
-  useEffect,
   useMemo,
   useState,
   type CSSProperties,
@@ -10,6 +9,12 @@ import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
 import { getThemeDisplayName } from "../../shared/core";
 import { SharedAppTopBar } from "../../shared/ui/app-top-bar";
+import { createReportFollowup } from "../../shared/api";
+import { isReportFollowupEnabled } from "../../shared/api/config";
+import {
+  buildReportDocument,
+  type ReportDocumentModule,
+} from "../report-document";
 import type { MandalaFlowState } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
 
@@ -29,9 +34,9 @@ type MarkdownBlock =
   | { type: "ordered-list"; items: string[] }
   | { type: "table"; header: string[]; rows: string[][] };
 
-type ChatMessage = {
-  role: "user" | "assistant";
-  content: string;
+type FollowupRound = {
+  question: string;
+  answer?: string;
 };
 
 function SaveGlyph() {
@@ -59,22 +64,6 @@ function InfoGlyph() {
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
       <path d="M12 10v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       <circle cx="12" cy="7" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-
-function MessageGlyph() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2 1.4-4.2A7.5 7.5 0 1 1 20 11.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function CloseGlyph() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -137,22 +126,6 @@ function parseProMarkdown(state: MandalaFlowState): ProMarkdownSection[] {
   }
 
   return sections;
-}
-
-function parseQaQuestions(state: MandalaFlowState): string[] {
-  const qa = state.report?.ai_qa_context;
-  if (Array.isArray(qa)) {
-    return qa.filter(
-      (item): item is string => typeof item === "string" && item.trim().length > 0,
-    );
-  }
-  if (typeof qa === "string" && qa.trim()) {
-    return qa
-      .split(/\n/)
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-  return [];
 }
 
 function stripMarkdownText(text: string): string {
@@ -521,149 +494,273 @@ function ProReportMarkdown({ sections }: { sections: ProMarkdownSection[] }) {
   );
 }
 
-function MobileWebAiChatModal({
-  open,
-  questions,
-  messages,
-  input,
-  error,
-  sending,
-  onInputChange,
-  onClose,
-  onSend,
+function FollowupGlyph() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.1A8 8 0 1 1 21 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.5 10.2a2.7 2.7 0 0 1 5.1 1.4c0 1.8-2.1 2.1-2.1 3.4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M12.5 17.4h.01" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ChevronGlyph({ expanded }: { expanded?: boolean }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={expanded ? "is-expanded" : undefined}
+    >
+      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function createSeedRounds(state: "thinking" | "answered" | "multi-collapsed"): FollowupRound[] {
+  if (state === "thinking") {
+    return [{ question: "哪一圈最适合我先调整？" }];
+  }
+
+  if (state === "multi-collapsed") {
+    return [
+      {
+        question: "这个模式更像长期形成，还是最近被触发？",
+        answer: "它更像长期形成的保护方式，只是最近被现实压力重新激活了。",
+      },
+      {
+        question: "我怎样减少过度消耗？",
+        answer: "先减少同时回应所有人的冲动，把精力留给一个真正重要的动作。",
+      },
+      {
+        question: "什么环境最支持我的表达？",
+        answer: "更适合在节奏稳定、允许慢一点说明的关系里练习表达。",
+      },
+    ];
+  }
+
+  return [
+    {
+      question: "这周我可以先做一个什么小练习？",
+      answer:
+        "可以先从一次很小的示弱开始：在安全的关系里，说出一个你平时会自己扛下的需要。重点不是立刻改变关系，而是让你的真实感受有一次被看见的机会。",
+    },
+  ];
+}
+
+function ProInlineFollowup({
+  module,
+  state,
+  uploadDraft,
+  themeLabel,
+  initialState,
 }: {
-  open: boolean;
-  questions: string[];
-  messages: ChatMessage[];
-  input: string;
-  error: string | null;
-  sending: boolean;
-  onInputChange: (value: string) => void;
-  onClose: () => void;
-  onSend: (message?: string) => void;
+  module: ReportDocumentModule;
+  state: MandalaFlowState;
+  uploadDraft?: MobileWebUploadDraft;
+  themeLabel: string;
+  initialState: "collapsed" | "input" | "thinking" | "answered" | "multi-collapsed";
 }) {
-  if (!open) {
-    return null;
+  const [panelOpen, setPanelOpen] = useState(initialState !== "collapsed");
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [rounds, setRounds] = useState<FollowupRound[]>(() =>
+    initialState === "thinking" || initialState === "answered" || initialState === "multi-collapsed"
+      ? createSeedRounds(initialState)
+      : [],
+  );
+  const [sending, setSending] = useState(initialState === "thinking");
+  const [error, setError] = useState<string | null>(null);
+  const count = rounds.length;
+  const latestRound = rounds[count - 1];
+  const historyRounds = rounds.slice(0, Math.max(0, count - 1));
+  const canUseApi = isReportFollowupEnabled();
+
+  async function handleSend() {
+    const question = input.trim();
+    const report = state.report;
+    if (!question || sending || !report?.interpretation_id || !report.report) {
+      return;
+    }
+
+    setPanelOpen(true);
+    setInput("");
+    setError(null);
+    setSending(true);
+    const roundIndex = rounds.length;
+    setRounds((current) => [...current, { question }]);
+
+    if (!canUseApi) {
+      window.setTimeout(() => {
+        setRounds((current) =>
+          current.map((round, index) =>
+            index === roundIndex
+              ? {
+                  ...round,
+                  answer:
+                    "这段追问会基于当前报告模块继续展开。当前本地预览先展示交互形态，真实回答会接入报告追问接口。",
+                }
+              : round,
+          ),
+        );
+        setSending(false);
+      }, 650);
+      return;
+    }
+
+    try {
+      const response = await createReportFollowup({
+        report_id: report.interpretation_id,
+        question,
+        report_mode: report.version,
+        final_report_md: report.report,
+        final_report: report.structured ?? {},
+        visual_draft: report.visual_draft ?? null,
+        history: rounds.flatMap((round) =>
+          round.answer
+            ? [
+                { role: "user" as const, content: round.question },
+                { role: "assistant" as const, content: round.answer },
+              ]
+            : [{ role: "user" as const, content: round.question }],
+        ),
+        theme: uploadDraft?.theme ?? "wealth",
+        theme_label: themeLabel,
+        painting_intention: uploadDraft?.paintingIntention ?? "",
+        painting_feeling: uploadDraft?.paintingFeeling ?? "",
+      });
+      setRounds((current) =>
+        current.map((round, index) =>
+          index === roundIndex
+            ? { ...round, answer: stripMarkdownText(response.answer_md) }
+            : round,
+        ),
+      );
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "追问暂时没有成功，请稍后再试。");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  if (!panelOpen && count > 0) {
+    return (
+      <button
+        type="button"
+        className="am-pro-followup-summary"
+        onClick={() => setPanelOpen(true)}
+      >
+        <span>已追问 {count} 次，展开查看</span>
+        <ChevronGlyph />
+      </button>
+    );
+  }
+
+  if (!panelOpen) {
+    return (
+      <div className="am-pro-followup-button-row">
+        <button
+          type="button"
+          className="am-pro-followup-pill"
+          onClick={() => setPanelOpen(true)}
+        >
+          <FollowupGlyph />
+          <span>追问</span>
+        </button>
+      </div>
+    );
   }
 
   return (
-    <>
-      <div
-        role="presentation"
-        onClick={onClose}
-        className="am-pro-chat-modal__backdrop"
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="和曼曼聊聊"
-        className="am-pro-chat-modal"
-      >
-        <div className="am-pro-chat-modal__header-shell">
-          <div className="am-pro-chat-modal__handle" />
-          <div className="am-pro-chat-modal__header">
-            <div className="am-pro-chat-modal__title-group">
-              <div className="am-pro-chat-modal__icon">
-                <MessageGlyph />
-              </div>
-              <div>
-                <div className="am-pro-chat-modal__title">和曼曼聊聊</div>
-                <div className="am-pro-chat-modal__subtitle">关于你的曼陀罗解读</div>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="am-pro-chat-modal__close"
-            >
-              <CloseGlyph />
-            </button>
-          </div>
-        </div>
-        <div className="am-pro-chat-modal__body am-scrollbar-hide">
-          {messages.length === 0 ? (
-            <div className="am-pro-chat-bubble-row is-assistant">
-              <div className="am-pro-chat-avatar">曼</div>
-              <div className="am-pro-chat-bubble is-assistant">
-                嗨，我是曼曼。你可以继续问我这份 Pro 解读里最在意的部分，我先在这里陪你整理思路。
-              </div>
-            </div>
-          ) : null}
-          {messages.map((message, index) => (
-            <div
-              key={`${message.role}-${index}`}
-              className={joinClassNames(
-                "am-pro-chat-bubble-row",
-                message.role === "user" ? "is-user" : "is-assistant",
-              )}
-            >
-              {message.role === "assistant" ? (
-                <div className="am-pro-chat-avatar">曼</div>
-              ) : null}
-              <div
-                className={joinClassNames(
-                  "am-pro-chat-bubble",
-                  message.role === "user" ? "is-user" : "is-assistant",
-                )}
-              >
-                {message.content}
-              </div>
-            </div>
-          ))}
-          {messages.length === 0 && questions.length > 0 ? (
-            <div className="am-pro-chat-suggestions">
-              {questions.map((question) => (
-                <button
-                  key={question}
-                  type="button"
-                  disabled={sending}
-                  onClick={() => onSend(question)}
-                  className="am-pro-chat-suggestions__chip"
-                >
-                  {question}
-                </button>
+    <div className="am-pro-followup-panel">
+      <div className="am-pro-followup-panel__header">
+        <span>{count > 0 ? `追问记录 · ${count}` : "追问记录"}</span>
+        <button
+          type="button"
+          onClick={() => setPanelOpen(false)}
+          className="am-pro-followup-panel__collapse"
+        >
+          收起
+          <ChevronGlyph expanded />
+        </button>
+      </div>
+
+      {historyRounds.length > 0 ? (
+        <div className="am-pro-followup-history">
+          <button
+            type="button"
+            className="am-pro-followup-history__toggle"
+            onClick={() => setHistoryOpen((current) => !current)}
+          >
+            <span>已追问 {historyRounds.length} 次，{historyOpen ? "收起历史" : "展开全部"}</span>
+            <ChevronGlyph expanded={historyOpen} />
+          </button>
+          {historyOpen ? (
+            <div className="am-pro-followup-history__list">
+              {historyRounds.map((round, index) => (
+                <div key={`${round.question}-${index}`} className="am-pro-followup-round is-history">
+                  <div className="am-pro-followup-question">{round.question}</div>
+                  {round.answer ? (
+                    <div className="am-pro-followup-answer">
+                      <span>补充解读</span>
+                      <p>{round.answer}</p>
+                    </div>
+                  ) : null}
+                </div>
               ))}
             </div>
           ) : null}
-          {sending ? (
-            <div className="am-pro-chat-bubble-row is-assistant is-loading">
-              <div className="am-pro-chat-avatar">
-                <LoadingGlyph />
-              </div>
-              <div className="am-pro-chat-bubble is-assistant is-loading">
-                曼曼正在结合这份报告继续想一想……
-              </div>
+        </div>
+      ) : null}
+
+      {latestRound ? (
+        <div className="am-pro-followup-round">
+          <div className="am-pro-followup-question">{latestRound.question}</div>
+          {sending && !latestRound.answer ? (
+            <div className="am-pro-followup-thinking">
+              <LoadingGlyph />
+              <span>正在基于本段报告思考...</span>
+            </div>
+          ) : null}
+          {latestRound.answer ? (
+            <div className="am-pro-followup-answer">
+              <span>补充解读</span>
+              <p>{latestRound.answer}</p>
             </div>
           ) : null}
         </div>
-        <div className="am-pro-chat-modal__footer">
-          {error ? <div className="am-pro-chat-modal__error">{error}</div> : null}
-          <div className="am-pro-chat-modal__input-row">
-            <input
-              value={input}
-              disabled={sending}
-              onChange={(event) => onInputChange(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !sending) {
-                  event.preventDefault();
-                  onSend();
-                }
-              }}
-              placeholder="输入你想继续追问的问题"
-              className="am-pro-chat-modal__input"
-            />
-            <button
-              type="button"
-              disabled={sending}
-              onClick={() => onSend()}
-              className="am-pro-chat-modal__send"
-            >
-              {sending ? <LoadingGlyph /> : <SendGlyph />}
-            </button>
-          </div>
-        </div>
+      ) : null}
+
+      {error ? <div className="am-pro-followup-error">{error}</div> : null}
+
+      <div className="am-pro-followup-input-row">
+        <input
+          value={input}
+          disabled={sending}
+          onChange={(event) => setInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !sending) {
+              event.preventDefault();
+              void handleSend();
+            }
+          }}
+          placeholder="请输入你想追问的问题"
+          className="am-pro-followup-input"
+          aria-label={`${module.title}追问输入`}
+        />
+        <button
+          type="button"
+          disabled={sending || !input.trim()}
+          onClick={() => void handleSend()}
+          className="am-pro-followup-send"
+          aria-label="发送追问"
+        >
+          {sending ? <LoadingGlyph /> : <SendGlyph />}
+        </button>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -675,11 +772,6 @@ export function MobileWebProReportPage({
   onRetryAction,
 }: MobileWebProReportPageProps) {
   const [saved, setSaved] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatInput, setChatInput] = useState("");
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [chatError, setChatError] = useState<string | null>(null);
-  const [chatSending, setChatSending] = useState(false);
   const previewImage =
     uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
   const innerRadius =
@@ -690,11 +782,25 @@ export function MobileWebProReportPage({
     state.status?.three_circles?.middle_radius ??
     state.interpretation?.three_circles?.middle_radius ??
     0.68;
-  const title = useMemo(() => extractProTitle(state), [state]);
+  const reportDocument = useMemo(() => buildReportDocument(state, "pro"), [state]);
+  const title = useMemo(
+    () => reportDocument.title || extractProTitle(state),
+    [reportDocument.title, state],
+  );
   const sections = useMemo(() => parseProMarkdown(state), [state]);
-  const qaQuestions = useMemo(() => parseQaQuestions(state), [state]);
+  const documentSections = useMemo(
+    () =>
+      reportDocument.modules.map((module, index) => ({
+        module,
+        section: sections[index] ?? {
+          title: module.title,
+          body: module.body,
+        },
+      })),
+    [reportDocument.modules, sections],
+  );
   const summary = useMemo(() => extractProSummary(state, sections), [sections, state]);
-  const hasProReport = state.report?.version === "pro" && sections.length > 0;
+  const hasProReport = state.report?.version === "pro" && documentSections.length > 0;
   const isError = state.step === "error" && Boolean(state.lastError);
   const isGenerating = !hasProReport && !isError;
   const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "财富关系";
@@ -710,55 +816,6 @@ export function MobileWebProReportPage({
   const pageStyle = {
     "--am-pattern-image": `url(${brandPattern})`,
   } as CSSProperties;
-
-  useEffect(() => {
-    setChatMessages([]);
-    setChatInput("");
-    setChatError(null);
-    setChatSending(false);
-  }, [state.report?.interpretation_id]);
-
-  async function handleSendChat(message?: string) {
-    const next = (message ?? chatInput).trim();
-    if (!next || chatSending) {
-      return;
-    }
-
-    const interpretationId = state.report?.interpretation_id;
-    if (!interpretationId) {
-      setChatError("当前报告还没有可用的解读记录，暂时无法继续追问。");
-      return;
-    }
-
-    const history = chatMessages.map((item) => ({
-      role: item.role,
-      content: item.content,
-    }));
-    const userMessage: ChatMessage = { role: "user", content: next };
-    setChatMessages((current) => [...current, userMessage]);
-    setChatInput("");
-    setChatError(null);
-    setChatSending(true);
-
-    void history;
-    const messageText = "报告追问暂未接入当前财富报告 API。";
-    setChatError(messageText);
-    setChatMessages((current) => [
-      ...current,
-      {
-        role: "assistant",
-        content: messageText,
-      },
-    ]);
-    setChatSending(false);
-  }
-
-  function openChatWithQuestion(question?: string) {
-    setChatOpen(true);
-    if (question) {
-      void handleSendChat(question);
-    }
-  }
 
   if (isError) {
     return (
@@ -863,53 +920,33 @@ export function MobileWebProReportPage({
                     慢一点读，你会更容易看见那些原本藏在反应背后的结构。
                   </p>
 
-                  <ProReportMarkdown sections={sections} />
-                </>
-              ) : null}
-
-              {qaQuestions.length > 0 ? (
-                <div className="am-pro-report-chat-entry">
-                  <div className="am-pro-report-chat-entry__main">
-                    <div className="am-pro-report-chat-entry__head">
-                      <div className="am-pro-report-chat-entry__icon">
-                        <MessageGlyph />
-                      </div>
-                      <div>
-                        <div className="am-pro-report-chat-entry__title">还有疑问？</div>
-                        <div className="am-pro-report-chat-entry__subtitle">
-                          AI 助手随时为你解答
+                  <div className="am-pro-report-module-list">
+                    {documentSections.map(({ module, section }, index) => {
+                      const followupState =
+                        index === 0
+                          ? "collapsed"
+                          : index === 1
+                            ? "input"
+                            : index === 2
+                              ? "thinking"
+                              : index === 3
+                                ? "multi-collapsed"
+                                : "answered";
+                      return (
+                        <div key={module.id} className="am-pro-report-module">
+                          <ProReportMarkdown sections={[section]} />
+                          <ProInlineFollowup
+                            module={module}
+                            state={state}
+                            uploadDraft={uploadDraft}
+                            themeLabel={themeLabel}
+                            initialState={followupState}
+                          />
                         </div>
-                      </div>
-                    </div>
-                    <p className="am-pro-report-chat-entry__prompt">
-                      你可以继续这样追问
-                    </p>
-                    <div className="am-pro-report-chat-entry__chips">
-                      {qaQuestions.map((question) => (
-                        <button
-                          key={question}
-                          type="button"
-                          onClick={() => openChatWithQuestion(question)}
-                          className="am-pro-report-chat-entry__chip"
-                        >
-                          {question}
-                        </button>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
-                  <div className="am-pro-report-chat-entry__footer">
-                    <button
-                      type="button"
-                      onClick={() => setChatOpen(true)}
-                      className="am-pro-report-chat-entry__button"
-                    >
-                      <span className="am-pro-report-chat-entry__button-inner">
-                        <MessageGlyph />
-                        开始 AI 对话
-                      </span>
-                    </button>
-                  </div>
-                </div>
+                </>
               ) : null}
 
               <div className="mw-button-row am-pro-report-actions">
@@ -964,19 +1001,6 @@ export function MobileWebProReportPage({
           </section>
         </div>
       </div>
-      <MobileWebAiChatModal
-        open={chatOpen}
-        questions={qaQuestions}
-        messages={chatMessages}
-        input={chatInput}
-        error={chatError}
-        sending={chatSending}
-        onInputChange={setChatInput}
-        onClose={() => setChatOpen(false)}
-        onSend={(message) => {
-          void handleSendChat(message);
-        }}
-      />
     </div>
   );
 }
