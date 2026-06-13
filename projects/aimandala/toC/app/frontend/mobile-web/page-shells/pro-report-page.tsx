@@ -3,17 +3,18 @@ import {
   useMemo,
   useState,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 
 import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
 import { getThemeDisplayName } from "../../shared/core";
-import { SharedAppTopBar } from "../../shared/ui/app-top-bar";
 import { createReportFollowup } from "../../shared/api";
 import { isReportFollowupEnabled } from "../../shared/api/config";
 import {
   buildReportDocument,
   type ReportDocumentModule,
+  type ReportDocumentModuleItem,
 } from "../report-document";
 import type { MandalaFlowState } from "../../shared/types";
 import type { MobileWebUploadDraft } from "../state";
@@ -37,6 +38,14 @@ type MarkdownBlock =
 type FollowupRound = {
   question: string;
   answer?: string;
+};
+
+type ProTemplateCard = {
+  id: string;
+  label: string;
+  content: string;
+  color?: string;
+  icon?: string;
 };
 
 function SaveGlyph() {
@@ -68,6 +77,25 @@ function InfoGlyph() {
   );
 }
 
+function ShareGlyph() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M18 8a3 3 0 1 0-2.82-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M6 14a3 3 0 1 0 2.82 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M15.3 7.4 8.7 10.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+      <path d="M8.7 13.4 15.3 16.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function BackGlyph() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15 6 9 12l6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function SendGlyph() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -90,7 +118,11 @@ function extractProTitle(state: MandalaFlowState): string {
   const markdown =
     typeof state.report?.report === "string" ? state.report.report : "";
   const markdownTitle = markdown.match(/^#\s+(.+)$/m)?.[1]?.trim();
-  const raw = markdownTitle || titleFromReport || "Pro 解读报告";
+  const compatibleReportTitle =
+    state.report?.version === "pro" && titleFromReport && !/lite/i.test(titleFromReport)
+      ? titleFromReport
+      : null;
+  const raw = markdownTitle || compatibleReportTitle || "Pro 解读报告";
   const withoutPrefix = raw.includes("：")
     ? raw.split("：").slice(1).join("：").trim()
     : raw;
@@ -149,6 +181,94 @@ function extractFirstParagraph(text: string): string {
   );
 }
 
+function getModuleText(module?: ReportDocumentModule | null): string {
+  if (!module) return "";
+  return [module.subtitle, module.body].filter(Boolean).join("\n").trim();
+}
+
+function moduleMatches(module: ReportDocumentModule, keywords: string[]): boolean {
+  const source = `${module.type ?? ""} ${module.title}`.toLowerCase();
+  return keywords.some((keyword) => source.includes(keyword.toLowerCase()));
+}
+
+function findModule(
+  modules: ReportDocumentModule[],
+  keywords: string[],
+): ReportDocumentModule | null {
+  return modules.find((module) => moduleMatches(module, keywords)) ?? null;
+}
+
+function findSection(
+  documentSections: Array<{ module: ReportDocumentModule; section: ProMarkdownSection }>,
+  module: ReportDocumentModule | null,
+  keywords: string[],
+): ProMarkdownSection | null {
+  if (module) {
+    return documentSections.find((item) => item.module.id === module.id)?.section ?? null;
+  }
+  return (
+    documentSections.find((item) => moduleMatches(item.module, keywords))?.section ??
+    null
+  );
+}
+
+function splitBodyCards(body: string, fallbackLabel: string): ProTemplateCard[] {
+  const chunks = body
+    .split(/\n\s*\n/)
+    .map((part) => stripMarkdownText(part).trim())
+    .filter(Boolean);
+  if (!chunks.length) return [];
+
+  return chunks.map((chunk, index) => {
+    const titleMatch = chunk.match(/^(.{2,12}?)[：:]\s*(.+)$/);
+    return {
+      id: `${fallbackLabel}-${index + 1}`,
+      label: titleMatch?.[1] ?? (chunks.length === 1 ? fallbackLabel : `${fallbackLabel} ${index + 1}`),
+      content: titleMatch?.[2] ?? chunk,
+    };
+  });
+}
+
+function mapModuleItems(items: ReportDocumentModuleItem[] | undefined): ProTemplateCard[] {
+  return (items ?? []).map((item) => ({
+    id: item.id,
+    label: item.label,
+    content: item.content,
+    color: item.color,
+    icon: item.icon,
+  }));
+}
+
+function buildTemplateCards(
+  module: ReportDocumentModule | null,
+  section: ProMarkdownSection | null,
+  fallbackLabel: string,
+): ProTemplateCard[] {
+  const itemCards = mapModuleItems(module?.items);
+  if (itemCards.length) return itemCards;
+  return splitBodyCards(section?.body ?? getModuleText(module), fallbackLabel);
+}
+
+function normalizeCards(
+  cards: ProTemplateCard[],
+  fallbackText: string,
+  labels: string[],
+  colors?: string[],
+): ProTemplateCard[] {
+  const normalized = cards.filter((card) => card.content.trim()).slice(0, labels.length);
+  if (normalized.length >= labels.length) return normalized;
+
+  return [
+    ...normalized,
+    ...labels.slice(normalized.length).map((label, index) => ({
+      id: `fallback-${label}-${index + normalized.length + 1}`,
+      label,
+      content: fallbackText,
+      color: colors?.[index + normalized.length],
+    })),
+  ];
+}
+
 function extractProSummary(
   state: MandalaFlowState,
   sections: ProMarkdownSection[],
@@ -176,36 +296,26 @@ function joinClassNames(
 
 function ProMandalaPreview({
   imagePath,
-  innerRadius = 0.3,
-  middleRadius = 0.68,
 }: {
   imagePath?: string | null;
-  innerRadius?: number;
-  middleRadius?: number;
 }) {
-  if (!imagePath) return null;
-
-  const outer = 148;
-  const middleSize = Math.max(outer * middleRadius, 18);
-  const innerSize = Math.max(outer * innerRadius, 12);
-  const previewStyle = {
-    "--am-pro-middle-size": `${middleSize}px`,
-    "--am-pro-inner-size": `${innerSize}px`,
-  } as CSSProperties;
+  const [imageFailed, setImageFailed] = useState(false);
 
   return (
-    <div className="am-pro-report-preview" style={previewStyle}>
-      <div className="am-pro-report-preview__halo" />
+    <div className="am-pro-report-preview">
       <div className="am-pro-report-preview__aura" />
       <div className="am-pro-report-preview__frame">
-        <img
-          className="am-pro-report-preview__image"
-          src={imagePath}
-          alt="当前曼陀罗"
-        />
+        {imagePath && !imageFailed ? (
+          <img
+            className="am-pro-report-preview__image"
+            src={imagePath}
+            alt="当前曼陀罗"
+            onError={() => setImageFailed(true)}
+          />
+        ) : (
+          <span className="am-pro-report-preview__placeholder" aria-hidden="true" />
+        )}
       </div>
-      <div className="am-pro-report-preview__ring am-pro-report-preview__ring--middle" />
-      <div className="am-pro-report-preview__ring am-pro-report-preview__ring--inner" />
       <div className="am-pro-report-preview__pill">Pro版</div>
     </div>
   );
@@ -494,6 +604,163 @@ function ProReportMarkdown({ sections }: { sections: ProMarkdownSection[] }) {
   );
 }
 
+function ProReportTopBar({
+  onBack,
+}: {
+  onBack?: () => void;
+}) {
+  return (
+    <nav className="am-pro-report-topbar" aria-label="报告导航">
+      <button
+        type="button"
+        className="am-pro-report-topbar__button"
+        onClick={onBack}
+        aria-label="返回上一页"
+      >
+        <BackGlyph />
+      </button>
+      <div className="am-pro-report-topbar__brand">
+        <img src={logoNiwu} alt="" />
+        <span>解读报告(Pro版)</span>
+      </div>
+      <button
+        type="button"
+        className="am-pro-report-topbar__button"
+        aria-label="分享报告"
+      >
+        <ShareGlyph />
+      </button>
+    </nav>
+  );
+}
+
+function ProReportModuleShell({
+  index,
+  title,
+  accent,
+  meta,
+  children,
+}: {
+  index: string;
+  title: string;
+  accent: string;
+  meta?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="am-pro-template-module">
+      <div className="am-pro-template-module__header">
+        <span
+          className="am-pro-template-module__index"
+          style={{ "--am-pro-module-accent": accent } as CSSProperties}
+        >
+          {index}
+        </span>
+        <h2>{title}</h2>
+        <span
+          className="am-pro-template-module__line"
+          style={{ "--am-pro-module-accent": accent } as CSSProperties}
+        />
+        {meta ? <span className="am-pro-template-module__meta">{meta}</span> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function ProMainlineCard({ text }: { text: string }) {
+  return (
+    <article className="am-pro-mainline-card">
+      <div className="am-pro-mainline-card__pattern" />
+      <span className="am-pro-mainline-card__glow" aria-hidden="true" />
+      <p>{text}</p>
+      <span>↓ 下方展开完整深度解读</span>
+    </article>
+  );
+}
+
+function ProDeepReadCards({ cards }: { cards: ProTemplateCard[] }) {
+  return (
+    <div className="am-pro-deepread-list">
+      {cards.map((card, index) => (
+        <article className="am-pro-deepread-card" key={card.id}>
+          <span className="am-pro-deepread-card__bar" aria-hidden="true" />
+          <div className="am-pro-deepread-card__header">
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{card.label}</h3>
+          </div>
+          <p>{card.content}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function ProEnergyRingsView({ cards }: { cards: ProTemplateCard[] }) {
+  const fallbackColors = ["#C25B56", "#D4883E", "#4A7FB5"];
+  return (
+    <div className="am-pro-energy">
+      <div className="am-pro-energy__visual" aria-hidden="true">
+        {cards.slice(0, 3).map((card, index) => (
+          <span
+            key={card.id}
+            style={
+              {
+                "--am-pro-ring-inset": `${index * 18}px`,
+                "--am-pro-ring-color": card.color ?? fallbackColors[index] ?? "#C8A066",
+              } as CSSProperties
+            }
+          />
+        ))}
+        <i />
+      </div>
+      <div className="am-pro-energy__cards">
+        {cards.slice(0, 3).map((card, index) => (
+          <article
+            className="am-pro-energy-card"
+            key={card.id}
+            style={
+              {
+                "--am-pro-ring-color": card.color ?? fallbackColors[index] ?? "#C8A066",
+              } as CSSProperties
+            }
+          >
+            <div className="am-pro-energy-card__header">
+              <span aria-hidden="true" />
+              <h3>{card.label}</h3>
+            </div>
+            <p>{card.content}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProCreamTextCard({ text }: { text: string }) {
+  return (
+    <article className="am-pro-cream-card">
+      <p>{text}</p>
+    </article>
+  );
+}
+
+function ProAdjustmentCards({ cards }: { cards: ProTemplateCard[] }) {
+  return (
+    <div className="am-pro-adjustment-list">
+      {cards.map((card) => (
+        <article className="am-pro-adjustment-card" key={card.id}>
+          <div className="am-pro-adjustment-card__header">
+            <span aria-hidden="true">{card.icon ?? "◇"}</span>
+            <h3>{card.label}</h3>
+          </div>
+          <p>{card.content}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function FollowupGlyph() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -774,17 +1041,9 @@ export function MobileWebProReportPage({
   const [saved, setSaved] = useState(false);
   const previewImage =
     uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
-  const innerRadius =
-    state.status?.three_circles?.inner_radius ??
-    state.interpretation?.three_circles?.inner_radius ??
-    0.3;
-  const middleRadius =
-    state.status?.three_circles?.middle_radius ??
-    state.interpretation?.three_circles?.middle_radius ??
-    0.68;
   const reportDocument = useMemo(() => buildReportDocument(state, "pro"), [state]);
   const title = useMemo(
-    () => reportDocument.title || extractProTitle(state),
+    () => extractProTitle(state) || reportDocument.title,
     [reportDocument.title, state],
   );
   const sections = useMemo(() => parseProMarkdown(state), [state]);
@@ -803,7 +1062,6 @@ export function MobileWebProReportPage({
   const hasProReport = state.report?.version === "pro" && documentSections.length > 0;
   const isError = state.step === "error" && Boolean(state.lastError);
   const isGenerating = !hasProReport && !isError;
-  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "财富关系";
   const generatedAt = useMemo(
     () =>
       new Date().toLocaleDateString("zh-CN", {
@@ -816,6 +1074,76 @@ export function MobileWebProReportPage({
   const pageStyle = {
     "--am-pattern-image": `url(${brandPattern})`,
   } as CSSProperties;
+  const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "财富关系";
+  const mainlineModule =
+    findModule(reportDocument.modules, ["mainline", "summary", "深层主线", "主线"]) ??
+    reportDocument.modules[0] ??
+    null;
+  const deepReadModule =
+    findModule(reportDocument.modules, ["deep", "reading", "深度解读", "深度"]);
+  const energyModule =
+    findModule(reportDocument.modules, ["three", "circle", "energy", "三圈", "能量"]);
+  const originModule =
+    findModule(reportDocument.modules, ["formation", "origin", "reason", "模式形成", "原因"]);
+  const adjustmentModule =
+    findModule(reportDocument.modules, ["practice", "suggestion", "adjustment", "调节", "建议"]);
+  const mainlineText =
+    summary ||
+    extractFirstParagraph(
+      findSection(documentSections, mainlineModule, ["mainline", "summary", "深层主线", "主线"])?.body ??
+        getModuleText(mainlineModule),
+    );
+  const deepReadCards = buildTemplateCards(
+    deepReadModule,
+    findSection(documentSections, deepReadModule, ["deep", "reading", "深度解读", "深度"]),
+    "深度线索",
+  );
+  const energyCards = buildTemplateCards(
+    energyModule,
+    findSection(documentSections, energyModule, ["three", "circle", "energy", "三圈", "能量"]),
+    "能量圈",
+  );
+  const originText =
+    extractFirstParagraph(
+      findSection(documentSections, originModule, ["formation", "origin", "reason", "模式形成", "原因"])?.body ??
+        getModuleText(originModule),
+    ) ||
+    extractFirstParagraph(documentSections[3]?.section.body ?? "");
+  const adjustmentCards = buildTemplateCards(
+    adjustmentModule,
+    findSection(documentSections, adjustmentModule, ["practice", "suggestion", "adjustment", "调节", "建议"]),
+    "调节方向",
+  );
+  const deepReadDisplayCards = normalizeCards(
+    deepReadCards,
+    mainlineText,
+    ["核心线索", "关系线索", "行动线索"],
+  );
+  const energyDisplayCards = normalizeCards(
+    energyCards.length ? energyCards : deepReadDisplayCards,
+    mainlineText,
+    ["内在圈", "关系圈", "外在圈"],
+    ["#C25B56", "#D4883E", "#4A7FB5"],
+  );
+  const adjustmentDisplayCards = normalizeCards(
+    adjustmentCards,
+    originText || mainlineText,
+    ["先稳定自己", "再松动关系", "最后落到行动"],
+  );
+  const followupModules = [
+    mainlineModule,
+    deepReadModule,
+    energyModule,
+    originModule,
+    adjustmentModule,
+  ].map((module, index) =>
+    module ??
+    reportDocument.modules[index] ?? {
+      id: `fallback-module-${index + 1}`,
+      title: `模块 ${index + 1}`,
+      body: "",
+    },
+  );
 
   if (isError) {
     return (
@@ -843,51 +1171,29 @@ export function MobileWebProReportPage({
   return (
     <div className="am-pro-report-page" style={pageStyle}>
       <div className="am-pro-report-page__frame">
-        <SharedAppTopBar
-          title="Pro版完整解读"
-          backLabel="返回上一页"
-          onBack={onBackAction}
-        />
+        <ProReportTopBar onBack={onBackAction} />
 
         <div className="am-pro-report-page__scroll am-scrollbar-hide">
           <section className="am-pro-report-hero">
             <div className="am-pro-report-hero__pattern" />
+            <span className="am-pro-report-hero__glow" aria-hidden="true" />
+            <span className="am-pro-report-particle am-pro-report-particle--one" aria-hidden="true" />
+            <span className="am-pro-report-particle am-pro-report-particle--two" aria-hidden="true" />
+            <span className="am-pro-report-particle am-pro-report-particle--three" aria-hidden="true" />
             <div className="am-pro-report-hero__inner">
               <div className="am-pro-report-hero__content">
-                <div className="am-pro-report-hero__eyebrow">
-                  一镜一梳 · 深度疗愈阅读
-                </div>
+                <ProMandalaPreview imagePath={previewImage} />
                 <h1 className="am-pro-report-hero__title">{title}</h1>
-                <div className="am-pro-report-hero__line" />
-                <span className="am-pro-report-hero__date">{generatedAt}生成</span>
-                <div className="am-pro-report-hero__badges">
-                  <span className="am-pro-report-hero__badge is-primary">
-                    Pro 完整报告
-                  </span>
-                  <span className="am-pro-report-hero__badge">{themeLabel}</span>
+                <div className="am-pro-report-hero__date-line">
+                  <span>{generatedAt}生成</span>
+                  <i aria-hidden="true" />
+                  <span>深度解读</span>
                 </div>
-                <div className="am-pro-report-hero__preview-wrap">
-                  <ProMandalaPreview
-                    imagePath={previewImage}
-                    innerRadius={innerRadius}
-                    middleRadius={middleRadius}
-                  />
-                </div>
-                {summary ? (
-                  <div className="am-pro-report-summary-card">
-                    <div className="am-pro-report-summary-card__label">一眼总结</div>
-                    <p className="am-pro-report-summary-card__body">{summary}</p>
-                    <p className="am-pro-report-summary-card__hint">
-                      让这份解读先陪你停一下，再继续往更深处看。
-                    </p>
-                  </div>
-                ) : null}
               </div>
             </div>
           </section>
 
           <section className="am-pro-report-surface">
-            <div className="am-pro-report-surface__handle" />
             <div className="am-pro-report-surface__content">
               {isGenerating ? (
                 <div className="am-pro-report-waiting-card">
@@ -910,42 +1216,75 @@ export function MobileWebProReportPage({
 
               {hasProReport ? (
                 <>
-                  <div className="am-pro-report-section-kicker">
-                    <div className="am-pro-report-section-kicker__line" />
-                    <span>完整解读</span>
-                    <div className="am-pro-report-section-kicker__line" />
-                  </div>
+                  <ProReportModuleShell index="01" title="深层主线" accent="#D4A054">
+                    <ProMainlineCard text={mainlineText} />
+                  </ProReportModuleShell>
+                  <ProInlineFollowup
+                    module={followupModules[0]}
+                    state={state}
+                    uploadDraft={uploadDraft}
+                    themeLabel={themeLabel}
+                    initialState="collapsed"
+                  />
 
-                  <p className="am-pro-report-reading-note">
-                    慢一点读，你会更容易看见那些原本藏在反应背后的结构。
-                  </p>
+                  <ProReportModuleShell
+                    index="02"
+                    title="深度解读"
+                    meta={`${deepReadDisplayCards.length} 项`}
+                    accent="#C87850"
+                  >
+                    <ProDeepReadCards cards={deepReadDisplayCards} />
+                  </ProReportModuleShell>
+                  <ProInlineFollowup
+                    module={followupModules[1]}
+                    state={state}
+                    uploadDraft={uploadDraft}
+                    themeLabel={themeLabel}
+                    initialState="input"
+                  />
 
-                  <div className="am-pro-report-module-list">
-                    {documentSections.map(({ module, section }, index) => {
-                      const followupState =
-                        index === 0
-                          ? "collapsed"
-                          : index === 1
-                            ? "input"
-                            : index === 2
-                              ? "thinking"
-                              : index === 3
-                                ? "multi-collapsed"
-                                : "answered";
-                      return (
-                        <div key={module.id} className="am-pro-report-module">
-                          <ProReportMarkdown sections={[section]} />
-                          <ProInlineFollowup
-                            module={module}
-                            state={state}
-                            uploadDraft={uploadDraft}
-                            themeLabel={themeLabel}
-                            initialState={followupState}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <ProReportModuleShell
+                    index="03"
+                    title="三圈能量"
+                    meta="内在 / 关系 / 外在"
+                    accent="#4A7FB5"
+                  >
+                    <ProEnergyRingsView cards={energyDisplayCards} />
+                  </ProReportModuleShell>
+                  <ProInlineFollowup
+                    module={followupModules[2]}
+                    state={state}
+                    uploadDraft={uploadDraft}
+                    themeLabel={themeLabel}
+                    initialState="thinking"
+                  />
+
+                  <ProReportModuleShell index="04" title="模式形成的原因" accent="#8B6AAE">
+                    <ProCreamTextCard text={originText || mainlineText} />
+                  </ProReportModuleShell>
+                  <ProInlineFollowup
+                    module={followupModules[3]}
+                    state={state}
+                    uploadDraft={uploadDraft}
+                    themeLabel={themeLabel}
+                    initialState="multi-collapsed"
+                  />
+
+                  <ProReportModuleShell
+                    index="05"
+                    title="调节建议"
+                    meta={`${adjustmentDisplayCards.length} 项`}
+                    accent="#5B8C5A"
+                  >
+                    <ProAdjustmentCards cards={adjustmentDisplayCards} />
+                  </ProReportModuleShell>
+                  <ProInlineFollowup
+                    module={followupModules[4]}
+                    state={state}
+                    uploadDraft={uploadDraft}
+                    themeLabel={themeLabel}
+                    initialState="answered"
+                  />
                 </>
               ) : null}
 
@@ -967,7 +1306,7 @@ export function MobileWebProReportPage({
                   className="mw-secondary-button am-pro-report-actions__button"
                 >
                   <RestartGlyph />
-                  <span>再画一幅</span>
+                  <span>重新上传</span>
                 </button>
               </div>
 

@@ -195,7 +195,13 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("Pro版完整解读");
+    expect(html).toContain("解读报告(Pro版)");
+    expect(html).toContain("Pro 解读报告");
+    expect(html).toContain("深层主线");
+    expect(html).toContain("深度解读");
+    expect(html).toContain("三圈能量");
+    expect(html).toContain("模式形成的原因");
+    expect(html).toContain("调节建议");
     expect(html).toContain("追问");
     expect(html).toContain("请输入你想追问的问题");
     expect(html).toContain("追问记录");
