@@ -67,16 +67,6 @@ function RestartGlyph() {
   );
 }
 
-function InfoGlyph() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 10v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <circle cx="12" cy="7" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-
 function ShareGlyph() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -1308,23 +1298,6 @@ export function MobileWebProReportPage({
                   <RestartGlyph />
                   <span>重新上传</span>
                 </button>
-              </div>
-
-              <div className="am-pro-report-info-card">
-                <p>
-                  更多延展服务会在后续版本逐步开放，当前 MVP 先聚焦把单次 Pro 报告阅读体验做好。
-                </p>
-              </div>
-
-              <div className="am-pro-report-disclaimer">
-                <p className="am-pro-report-disclaimer__text">
-                  <span className="am-pro-report-disclaimer__icon">
-                    <InfoGlyph />
-                  </span>
-                  <span>
-                    本报告基于AI分析和传统五行理论生成，仅供自我探索参考，不构成医疗或心理咨询建议。如有严重心理困扰，请寻求专业帮助。
-                  </span>
-                </p>
               </div>
 
               <div className="am-pro-report-footer-brand">

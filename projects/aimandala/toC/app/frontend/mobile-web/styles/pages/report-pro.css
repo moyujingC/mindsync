@@ -1068,7 +1068,8 @@
 
 .am-pro-report-actions {
   gap: 12px;
-  margin-top: 2px;
+  margin-top: 0;
+  padding-top: 2px;
 }
 
 .am-pro-report-actions__button {
@@ -1093,47 +1094,11 @@
   box-shadow: var(--am-report-pro-action-secondary-shadow);
 }
 
-.am-pro-report-info-card {
-  padding: 15px 16px;
-  border-radius: var(--am-radius-md);
-  border: 1px solid var(--am-report-pro-info-border);
-  background: var(--am-report-pro-info-bg);
-}
-
-.am-pro-report-info-card p {
-  margin: 0;
-  color: var(--am-color-clay-500);
-  font-size: 12.5px;
-  line-height: 1.8;
-}
-
-.am-pro-report-disclaimer {
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px solid var(--am-report-pro-disclaimer-border);
-  background: var(--am-report-pro-disclaimer-bg);
-}
-
-.am-pro-report-disclaimer__text {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 0;
-  color: var(--am-text-tertiary);
-  font-size: 11.5px;
-  line-height: 1.75;
-}
-
-.am-pro-report-disclaimer__icon {
-  margin-top: 1px;
-  color: var(--am-text-brass);
-}
-
 .am-pro-report-footer-brand {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 8px 0 4px;
+  margin: 2px 0 4px;
 }
 
 .am-pro-report-footer-brand__line {
