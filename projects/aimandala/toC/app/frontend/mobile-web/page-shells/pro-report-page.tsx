@@ -103,6 +103,16 @@ function LoadingGlyph() {
   );
 }
 
+function ThinkingDots() {
+  return (
+    <span className="am-pro-followup-thinking-dots" aria-hidden="true">
+      <i />
+      <i />
+      <i />
+    </span>
+  );
+}
+
 function extractProTitle(state: MandalaFlowState): string {
   const titleFromReport = state.report?.title;
   const markdown =
@@ -967,7 +977,10 @@ function ProInlineFollowup({
   return (
     <div className="am-pro-followup-panel">
       <div className="am-pro-followup-panel__header">
-        <span>{count > 0 ? `追问记录 · ${count}` : "追问记录"}</span>
+        <span>
+          <FollowupGlyph />
+          {count > 0 && !sending ? `追问记录 · ${count}` : "追问记录"}
+        </span>
         <button
           type="button"
           onClick={() => setPanelOpen(false)}
@@ -1011,7 +1024,7 @@ function ProInlineFollowup({
           <div className="am-pro-followup-question">{latestRound.question}</div>
           {sending && !latestRound.answer ? (
             <div className="am-pro-followup-thinking">
-              <LoadingGlyph />
+              <ThinkingDots />
               <span>正在基于本段报告思考...</span>
             </div>
           ) : null}

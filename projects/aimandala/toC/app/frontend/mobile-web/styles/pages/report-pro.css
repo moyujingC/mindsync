@@ -693,14 +693,14 @@
 
 .am-pro-energy {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .am-pro-energy__visual {
   position: relative;
   width: 120px;
   height: 120px;
-  margin: 0 auto 4px;
+  margin: -2px auto 2px;
 }
 
 .am-pro-energy__visual span {
@@ -805,10 +805,10 @@
 .am-pro-followup-panel {
   display: grid;
   gap: 12px;
-  margin: 0 0 22px;
+  margin: 0 0 18px;
   padding: 12px 12px 12px 14px;
   border: 1px solid rgba(201, 151, 82, 0.2);
-  border-left: 2px solid rgba(190, 134, 49, 0.72);
+  border-left: 1px solid rgba(190, 134, 49, 0.72);
   border-radius: 14px;
   background:
     linear-gradient(135deg, rgba(244, 206, 142, 0.22), rgba(226, 151, 95, 0.12)),
@@ -830,6 +830,16 @@
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
+}
+
+.am-pro-followup-panel__header > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.am-pro-followup-panel__header svg {
+  color: rgba(196, 120, 80, 0.85);
 }
 
 .am-pro-followup-panel__collapse,
@@ -908,9 +918,30 @@
   font-size: 12px;
 }
 
-.am-pro-followup-thinking svg,
 .am-pro-followup-send svg {
   animation: am-pro-followup-spin 0.9s linear infinite;
+}
+
+.am-pro-followup-thinking-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.am-pro-followup-thinking-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(196, 120, 80, 0.42);
+  animation: am-pro-followup-pulse 1.2s ease-in-out infinite;
+}
+
+.am-pro-followup-thinking-dots i:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.am-pro-followup-thinking-dots i:nth-child(3) {
+  animation-delay: 0.36s;
 }
 
 .am-pro-followup-answer {
@@ -995,9 +1026,9 @@
 }
 
 .am-pro-followup-send:disabled {
-  opacity: 1;
-  background: rgba(200, 160, 102, 0.42);
-  box-shadow: none;
+  opacity: 0.72;
+  background: linear-gradient(135deg, var(--am-pro-copper-500) 0%, var(--am-pro-gold-500) 100%);
+  box-shadow: 0 1px 4px rgba(200, 120, 80, 0.18);
 }
 
 .am-pro-followup-panel svg,
@@ -1013,6 +1044,17 @@
 @keyframes am-pro-followup-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes am-pro-followup-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
   }
 }
 
