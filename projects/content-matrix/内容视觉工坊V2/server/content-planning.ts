@@ -936,7 +936,6 @@ export function planWechatCoverFromArticle(
 function buildCoverOnlyPrompt(request: CoverPlannerRequest) {
   return `
 你只负责公众号封面阶段一：文生文。
-不要做知识卡拆解，不要提取金句卡，不要规划正文配图。
 
 【公众号封面提示词生成器】
 
@@ -959,11 +958,9 @@ ${request.rawText}
   "coverPlan": [
     {
       "index": 1,
-      "title": "候选标题左置",
+      "title": "候选中心封面",
       "composition": "本候选的构图说明",
       "visualMetaphor": "本候选的视觉隐喻",
-      "thumbKeyword": "2到4个字的小封面关键词",
-      "thumbShape": "circle 或 square",
       "promptText": "只生成这一张封面图的完整绘图提示词，横版 900×383，只包含一个封面，不要拼接多候选"
     }
   ]
@@ -972,10 +969,9 @@ ${request.rawText}
 硬性要求：
 - coverPlan 必须正好 3 条。
 - 每条 promptText 只能生成一张独立公众号封面，不能写“三张候选”，不能让模型把多张拼到一张图。
-- 每条必须给出 thumbKeyword，用于程序生成公众号小封面。thumbKeyword 只能 2-4 个中文字符。
-- thumbShape 只能是 circle 或 square。
 - 标题必须使用文章原标题，不得改写，不得添加导语、摘要、副标题、作者名、日期或水印。
-- 封面不是知识卡，不要信息图，不要多段正文。`.trim();
+- 标题和主体视觉必须放在中心安全区，便于从大封面中心裁切小封面。
+- 不要信息图，不要多段正文。`.trim();
 }
 
 export async function planWechatCoverWithLLM(
@@ -998,7 +994,7 @@ export async function planWechatCoverWithLLM(
         {
           role: "system",
           content:
-            "你是公众号封面文生文规划器，只返回 JSON。不要做知识卡、金句卡或正文配图拆解。coverPlan 必须 3 条，每条是一张独立封面图的 promptText。",
+            "你是公众号封面文生文规划器，只返回 JSON。coverPlan 必须 3 条，每条是一张独立封面图的 promptText。",
         },
         {
           role: "user",
