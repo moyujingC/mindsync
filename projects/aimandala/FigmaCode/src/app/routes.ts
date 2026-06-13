@@ -2,7 +2,8 @@ import { createBrowserRouter } from "react-router";
 import { LandingPage } from "./components/LandingPage";
 import { UploadPage } from "./components/UploadPage";
 import { LoadingPage } from "./components/LoadingPage";
-import { ReportPage } from "./components/ReportPage";
+import { ReportLitePage } from "./components/ReportLitePage";
+import { ReportProPage } from "./components/ReportProPage";
 import { HistoryPage } from "./components/HistoryPage";
 import { SelectPlanPage } from "./components/SelectPlanPage";
 import { ConfirmPaymentPage } from "./components/ConfirmPaymentPage";
@@ -23,7 +24,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/report",
-    Component: ReportPage,
+    Component: ReportLitePage,
+  },
+  {
+    path: "/report/lite",
+    Component: ReportLitePage,
+  },
+  {
+    path: "/report/pro",
+    Component: ReportProPage,
   },
   {
     path: "/history",
