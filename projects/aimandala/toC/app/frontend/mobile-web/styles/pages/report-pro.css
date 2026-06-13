@@ -131,7 +131,7 @@
 
 .am-pro-report-hero__inner {
   position: relative;
-  padding: 32px 24px 42px;
+  padding: 32px 24px 34px;
 }
 
 .am-pro-report-hero__content {
@@ -572,6 +572,9 @@
 .am-pro-mainline-card {
   position: relative;
   overflow: hidden;
+  min-height: 176px;
+  display: flex;
+  flex-direction: column;
   padding: 18px 20px;
   border: 1px solid rgb(212 160 84 / 0.18);
   border-radius: 16px;
@@ -606,6 +609,10 @@
   font-size: 14px;
   line-height: 1.95;
   letter-spacing: 0.02em;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
 }
 
 .am-pro-mainline-card > span {
