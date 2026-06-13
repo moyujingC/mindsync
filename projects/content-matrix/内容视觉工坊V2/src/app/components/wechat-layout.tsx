@@ -8,7 +8,6 @@ import {
 import {
   Copy,
   RefreshCw,
-  ClipboardPaste,
   Bookmark,
   Info,
   CheckCircle2,
@@ -80,10 +79,9 @@ export function WechatLayout() {
   const [themeLibrary, setThemeLibrary] = useState<SavedWechatBaseline[]>([]);
   const [activeThemeId, setActiveThemeId] = useState("");
   const [statusMessage, setStatusMessage] = useState("尚未保存新的样式基准");
-  const [isPasting, setIsPasting] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
   const [showAllSampleBlocks, setShowAllSampleBlocks] = useState(false);
-  const pasteTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const pasteAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -182,52 +180,6 @@ export function WechatLayout() {
     [inlineGeneration]
   );
 
-  async function handlePasteFromClipboard() {
-    setIsPasting(true);
-    try {
-      let html = "";
-      let text = "";
-
-      if (navigator.clipboard && "read" in navigator.clipboard) {
-        const items = await navigator.clipboard.read();
-        for (const item of items) {
-          if (!html && item.types.includes("text/html")) {
-            const blob = await item.getType("text/html");
-            html = await blob.text();
-          }
-          if (!text && item.types.includes("text/plain")) {
-            const blob = await item.getType("text/plain");
-            text = await blob.text();
-          }
-        }
-      }
-
-      if (!html && navigator.clipboard?.readText) {
-        text = await navigator.clipboard.readText();
-      }
-
-      const nextText = (text || stripHtml(html)).trim();
-      if (!html && !nextText) {
-        focusPasteArea();
-        setStatusMessage("剪贴板里没有可用内容，请复制样本后在输入区粘贴");
-        return;
-      }
-
-      receivePastedSample(html, nextText);
-    } catch {
-      focusPasteArea();
-      setStatusMessage("无法直接读取剪贴板，请在输入区按 Cmd+V 粘贴样本");
-    } finally {
-      setIsPasting(false);
-    }
-  }
-
-  function focusPasteArea() {
-    window.setTimeout(() => {
-      pasteTextareaRef.current?.focus();
-    }, 0);
-  }
-
   function receivePastedSample(html: string, text: string) {
     const nextText = (text || stripHtml(html)).trim();
     if (!html && !nextText) {
@@ -239,7 +191,7 @@ export function WechatLayout() {
     setStatusMessage(html ? "已接收富文本样本 · 待保存" : "已接收纯文本样本 · 待保存");
   }
 
-  function handleSamplePaste(event: ReactClipboardEvent<HTMLTextAreaElement>) {
+  function handleSamplePaste(event: ReactClipboardEvent<HTMLDivElement>) {
     const html = event.clipboardData.getData("text/html");
     const text = event.clipboardData.getData("text/plain");
     if (!html && !text.trim()) return;
@@ -905,19 +857,9 @@ export function WechatLayout() {
                 富文本样本接入区
               </span>
             </div>
-            <button
-              onClick={handlePasteFromClipboard}
-              className="flex items-center gap-1.5 px-2 rounded"
-              style={{
-                color: COLORS.blueDeep,
-                fontSize: 12,
-                height: 26,
-                background: "transparent",
-              }}
-            >
-              <ClipboardPaste size={12} strokeWidth={1.6} />
-              {isPasting ? "读取中..." : "粘贴样本"}
-            </button>
+            <span style={{ color: COLORS.textFaint, fontSize: 10.5 }}>
+              点击下方区域后 Cmd+V
+            </span>
           </div>
 
           <div className="px-4 py-4">
@@ -933,26 +875,42 @@ export function WechatLayout() {
               建议包含一级 / 二级标题、正文段落、引用块。
             </div>
 
-            <textarea
-              ref={pasteTextareaRef}
-              value={importedText}
-              onChange={(e) => {
-                setImportedHtml("");
-                setImportedText(e.target.value);
-                setStatusMessage("已接收纯文本样本 · 待保存");
-              }}
+            <div
+              ref={pasteAreaRef}
+              contentEditable
+              suppressContentEditableWarning
               onPaste={handleSamplePaste}
-              placeholder="也可以直接把从公众号编辑器复制的内容粘贴到这里。"
-              className="mt-3 w-full rounded-md px-3 py-2.5 outline-none resize-none"
+              onInput={(event) => {
+                const text = event.currentTarget.innerText.trim();
+                setImportedHtml("");
+                setImportedText(text);
+                setStatusMessage(text ? "已接收纯文本样本 · 待保存" : "样本为空，请重新复制公众号排版内容");
+              }}
+              className="mt-3 w-full rounded-md px-3 py-2.5 outline-none"
               style={{
-                minHeight: 104,
+                minHeight: 116,
                 background: COLORS.surface,
                 border: `1px solid ${COLORS.borderSoft}`,
                 color: COLORS.textMid,
                 fontSize: 12,
                 lineHeight: 1.7,
+                whiteSpace: "pre-wrap",
               }}
-            />
+            >
+              {samplePreview ? (
+                samplePreview.mode === "html" ? (
+                  <span style={{ color: COLORS.textFaint }}>
+                    已接入富文本样本。下方可查看预览和抓取摘要。
+                  </span>
+                ) : (
+                  <span>{samplePreview.value.slice(0, 260)}</span>
+                )
+              ) : (
+                <span style={{ color: COLORS.textFaint }}>
+                  在这里直接粘贴公众号编辑器内容。系统会优先读取富文本 HTML。
+                </span>
+              )}
+            </div>
 
             <div
               className="mt-3 px-3 py-2.5 rounded"
