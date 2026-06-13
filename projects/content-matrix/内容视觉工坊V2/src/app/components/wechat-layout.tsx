@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  type ClipboardEvent as ReactClipboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Copy,
   RefreshCw,
@@ -77,6 +83,7 @@ export function WechatLayout() {
   const [isPasting, setIsPasting] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
   const [showAllSampleBlocks, setShowAllSampleBlocks] = useState(false);
+  const pasteTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -201,18 +208,43 @@ export function WechatLayout() {
 
       const nextText = (text || stripHtml(html)).trim();
       if (!html && !nextText) {
-        setStatusMessage("剪贴板里没有可用内容，请先从公众号编辑器复制");
+        focusPasteArea();
+        setStatusMessage("剪贴板里没有可用内容，请复制样本后在输入区粘贴");
         return;
       }
 
-      setImportedHtml(html);
-      setImportedText(nextText);
-      setStatusMessage("已接收新样本 · 待保存");
+      receivePastedSample(html, nextText);
     } catch {
-      setStatusMessage("读取剪贴板失败，请先允许浏览器访问剪贴板");
+      focusPasteArea();
+      setStatusMessage("无法直接读取剪贴板，请在输入区按 Cmd+V 粘贴样本");
     } finally {
       setIsPasting(false);
     }
+  }
+
+  function focusPasteArea() {
+    window.setTimeout(() => {
+      pasteTextareaRef.current?.focus();
+    }, 0);
+  }
+
+  function receivePastedSample(html: string, text: string) {
+    const nextText = (text || stripHtml(html)).trim();
+    if (!html && !nextText) {
+      setStatusMessage("样本为空，请重新复制公众号排版内容");
+      return;
+    }
+    setImportedHtml(html);
+    setImportedText(nextText);
+    setStatusMessage(html ? "已接收富文本样本 · 待保存" : "已接收纯文本样本 · 待保存");
+  }
+
+  function handleSamplePaste(event: ReactClipboardEvent<HTMLTextAreaElement>) {
+    const html = event.clipboardData.getData("text/html");
+    const text = event.clipboardData.getData("text/plain");
+    if (!html && !text.trim()) return;
+    event.preventDefault();
+    receivePastedSample(html, text);
   }
 
   function handleSaveBaseline() {
@@ -902,12 +934,14 @@ export function WechatLayout() {
             </div>
 
             <textarea
+              ref={pasteTextareaRef}
               value={importedText}
               onChange={(e) => {
                 setImportedHtml("");
                 setImportedText(e.target.value);
-                setStatusMessage("已接收新样本 · 待保存");
+                setStatusMessage("已接收纯文本样本 · 待保存");
               }}
+              onPaste={handleSamplePaste}
               placeholder="也可以直接把从公众号编辑器复制的内容粘贴到这里。"
               className="mt-3 w-full rounded-md px-3 py-2.5 outline-none resize-none"
               style={{
