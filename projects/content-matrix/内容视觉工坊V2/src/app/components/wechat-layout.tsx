@@ -113,48 +113,83 @@ export function WechatLayout() {
     if (!importedHtml && !importedText.trim()) {
       return {
         paragraphCount: 12,
-        headingCount: 3,
+        primaryHeadingCount: 2,
+        secondaryHeadingCount: 1,
         bodyFontSize: "15 px",
-        headingFontSize: mapping === "h1h2" ? "17 / 16 px" : "16 / 15 px",
+        primaryHeadingFontSize: mapping === "h1h2" ? "17 px" : "16 px",
+        secondaryHeadingFontSize: mapping === "h1h2" ? "16 px" : "15 px",
         lineHeight: "1.85",
         letterSpacing: "0.01em",
       };
     }
 
     const textSource = importedText.trim() || stripHtml(importedHtml);
-    const htmlSource = importedHtml
-      ? importedHtml
-      : `<div>${escapeHtml(textSource).replace(/\n/g, "<br/>")}</div>`;
-    const doc = new DOMParser().parseFromString(htmlSource, "text/html");
+    const doc = importedHtml
+      ? new DOMParser().parseFromString(importedHtml, "text/html")
+      : null;
+    const headingSelectors =
+      mapping === "h1h2"
+        ? { primary: "h1", secondary: "h2" }
+        : { primary: "h2", secondary: "h3" };
+    const primaryHeadingNodes = doc
+      ? Array.from(doc.querySelectorAll<HTMLElement>(headingSelectors.primary))
+      : [];
+    const secondaryHeadingNodes = doc
+      ? Array.from(doc.querySelectorAll<HTMLElement>(headingSelectors.secondary))
+      : [];
+    const markdownLines = textSource
+      .split("\n")
+      .map((item) => item.trim())
+      .filter(Boolean);
+    const primaryMarkdownHeading = mapping === "h1h2" ? /^#\s+/ : /^##\s+/;
+    const secondaryMarkdownHeading = mapping === "h1h2" ? /^##\s+/ : /^###\s+/;
+    const primaryHeadingCount = doc
+      ? primaryHeadingNodes.length
+      : markdownLines.filter((line) => primaryMarkdownHeading.test(line)).length;
+    const secondaryHeadingCount = doc
+      ? secondaryHeadingNodes.length
+      : markdownLines.filter((line) => secondaryMarkdownHeading.test(line)).length;
 
     const paragraphCount = Math.max(
-      doc.querySelectorAll("p").length,
+      doc?.querySelectorAll("p").length ?? 0,
       textSource
         .split(/\n{2,}/)
         .map((item) => item.trim())
-        .filter(Boolean).length || 1
+        .filter((item) => item && !/^#{1,6}\s/.test(item)).length || 1
     );
-    const headingCount = Math.max(
-      doc.querySelectorAll("h1,h2,h3,h4,h5,h6").length,
-      textSource
-        .split("\n")
-        .map((item) => item.trim())
-        .filter((line) => /^#{1,3}\s/.test(line)).length
-    );
+    const styledBodyNodes = doc
+      ? Array.from(doc.body.querySelectorAll<HTMLElement>("p,section,span,div")).filter(
+          (node) => node.textContent?.trim()
+        )
+      : [];
 
     return {
       paragraphCount,
-      headingCount,
-      bodyFontSize: "15 px",
-      headingFontSize: mapping === "h1h2" ? "17 / 16 px" : "16 / 15 px",
-      lineHeight: "1.85",
-      letterSpacing: "0.01em",
+      primaryHeadingCount,
+      secondaryHeadingCount,
+      bodyFontSize: formatCssValue(
+        firstCssValue(styledBodyNodes, "font-size"),
+        "15 px"
+      ),
+      primaryHeadingFontSize: formatCssValue(
+        firstCssValue(primaryHeadingNodes, "font-size"),
+        mapping === "h1h2" ? "17 px" : "16 px"
+      ),
+      secondaryHeadingFontSize: formatCssValue(
+        firstCssValue(secondaryHeadingNodes, "font-size"),
+        mapping === "h1h2" ? "16 px" : "15 px"
+      ),
+      lineHeight: formatCssValue(firstCssValue(styledBodyNodes, "line-height"), "1.85"),
+      letterSpacing: formatCssValue(
+        firstCssValue(styledBodyNodes, "letter-spacing"),
+        "0.01em"
+      ),
     };
   }, [importedHtml, importedText, mapping]);
 
   const activeTheme = useMemo(
-    () => deriveWechatTheme(importedHtml, sampleSummary),
-    [importedHtml, sampleSummary]
+    () => deriveWechatTheme(importedHtml, sampleSummary, mapping),
+    [importedHtml, sampleSummary, mapping]
   );
 
   const samplePreview = useMemo(() => {
@@ -197,6 +232,7 @@ export function WechatLayout() {
     if (!html && !text.trim()) return;
     event.preventDefault();
     receivePastedSample(html, text);
+    event.currentTarget.textContent = "";
   }
 
   function handleSaveBaseline() {
@@ -531,8 +567,16 @@ export function WechatLayout() {
                         </span>
                         <span className="flex items-center gap-1.5 shrink-0">
                           {active && <Tag tone="blue">当前</Tag>}
-                          <button
+                          <span
+                            role="button"
+                            tabIndex={0}
                             onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteTheme(theme.id);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key !== "Enter" && e.key !== " ") return;
+                              e.preventDefault();
                               e.stopPropagation();
                               handleDeleteTheme(theme.id);
                             }}
@@ -541,7 +585,7 @@ export function WechatLayout() {
                             title="删除主题"
                           >
                             <Trash2 size={11} strokeWidth={1.6} />
-                          </button>
+                          </span>
                         </span>
                       </button>
                     );
@@ -876,75 +920,54 @@ export function WechatLayout() {
             </div>
 
             <div
-              ref={pasteAreaRef}
-              contentEditable
-              suppressContentEditableWarning
-              onPaste={handleSamplePaste}
-              onInput={(event) => {
-                const text = event.currentTarget.innerText.trim();
-                setImportedHtml("");
-                setImportedText(text);
-                setStatusMessage(text ? "已接收纯文本样本 · 待保存" : "样本为空，请重新复制公众号排版内容");
-              }}
-              className="mt-3 w-full rounded-md px-3 py-2.5 outline-none"
-              style={{
-                minHeight: 116,
-                background: COLORS.surface,
-                border: `1px solid ${COLORS.borderSoft}`,
-                color: COLORS.textMid,
-                fontSize: 12,
-                lineHeight: 1.7,
-                whiteSpace: "pre-wrap",
-              }}
+              className="relative mt-3"
+              style={{ minHeight: 116 }}
             >
-              {samplePreview ? (
-                samplePreview.mode === "html" ? (
-                  <span style={{ color: COLORS.textFaint }}>
-                    已接入富文本样本。下方可查看预览和抓取摘要。
-                  </span>
-                ) : (
-                  <span>{samplePreview.value.slice(0, 260)}</span>
-                )
-              ) : (
-                <span style={{ color: COLORS.textFaint }}>
+              {!samplePreview && (
+                <div
+                  className="pointer-events-none absolute left-3 right-3 top-2.5"
+                  style={{ color: COLORS.textFaint, fontSize: 12, lineHeight: 1.7 }}
+                >
                   在这里直接粘贴公众号编辑器内容。系统会优先读取富文本 HTML。
-                </span>
+                </div>
               )}
-            </div>
-
-            <div
-              className="mt-3 px-3 py-2.5 rounded"
-              style={{
-                background: COLORS.pageBg,
-                fontSize: 11.5,
-                lineHeight: 1.7,
-              }}
-            >
-              {samplePreview ? (
-                samplePreview.mode === "html" ? (
-                  <div
-                    style={{ color: activeTheme.bodyColor }}
-                    dangerouslySetInnerHTML={{
-                      __html: sanitizePreviewHtml(samplePreview.value),
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{ color: activeTheme.bodyColor, whiteSpace: "pre-wrap" }}
-                  >
-                    {samplePreview.value.slice(0, 240)}
-                  </div>
-                )
-              ) : (
-                <>
-                  <div style={{ color: activeTheme.accentColor }}>
-                    「专注不是用力」 · {sampleSummary.headingFontSize}
-                  </div>
-                  <div style={{ color: activeTheme.bodyColor, marginTop: 2 }}>
-                    正文 · {sampleSummary.bodyFontSize} · {activeTheme.bodyColor}
-                  </div>
-                </>
+              {samplePreview && (
+                <div
+                  className="pointer-events-none absolute left-3 right-3 top-2.5"
+                  style={{ color: COLORS.textFaint, fontSize: 12, lineHeight: 1.7 }}
+                >
+                  已接入{samplePreview.mode === "html" ? "富文本" : "纯文本"}样本。
+                  下方样式摘要已更新，可保存为默认基准。
+                </div>
               )}
+              <div
+                ref={pasteAreaRef}
+                contentEditable
+                suppressContentEditableWarning
+                onPaste={handleSamplePaste}
+                onInput={(event) => {
+                  const text = event.currentTarget.innerText.trim();
+                  setImportedHtml("");
+                  setImportedText(text);
+                  setStatusMessage(
+                    text
+                      ? "已接收纯文本样本 · 待保存"
+                      : "样本为空，请重新复制公众号排版内容"
+                  );
+                  event.currentTarget.textContent = "";
+                }}
+                className="mt-3 w-full rounded-md px-3 py-2.5 outline-none"
+                style={{
+                  minHeight: 116,
+                  background: COLORS.surface,
+                  border: `1px solid ${COLORS.borderSoft}`,
+                  color: "transparent",
+                  fontSize: 12,
+                  lineHeight: 1.7,
+                  whiteSpace: "pre-wrap",
+                  caretColor: COLORS.text,
+                }}
+              />
             </div>
           </div>
 
@@ -979,9 +1002,11 @@ export function WechatLayout() {
         >
           {[
             ["段落数", String(sampleSummary.paragraphCount)],
-            ["标题数", String(sampleSummary.headingCount)],
+            ["一级标题", String(sampleSummary.primaryHeadingCount)],
+            ["二级标题", String(sampleSummary.secondaryHeadingCount)],
             ["正文字号", sampleSummary.bodyFontSize],
-            ["标题字号", sampleSummary.headingFontSize],
+            ["一级字号", sampleSummary.primaryHeadingFontSize],
+            ["二级字号", sampleSummary.secondaryHeadingFontSize],
             ["行高", sampleSummary.lineHeight],
             ["字间距", sampleSummary.letterSpacing],
           ].map(([k, v]) => (
@@ -1202,6 +1227,31 @@ function sanitizePreviewHtml(html: string) {
   return doc.body.innerHTML.slice(0, 1000);
 }
 
+function getInlineCssValue(node: HTMLElement, property: string) {
+  const inline = node.style.getPropertyValue(property);
+  if (inline) return inline.trim();
+  const style = node.getAttribute("style") || "";
+  const escaped = property.replace("-", "\\-");
+  return new RegExp(`${escaped}\\s*:\\s*([^;]+)`, "i")
+    .exec(style)?.[1]
+    ?.trim();
+}
+
+function firstCssValue(nodes: HTMLElement[], property: string) {
+  for (const node of nodes) {
+    const value = getInlineCssValue(node, property);
+    if (value) return value;
+  }
+  return "";
+}
+
+function formatCssValue(value: string | undefined, fallback: string) {
+  if (!value) return fallback;
+  const trimmed = value.trim();
+  if (!trimmed) return fallback;
+  return trimmed.replace(/\s*px\b/i, " px");
+}
+
 function formatSavedAt(isoString: string) {
   const date = new Date(isoString);
   const hh = String(date.getHours()).padStart(2, "0");
@@ -1416,16 +1466,18 @@ function deriveWechatTheme(
   importedHtml: string,
   summary: {
     bodyFontSize: string;
-    headingFontSize: string;
+    primaryHeadingFontSize: string;
+    secondaryHeadingFontSize: string;
     lineHeight: string;
-  }
+  },
+  mapping: MappingMode
 ): WechatTheme {
   if (!importedHtml) {
     return {
       ...DEFAULT_THEME,
       bodyFontSize: parsePixel(summary.bodyFontSize, DEFAULT_THEME.bodyFontSize),
-      headingFontSize: parseHeadingFontSize(
-        summary.headingFontSize,
+      headingFontSize: parsePixel(
+        summary.primaryHeadingFontSize,
         DEFAULT_THEME.headingFontSize
       ),
       bodyLineHeight: parseFloat(summary.lineHeight) || DEFAULT_THEME.bodyLineHeight,
@@ -1435,24 +1487,35 @@ function deriveWechatTheme(
 
   const doc = new DOMParser().parseFromString(importedHtml, "text/html");
   const styledNodes = Array.from(doc.body.querySelectorAll<HTMLElement>("[style]"));
-  const colors = collectMatches(styledNodes, /color\s*:\s*([^;]+)/i);
+  const headingSelectors =
+    mapping === "h1h2"
+      ? { primary: "h1", secondary: "h2" }
+      : { primary: "h2", secondary: "h3" };
+  const primaryHeadingNodes = Array.from(
+    doc.body.querySelectorAll<HTMLElement>(headingSelectors.primary)
+  );
+  const bodyNodes = Array.from(
+    doc.body.querySelectorAll<HTMLElement>("p,section,span,div")
+  ).filter((node) => node.textContent?.trim());
+  const colors = collectMatches(styledNodes, /(?:^|;)color\s*:\s*([^;]+)/i);
   const backgrounds = collectMatches(styledNodes, /background(?:-color)?\s*:\s*([^;]+)/i);
-  const fontSizes = collectMatches(styledNodes, /font-size\s*:\s*([^;]+)/i);
-  const lineHeights = collectMatches(styledNodes, /line-height\s*:\s*([^;]+)/i);
+  const bodyFontValue = firstCssValue(bodyNodes, "font-size");
+  const headingFontValue = firstCssValue(primaryHeadingNodes, "font-size");
+  const bodyLineHeightValue = firstCssValue(bodyNodes, "line-height");
 
   const bodyColor = pickCssColor(colors[0]) || DEFAULT_THEME.bodyColor;
   const accentColor =
     pickCssColor(colors.find((item) => item !== bodyColor)) || DEFAULT_THEME.accentColor;
   const blockBg = pickCssColor(backgrounds[0]) || DEFAULT_THEME.blockBg;
   const bodyFontSize =
-    parsePixel(fontSizes.find((item) => item.includes("px")), DEFAULT_THEME.bodyFontSize);
+    parsePixel(bodyFontValue || summary.bodyFontSize, DEFAULT_THEME.bodyFontSize);
   const headingFontSize =
     parsePixel(
-      fontSizes.find((item) => parsePixel(item, 0) >= bodyFontSize + 1),
+      headingFontValue || summary.primaryHeadingFontSize,
       DEFAULT_THEME.headingFontSize
     );
   const bodyLineHeight =
-    parseLineHeight(lineHeights[0], DEFAULT_THEME.bodyLineHeight);
+    parseLineHeight(bodyLineHeightValue || summary.lineHeight, DEFAULT_THEME.bodyLineHeight);
 
   return {
     titleColor: accentColor,
@@ -1490,12 +1553,6 @@ function parsePixel(value: string | undefined, fallback: number) {
   if (!value) return fallback;
   const match = value.match(/([\d.]+)/);
   return match ? Number(match[1]) : fallback;
-}
-
-function parseHeadingFontSize(value: string | undefined, fallback: number) {
-  if (!value) return fallback;
-  const first = value.split("/")[0]?.trim();
-  return parsePixel(first, fallback);
 }
 
 function parseLineHeight(value: string | undefined, fallback: number) {
