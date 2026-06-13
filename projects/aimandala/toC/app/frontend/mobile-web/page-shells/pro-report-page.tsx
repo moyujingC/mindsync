@@ -274,7 +274,13 @@ function normalizeCards(
 function extractProSummary(
   state: MandalaFlowState,
   sections: ProMarkdownSection[],
+  documentSummary?: string,
 ): string {
+  const structuredSummary = stripMarkdownText(documentSummary ?? "");
+  if (structuredSummary) {
+    return structuredSummary;
+  }
+
   const overallImpression = stripMarkdownText(
     state.report?.overall_impression ?? "",
   );
@@ -692,7 +698,7 @@ function ProMainlineCard({ text }: { text: string }) {
       <div className="am-pro-mainline-card__pattern" />
       <span className="am-pro-mainline-card__glow" aria-hidden="true" />
       <p>{text}</p>
-      <span>↓ 下方展开完整深度解读</span>
+      <span className="am-pro-mainline-card__hint">↓ 下方展开完整深度解读</span>
     </article>
   );
 }
@@ -769,7 +775,7 @@ function ProAdjustmentCards({ cards }: { cards: ProTemplateCard[] }) {
       {cards.map((card) => (
         <article className="am-pro-adjustment-card" key={card.id}>
           <div className="am-pro-adjustment-card__header">
-            <span aria-hidden="true">{card.icon ?? "◇"}</span>
+            <span aria-hidden="true">{card.icon ?? "🌿"}</span>
             <h3>{card.label}</h3>
           </div>
           <p>{card.content}</p>
@@ -1076,7 +1082,10 @@ export function MobileWebProReportPage({
       })),
     [reportDocument.modules, sections],
   );
-  const summary = useMemo(() => extractProSummary(state, sections), [sections, state]);
+  const summary = useMemo(
+    () => extractProSummary(state, sections, reportDocument.summary),
+    [reportDocument.summary, sections, state],
+  );
   const hasProReport = state.report?.version === "pro" && documentSections.length > 0;
   const isError = state.step === "error" && Boolean(state.lastError);
   const isGenerating = !hasProReport && !isError;

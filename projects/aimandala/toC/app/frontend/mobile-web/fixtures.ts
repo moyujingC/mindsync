@@ -106,8 +106,117 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
     structured: version === "pro"
       ? {
           title: "一镜：冰封的太阳 - Pro版",
-          summary: "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
+          summary:
+            "这幅画的深层主线，是一场关于「被看见」的拉扯——你既渴望释放炽热的自我，又用秩序把它牢牢冻结。太阳被冰封，不是因为没有热，而是热被层层保护了起来。",
           report_mode: version,
+          generated_at: "2026-03-08T10:00:00+08:00",
+          modules: [
+            {
+              id: "mainline",
+              type: "mainline",
+              order: 1,
+              title: "深层主线",
+              body:
+                "这幅画的深层主线，是一场关于「被看见」的拉扯——你既渴望释放炽热的自我，又用秩序把它牢牢冻结。太阳被冰封，不是因为没有热，而是热被层层保护了起来。",
+              accent: "#D4A054",
+            },
+            {
+              id: "deep-reading",
+              type: "deep_reading",
+              order: 2,
+              title: "深度解读",
+              accent: "#C87850",
+              items: [
+                {
+                  id: "color",
+                  label: "色彩语言",
+                  content:
+                    "浓烈的暖色集中在中心，冷色与留白被推向外圈——这是一种「热在内、冷在外」的能量分布。你把最真实、最有温度的部分藏在最里层，只让外界看到克制和秩序。",
+                },
+                {
+                  id: "shape",
+                  label: "形状结构",
+                  content:
+                    "规整的几何边框包裹着自由生长的中心图案。框架代表你为自己设定的「应该」，而中心的生命力，是你真正想要的「想要」。两者长期并存，构成了内在的张力。",
+                },
+                {
+                  id: "space",
+                  label: "空间留白",
+                  content:
+                    "外圈大面积的冷色留白，是你与他人之间的安全距离。它保护了你，也在不经意间，把想要靠近你的人挡在了门外。",
+                },
+              ],
+            },
+            {
+              id: "three-circles",
+              type: "three_circles",
+              order: 3,
+              title: "三圈能量",
+              accent: "#4A7FB5",
+              items: [
+                {
+                  id: "inner",
+                  label: "内在",
+                  color: "#C25B56",
+                  content:
+                    "核心是充沛而炽热的，你对生活有强烈的热情与创造欲，但这股能量目前更多向内燃烧，缺少安全的出口。",
+                },
+                {
+                  id: "relation",
+                  label: "关系",
+                  color: "#D4883E",
+                  content:
+                    "你在关系中习惯做给予的一方，用照顾换取连接。你给得多、要得少，长期下来容易感到「我懂别人，却没人真的懂我」。",
+                },
+                {
+                  id: "outer",
+                  label: "外在",
+                  color: "#4A7FB5",
+                  content:
+                    "对外你呈现出可靠、有条理的形象，边界清晰甚至略显疏离。这层外壳让你被信任，却也让真实的脆弱难以流动出来。",
+                },
+              ],
+            },
+            {
+              id: "origin",
+              type: "formation_reason",
+              order: 4,
+              title: "模式形成的原因",
+              body:
+                "这套「热在内、冷在外」的模式，往往形成于一段需要你「懂事、稳定、不添麻烦」的早期经历。当展现真实情绪没有得到温柔回应时，你学会了把热情收进秩序里——它曾经保护过你，只是如今，它也开始限制你。",
+              accent: "#8B6AAE",
+            },
+            {
+              id: "adjustments",
+              type: "practice_suggestion",
+              order: 5,
+              title: "调节建议",
+              accent: "#5B8C5A",
+              items: [
+                {
+                  id: "a1",
+                  label: "松动边界",
+                  icon: "🌿",
+                  content:
+                    "练习在安全的关系里，做一次小小的「示弱」——说出一个你平时会自己扛下的需要，观察对方的回应。",
+                },
+                {
+                  id: "a2",
+                  label: "向外释放",
+                  icon: "🌿",
+                  content:
+                    "为内在的热找一个出口：一项不追求结果的创造性活动（涂鸦、写字、唱歌），让能量有处可去。",
+                },
+                {
+                  id: "a3",
+                  label: "接住自己",
+                  icon: "🌿",
+                  content:
+                    "当「完美化」防御又启动时，试着对自己说一句：「不完美也没关系，我已经做得足够好了。」",
+                },
+              ],
+            },
+          ],
         }
       : {
           title: "冰封的太阳",

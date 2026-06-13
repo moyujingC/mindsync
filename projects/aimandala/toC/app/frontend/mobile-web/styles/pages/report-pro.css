@@ -33,12 +33,12 @@
   position: sticky;
   top: 0;
   z-index: 20;
-  min-height: 50px;
+  min-height: 55px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 16px;
+  padding: 12px 16px;
   background: linear-gradient(135deg, var(--am-pro-deep-900) 0%, var(--am-pro-deep-800) 50%, var(--am-pro-deep-900) 100%);
   border-bottom: 1px solid rgb(212 160 84 / 0.15);
 }
@@ -131,7 +131,7 @@
 
 .am-pro-report-hero__inner {
   position: relative;
-  padding: 32px 24px 34px;
+  padding: 29px 24px 35px;
 }
 
 .am-pro-report-hero__content {
@@ -292,7 +292,7 @@
 
 .am-pro-report-surface__content {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   max-width: var(--am-layout-max-content);
   margin: 0 auto;
 }
@@ -491,7 +491,7 @@
   align-items: center;
   justify-content: space-between;
   min-height: 28px;
-  margin: -3px 0 16px;
+  margin: -3px 0 10px;
   padding-bottom: 12px;
   border-bottom: 1px dashed rgba(200, 160, 102, 0.28);
   color: #8A6E3C;
@@ -519,7 +519,7 @@
 }
 
 .am-pro-template-module {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .am-pro-template-module__header {
@@ -572,10 +572,10 @@
 .am-pro-mainline-card {
   position: relative;
   overflow: hidden;
-  min-height: 176px;
   display: flex;
   flex-direction: column;
-  padding: 18px 20px;
+  justify-content: flex-start;
+  padding: 19px 20px 18px;
   border: 1px solid rgb(212 160 84 / 0.18);
   border-radius: 16px;
   background: linear-gradient(135deg, var(--am-pro-deep-900) 0%, var(--am-pro-deep-800) 50%, var(--am-pro-deep-700) 100%);
@@ -607,7 +607,7 @@
   color: rgb(232 220 200 / 0.9);
   font-family: var(--am-font-display);
   font-size: 14px;
-  line-height: 1.95;
+  line-height: 1.92;
   letter-spacing: 0.02em;
   display: -webkit-box;
   overflow: hidden;
@@ -615,10 +615,10 @@
   -webkit-line-clamp: 4;
 }
 
-.am-pro-mainline-card > span {
+.am-pro-mainline-card__hint {
   position: relative;
   display: inline-block;
-  margin-top: 12px;
+  margin-top: 13px;
   color: rgb(212 160 84 / 0.55);
   font-size: 11px;
   letter-spacing: 0.05em;
@@ -766,14 +766,15 @@
 }
 
 .am-pro-adjustment-card {
-  padding: 14px 16px;
+  padding: 15px 16px;
   border-color: rgb(91 140 90 / 0.2);
   background: linear-gradient(135deg, rgb(91 140 90 / 0.08) 0%, rgb(245 239 226 / 0.6) 100%);
 }
 
 .am-pro-adjustment-card__header span {
   color: #5B8C5A;
-  font-size: 14px;
+  font-size: 15px;
+  line-height: 1;
 }
 
 .am-pro-adjustment-card__header h3 {
@@ -784,7 +785,7 @@
 .am-pro-followup-button-row {
   display: flex;
   justify-content: flex-end;
-  margin: 0 0 22px;
+  margin: 0 0 14px;
 }
 
 .am-pro-followup-pill {
