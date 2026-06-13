@@ -76,6 +76,7 @@ export function WechatLayout() {
   const [statusMessage, setStatusMessage] = useState("尚未保存新的样式基准");
   const [isPasting, setIsPasting] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
+  const [showAllSampleBlocks, setShowAllSampleBlocks] = useState(false);
 
   useEffect(() => {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -1032,10 +1033,19 @@ export function WechatLayout() {
           <div className="mb-2 flex items-center justify-between">
             <span style={{ color: COLORS.textFaint, fontSize: 11 }}>样例块</span>
             <button
+              onClick={() => setShowAllSampleBlocks((value) => !value)}
               className="flex items-center gap-1"
               style={{ color: COLORS.blue, fontSize: 11 }}
             >
-              查看全部 <ChevronRight size={11} strokeWidth={1.6} />
+              {showAllSampleBlocks ? "收起" : "查看全部"}
+              <ChevronRight
+                size={11}
+                strokeWidth={1.6}
+                style={{
+                  transform: showAllSampleBlocks ? "rotate(90deg)" : "none",
+                  transition: "transform 0.16s ease",
+                }}
+              />
             </button>
           </div>
           <div className="space-y-2">
@@ -1074,6 +1084,71 @@ export function WechatLayout() {
             >
               引用块 · 用于金句段
             </div>
+            {showAllSampleBlocks && (
+              <>
+                <div
+                  className="px-3 py-2 rounded"
+                  style={{
+                    background: COLORS.surfaceAlt,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                    color: activeTheme.titleColor,
+                    fontSize: activeTheme.titleFontSize,
+                    lineHeight: 1.45,
+                    fontWeight: 600,
+                  }}
+                >
+                  AI提升了效率，为何难获轻松？
+                </div>
+                <div
+                  className="px-3 py-2 rounded"
+                  style={{
+                    background: COLORS.surfaceAlt,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                    color: activeTheme.bodyColor,
+                    fontSize: activeTheme.bodyFontSize,
+                    lineHeight: activeTheme.bodyLineHeight,
+                  }}
+                >
+                  正文段落 · 用于普通叙述。这里检查字号、行高、段间距和整体阅读密度。
+                </div>
+                <div
+                  className="px-3 py-2 rounded"
+                  style={{
+                    background: COLORS.surfaceAlt,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                    color: activeTheme.bodyColor,
+                    fontSize: activeTheme.bodyFontSize,
+                    lineHeight: activeTheme.bodyLineHeight,
+                  }}
+                >
+                  加粗正文 · <strong style={{ fontWeight: 700 }}>用于强调句，检查粗体在预览和复制后的稳定性。</strong>
+                </div>
+                <div
+                  className="px-3 py-2 rounded"
+                  style={{
+                    background: "#FAF7F2",
+                    border: `1px solid ${COLORS.borderSoft}`,
+                    color: activeTheme.bodyColor,
+                    fontSize: Math.max(activeTheme.bodyFontSize - 1, 12),
+                    lineHeight: activeTheme.bodyLineHeight,
+                  }}
+                >
+                  提示块 · 用于补充说明、发布提醒或编辑备注。
+                </div>
+                <div
+                  className="px-3 py-2 rounded"
+                  style={{
+                    background: COLORS.surfaceAlt,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                    color: activeTheme.metaColor,
+                    fontSize: 11,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  辅助信息 · 静读笔记 · 2026-06-09 · 8 分钟阅读
+                </div>
+              </>
+            )}
           </div>
         </div>
 
