@@ -55,6 +55,8 @@ export function Workbench() {
         currentArticleMeta={currentArticleMeta}
         outputs={controller.outputs}
         toggleOutput={controller.toggleOutput}
+        coverThumbMode={controller.coverThumbMode}
+        setCoverThumbMode={controller.setCoverThumbMode}
         splitStrategy={controller.splitStrategy}
         setSplitStrategy={controller.setSplitStrategy}
         minCards={controller.minCards}
@@ -108,6 +110,7 @@ export function Workbench() {
         coverPreset={controller.coverPreset}
         coverGeneration={controller.coverGeneration}
         coverSelection={controller.coverSelection}
+        coverThumbMode={controller.coverThumbMode}
         handleSelectCover={controller.handleSelectCover}
         handleFinalizeCover={controller.handleFinalizeCover}
         inlinePreset={controller.inlinePreset}

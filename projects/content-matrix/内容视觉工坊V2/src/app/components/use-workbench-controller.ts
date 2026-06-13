@@ -131,6 +131,7 @@ export function useWorkbenchController({
   const importedMarkdownMeta = workbenchState.importedMarkdownMeta;
   const quoteGenerationSelection = workbenchState.quoteGenerationSelection;
   const coverSelection = workbenchState.coverSelection;
+  const coverThumbMode = workbenchState.coverThumbMode;
   const replanRevision = workbenchState.replanRevision;
 
   const unlockedPlannedCards = plannedCards.filter(
@@ -182,13 +183,20 @@ export function useWorkbenchController({
     }),
     cover: buildOutputSummary({
       label: "公众号封面",
-      generatedCount: coverGeneration?.images.length ?? 0,
+      generatedCount:
+        coverGeneration?.images.filter((image) => (image.coverLink?.variant || "large") === "large")
+          .length ?? 0,
       plannedCount: 3,
       generatedText:
         coverGeneration?.images.length && coverGeneration.images.length > 0
-          ? `${coverGeneration.images.length} 张已生成`
+          ? `${
+              coverGeneration.images.filter(
+                (image) => (image.coverLink?.variant || "large") === "large"
+              ).length
+            } 张大封面`
           : null,
       pendingText: "3 张待生成",
+      modeText: coverThumbMode === "crop" ? "小图裁切" : "小图单独",
     }),
     inline: buildOutputSummary({
       label: "正文配图",
@@ -208,6 +216,13 @@ export function useWorkbenchController({
 
   function toggleOutput(key: keyof WorkbenchOutputs) {
     setOutputs((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  function setCoverThumbMode(mode: "crop" | "separate") {
+    setWorkbenchState((prev) => ({
+      ...prev,
+      coverThumbMode: mode,
+    }));
   }
 
   function toggleQuote(index: number) {
@@ -1013,22 +1028,6 @@ export function useWorkbenchController({
           title: candidate.title,
           variant: "large" as const,
         },
-        thumbImage: {
-          id: `programmatic-cover-thumb-${candidate.index}-${Date.now().toString(36)}`,
-          imageUrl: buildProgrammaticWechatThumb({
-            keyword: resolveCoverThumbKeyword(candidate.thumbKeyword, candidate.title),
-            shape: candidate.thumbShape || (candidate.index % 2 === 0 ? "square" : "circle"),
-            tone: candidate.index,
-          }),
-          prompt: "程序生成小封面：底色 + 几何形状 + 关键词",
-          width: 383,
-          height: 383,
-          coverLink: {
-            index: candidate.index,
-            title: candidate.title,
-            variant: "thumb" as const,
-          },
-        },
       }));
 
     let mergedCoverRecord = coverGeneration;
@@ -1060,9 +1059,40 @@ export function useWorkbenchController({
         return;
       }
 
+      const candidate = coverPlan.coverPlan[index];
+      const largeImage = record.images.find(
+        (image) => (image.coverLink?.variant || "large") === "large"
+      );
+      const thumbImage = largeImage
+        ? {
+            id: `${coverThumbMode === "crop" ? "cropped" : "programmatic"}-cover-thumb-${task.coverLink.index}-${Date.now().toString(36)}`,
+            imageUrl:
+              coverThumbMode === "crop"
+                ? largeImage.imageUrl
+                : buildProgrammaticWechatThumb({
+                    keyword: resolveCoverThumbKeyword(candidate?.thumbKeyword, task.coverLink.title),
+                    shape:
+                      candidate?.thumbShape ||
+                      (task.coverLink.index % 2 === 0 ? "square" : "circle"),
+                    tone: task.coverLink.index,
+                  }),
+            prompt:
+              coverThumbMode === "crop"
+                ? "从公众号大封面中心裁切 383×383 小封面"
+                : "程序生成小封面：底色 + 几何形状 + 关键词",
+            width: 383,
+            height: 383,
+            coverLink: {
+              index: task.coverLink.index,
+              title: task.coverLink.title,
+              variant: "thumb" as const,
+            },
+          }
+        : null;
+
       mergedCoverRecord = mergeRecordImages(mergedCoverRecord, {
         ...record,
-        images: [...record.images, task.thumbImage],
+        images: thumbImage ? [...record.images, thumbImage] : record.images,
       });
       saveGenerationRecord(mergedCoverRecord);
       pushStatus("cover-generation", "success", `${taskLabel} 已完成`, {
@@ -1400,6 +1430,8 @@ export function useWorkbenchController({
     coverGeneration,
     inlineGeneration,
     coverSelection,
+    coverThumbMode,
+    setCoverThumbMode,
     latestGenerationTime,
     latestLogText,
     controlTowerOutputs,

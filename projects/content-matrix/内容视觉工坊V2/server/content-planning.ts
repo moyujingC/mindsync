@@ -702,31 +702,25 @@ function buildCoverCandidates({
 }): CoverCandidatePlan[] {
   const candidates = [
     {
-      title: "标题左置",
-      thumbKeyword: "效率",
-      thumbShape: "circle" as const,
-      composition:
-        "标题左置，占画面左侧 45%-55%；右侧用一个克制的纸本隐喻物件承接主题，背景保留大面积温白纸面。",
-      elementHint: `一张主纸片、少量胶带、一个与“${visualMetaphor}”相关的低饱和小物件或小图框。`,
-      focus: "标题可读，纸本质感明确，主题隐喻清楚。",
-    },
-    {
       title: "中心纸片",
-      thumbKeyword: "收口",
-      thumbShape: "square" as const,
       composition:
-        "中心纸片承载标题，背后只有轻微纸张叠层和低饱和色块，右下角放一个小型隐喻物件。",
-      elementHint: "中心标题纸片、浅雾蓝/浅卡其色块、铅笔或便签边角。",
-      focus: "更安静，更适合知识型公众号。",
+        "中心纸片承载原标题，标题和主要视觉都放在中心安全区，确保从大封面中心裁成 1:1 小封面后仍完整可读。",
+      elementHint: `中心纸片、少量胶带、一个与“${visualMetaphor}”相关的低饱和小物件。`,
+      focus: "标题居中可读，中心裁切可用，纸本质感明确。",
     },
     {
-      title: "错位纸张",
-      thumbKeyword: "边界",
-      thumbShape: "circle" as const,
+      title: "中心聚焦",
       composition:
-        "标题区与主体物件错位，标题放在中左纸片上，右侧或下方用边角纸张层次和轻扫描感制造入口气质。",
-      elementHint: `错位纸片、回形针或胶带、一个象征“${keywords}”的简洁物件。`,
-      focus: "入口感稍强，但不能商业营销化。",
+        "中心聚焦构图，标题置于画面中心，四周用低饱和色块和少量纸本元素形成入口氛围。",
+      elementHint: "中心标题区、浅雾蓝/浅卡其色块、铅笔或便签边角。",
+      focus: "更安静，更适合知识型公众号，中心安全区稳定。",
+    },
+    {
+      title: "对称留白",
+      composition:
+        "近似对称构图，标题位于中心略上位置，主体物件围绕标题下方或两侧展开，边缘保持干净。",
+      elementHint: `居中标题纸片、回形针或胶带、一个象征“${keywords}”的简洁物件。`,
+      focus: "入口感稍强，但不能商业营销化，不能影响中心裁切。",
     },
   ];
 
@@ -735,8 +729,6 @@ function buildCoverCandidates({
     title: candidate.title,
     composition: candidate.composition,
     visualMetaphor,
-    thumbKeyword: candidate.thumbKeyword,
-    thumbShape: candidate.thumbShape,
     promptText: `【公众号封面图 - 候选 ${index + 1}，横版 900×383】
 
 用途：公众号文章《${articleTitle}》首发封面。
@@ -771,9 +763,11 @@ ${referenceImages}
 
 重点：${candidate.focus}
 
+小封面适配：公众号小封面直接从这张大封面中心裁切 383×383，不单独生成小封面。因此标题和核心视觉必须位于中心安全区，不能放在左右边缘。
+
 ## 禁止
 
-不要知识卡片布局，不要小红书竖版卡片，不要信息图，不要段落文字，不要人物大头，不要复杂拼贴，不要高饱和营销海报。`,
+不要知识卡片布局，不要小红书竖版卡片，不要信息图，不要段落文字，不要人物大头，不要复杂拼贴，不要高饱和营销海报，不要左置标题，不要右置标题。`,
   }));
 }
 

@@ -101,6 +101,8 @@ export type WorkbenchCoverSelection = {
   updatedAt: string;
 };
 
+export type WorkbenchCoverThumbMode = "crop" | "separate";
+
 export type GenerationRecord = {
   id: string;
   source: "general-image";
@@ -153,6 +155,7 @@ export type WorkbenchState = {
   taskState: WorkbenchTaskState;
   quoteGenerationSelection: WorkbenchQuoteGenerationSelection | null;
   coverSelection: WorkbenchCoverSelection | null;
+  coverThumbMode: WorkbenchCoverThumbMode;
   importedMarkdownMeta: WorkbenchImportedMarkdownMeta | null;
   replanRevision: number;
 };
@@ -222,6 +225,7 @@ const DEFAULT_WORKBENCH_STATE: WorkbenchState = {
   },
   quoteGenerationSelection: null,
   coverSelection: null,
+  coverThumbMode: "crop",
   importedMarkdownMeta: null,
   replanRevision: 0,
 };
@@ -371,6 +375,7 @@ function normalizeWorkbenchState(input: unknown): WorkbenchState {
     },
     quoteGenerationSelection: value.quoteGenerationSelection ?? null,
     coverSelection: value.coverSelection ?? null,
+    coverThumbMode: value.coverThumbMode === "separate" ? "separate" : "crop",
     importedMarkdownMeta: value.importedMarkdownMeta ?? null,
     replanRevision: value.replanRevision ?? 0,
   };

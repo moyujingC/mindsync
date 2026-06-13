@@ -31,7 +31,11 @@ import {
 import { COVER_DRAFTS, ILLUSTRATIONS } from "./workbench-data";
 import { KnowledgeCardResults, ResultRow } from "./workbench-panels";
 import type { CardPlan } from "../content-planning";
-import type { WorkbenchImportedMarkdownMeta, WorkbenchStatusMessage } from "../workspace";
+import type {
+  WorkbenchCoverThumbMode,
+  WorkbenchImportedMarkdownMeta,
+  WorkbenchStatusMessage,
+} from "../workspace";
 import { downloadGeneratedImage } from "../api";
 import { formatScopeLabel } from "./use-workbench-controller";
 
@@ -43,6 +47,8 @@ export function WorkbenchLeftSidebar({
   currentArticleMeta,
   outputs,
   toggleOutput,
+  coverThumbMode,
+  setCoverThumbMode,
   splitStrategy,
   setSplitStrategy,
   minCards,
@@ -73,6 +79,8 @@ export function WorkbenchLeftSidebar({
   toggleOutput: (
     key: "knowledge" | "quote" | "cover" | "inline" | "layout"
   ) => void;
+  coverThumbMode: WorkbenchCoverThumbMode;
+  setCoverThumbMode: (mode: WorkbenchCoverThumbMode) => void;
   splitStrategy: "auto" | "less" | "more";
   setSplitStrategy: (strategy: "auto" | "less" | "more") => void;
   minCards: number;
@@ -240,6 +248,48 @@ export function WorkbenchLeftSidebar({
           />
         ))}
       </div>
+
+      {outputs.cover ? (
+        <div
+          className="mt-2 rounded-md px-3.5 py-3"
+          style={{
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.borderSoft}`,
+          }}
+        >
+          <div className="mb-2" style={{ color: COLORS.textFaint, fontSize: 11 }}>
+            公众号小封面
+          </div>
+          <div className="flex p-0.5 rounded" style={{ background: COLORS.borderSoft }}>
+            {[
+              { k: "crop" as const, l: "从大封面裁切" },
+              { k: "separate" as const, l: "单独生成小图" },
+            ].map((item) => {
+              const active = coverThumbMode === item.k;
+              return (
+                <button
+                  key={item.k}
+                  onClick={() => setCoverThumbMode(item.k)}
+                  className="flex-1 h-6 rounded text-center"
+                  style={{
+                    background: active ? COLORS.surface : "transparent",
+                    color: active ? COLORS.text : COLORS.textMuted,
+                    fontSize: 11.5,
+                    boxShadow: active ? "0 1px 1.5px rgba(43,55,72,0.05)" : "none",
+                  }}
+                >
+                  {item.l}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-2" style={{ color: COLORS.textFaint, fontSize: 10.5, lineHeight: 1.5 }}>
+            {coverThumbMode === "crop"
+              ? "默认使用大封面中心 1:1 裁切，要求标题位于中心安全区。"
+              : "沿用程序生成的小封面方案，适合以后单独打磨。"}
+          </div>
+        </div>
+      ) : null}
 
       <SectionLabel className="mt-3">后续处理</SectionLabel>
       <div
@@ -494,6 +544,7 @@ export function WorkbenchCenterSection({
   coverPreset,
   coverGeneration,
   coverSelection,
+  coverThumbMode,
   handleSelectCover,
   handleFinalizeCover,
   inlinePreset,
@@ -549,6 +600,7 @@ export function WorkbenchCenterSection({
     finalizedCoverIndex?: number | null;
     updatedAt: string;
   } | null;
+  coverThumbMode: WorkbenchCoverThumbMode;
   handleSelectCover: (index: number) => void;
   handleFinalizeCover: (index: number) => void;
   inlinePreset?: { w: number; h: number };
@@ -844,6 +896,7 @@ export function WorkbenchCenterSection({
           coverPreset={coverPreset}
           coverGeneration={coverGeneration}
           coverSelection={coverSelection}
+          coverThumbMode={coverThumbMode}
           handleSelectCover={handleSelectCover}
           handleFinalizeCover={handleFinalizeCover}
           inlinePreset={inlinePreset}
@@ -965,6 +1018,7 @@ function WorkbenchResultsPanel({
   coverPreset,
   coverGeneration,
   coverSelection,
+  coverThumbMode,
   handleSelectCover,
   handleFinalizeCover,
   inlinePreset,
@@ -1456,7 +1510,7 @@ function WorkbenchResultsPanel({
         <div>
           <ResultRow
             label="公众号封面组合"
-            size="大图 AI · 小图程序生成"
+            size={coverThumbMode === "crop" ? "大图 AI · 小图中心裁切" : "大图 AI · 小图单独生成"}
             count={3}
           />
           <div className="space-y-2 mt-2.5">
