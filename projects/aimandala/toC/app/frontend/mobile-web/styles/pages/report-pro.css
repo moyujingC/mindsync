@@ -956,18 +956,20 @@
 .am-pro-followup-input-row {
   display: flex;
   align-items: center;
-  gap: 8px;
   margin-top: 2px;
+  padding: 0 5px 0 14px;
+  border: 1px solid rgba(200, 160, 102, 0.35);
+  border-radius: var(--am-radius-pill);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .am-pro-followup-input {
   flex: 1;
   min-width: 0;
   height: 38px;
-  padding: 0 12px;
-  border: 1px solid rgba(170, 126, 69, 0.28);
-  border-radius: var(--am-radius-pill);
-  background: rgba(255, 255, 255, 0.78);
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--am-text-primary);
   font-size: 13px;
   outline: none;
@@ -981,17 +983,20 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 30px;
+  height: 30px;
   flex: 0 0 auto;
   border: 0;
   border-radius: var(--am-radius-pill);
-  background: var(--am-color-gold-500);
+  background: linear-gradient(135deg, var(--am-pro-copper-500) 0%, var(--am-pro-gold-500) 100%);
+  box-shadow: 0 1px 4px rgba(200, 120, 80, 0.3);
   color: var(--am-color-sand-100);
 }
 
 .am-pro-followup-send:disabled {
-  opacity: 0.52;
+  opacity: 1;
+  background: rgba(200, 160, 102, 0.42);
+  box-shadow: none;
 }
 
 .am-pro-followup-panel svg,
