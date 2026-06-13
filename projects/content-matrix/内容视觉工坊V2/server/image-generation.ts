@@ -30,6 +30,7 @@ function buildPrompt(request: GenerateImagesRequest) {
   const lines = [
     request.prompt.trim(),
     `用途：${request.purposeLabel}`,
+    `目标规格：${request.presetLabel}，画面比例 ${request.width}:${request.height}`,
     `风格：${request.styleName}`,
     `文章标题：${request.articleTitle}`,
   ];

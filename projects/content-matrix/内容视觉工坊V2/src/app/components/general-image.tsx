@@ -41,7 +41,7 @@ export function GeneralImage() {
   const [count, setCount] = useState(4);
   const [style, setStyle] = useState("蓝雾静读");
   const [prompt, setPrompt] = useState(
-    "一座静山，雾色笼罩山脊，远处一盏暖灯。低饱和雾蓝主色，留白克制，单点光源，安静、疗愈。"
+    "小红书图文 3:4 知识卡片，围绕当前文章主题生成一张可发布配图。低饱和、信息层次清楚、标题区可读，适合小红书图文流。"
   );
   const [negativePrompt, setNegativePrompt] = useState(
     "高饱和、霓虹、HDR、卡通、文字"

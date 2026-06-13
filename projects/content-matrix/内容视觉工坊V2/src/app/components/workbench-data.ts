@@ -449,7 +449,7 @@ export function buildGenerationTasks({
             height: preset.h,
             count: 1,
             purposeKey: "xhs_card",
-            purposeLabel: "小红书知识卡片 / 图文配图",
+            purposeLabel: "小红书图文 / 知识卡片",
             presetKey: preset.k,
             presetLabel: preset.label,
             styleName: "极简纸本信息板",
