@@ -32,6 +32,7 @@ import { COVER_DRAFTS, ILLUSTRATIONS } from "./workbench-data";
 import { KnowledgeCardResults, ResultRow } from "./workbench-panels";
 import type { CardPlan } from "../content-planning";
 import type {
+  GeneratedImageItem,
   WorkbenchCoverThumbMode,
   WorkbenchImportedMarkdownMeta,
   WorkbenchStatusMessage,
@@ -1025,7 +1026,11 @@ function WorkbenchResultsPanel({
   plannedInlineImages,
   inlineGeneration,
 }: any) {
-  const [previewImage, setPreviewImage] = useState<{ imageUrl: string; alt: string } | null>(null);
+  const [previewImage, setPreviewImage] = useState<{
+    imageUrl: string;
+    alt: string;
+    sourceImage?: GeneratedImageItem;
+  } | null>(null);
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [isExportingReleasePack, setIsExportingReleasePack] = useState(false);
   const [exportFeedback, setExportFeedback] = useState<string>("");
@@ -1103,6 +1108,7 @@ function WorkbenchResultsPanel({
       ? {
           kind: "cover" as const,
           imageUrl: releaseCoverLarge.imageUrl,
+          sourceImage: releaseCoverLarge,
           filename:
             releaseCoverIndex === finalizedCoverIndex
               ? "release-cover-large-final.png"
@@ -1117,6 +1123,7 @@ function WorkbenchResultsPanel({
       ? {
           kind: "cover" as const,
           imageUrl: releaseCoverThumb.imageUrl,
+          sourceImage: releaseCoverThumb,
           filename:
             releaseCoverIndex === finalizedCoverIndex
               ? "release-cover-thumb-final.png"
@@ -1152,6 +1159,7 @@ function WorkbenchResultsPanel({
   ].filter(Boolean) as Array<{
     kind: "cover" | "knowledge" | "quote" | "inline";
     imageUrl: string;
+    sourceImage?: GeneratedImageItem;
     filename: string;
     label: string;
   }>;
@@ -1162,8 +1170,8 @@ function WorkbenchResultsPanel({
     ...(inlineGeneration?.images ?? []),
   ];
 
-  function handlePreviewImage(imageUrl: string, alt: string) {
-    setPreviewImage({ imageUrl, alt });
+  function handlePreviewImage(imageUrl: string, alt: string, sourceImage?: GeneratedImageItem) {
+    setPreviewImage({ imageUrl, alt, sourceImage });
   }
 
   async function downloadImage(url: string, filename: string) {
@@ -1182,6 +1190,57 @@ function WorkbenchResultsPanel({
       document.body.removeChild(link);
       setExportFeedback(`已尝试打开原图地址：${filename}`);
     }
+  }
+
+  async function downloadImageAsset(image: GeneratedImageItem, filename: string) {
+    try {
+      const blob = await buildDownloadBlob(image);
+      downloadBlob(blob, filename);
+      setExportFeedback(`已开始下载：${filename}`);
+    } catch {
+      await downloadImage(image.imageUrl, filename);
+    }
+  }
+
+  async function buildDownloadBlob(image: GeneratedImageItem) {
+    const blob = await downloadGeneratedImage(image.imageUrl);
+    if (!isCroppedCoverThumb(image)) {
+      return blob;
+    }
+    return await cropBlobToSquarePng(blob, image.width || 383);
+  }
+
+  function isCroppedCoverThumb(image: GeneratedImageItem) {
+    return (
+      image.coverLink?.variant === "thumb" &&
+      image.prompt.includes("中心裁切")
+    );
+  }
+
+  async function cropBlobToSquarePng(blob: Blob, size: number) {
+    const bitmap = await createImageBitmap(blob);
+    const side = Math.min(bitmap.width, bitmap.height);
+    const sourceX = Math.max(0, (bitmap.width - side) / 2);
+    const sourceY = Math.max(0, (bitmap.height - side) / 2);
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      bitmap.close();
+      throw new Error("无法创建图片裁切画布");
+    }
+    context.drawImage(bitmap, sourceX, sourceY, side, side, 0, 0, size, size);
+    bitmap.close();
+    return await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((nextBlob) => {
+        if (nextBlob) {
+          resolve(nextBlob);
+        } else {
+          reject(new Error("封面小图裁切失败"));
+        }
+      }, "image/png");
+    });
   }
 
   function downloadBlob(blob: Blob, filename: string) {
@@ -1224,7 +1283,7 @@ function WorkbenchResultsPanel({
       const files = await Promise.all(
         downloadableImages.map(async (image, index) => ({
           filename: `content-visual-${String(index + 1).padStart(2, "0")}.png`,
-          blob: await downloadGeneratedImage(image.imageUrl),
+          blob: await buildDownloadBlob(image as GeneratedImageItem),
         }))
       );
       const zipBlob = await buildZipBlob(files);
@@ -1272,7 +1331,9 @@ function WorkbenchResultsPanel({
       const assetFiles = await Promise.all(
         releaseAssets.map(async (asset) => ({
           filename: asset.filename,
-          blob: await downloadGeneratedImage(asset.imageUrl),
+          blob: asset.sourceImage
+            ? await buildDownloadBlob(asset.sourceImage)
+            : await downloadGeneratedImage(asset.imageUrl),
         }))
       );
       const files = [
@@ -1539,7 +1600,7 @@ function WorkbenchResultsPanel({
                         onClick={(event) => {
                           event.stopPropagation();
                           const image = getCoverImage(index, "large");
-                          if (image) handlePreviewImage(image.imageUrl, `封面大图 ${index + 1}`);
+                          if (image) handlePreviewImage(image.imageUrl, `封面大图 ${index + 1}`, image);
                         }}
                         style={{
                           width: 116,
@@ -1569,7 +1630,7 @@ function WorkbenchResultsPanel({
                         onClick={(event) => {
                           event.stopPropagation();
                           const image = getCoverImage(index, "thumb");
-                          if (image) handlePreviewImage(image.imageUrl, `封面小图 ${index + 1}`);
+                          if (image) handlePreviewImage(image.imageUrl, `封面小图 ${index + 1}`, image);
                         }}
                         style={{
                           width: 50,
@@ -1709,10 +1770,15 @@ function WorkbenchResultsPanel({
                 variant="secondary"
                 size="md"
                 onClick={() =>
-                  void downloadImage(
-                    previewImage.imageUrl,
-                    `${(previewImage.alt || "preview").replace(/\s+/g, "-")}.png`
-                  )
+                  void (previewImage.sourceImage
+                    ? downloadImageAsset(
+                        previewImage.sourceImage,
+                        `${(previewImage.alt || "preview").replace(/\s+/g, "-")}.png`
+                      )
+                    : downloadImage(
+                        previewImage.imageUrl,
+                        `${(previewImage.alt || "preview").replace(/\s+/g, "-")}.png`
+                      ))
                 }
               >
                 下载当前图片
