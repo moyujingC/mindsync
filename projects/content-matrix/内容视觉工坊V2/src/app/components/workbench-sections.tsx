@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronRight,
   ClipboardPaste,
+  Download,
   ExternalLink,
   FileText,
   Image as ImageIcon,
@@ -1213,7 +1214,7 @@ function WorkbenchResultsPanel({
   function isCroppedCoverThumb(image: GeneratedImageItem) {
     return (
       image.coverLink?.variant === "thumb" &&
-      image.prompt.includes("中心裁切")
+      !image.imageUrl.startsWith("data:image/svg")
     );
   }
 
@@ -1669,12 +1670,50 @@ function WorkbenchResultsPanel({
                   <div className="w-3" />
                 </button>
                 <div
-                  className="px-3 py-2 flex items-center justify-end"
+                  className="px-3 py-2 flex items-center justify-between gap-2"
                   style={{
                     borderTop: `1px solid ${COLORS.borderSoft}`,
                     background: COLORS.surface,
                   }}
                 >
+                  <div className="flex items-center gap-1.5">
+                    {getCoverImage(index, "large") ? (
+                      <Btn
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const image = getCoverImage(index, "large");
+                          if (image) {
+                            void downloadImageAsset(
+                              image,
+                              `wechat-cover-large-${String(index + 1).padStart(2, "0")}.png`
+                            );
+                          }
+                        }}
+                      >
+                        <Download size={12} strokeWidth={1.6} />
+                        大图
+                      </Btn>
+                    ) : null}
+                    {getCoverImage(index, "thumb") ? (
+                      <Btn
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const image = getCoverImage(index, "thumb");
+                          if (image) {
+                            void downloadImageAsset(
+                              image,
+                              `wechat-cover-thumb-${String(index + 1).padStart(2, "0")}.png`
+                            );
+                          }
+                        }}
+                      >
+                        <Download size={12} strokeWidth={1.6} />
+                        小图
+                      </Btn>
+                    ) : null}
+                  </div>
                   <Btn
                     variant={index === finalizedCoverIndex ? "secondary" : "ghost"}
                     size="sm"
@@ -1751,17 +1790,40 @@ function WorkbenchResultsPanel({
           </DialogHeader>
           {previewImage ? (
             <div className="max-h-[75vh] overflow-auto">
-              <img
-                src={previewImage.imageUrl}
-                alt={previewImage.alt}
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  objectFit: "contain",
-                  borderRadius: 8,
-                  border: `1px solid ${COLORS.borderSoft}`,
-                }}
-              />
+              {previewImage.sourceImage && isCroppedCoverThumb(previewImage.sourceImage) ? (
+                <div
+                  style={{
+                    width: "min(75vh, 520px)",
+                    aspectRatio: "1 / 1",
+                    margin: "0 auto",
+                    overflow: "hidden",
+                    borderRadius: 8,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                  }}
+                >
+                  <img
+                    src={previewImage.imageUrl}
+                    alt={previewImage.alt}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+              ) : (
+                <img
+                  src={previewImage.imageUrl}
+                  alt={previewImage.alt}
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    objectFit: "contain",
+                    borderRadius: 8,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                  }}
+                />
+              )}
             </div>
           ) : null}
           {previewImage ? (
