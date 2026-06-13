@@ -19,6 +19,7 @@ const flowState: MandalaFlowState = {
     structured: {
       report_id: "report-1",
       title: "财富关系曼陀罗解读报告",
+      generated_at: "2026-03-08T10:00:00+08:00",
       summary: "结构化整体印象优先展示。",
       persona: {
         persona_id: "manman",
@@ -83,6 +84,7 @@ describe("MobileWebReportPage followup", () => {
     const html = renderToStaticMarkup(<MobileWebReportPage state={flowState} />);
 
     expect(html).toContain("解读报告(Lite版)");
+    expect(html).toContain("2026年3月8日生成");
     expect(html).toContain("整体印象");
     expect(html).toContain("六个核心看见");
     expect(html).toContain("一个小实验");

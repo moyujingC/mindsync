@@ -100,9 +100,9 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
   return {
     interpretation_id: "demo-interpretation-id",
     version,
-    title: version === "pro" ? "一镜：冰封的太阳 - Pro版" : "一镜 Lite 版预览",
+    title: version === "pro" ? "一镜：冰封的太阳 - Pro版" : "冰封的太阳",
     overall_impression:
-      "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
+      "这是一幅充满生命力的画作，像春日里急切绽放的花朵，带着想要被世界看见的渴望。色彩浓烈却排列有序，暗示着一个在严格框架中燃烧着热情的灵魂。",
     structured: version === "pro"
       ? {
           title: "一镜：冰封的太阳 - Pro版",
@@ -110,16 +110,18 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
           report_mode: version,
         }
       : {
-          title: "一镜 Lite 版预览",
-          summary: "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
+          title: "冰封的太阳",
+          summary:
+            "这是一幅充满生命力的画作，像春日里急切绽放的花朵，带着想要被世界看见的渴望。色彩浓烈却排列有序，暗示着一个在严格框架中燃烧着热情的灵魂。",
           report_mode: version,
+          generated_at: "2026-03-08T10:00:00+08:00",
           modules: [
             {
               id: "summary",
               type: "summary",
               order: 1,
               title: "整体印象",
-              body: "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。你正在把注意力重新放回自己身上，也在尝试让一些更真实的感受慢慢浮出来。",
+              body: "这是一幅充满生命力的画作，像春日里急切绽放的花朵，带着想要被世界看见的渴望。色彩浓烈却排列有序，暗示着一个在严格框架中燃烧着热情的灵魂。",
               accent: "#9EAA9B",
             },
             {
@@ -132,44 +134,50 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
                 {
                   id: "base",
                   label: "你的底色",
-                  icon: "○",
+                  icon: "🎨",
                   color: "#5B8C5A",
-                  content: "你的画面有温和的秩序感，像是在给内在感受保留一个稳定的位置。",
+                  content:
+                    "你的本质是温暖而敏感的，像春天的泥土——看似沉默，内部却孕育着无数种子。你拥有强大的共情能力和细腻的感知力，能捕捉到他人忽略的微妙情绪变化。",
                 },
                 {
-                  id: "energy",
-                  label: "你的能量",
-                  icon: "◇",
+                  id: "conflict",
+                  label: "你的矛盾",
+                  icon: "⚡",
                   color: "#D4883E",
-                  content: "中心区域的聚拢感较强，说明你此刻仍有明确的内在动力，只是表达会先经过筛选。",
+                  content:
+                    "你渴望被看见和认可，同时又害怕暴露真实的自己。画中明亮的中心与压抑的外圈形成对比，揭示出你在“展现自我”和“保护自我”之间反复拉扯的核心矛盾。",
                 },
                 {
-                  id: "relationship",
-                  label: "你的关系感",
-                  icon: "✦",
+                  id: "pattern",
+                  label: "你的模式",
+                  icon: "🔄",
                   color: "#4A7FB5",
-                  content: "中圈的重复线索提示你在靠近关系时，会同时需要连接与安全边界。",
+                  content:
+                    "你习惯性地在关系中成为照顾者——倾听、共情、给予。但你很少允许别人走进你的内心。这种“付出型”模式让你获得安全感，也让你持续感到疲惫和不被理解。",
                 },
                 {
-                  id: "protection",
-                  label: "你的保护",
-                  icon: "△",
+                  id: "defense",
+                  label: "你的防御",
+                  icon: "🛡️",
                   color: "#8B6AAE",
-                  content: "外圈的留白与收束像一层缓冲，让你在不确定时先观察，再决定是否打开。",
+                  content:
+                    "当感到威胁时，你会启动“完美化”防御——确保一切都在掌控中，用忙碌和效率来回避内心的不安。你的秩序感是一座精致的盾牌，保护着深处那个害怕犯错的孩子。",
                 },
                 {
                   id: "stuck",
                   label: "你的卡点",
-                  icon: "◌",
+                  icon: "💫",
                   color: "#C25B56",
-                  content: "当前的卡点不一定是没有方向，而是想得足够多之后，行动还停在准备阶段。",
+                  content:
+                    "你目前感到一种说不清的停滞感——明明很努力，却好像原地打转。这种卡顿的核心在于：你一直在向外寻求答案，却忽略了内心那个微小但清晰的声音。",
                 },
                 {
                   id: "light",
                   label: "你的光",
-                  icon: "✧",
+                  icon: "✨",
                   color: "#C8A066",
-                  content: "画面里仍有向外舒展的力量，说明你具备把感受转成创造和表达的能力。",
+                  content:
+                    "画作中隐藏着一股温柔而坚定的力量——你拥有罕见的自愈能力和创造力。当你允许自己不完美、允许自己休息时，你的光会自然绽放，照亮自己，也温暖他人。",
                 },
               ],
             },
@@ -178,9 +186,9 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
               type: "practice_suggestion",
               order: 3,
               title: "一个小实验",
-              action: "这周选一个安全的时刻，说出一个平时会被你放在心里的小需要。",
-              observe: "观察：当你把这个需要说出来后，身体是更紧，还是有一点松开。",
-              body: "这周选一个安全的时刻，说出一个平时会被你放在心里的小需要。\n观察：当你把这个需要说出来后，身体是更紧，还是有一点松开。",
+              action: "这周尝试一次“不完美的展现”：发朋友圈时，不P图、不斟酌文案，直接发一张随手拍。",
+              observe: "观察：世界崩塌了吗？还是其实没人注意到“不完美”？你内心的感受是什么？",
+              body: "这周尝试一次“不完美的展现”：发朋友圈时，不P图、不斟酌文案，直接发一张随手拍。\n观察：世界崩塌了吗？还是其实没人注意到“不完美”？你内心的感受是什么？",
               accent: "#D4A054",
             },
           ],

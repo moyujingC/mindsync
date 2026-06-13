@@ -58,6 +58,16 @@ const PRO_DEEPER_POINTS = [
   "调节方向：可以从哪里开始，温和地松动它",
 ];
 
+function formatReportDate(source?: string): string {
+  const parsedDate = source ? new Date(source) : new Date();
+  const validDate = Number.isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+  return validDate.toLocaleDateString("zh-CN", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 function ReportBackIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -417,11 +427,7 @@ export function MobileWebReportPage({
   const reportTitle = isError
     ? "报告暂未生成"
     : reportDocument.title || "你的曼陀罗解读";
-  const generatedAt = new Date().toLocaleDateString("zh-CN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const generatedAt = formatReportDate(reportDocument.generatedAt);
   const resolvedUpgradeLabel =
     primaryLabel && /升级|Pro/i.test(primaryLabel) ? primaryLabel : "升级到 Pro";
   const resolvedSecondaryLabel =

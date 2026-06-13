@@ -35,6 +35,7 @@ export interface ReportDocument {
   mode: ReportDocumentMode;
   title: string;
   summary: string;
+  generatedAt?: string;
   modules: ReportDocumentModule[];
   finalReportMd: string;
 }
@@ -233,12 +234,20 @@ export function buildReportDocument(
     getString(report?.overall_impression) ??
     modules[0]?.body ??
     "";
+  const generatedAt =
+    getString(structured?.generated_at) ??
+    getString(structured?.generatedAt) ??
+    getString(structured?.created_at) ??
+    getString(structured?.createdAt) ??
+    getString(structured?.date) ??
+    undefined;
 
   return {
     id: report?.interpretation_id ?? "preview-report",
     mode,
     title,
     summary,
+    generatedAt,
     modules: mode === "pro" ? attachFollowupAnchors(modules) : modules,
     finalReportMd,
   };
