@@ -103,12 +103,88 @@ function createMockReport(version: "lite" | "pro" = "lite"): ReportResponse {
     title: version === "pro" ? "一镜：冰封的太阳 - Pro版" : "一镜 Lite 版预览",
     overall_impression:
       "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
-    structured: {
-      title:
-        version === "pro" ? "一镜：冰封的太阳 - Pro版" : "一镜 Lite 版预览",
-      summary: "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
-      report_mode: version,
-    },
+    structured: version === "pro"
+      ? {
+          title: "一镜：冰封的太阳 - Pro版",
+          summary: "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
+          report_mode: version,
+        }
+      : {
+          title: "一镜 Lite 版预览",
+          summary: "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。",
+          report_mode: version,
+          modules: [
+            {
+              id: "summary",
+              type: "summary",
+              order: 1,
+              title: "整体印象",
+              body: "画面中心聚拢、外圈舒展，呈现出一种从收束走向打开的心理动作。你正在把注意力重新放回自己身上，也在尝试让一些更真实的感受慢慢浮出来。",
+              accent: "#9EAA9B",
+            },
+            {
+              id: "core-insights",
+              type: "insight_list",
+              order: 2,
+              title: "六个核心看见",
+              accent: "#C87850",
+              items: [
+                {
+                  id: "base",
+                  label: "你的底色",
+                  icon: "○",
+                  color: "#5B8C5A",
+                  content: "你的画面有温和的秩序感，像是在给内在感受保留一个稳定的位置。",
+                },
+                {
+                  id: "energy",
+                  label: "你的能量",
+                  icon: "◇",
+                  color: "#D4883E",
+                  content: "中心区域的聚拢感较强，说明你此刻仍有明确的内在动力，只是表达会先经过筛选。",
+                },
+                {
+                  id: "relationship",
+                  label: "你的关系感",
+                  icon: "✦",
+                  color: "#4A7FB5",
+                  content: "中圈的重复线索提示你在靠近关系时，会同时需要连接与安全边界。",
+                },
+                {
+                  id: "protection",
+                  label: "你的保护",
+                  icon: "△",
+                  color: "#8B6AAE",
+                  content: "外圈的留白与收束像一层缓冲，让你在不确定时先观察，再决定是否打开。",
+                },
+                {
+                  id: "stuck",
+                  label: "你的卡点",
+                  icon: "◌",
+                  color: "#C25B56",
+                  content: "当前的卡点不一定是没有方向，而是想得足够多之后，行动还停在准备阶段。",
+                },
+                {
+                  id: "light",
+                  label: "你的光",
+                  icon: "✧",
+                  color: "#C8A066",
+                  content: "画面里仍有向外舒展的力量，说明你具备把感受转成创造和表达的能力。",
+                },
+              ],
+            },
+            {
+              id: "experiment",
+              type: "practice_suggestion",
+              order: 3,
+              title: "一个小实验",
+              action: "这周选一个安全的时刻，说出一个平时会被你放在心里的小需要。",
+              observe: "观察：当你把这个需要说出来后，身体是更紧，还是有一点松开。",
+              body: "这周选一个安全的时刻，说出一个平时会被你放在心里的小需要。\n观察：当你把这个需要说出来后，身体是更紧，还是有一点松开。",
+              accent: "#D4A054",
+            },
+          ],
+        },
     report:
       version === "pro"
         ? "# 一镜：冰封的太阳 - Pro版\n## 深层主线\n你的内在能量很强，但表达端仍带着明显的收束和保护。你不是没有热情，而是热情长期被谨慎包裹。\n\n## 深度解读\n画面里的明亮部分像是想要被看见的生命力，外层的冷色和停顿感则像一层边界。它们共同呈现出一种既想靠近、又会先观察安全感的模式。\n\n## 三圈能量\n内圈更强，说明你对自己的真实感受并不陌生；中外圈的迟疑，更多发生在关系与外界互动层。真正需要先调整的，未必是内在感受，而是它进入关系时的表达方式。\n\n## 模式形成原因\n这个模式更像长期形成的自我保护：你已经习惯先把感受收好，等确认环境足够安全再慢慢释放。它帮助你维持稳定，也让真实需要容易被延后。\n\n## 调节建议\n先做小步表达，少做完美准备。让一个真实动作先发生，比继续在脑内推演更重要。"

@@ -49,6 +49,31 @@ const flowState: MandalaFlowState = {
       title: "Lite 解读报告",
       summary: "你正在把注意力收回自己身上。",
       report_mode: "lite",
+      modules: [
+        {
+          id: "summary",
+          type: "summary",
+          title: "整体印象",
+          body: "你正在把注意力收回自己身上。",
+        },
+        {
+          id: "insights",
+          type: "insight_list",
+          title: "六个核心看见",
+          items: [
+            { id: "base", label: "你的底色", content: "你正在重新确认自己的底色。" },
+            { id: "energy", label: "你的能量", content: "能量正在从收束走向打开。" },
+          ],
+        },
+        {
+          id: "practice",
+          type: "practice_suggestion",
+          title: "一个小实验",
+          action: "这周先做一次小表达。",
+          observe: "观察身体有没有一点松开。",
+          body: "这周先做一次小表达。\n观察身体有没有一点松开。",
+        },
+      ],
     },
     report: "# Lite 解读报告\n\n你正在把注意力收回自己身上。",
     ai_qa_context: null,
@@ -96,7 +121,7 @@ describe("MobileWebApp", () => {
     expect(html).toContain("滑动了解详情");
   });
 
-  it("report 主路由默认渲染 Lite 解读报告页壳", () => {
+  it("report 主路由默认渲染 Figma Lite 报告模板", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="report"
@@ -110,9 +135,13 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("这份报告已经按新版解读链路生成");
-    expect(html).toContain("阅读路径：Lite 解读报告");
-    expect(html).toContain("重新上传画作");
+    expect(html).toContain("解读报告(Lite版)");
+    expect(html).toContain("整体印象");
+    expect(html).toContain("六个核心看见");
+    expect(html).toContain("一个小实验");
+    expect(html).toContain("升级到 Pro");
+    expect(html).toContain("保存报告");
+    expect(html).toContain("重新上传");
   });
 
   it("report 主路由默认不渲染 Lite 追问入口", () => {
@@ -130,7 +159,8 @@ describe("MobileWebApp", () => {
     );
 
     expect(html).toContain("解读报告(Lite版)");
-    expect(html).not.toContain("输入你想继续追问的问题");
+    expect(html).not.toContain("请输入你想追问的问题");
+    expect(html).not.toContain("追问记录");
   });
 
   it("reportPro 路由渲染 Pro 报告与段落级追问", () => {

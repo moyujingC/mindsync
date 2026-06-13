@@ -8,10 +8,25 @@ export interface ReportFollowupAnchor {
   label: string;
 }
 
+export interface ReportDocumentModuleItem {
+  id: string;
+  label: string;
+  content: string;
+  icon?: string;
+  color?: string;
+}
+
 export interface ReportDocumentModule {
   id: string;
+  type?: string;
+  order?: number;
   title: string;
+  subtitle?: string;
   body: string;
+  accent?: string;
+  items?: ReportDocumentModuleItem[];
+  action?: string;
+  observe?: string;
   followupAnchor?: ReportFollowupAnchor;
 }
 
@@ -44,6 +59,58 @@ function stripMarkdown(text: string): string {
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
     .replace(/^>\s?/gm, "")
     .trim();
+}
+
+function getNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function normalizeModuleItems(value: unknown): ReportDocumentModuleItem[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.flatMap((item, index): ReportDocumentModuleItem[] => {
+    const record = getRecord(item);
+    if (!record) {
+      const content = getString(item);
+      return content
+        ? [
+            {
+              id: `item-${index + 1}`,
+              label: `看见 ${index + 1}`,
+              content,
+            },
+          ]
+        : [];
+    }
+
+    const content =
+      getString(record.content) ??
+      getString(record.body) ??
+      getString(record.text) ??
+      getString(record.summary) ??
+      getString(record.description);
+    if (!content) return [];
+
+    return [
+      {
+        id:
+          getString(record.id) ??
+          getString(record.key) ??
+          `item-${index + 1}`,
+        label:
+          getString(record.label) ??
+          getString(record.title) ??
+          getString(record.heading) ??
+          `看见 ${index + 1}`,
+        content,
+        icon: getString(record.icon) ?? undefined,
+        color:
+          getString(record.color) ??
+          getString(record.accent) ??
+          undefined,
+      },
+    ];
+  });
 }
 
 function parseMarkdownModules(markdown: string): ReportDocumentModule[] {
@@ -104,17 +171,29 @@ function normalizeStructuredModules(
       getString(record.body) ??
       getString(record.content) ??
       getString(record.text) ??
-      getString(record.summary);
-    if (!body) return [];
+      getString(record.summary) ??
+      getString(record.description) ??
+      getString(record.action);
+    const items = normalizeModuleItems(
+      record.items ?? record.cards ?? record.insights ?? record.children,
+    );
+    if (!body && items.length === 0) return [];
     const id = getString(record.id) ?? `module-${index + 1}`;
     return [
       {
         id,
+        type: getString(record.type) ?? getString(record.module_type) ?? undefined,
+        order: getNumber(record.order) ?? index + 1,
         title,
-        body,
+        subtitle: getString(record.subtitle) ?? undefined,
+        body: body ?? "",
+        accent: getString(record.accent) ?? getString(record.color) ?? undefined,
+        items: items.length > 0 ? items : undefined,
+        action: getString(record.action) ?? undefined,
+        observe: getString(record.observe) ?? getString(record.observation) ?? undefined,
       },
     ];
-  });
+  }).sort((left, right) => (left.order ?? 0) - (right.order ?? 0));
 }
 
 function attachFollowupAnchors(
