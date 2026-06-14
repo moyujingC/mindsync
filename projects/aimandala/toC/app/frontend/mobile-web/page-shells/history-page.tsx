@@ -39,10 +39,10 @@ const timeModeOptions = [
 type HistoryTimeMode = (typeof timeModeOptions)[number]["id"];
 
 const recentMonthOptions = [
-  { value: 10, label: "1 个月" },
-  { value: 20, label: "3 个月" },
-  { value: 50, label: "6 个月" },
-  { value: 100, label: "12 个月" },
+  { value: 10, months: 1, label: "1 个月" },
+  { value: 20, months: 3, label: "3 个月" },
+  { value: 50, months: 6, label: "6 个月" },
+  { value: 100, months: 12, label: "12 个月" },
 ] as const;
 
 const statusOptions: Array<{ id: HistoryFilterId; label: string }> = [
@@ -70,6 +70,64 @@ function getHistoryThemeValue(activeTheme?: string) {
   }
 
   return activeTheme ?? "all";
+}
+
+function getDateBoundary(value: string, boundary: "start" | "end") {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  if (boundary === "end") {
+    date.setHours(23, 59, 59, 999);
+  }
+
+  return date.getTime();
+}
+
+function matchesHistoryDateRange(
+  createdAt: string,
+  startDate: string,
+  endDate: string,
+) {
+  const startTime = getDateBoundary(startDate, "start");
+  const endTime = getDateBoundary(endDate, "end");
+
+  if (startTime === null && endTime === null) {
+    return true;
+  }
+
+  const createdTime = new Date(createdAt).getTime();
+  if (Number.isNaN(createdTime)) {
+    return true;
+  }
+
+  if (startTime !== null && createdTime < startTime) {
+    return false;
+  }
+
+  if (endTime !== null && createdTime > endTime) {
+    return false;
+  }
+
+  return true;
+}
+
+function matchesRecentMonthRange(createdAt: string, monthCount: number) {
+  const createdTime = new Date(createdAt).getTime();
+  if (Number.isNaN(createdTime)) {
+    return true;
+  }
+
+  const rangeStart = new Date();
+  rangeStart.setMonth(rangeStart.getMonth() - monthCount);
+  rangeStart.setHours(0, 0, 0, 0);
+
+  return createdTime >= rangeStart.getTime();
 }
 
 export interface MobileWebHistoryPageProps {
@@ -114,6 +172,8 @@ export function MobileWebHistoryPage({
   const descriptor = createHistoryPageDescriptor(records);
   const activeTheme = historyQuery?.theme;
   const activeLimit = historyQuery?.limit ?? 20;
+  const activeRecentMonthOption =
+    recentMonthOptions.find((option) => option.value === activeLimit) ?? recentMonthOptions[1];
   const [timeMode, setTimeMode] = useState<HistoryTimeMode>("recent");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
@@ -121,6 +181,14 @@ export function MobileWebHistoryPage({
   const filteredItems = descriptor.items.filter((item) => {
     const matchesTheme = matchesHistoryThemeFilter(item.theme, activeTheme);
     if (!matchesTheme) {
+      return false;
+    }
+
+    if (timeMode === "custom") {
+      if (!matchesHistoryDateRange(item.createdAt, customStartDate, customEndDate)) {
+        return false;
+      }
+    } else if (!matchesRecentMonthRange(item.createdAt, activeRecentMonthOption.months)) {
       return false;
     }
 
@@ -378,6 +446,7 @@ export function MobileWebHistoryPage({
                     aria-label="开始日期"
                     value={customStartDate}
                     onChange={(event) => setCustomStartDate(event.target.value)}
+                    onInput={(event) => setCustomStartDate(event.currentTarget.value)}
                     disabled={filterBusy}
                   />
                   <span>至</span>
@@ -386,6 +455,7 @@ export function MobileWebHistoryPage({
                     aria-label="结束日期"
                     value={customEndDate}
                     onChange={(event) => setCustomEndDate(event.target.value)}
+                    onInput={(event) => setCustomEndDate(event.currentTarget.value)}
                     disabled={filterBusy}
                   />
                 </div>

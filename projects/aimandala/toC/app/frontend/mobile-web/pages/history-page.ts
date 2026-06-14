@@ -9,6 +9,7 @@ export interface HistoryPageItemDescriptor {
   themeLabel: string;
   title: string;
   subtitle: string;
+  createdAt: string;
   recordReady: boolean;
   availableReportTypes: InterpretationVersion[];
   focusReportType: InterpretationVersion;
@@ -131,6 +132,7 @@ export function createHistoryPageDescriptor(
         themeLabel,
         title: `${themeLabel} · 解读记录`,
         subtitle: `创建于 ${formatHistoryCreatedAt(record.created_at)}`,
+        createdAt: record.created_at,
         recordReady: presentation.isReady,
         availableReportTypes,
         focusReportType,

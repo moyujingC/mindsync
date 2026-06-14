@@ -69,6 +69,17 @@ function createHistoryRecord(): InterpretationRecordResponse {
   };
 }
 
+function createHistoryRecordWithDate(
+  interpretationId: string,
+  createdAt: string,
+): InterpretationRecordResponse {
+  return {
+    ...createHistoryRecord(),
+    interpretation_id: interpretationId,
+    created_at: createdAt,
+  };
+}
+
 async function waitForAssertion(assertion: () => void): Promise<void> {
   let lastError: unknown;
 
@@ -111,6 +122,7 @@ describe("MobileWebRuntime", () => {
   });
 
   afterEach(async () => {
+    vi.useRealTimers();
     flushSync(() => {
       root.unmount();
     });
@@ -422,6 +434,76 @@ describe("MobileWebRuntime", () => {
       expect(container.textContent).toContain("报告暂未生成");
       expect(container.textContent).toContain("重试刷新结果");
     });
+  });
+
+  it("历史页自定义时间范围会过滤清单记录", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-06-15T00:00:00+08:00"));
+    vi.spyOn(loaders, "loadHistoryPage").mockResolvedValueOnce({
+      records: [
+        createHistoryRecordWithDate("ipt-history-in-range", "2026-06-08T09:30:00+08:00"),
+        createHistoryRecordWithDate("ipt-history-out-range", "2026-05-20T17:40:00+08:00"),
+      ],
+    });
+    const input: MobileWebRouteInput = {
+      route: "history",
+      params: {
+        session: createMobileWebGuestSession("runtime-test"),
+        uploadDraft: {
+          imagePath: "/tmp/runtime-history.png",
+          theme: "wealth",
+          reportType: "lite",
+          reportVariant: "lite",
+          paintingIntention: "",
+          paintingFeeling: "",
+        },
+      },
+    };
+
+    await act(async () => {
+      root.render(<MobileWebRuntime input={input} />);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("06/08 09:30");
+      expect(container.textContent).toContain("05/20 17:40");
+    });
+
+    const customRangeButton = Array.from(container.querySelectorAll("button")).find(
+      (button) => button.textContent?.trim() === "自定义范围",
+    );
+    expect(customRangeButton).toBeTruthy();
+
+    await act(async () => {
+      customRangeButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    const [startDateInput, endDateInput] = Array.from(
+      container.querySelectorAll<HTMLInputElement>(".mw-history-custom-range input"),
+    );
+    expect(startDateInput).toBeTruthy();
+    expect(endDateInput).toBeTruthy();
+
+    await act(async () => {
+      const valueSetter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )?.set;
+      valueSetter?.call(startDateInput, "2026-06-01");
+      startDateInput.dispatchEvent(new Event("input", { bubbles: true }));
+      startDateInput.dispatchEvent(new Event("change", { bubbles: true }));
+      valueSetter?.call(endDateInput, "2026-06-11");
+      endDateInput.dispatchEvent(new Event("input", { bubbles: true }));
+      endDateInput.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+
+    await waitForAssertion(() => {
+      const filteredList = container.querySelector(".mw-history-record-list--all");
+      expect(filteredList?.textContent).toContain("06/08 09:30");
+      expect(filteredList?.textContent).not.toContain("05/20 17:40");
+    });
+    vi.useRealTimers();
   });
 
   it("Lite 报告页底部主按钮会进入 Pro 升级直生成页", async () => {
