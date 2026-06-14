@@ -387,21 +387,18 @@ export function WechatLayout() {
   async function handleCopyWechatHtml() {
     setIsCopying(true);
     try {
-      const html = buildWechatArticleHtml(
-        styleTemplate,
-        currentArticle.title,
-        articleMetaLine,
-        wechatArticleBlocks,
-        previewCover,
-        inlineImageMap
-      );
-      const plainText = buildWechatArticleText(currentArticle.title, currentArticleBlocks);
+      const html = previewPaneHtml;
+      const plainText = htmlToPlainText(previewPaneHtml);
 
       if (!copyWechatArticleWithCopyEvent(html, plainText)) {
         await copyWechatArticleToClipboard(html, plainText);
       }
 
-      setStatusMessage("公众号正文已复制，可直接粘贴到公众号编辑器");
+      setStatusMessage(
+        samplePreview
+          ? "预览窗富文本已复制，可直接粘贴到公众号编辑器"
+          : "公众号正文已复制，可直接粘贴到公众号编辑器"
+      );
     } catch (error) {
       console.warn("[wechat-copy] failed", error);
       setStatusMessage("复制失败，请确认浏览器已允许访问剪贴板");
@@ -1043,6 +1040,11 @@ function stripHtml(html: string) {
   return doc.body.textContent?.trim() ?? "";
 }
 
+function htmlToPlainText(html: string) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent?.replace(/\n{3,}/g, "\n\n").trim() ?? "";
+}
+
 function escapeHtml(text: string) {
   return text
     .replaceAll("&", "&amp;")
@@ -1493,10 +1495,6 @@ function formatSavedAt(isoString: string) {
 }
 
 async function copyWechatArticleToClipboard(html: string, plainText: string) {
-  if (copyPlainTextWithSelection(plainText)) {
-    return;
-  }
-
   try {
     if (
       typeof ClipboardItem !== "undefined" &&
@@ -1533,10 +1531,10 @@ function copyWechatArticleWithCopyEvent(html: string, plainText: string) {
   };
 
   document.addEventListener("copy", handleCopy, { once: true });
-  const marker = document.createElement("textarea");
+  const marker = document.createElement("div");
   try {
-    marker.value = plainText || " ";
-    marker.setAttribute("readonly", "true");
+    marker.setAttribute("contenteditable", "true");
+    marker.innerHTML = html || escapeHtml(plainText || " ");
     marker.style.position = "fixed";
     marker.style.left = "-9999px";
     marker.style.top = "0";
@@ -1546,36 +1544,21 @@ function copyWechatArticleWithCopyEvent(html: string, plainText: string) {
     document.body.appendChild(marker);
 
     window.focus();
-    marker.focus();
-    marker.select();
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(marker);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
 
     const commandSucceeded = document.execCommand("copy");
     return copied && commandSucceeded;
   } finally {
     document.removeEventListener("copy", handleCopy);
+    window.getSelection()?.removeAllRanges();
     if (marker.parentNode) {
       document.body.removeChild(marker);
     }
   }
-}
-
-function copyPlainTextWithSelection(text: string) {
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.style.position = "fixed";
-  textarea.style.left = "-9999px";
-  textarea.style.top = "0";
-  document.body.appendChild(textarea);
-  textarea.focus();
-  textarea.select();
-
-  let copied = false;
-  try {
-    copied = document.execCommand("copy");
-  } finally {
-    document.body.removeChild(textarea);
-  }
-  return copied;
 }
 
 function buildWechatArticleHtml(
