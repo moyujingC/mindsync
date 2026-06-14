@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { MobileWebAppShell } from "../app-shell";
 import { createHistoryPageDescriptor } from "../pages";
 import { mobileWebRoutes } from "../routes";
@@ -22,6 +24,8 @@ const timeModeOptions = [
   { id: "recent", label: "最近几月" },
   { id: "custom", label: "自定义范围" },
 ] as const;
+
+type HistoryTimeMode = (typeof timeModeOptions)[number]["id"];
 
 const recentMonthOptions = [
   { value: 10, label: "1 个月" },
@@ -99,6 +103,9 @@ export function MobileWebHistoryPage({
   const descriptor = createHistoryPageDescriptor(records);
   const activeTheme = historyQuery?.theme;
   const activeLimit = historyQuery?.limit ?? 20;
+  const [timeMode, setTimeMode] = useState<HistoryTimeMode>("recent");
+  const [customStartDate, setCustomStartDate] = useState("");
+  const [customEndDate, setCustomEndDate] = useState("");
   const pendingItems = descriptor.items.slice(0, 5);
   const filteredItems = descriptor.items.filter((item) => {
     const matchesTheme = matchesHistoryThemeFilter(item.theme, activeTheme);
@@ -265,26 +272,48 @@ export function MobileWebHistoryPage({
                   <button
                     key={option.id}
                     type="button"
-                    className={`mw-history-pill mw-history-pill--time-mode${option.id === "recent" ? " is-active" : ""}`}
+                    className={`mw-history-pill mw-history-pill--time-mode${timeMode === option.id ? " is-active" : ""}`}
+                    aria-pressed={timeMode === option.id}
+                    onClick={() => setTimeMode(option.id)}
                     disabled={filterBusy}
                   >
                     {option.label}
                   </button>
                 ))}
               </div>
-              <div className="mw-history-pill-row mw-history-pill-row--limit">
-                {recentMonthOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={`mw-history-pill mw-history-pill--limit${activeLimit === option.value ? " is-active" : ""}`}
-                    onClick={() => onLimitChange?.(option.value)}
+              {timeMode === "recent" ? (
+                <div className="mw-history-pill-row mw-history-pill-row--limit">
+                  {recentMonthOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`mw-history-pill mw-history-pill--limit${activeLimit === option.value ? " is-active" : ""}`}
+                      onClick={() => onLimitChange?.(option.value)}
+                      disabled={filterBusy}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="mw-history-custom-range">
+                  <input
+                    type="date"
+                    aria-label="开始日期"
+                    value={customStartDate}
+                    onChange={(event) => setCustomStartDate(event.target.value)}
                     disabled={filterBusy}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
+                  />
+                  <span>至</span>
+                  <input
+                    type="date"
+                    aria-label="结束日期"
+                    value={customEndDate}
+                    onChange={(event) => setCustomEndDate(event.target.value)}
+                    disabled={filterBusy}
+                  />
+                </div>
+              )}
             </div>
           </section>
 

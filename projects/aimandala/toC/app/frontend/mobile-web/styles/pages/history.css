@@ -1066,6 +1066,38 @@
   color: #ede4d4;
 }
 
+.mw-history-custom-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mw-history-custom-range input {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid rgb(212 160 84 / 0.2);
+  border-radius: 6px;
+  outline: none;
+  background: rgb(212 160 84 / 0.08);
+  color: #e0b46a;
+  color-scheme: dark;
+  font-family: var(--am-font-body);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.mw-history-custom-range input:focus {
+  border-color: rgb(212 160 84 / 0.42);
+  box-shadow: 0 0 0 2px rgb(212 160 84 / 0.08);
+}
+
+.mw-history-custom-range span {
+  flex: 0 0 auto;
+  color: rgb(212 160 84 / 0.4);
+  font-size: 11px;
+}
+
 .mw-history-theme__scroll {
   display: flex;
   gap: 8px;

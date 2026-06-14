@@ -336,6 +336,20 @@ describe("MobileWebApp", () => {
     expect(html).toContain("查看进度");
   });
 
+  it("history 路由会渲染自定义时间范围入口", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="history"
+        records={[historyRecord]}
+        historyQuery={{ filter: "all", limit: 20 }}
+      />,
+    );
+
+    expect(html).toContain("最近几月");
+    expect(html).toContain("自定义范围");
+    expect(html).toContain("aria-pressed=\"true\"");
+  });
+
   it("historyRecordDetail 路由会渲染版本进度与解读轨迹", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
