@@ -1272,21 +1272,20 @@
 
 .mw-history-theme__check {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--mw-history-theme-card-check);
-  box-shadow: 0 1px 3px rgb(12 20 36 / 0.14);
+  top: 5px;
+  right: 5px;
+  width: 14.4px;
+  height: 14.4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--am-radius-pill);
+  background: var(--am-upload-theme-check-bg);
+  color: var(--am-color-ink-800);
 }
 
 .mw-history-theme__check svg {
-  color: var(--mw-history-theme-card-check-mark);
-}
-
-.mw-history-theme__card.is-all .mw-history-theme__check {
-  background: rgb(var(--am-rgb-sand-300) / 0.4);
+  color: currentColor;
 }
 
 .mw-history-theme__icon,
