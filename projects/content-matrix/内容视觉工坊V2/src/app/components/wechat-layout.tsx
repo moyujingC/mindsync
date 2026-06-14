@@ -425,14 +425,14 @@ export function WechatLayout() {
             {
               k: "h1h2",
               t: "# 作为一级标题",
-              s: "## / 一、 作为二级标题",
-              note: "适用于保留文章大标题的完整文档",
+              s: "## 作为二级标题",
+              note: "适用于正文标题从 # 开始的稿件",
             },
             {
               k: "h2h3",
               t: "## 作为一级标题",
-              s: "### / 一、 作为一级标题",
-              note: "适用于正文里已经省略 H1 的稿件",
+              s: "### 作为二级标题",
+              note: "适用于 # 留给文章标题的稿件",
             },
           ].map((o) => {
             const active = mapping === o.k;
@@ -1107,17 +1107,16 @@ function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArt
     if (/^([一二三四五六七八九十]+、|[0-9]+\.)/.test(chunk)) {
       const next = chunks[index + 1];
       lastSectionKey = toWechatSectionKey(chunk);
-      const numberedHeadingLevel = mapping === "h1h2" ? "secondary" : "primary";
       if (next && !looksLikeWechatStandaloneBlock(next)) {
         blocks.push({
           type: "heading",
-          level: numberedHeadingLevel,
+          level: "primary",
           title: chunk,
           body: next,
         });
         index += 1;
       } else {
-        blocks.push({ type: "heading", level: numberedHeadingLevel, title: chunk });
+        blocks.push({ type: "heading", level: "primary", title: chunk });
       }
       continue;
     }
