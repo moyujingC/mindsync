@@ -95,9 +95,7 @@ function normalizeModuleItems(value: unknown): ReportDocumentModuleItem[] {
     return [
       {
         id:
-          getString(record.id) ??
-          getString(record.key) ??
-          `item-${index + 1}`,
+          getString(record.id) ?? getString(record.key) ?? `item-${index + 1}`,
         label:
           getString(record.label) ??
           getString(record.title) ??
@@ -105,10 +103,7 @@ function normalizeModuleItems(value: unknown): ReportDocumentModuleItem[] {
           `看见 ${index + 1}`,
         content,
         icon: getString(record.icon) ?? undefined,
-        color:
-          getString(record.color) ??
-          getString(record.accent) ??
-          undefined,
+        color: getString(record.color) ?? getString(record.accent) ?? undefined,
       },
     ];
   });
@@ -138,7 +133,8 @@ function parseMarkdownModules(markdown: string): ReportDocumentModule[] {
     const strongHeadingMatch = line.match(/^\*\*([^*]+)\*\*\s*$/);
     if (headingMatch || strongHeadingMatch) {
       pushModule();
-      currentTitle = headingMatch?.[1] ?? strongHeadingMatch?.[1] ?? currentTitle;
+      currentTitle =
+        headingMatch?.[1] ?? strongHeadingMatch?.[1] ?? currentTitle;
       buffer = [];
       continue;
     }
@@ -160,41 +156,50 @@ function normalizeStructuredModules(
     structured.cards;
   if (!Array.isArray(rawModules)) return [];
 
-  return rawModules.flatMap((item, index): ReportDocumentModule[] => {
-    const record = getRecord(item);
-    if (!record) return [];
-    const title =
-      getString(record.title) ??
-      getString(record.heading) ??
-      getString(record.label) ??
-      `模块 ${index + 1}`;
-    const body =
-      getString(record.body) ??
-      getString(record.content) ??
-      getString(record.text) ??
-      getString(record.summary) ??
-      getString(record.description) ??
-      getString(record.action);
-    const items = normalizeModuleItems(
-      record.items ?? record.cards ?? record.insights ?? record.children,
-    );
-    if (!body && items.length === 0) return [];
-    const id = getString(record.id) ?? `module-${index + 1}`;
-    return [
-      {
-        id,
-        type: getString(record.type) ?? getString(record.module_type) ?? undefined,
-        order: getNumber(record.order) ?? index + 1,
-        title,
-        subtitle: getString(record.subtitle) ?? undefined,
-        body: body ?? "",
-        accent: getString(record.accent) ?? getString(record.color) ?? undefined,
-        items: items.length > 0 ? items : undefined,
-        action: getString(record.action) ?? undefined,
-        observe: getString(record.observe) ?? getString(record.observation) ?? undefined,
-      },
-    ];
-  }).sort((left, right) => (left.order ?? 0) - (right.order ?? 0));
+  return rawModules
+    .flatMap((item, index): ReportDocumentModule[] => {
+      const record = getRecord(item);
+      if (!record) return [];
+      const title =
+        getString(record.title) ??
+        getString(record.heading) ??
+        getString(record.label) ??
+        `模块 ${index + 1}`;
+      const body =
+        getString(record.body) ??
+        getString(record.content) ??
+        getString(record.text) ??
+        getString(record.summary) ??
+        getString(record.description) ??
+        getString(record.action);
+      const items = normalizeModuleItems(
+        record.items ?? record.cards ?? record.insights ?? record.children,
+      );
+      if (!body && items.length === 0) return [];
+      const id = getString(record.id) ?? `module-${index + 1}`;
+      return [
+        {
+          id,
+          type:
+            getString(record.type) ??
+            getString(record.module_type) ??
+            undefined,
+          order: getNumber(record.order) ?? index + 1,
+          title,
+          subtitle: getString(record.subtitle) ?? undefined,
+          body: body ?? "",
+          accent:
+            getString(record.accent) ?? getString(record.color) ?? undefined,
+          items: items.length > 0 ? items : undefined,
+          action: getString(record.action) ?? undefined,
+          observe:
+            getString(record.observe) ??
+            getString(record.observation) ??
+            undefined,
+        },
+      ];
+    })
+    .sort((left, right) => (left.order ?? 0) - (right.order ?? 0));
 }
 
 function attachFollowupAnchors(

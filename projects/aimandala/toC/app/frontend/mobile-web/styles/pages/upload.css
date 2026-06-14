@@ -3,10 +3,12 @@
   --am-upload-topbar-height: 48px;
   --am-upload-form-target-height: 402px;
   --am-upload-hero-adaptive-height: calc(
-    100vh - var(--am-upload-topbar-height) - var(--am-upload-form-target-height) - var(--am-layout-bottom-sheet-gap)
+    100vh - var(--am-upload-topbar-height) -
+      var(--am-upload-form-target-height) - var(--am-layout-bottom-sheet-gap)
   );
   --am-upload-hero-adaptive-height: calc(
-    100dvh - var(--am-upload-topbar-height) - var(--am-upload-form-target-height) - var(--am-layout-bottom-sheet-gap)
+    100dvh - var(--am-upload-topbar-height) -
+      var(--am-upload-form-target-height) - var(--am-layout-bottom-sheet-gap)
   );
   height: 100vh;
   height: 100dvh;
@@ -569,10 +571,14 @@
   position: relative;
   overflow: hidden;
   min-height: calc(
-    100vh - var(--am-upload-topbar-height) - max(420px, var(--am-upload-hero-adaptive-height)) - var(--am-layout-bottom-sheet-gap)
+    100vh - var(--am-upload-topbar-height) -
+      max(420px, var(--am-upload-hero-adaptive-height)) -
+      var(--am-layout-bottom-sheet-gap)
   );
   min-height: calc(
-    100dvh - var(--am-upload-topbar-height) - max(420px, var(--am-upload-hero-adaptive-height)) - var(--am-layout-bottom-sheet-gap)
+    100dvh - var(--am-upload-topbar-height) -
+      max(420px, var(--am-upload-hero-adaptive-height)) -
+      var(--am-layout-bottom-sheet-gap)
   );
   padding: 16px 22px 16px;
   border-radius: 28px 28px 0 0;

@@ -389,7 +389,9 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.querySelector(".mw-history-record__cta-inline")).toBeTruthy();
+      expect(
+        container.querySelector(".mw-history-record__cta-inline"),
+      ).toBeTruthy();
     });
 
     const detailButton = container.querySelector<HTMLButtonElement>(

@@ -1,5 +1,5 @@
 export type InterpretationVersion = "lite" | "pro";
-export type InterpretationListFilter = "all" | "ready" | "pending";
+export type InterpretationListFilter = "all" | "ready" | "pending" | "review";
 
 export interface InterpretationUpgradeHistoryEntry {
   from: InterpretationVersion | string;
@@ -128,6 +128,7 @@ export interface WealthReportRecordResponse {
   generation_stage: string;
   generation_progress: number;
   created_at: string;
+  pro_ready_at?: string | null;
 }
 
 export interface ReportPersona {
@@ -207,6 +208,7 @@ export interface InterpretationRecordResponse {
   auto_detected: boolean;
   can_upgrade: boolean;
   created_at: string;
+  pro_ready_at?: string | null;
   upgrade_history?: InterpretationUpgradeHistoryEntry[];
   image_url?: string | null;
   storage_backend?: string | null;

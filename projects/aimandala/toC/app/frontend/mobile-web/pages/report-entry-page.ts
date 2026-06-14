@@ -34,8 +34,7 @@ export function createReportEntryPageDescriptor(
   draft: Pick<MobileWebUploadDraft, "theme" | "reportType" | "reportVariant">,
 ): ReportEntryPageDescriptor {
   const themeLabel = getThemeDisplayName(draft.theme) ?? "财富关系";
-  const isProUpgrade =
-    (draft.reportType ?? draft.reportVariant) === "pro";
+  const isProUpgrade = (draft.reportType ?? draft.reportVariant) === "pro";
 
   return {
     statusLabel: "待支付",

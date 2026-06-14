@@ -69,10 +69,16 @@ function writeEntries(entries: GeneratedReportEntry[]): void {
     return;
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.slice(0, 50)));
+  window.localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(entries.slice(0, 50)),
+  );
 }
 
-function createSeedDraft(theme: string, imagePath: string): MobileWebUploadDraft {
+function createSeedDraft(
+  theme: string,
+  imagePath: string,
+): MobileWebUploadDraft {
   return {
     imagePath,
     theme,
@@ -170,7 +176,8 @@ function toRecord(entry: GeneratedReportEntry): InterpretationRecordResponse {
     image_url: imageUrl,
     storage_backend: entry.draft.uploadAsset?.storageBackend ?? null,
     storage_key: entry.draft.uploadAsset?.storageKey ?? null,
-    image_local_expires_at: entry.draft.uploadAsset?.imageLocalExpiresAt ?? null,
+    image_local_expires_at:
+      entry.draft.uploadAsset?.imageLocalExpiresAt ?? null,
   };
 }
 
@@ -198,7 +205,9 @@ export function saveGeneratedReport(args: {
   writeEntries([nextEntry, ...existing]);
 }
 
-export function seedGeneratedReportsForDebug(userId: string): GeneratedReportEntry[] {
+export function seedGeneratedReportsForDebug(
+  userId: string,
+): GeneratedReportEntry[] {
   const existing = readEntries();
   if (existing.length > 0) {
     return existing;
@@ -213,7 +222,8 @@ export function seedGeneratedReportsForDebug(userId: string): GeneratedReportEnt
       createdAt: "2026-04-18T09:30:00+08:00",
       imagePath: "/tmp/aimandala-seed-001.png",
       title: "亲密关系 Pro 解读",
-      summary: "这是一条本地调试 seed，用来撑起历史解读页的首屏布局和卡片状态。",
+      summary:
+        "这是一条本地调试 seed，用来撑起历史解读页的首屏布局和卡片状态。",
     }),
     createSeedEntry({
       reportId: "seed-history-002",
@@ -223,7 +233,8 @@ export function seedGeneratedReportsForDebug(userId: string): GeneratedReportEnt
       createdAt: "2026-04-17T20:18:00+08:00",
       imagePath: "/tmp/aimandala-seed-002.png",
       title: "母亲关系 Lite 解读",
-      summary: "记录保留了 Lite 版本的最小报告结构，方便调试标题、时间和按钮样式。",
+      summary:
+        "记录保留了 Lite 版本的最小报告结构，方便调试标题、时间和按钮样式。",
     }),
     createSeedEntry({
       reportId: "seed-history-003",
@@ -271,7 +282,9 @@ export function seedGeneratedReportsForDebug(userId: string): GeneratedReportEnt
   return seededEntries;
 }
 
-export function appendGeneratedReportForDebug(userId: string): GeneratedReportEntry {
+export function appendGeneratedReportForDebug(
+  userId: string,
+): GeneratedReportEntry {
   const existing = readEntries();
   const seedThemes = [
     "intimate_relationship",
@@ -284,8 +297,11 @@ export function appendGeneratedReportForDebug(userId: string): GeneratedReportEn
   ];
   const nextIndex = existing.length + 1;
   const theme = seedThemes[nextIndex % seedThemes.length] ?? "wealth";
-  const reportMode: InterpretationVersion = nextIndex % 3 === 0 ? "pro" : "lite";
-  const createdAt = new Date(Date.now() - nextIndex * 36 * 60 * 1000).toISOString();
+  const reportMode: InterpretationVersion =
+    nextIndex % 3 === 0 ? "pro" : "lite";
+  const createdAt = new Date(
+    Date.now() - nextIndex * 36 * 60 * 1000,
+  ).toISOString();
 
   const nextEntry = createSeedEntry({
     reportId: `seed-history-${String(Date.now())}`,
@@ -295,7 +311,8 @@ export function appendGeneratedReportForDebug(userId: string): GeneratedReportEn
     createdAt,
     imagePath: `/tmp/aimandala-seed-${nextIndex}.png`,
     title: `${theme} ${reportMode.toUpperCase()} 调试解读`,
-    summary: "这是通过开发控制台即时追加的本地历史记录，用来继续调试历史列表布局和筛选状态。",
+    summary:
+      "这是通过开发控制台即时追加的本地历史记录，用来继续调试历史列表布局和筛选状态。",
   });
 
   writeEntries([nextEntry, ...existing]);

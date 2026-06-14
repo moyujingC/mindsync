@@ -114,8 +114,12 @@ function getUpgradeHistoryTime(
   return firstUpgrade?.at ? formatHistoryCreatedAt(firstUpgrade.at) : undefined;
 }
 
-function getProReadyTime(record: InterpretationRecordResponse): string | undefined {
-  const proReadyAt = (record as InterpretationRecordResponse & { pro_ready_at?: string | null }).pro_ready_at;
+function getProReadyTime(
+  record: InterpretationRecordResponse,
+): string | undefined {
+  const proReadyAt = (
+    record as InterpretationRecordResponse & { pro_ready_at?: string | null }
+  ).pro_ready_at;
   return proReadyAt ? formatHistoryCreatedAt(proReadyAt) : undefined;
 }
 
@@ -171,7 +175,6 @@ function buildTimeline(
 export function createHistoryRecordDetailPageDescriptor(
   record: InterpretationRecordResponse,
 ): HistoryRecordDetailPageDescriptor {
-  const presentation = getGenerationPresentation(record);
   const state = getHistoryRecordDetailState(record);
   const themeLabel = getThemeDisplayName(record.theme) ?? record.theme;
   const progressPercent = Math.min(

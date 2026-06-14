@@ -65,6 +65,7 @@ describe("shared ui", () => {
             helperNote: "无需一直停留在等待页。",
             stageLabel: "正在生成 Lite 解读",
             progressLabel: "约 52%",
+            theme: "intimate_relationship",
             themeLabel: "亲密关系",
           },
         ]}
@@ -112,39 +113,47 @@ describe("shared ui", () => {
   });
 
   it("计算 report-entry 兑换结果", () => {
-    expect(resolveReportEntryRedeemResult({
-      cardId: "lite",
-      code: "MVP_LITE",
-      priceLabel: "9.9 元",
-    })).toEqual({
+    expect(
+      resolveReportEntryRedeemResult({
+        cardId: "lite",
+        code: "MVP_LITE",
+        priceLabel: "9.9 元",
+      }),
+    ).toEqual({
       state: "success",
       message: "兑换成功：MVP 体验券已应用。",
       discountLabel: "9.9 元",
       payableLabel: "0 元",
     });
-    expect(resolveReportEntryRedeemResult({
-      cardId: "pro",
-      code: "mvp-pro",
-      priceLabel: "再付 29 元升级",
-    })).toEqual({
+    expect(
+      resolveReportEntryRedeemResult({
+        cardId: "pro",
+        code: "mvp-pro",
+        priceLabel: "再付 29 元升级",
+      }),
+    ).toEqual({
       state: "success",
       message: "兑换成功：MVP 体验券已应用。",
       discountLabel: "29 元",
       payableLabel: "0 元",
     });
-    expect(resolveReportEntryRedeemResult({
-      cardId: "lite",
-      code: "",
-      priceLabel: "9.9 元",
-    })).toEqual({
+    expect(
+      resolveReportEntryRedeemResult({
+        cardId: "lite",
+        code: "",
+        priceLabel: "9.9 元",
+      }),
+    ).toEqual({
       state: "empty",
       message: "请先输入优惠券或兑换码。",
     });
-    expect(resolveReportEntryRedeemResult({
-      cardId: "lite",
-      code: "MVP_PRO",
-      priceLabel: "9.9 元",
-    })).toEqual({
+    expect(
+      resolveReportEntryRedeemResult({
+        cardId: "lite",
+        code: "MVP_PRO",
+        priceLabel: "9.9 元",
+      }),
+    ).toEqual({
       state: "error",
       message: "兑换失败：兑换码无效或不适用于当前解读版本。",
     });

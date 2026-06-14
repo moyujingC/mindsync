@@ -19,9 +19,7 @@
   align-items: center;
   padding: 30px 22px 20px;
   overflow: hidden;
-  background:
-    var(--am-landing-hero-overlay),
-    var(--am-surface-hero);
+  background: var(--am-landing-hero-overlay), var(--am-surface-hero);
   border-radius: 32px 32px 0 0;
 }
 
@@ -391,9 +389,7 @@
 .am-landing-section--pricing {
   min-height: auto;
   padding: 48px 26px 40px;
-  background:
-    var(--am-landing-hero-overlay),
-    var(--am-surface-hero);
+  background: var(--am-landing-hero-overlay), var(--am-surface-hero);
   color: var(--am-text-on-dark);
 }
 

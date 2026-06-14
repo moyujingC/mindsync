@@ -1,9 +1,20 @@
-import { loadExistingReportPage, loadHistoryPage, loadLiteReportPage, loadUploadPage } from "./loaders";
+import {
+  loadExistingReportPage,
+  loadHistoryPage,
+  loadLiteReportPage,
+  loadUploadPage,
+} from "./loaders";
 import { resolveMobileWebCanonicalUserId } from "./identity";
-import { getGeneratedReportEntry, listGeneratedReportRecords } from "./generated-report-store";
+import {
+  getGeneratedReportEntry,
+  listGeneratedReportRecords,
+} from "./generated-report-store";
 import type { MobileWebAppProps } from "./app";
 import { isHistoryRecordDetailRoute, type MobileWebRouteId } from "./routes";
-import { hasDraftResolvedCircleRadii, type MobileWebUploadDraft } from "./state";
+import {
+  hasDraftResolvedCircleRadii,
+  type MobileWebUploadDraft,
+} from "./state";
 import type {
   FrontendUserSession,
   InterpretationListQuery,
@@ -52,11 +63,23 @@ export type MobileWebRouteInput =
   | { route: "reportPro"; params: ExistingReportRouteInput }
   | { route: "history"; params: HistoryRouteInput }
   | { route: "historyRecordDetail"; params: HistoryRecordDetailRouteInput }
-  | { route: "historyRecordDetailNotUpgraded"; params: HistoryRecordDetailPreviewRouteInput }
-  | { route: "historyRecordDetailGenerating"; params: HistoryRecordDetailPreviewRouteInput }
-  | { route: "historyRecordDetailViewable"; params: HistoryRecordDetailPreviewRouteInput };
+  | {
+      route: "historyRecordDetailNotUpgraded";
+      params: HistoryRecordDetailPreviewRouteInput;
+    }
+  | {
+      route: "historyRecordDetailGenerating";
+      params: HistoryRecordDetailPreviewRouteInput;
+    }
+  | {
+      route: "historyRecordDetailViewable";
+      params: HistoryRecordDetailPreviewRouteInput;
+    };
 
-type HistoryRecordDetailPreviewState = "not-upgraded" | "generating" | "viewable";
+type HistoryRecordDetailPreviewState =
+  | "not-upgraded"
+  | "generating"
+  | "viewable";
 
 function matchesHistoryRecordDetailPreviewState(
   record: InterpretationRecordResponse,
@@ -151,8 +174,8 @@ function resolveHistoryRecordDetailPreview(
   uploadDraft?: MobileWebUploadDraft,
 ): MobileWebAppProps {
   const record = createHistoryRecordDetailPreviewRecord(state);
-  const matchedEntry = listGeneratedReportRecords({ limit: 100 }).find((candidate) =>
-    matchesHistoryRecordDetailPreviewState(candidate, state),
+  const matchedEntry = listGeneratedReportRecords({ limit: 100 }).find(
+    (candidate) => matchesHistoryRecordDetailPreviewState(candidate, state),
   );
 
   return {
@@ -164,7 +187,8 @@ function resolveHistoryRecordDetailPreview(
           : "historyRecordDetailViewable",
     record,
     uploadDraft: matchedEntry
-      ? getGeneratedReportEntry(matchedEntry.interpretation_id)?.draft ?? uploadDraft
+      ? (getGeneratedReportEntry(matchedEntry.interpretation_id)?.draft ??
+        uploadDraft)
       : uploadDraft,
   };
 }
@@ -205,7 +229,9 @@ export async function resolveMobileWebRouteProps(
     case "loading": {
       const userId = resolveMobileWebCanonicalUserId(input.params);
       if (!userId) {
-        throw new Error("Mobile web loading route requires a canonical user session.");
+        throw new Error(
+          "Mobile web loading route requires a canonical user session.",
+        );
       }
       const report = await loadLiteReportPage({
         ...input.params,
@@ -221,7 +247,9 @@ export async function resolveMobileWebRouteProps(
     case "report":
     case "reportLite":
     case "reportPro": {
-      const report = await loadExistingReportPage(input.params.interpretationId);
+      const report = await loadExistingReportPage(
+        input.params.interpretationId,
+      );
       return {
         route: input.route,
         flowState: report.state,
@@ -232,12 +260,11 @@ export async function resolveMobileWebRouteProps(
     case "history": {
       const userId = resolveMobileWebCanonicalUserId(input.params);
       if (!userId) {
-        throw new Error("Mobile web history route requires a canonical user session.");
+        throw new Error(
+          "Mobile web history route requires a canonical user session.",
+        );
       }
-      const history = await loadHistoryPage(
-        userId,
-        input.params.historyQuery,
-      );
+      const history = await loadHistoryPage(userId, input.params.historyQuery);
       return {
         route: "history",
         records: history.records,
@@ -249,7 +276,8 @@ export async function resolveMobileWebRouteProps(
     case "historyRecordDetail": {
       const entry = getGeneratedReportEntry(input.params.interpretationId);
       const record = listGeneratedReportRecords({ limit: 100 }).find(
-        (candidate) => candidate.interpretation_id === input.params.interpretationId,
+        (candidate) =>
+          candidate.interpretation_id === input.params.interpretationId,
       );
       if (!entry || !record) {
         throw new Error(`未找到本地历史记录：${input.params.interpretationId}`);
@@ -262,14 +290,22 @@ export async function resolveMobileWebRouteProps(
     }
 
     case "historyRecordDetailNotUpgraded":
-      return resolveHistoryRecordDetailPreview("not-upgraded", input.params.uploadDraft);
+      return resolveHistoryRecordDetailPreview(
+        "not-upgraded",
+        input.params.uploadDraft,
+      );
 
     case "historyRecordDetailGenerating":
-      return resolveHistoryRecordDetailPreview("generating", input.params.uploadDraft);
+      return resolveHistoryRecordDetailPreview(
+        "generating",
+        input.params.uploadDraft,
+      );
 
     case "historyRecordDetailViewable":
-      return resolveHistoryRecordDetailPreview("viewable", input.params.uploadDraft);
-
+      return resolveHistoryRecordDetailPreview(
+        "viewable",
+        input.params.uploadDraft,
+      );
   }
 
   return assertNever(input);

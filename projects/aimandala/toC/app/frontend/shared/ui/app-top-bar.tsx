@@ -2,7 +2,13 @@ import type { CSSProperties, ReactNode } from "react";
 
 function AppTopBarBackIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
       <path
         d="M14.5 6.5 9 12l5.5 5.5"
         stroke="currentColor"
@@ -32,8 +38,16 @@ export function SharedAppTopBar({
   style,
 }: SharedAppTopBarProps) {
   return (
-    <div className={className ? `am-app-topbar ${className}` : "am-app-topbar"} style={style}>
-      <button type="button" className="am-app-topbar__back" onClick={onBack} aria-label={backLabel}>
+    <div
+      className={className ? `am-app-topbar ${className}` : "am-app-topbar"}
+      style={style}
+    >
+      <button
+        type="button"
+        className="am-app-topbar__back"
+        onClick={onBack}
+        aria-label={backLabel}
+      >
         <AppTopBarBackIcon />
       </button>
       <h1 className="am-app-topbar__title">{title}</h1>

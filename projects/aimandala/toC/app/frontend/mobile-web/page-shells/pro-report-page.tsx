@@ -1,10 +1,4 @@
-import {
-  Fragment,
-  useMemo,
-  useState,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 
 import logoNiwu from "../assets/logo-niwu.webp";
 import brandPattern from "../assets/pattern.webp";
@@ -24,17 +18,6 @@ type ProMarkdownSection = {
   body: string;
 };
 
-type InlineToken =
-  | { type: "text"; content: string }
-  | { type: "strong"; content: string };
-
-type MarkdownBlock =
-  | { type: "paragraph"; text: string }
-  | { type: "heading3"; text: string }
-  | { type: "rule" }
-  | { type: "ordered-list"; items: string[] }
-  | { type: "table"; header: string[]; rows: string[][] };
-
 type FollowupRound = {
   question: string;
   answer?: string;
@@ -50,55 +33,162 @@ type ProTemplateCard = {
 
 function SaveGlyph() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 3v12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M7 10.5 12 15.5l5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M5 20h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 3v12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M7 10.5 12 15.5l5-5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5 20h14"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
 function RestartGlyph() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M3 3v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M3 12a9 9 0 1 0 3-6.7"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 3v6h6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
 function ShareGlyph() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M18 8a3 3 0 1 0-2.82-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M6 14a3 3 0 1 0 2.82 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M15.3 7.4 8.7 10.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M8.7 13.4 15.3 16.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M18 8a3 3 0 1 0-2.82-4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M6 14a3 3 0 1 0 2.82 4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M15.3 7.4 8.7 10.6"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M8.7 13.4 15.3 16.6"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
 function BackGlyph() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M15 6 9 12l6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M15 6 9 12l6 6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
 function SendGlyph() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 19V5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="m6.5 10.5 5.5-5.5 5.5 5.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 19V5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="m6.5 10.5 5.5-5.5 5.5 5.5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
 function LoadingGlyph() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 4a8 8 0 1 0 8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 4a8 8 0 1 0 8 8"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -119,14 +209,18 @@ function extractProTitle(state: MandalaFlowState): string {
     typeof state.report?.report === "string" ? state.report.report : "";
   const markdownTitle = markdown.match(/^#\s+(.+)$/m)?.[1]?.trim();
   const compatibleReportTitle =
-    state.report?.version === "pro" && titleFromReport && !/lite/i.test(titleFromReport)
+    state.report?.version === "pro" &&
+    titleFromReport &&
+    !/lite/i.test(titleFromReport)
       ? titleFromReport
       : null;
   const raw = markdownTitle || compatibleReportTitle || "Pro 解读报告";
   const withoutPrefix = raw.includes("：")
     ? raw.split("：").slice(1).join("：").trim()
     : raw;
-  return withoutPrefix.replace(/\s*-\s*Pro\s*版?\s*$/i, "").trim() || "Pro 解读报告";
+  return (
+    withoutPrefix.replace(/\s*-\s*Pro\s*版?\s*$/i, "").trim() || "Pro 解读报告"
+  );
 }
 
 function parseProMarkdown(state: MandalaFlowState): ProMarkdownSection[] {
@@ -198,7 +292,10 @@ function getStructuredString(
   return null;
 }
 
-function moduleMatches(module: ReportDocumentModule, keywords: string[]): boolean {
+function moduleMatches(
+  module: ReportDocumentModule,
+  keywords: string[],
+): boolean {
   const source = `${module.type ?? ""} ${module.title}`.toLowerCase();
   return keywords.some((keyword) => source.includes(keyword.toLowerCase()));
 }
@@ -211,20 +308,29 @@ function findModule(
 }
 
 function findSection(
-  documentSections: Array<{ module: ReportDocumentModule; section: ProMarkdownSection }>,
+  documentSections: Array<{
+    module: ReportDocumentModule;
+    section: ProMarkdownSection;
+  }>,
   module: ReportDocumentModule | null,
   keywords: string[],
 ): ProMarkdownSection | null {
   if (module) {
-    return documentSections.find((item) => item.module.id === module.id)?.section ?? null;
+    return (
+      documentSections.find((item) => item.module.id === module.id)?.section ??
+      null
+    );
   }
   return (
-    documentSections.find((item) => moduleMatches(item.module, keywords))?.section ??
-    null
+    documentSections.find((item) => moduleMatches(item.module, keywords))
+      ?.section ?? null
   );
 }
 
-function splitBodyCards(body: string, fallbackLabel: string): ProTemplateCard[] {
+function splitBodyCards(
+  body: string,
+  fallbackLabel: string,
+): ProTemplateCard[] {
   const chunks = body
     .split(/\n\s*\n/)
     .map((part) => stripMarkdownText(part).trim())
@@ -235,13 +341,17 @@ function splitBodyCards(body: string, fallbackLabel: string): ProTemplateCard[] 
     const titleMatch = chunk.match(/^(.{2,12}?)[：:]\s*(.+)$/);
     return {
       id: `${fallbackLabel}-${index + 1}`,
-      label: titleMatch?.[1] ?? (chunks.length === 1 ? fallbackLabel : `${fallbackLabel} ${index + 1}`),
+      label:
+        titleMatch?.[1] ??
+        (chunks.length === 1 ? fallbackLabel : `${fallbackLabel} ${index + 1}`),
       content: titleMatch?.[2] ?? chunk,
     };
   });
 }
 
-function mapModuleItems(items: ReportDocumentModuleItem[] | undefined): ProTemplateCard[] {
+function mapModuleItems(
+  items: ReportDocumentModuleItem[] | undefined,
+): ProTemplateCard[] {
   return (items ?? []).map((item) => ({
     id: item.id,
     label: item.label,
@@ -267,7 +377,9 @@ function normalizeCards(
   labels: string[],
   colors?: string[],
 ): ProTemplateCard[] {
-  const normalized = cards.filter((card) => card.content.trim()).slice(0, labels.length);
+  const normalized = cards
+    .filter((card) => card.content.trim())
+    .slice(0, labels.length);
   if (normalized.length >= labels.length) return normalized;
 
   return [
@@ -306,17 +418,7 @@ function extractProSummary(
   return "这份 Pro 报告会把 Lite 里已经看到的主线，继续向更深的结构与现实连接展开。";
 }
 
-function joinClassNames(
-  ...classes: Array<string | false | null | undefined>
-): string {
-  return classes.filter(Boolean).join(" ");
-}
-
-function ProMandalaPreview({
-  imagePath,
-}: {
-  imagePath?: string | null;
-}) {
+function ProMandalaPreview({ imagePath }: { imagePath?: string | null }) {
   const [imageFailed, setImageFailed] = useState(false);
 
   return (
@@ -331,7 +433,10 @@ function ProMandalaPreview({
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <span className="am-pro-report-preview__placeholder" aria-hidden="true" />
+          <span
+            className="am-pro-report-preview__placeholder"
+            aria-hidden="true"
+          />
         )}
       </div>
       <div className="am-pro-report-preview__pill">Pro版</div>
@@ -347,286 +452,7 @@ export interface MobileWebProReportPageProps {
   onRetryAction?: () => void;
 }
 
-function ProReportMarkdown({ sections }: { sections: ProMarkdownSection[] }) {
-  function parseInlineTokens(text: string): InlineToken[] {
-    const tokens: InlineToken[] = [];
-    const pattern = /\*\*(.+?)\*\*/g;
-    let lastIndex = 0;
-
-    for (const match of text.matchAll(pattern)) {
-      const index = match.index ?? 0;
-      if (index > lastIndex) {
-        tokens.push({
-          type: "text",
-          content: text.slice(lastIndex, index),
-        });
-      }
-      tokens.push({
-        type: "strong",
-        content: match[1],
-      });
-      lastIndex = index + match[0].length;
-    }
-
-    if (lastIndex < text.length) {
-      tokens.push({
-        type: "text",
-        content: text.slice(lastIndex),
-      });
-    }
-
-    return tokens.length ? tokens : [{ type: "text", content: text }];
-  }
-
-  function renderInlineText(text: string) {
-    return parseInlineTokens(text).map((token, index) => {
-      if (token.type === "strong") {
-        return (
-          <strong
-            key={`${token.content}-${index}`}
-            className="am-pro-report-markdown__strong"
-          >
-            {token.content}
-          </strong>
-        );
-      }
-
-      return <Fragment key={`${token.content}-${index}`}>{token.content}</Fragment>;
-    });
-  }
-
-  function isTableSeparatorLine(line: string): boolean {
-    const trimmed = line.trim();
-    return /^\|?(?:\s*:?-{3,}:?\s*\|)+\s*:?-{3,}:?\s*\|?$/.test(trimmed);
-  }
-
-  function parseMarkdownBlocks(body: string): MarkdownBlock[] {
-    const lines = body.split("\n");
-    const blocks: MarkdownBlock[] = [];
-    let paragraphBuffer: string[] = [];
-    let orderedListBuffer: string[] = [];
-    let tableBuffer: string[] = [];
-
-    const flushParagraph = () => {
-      if (!paragraphBuffer.length) return;
-      blocks.push({
-        type: "paragraph",
-        text: paragraphBuffer.join("\n").trim(),
-      });
-      paragraphBuffer = [];
-    };
-
-    const flushOrderedList = () => {
-      if (!orderedListBuffer.length) return;
-      blocks.push({
-        type: "ordered-list",
-        items: [...orderedListBuffer],
-      });
-      orderedListBuffer = [];
-    };
-
-    const flushTable = () => {
-      if (tableBuffer.length < 2) {
-        paragraphBuffer.push(...tableBuffer);
-        tableBuffer = [];
-        return;
-      }
-
-      const normalized = tableBuffer.map((line) => line.trim()).filter(Boolean);
-
-      if (normalized.length < 2 || !isTableSeparatorLine(normalized[1])) {
-        paragraphBuffer.push(...tableBuffer);
-        tableBuffer = [];
-        return;
-      }
-
-      const parseCells = (line: string) =>
-        line
-          .replace(/^\|/, "")
-          .replace(/\|$/, "")
-          .split("|")
-          .map((cell) => cell.trim());
-
-      const header = parseCells(normalized[0]);
-      const rows = normalized.slice(2).map(parseCells);
-      blocks.push({
-        type: "table",
-        header,
-        rows,
-      });
-      tableBuffer = [];
-    };
-
-    const flushAll = () => {
-      flushParagraph();
-      flushOrderedList();
-      flushTable();
-    };
-
-    for (const rawLine of lines) {
-      const line = rawLine.trimEnd();
-      const trimmed = line.trim();
-
-      if (!trimmed) {
-        flushParagraph();
-        flushOrderedList();
-        flushTable();
-        continue;
-      }
-
-      if (trimmed.startsWith("|")) {
-        flushParagraph();
-        flushOrderedList();
-        tableBuffer.push(trimmed);
-        continue;
-      }
-
-      flushTable();
-
-      if (/^---+$/.test(trimmed)) {
-        flushParagraph();
-        flushOrderedList();
-        blocks.push({ type: "rule" });
-        continue;
-      }
-
-      if (trimmed.startsWith("### ")) {
-        flushParagraph();
-        flushOrderedList();
-        blocks.push({
-          type: "heading3",
-          text: trimmed.slice(4).trim(),
-        });
-        continue;
-      }
-
-      const orderedListMatch = trimmed.match(/^\d+\.\s+(.+)$/);
-      if (orderedListMatch) {
-        flushParagraph();
-        orderedListBuffer.push(orderedListMatch[1].trim());
-        continue;
-      }
-
-      flushOrderedList();
-      paragraphBuffer.push(line);
-    }
-
-    flushAll();
-    return blocks;
-  }
-
-  return (
-    <div className="am-pro-report-markdown">
-      {sections.map((section, index) => (
-        <section
-          key={`${section.title}-${index}`}
-          className={joinClassNames(
-            "am-pro-report-markdown__section",
-            index > 0 && "am-pro-report-markdown__section--split",
-          )}
-        >
-          {index > 0 ? <div className="am-pro-report-markdown__divider" /> : null}
-          {section.title ? (
-            <h2 className="am-pro-report-markdown__section-title">{section.title}</h2>
-          ) : null}
-          <div className="am-pro-report-markdown__blocks">
-            {parseMarkdownBlocks(section.body).map((block, blockIndex) => {
-              if (block.type === "heading3") {
-                return (
-                  <h3
-                    key={`${section.title}-${index}-h3-${blockIndex}`}
-                    className="am-pro-report-markdown__heading3"
-                  >
-                    {renderInlineText(block.text)}
-                  </h3>
-                );
-              }
-
-              if (block.type === "paragraph") {
-                return (
-                  <p
-                    key={`${section.title}-${index}-p-${blockIndex}`}
-                    className="am-pro-report-markdown__paragraph"
-                  >
-                    {renderInlineText(block.text)}
-                  </p>
-                );
-              }
-
-              if (block.type === "rule") {
-                return (
-                  <div
-                    key={`${section.title}-${index}-rule-${blockIndex}`}
-                    className="am-pro-report-markdown__rule"
-                  />
-                );
-              }
-
-              if (block.type === "ordered-list") {
-                return (
-                  <ol
-                    key={`${section.title}-${index}-ol-${blockIndex}`}
-                    className="am-pro-report-markdown__list"
-                  >
-                    {block.items.map((item, itemIndex) => (
-                      <li key={`${item}-${itemIndex}`}>{renderInlineText(item)}</li>
-                    ))}
-                  </ol>
-                );
-              }
-
-              return (
-                <div
-                  key={`${section.title}-${index}-table-${blockIndex}`}
-                  className="am-pro-report-markdown__table-wrap"
-                >
-                  <table className="am-pro-report-markdown__table">
-                    <thead>
-                      <tr>
-                        {block.header.map((cell, cellIndex) => (
-                          <th
-                            key={`${cell}-${cellIndex}`}
-                            className="am-pro-report-markdown__table-heading"
-                          >
-                            {renderInlineText(cell)}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {block.rows.map((row, rowIndex) => (
-                        <tr key={`${row.join("-")}-${rowIndex}`}>
-                          {row.map((cell, cellIndex) => (
-                            <td
-                              key={`${cell}-${cellIndex}`}
-                              className={joinClassNames(
-                                "am-pro-report-markdown__table-cell",
-                                rowIndex > 0 &&
-                                  "am-pro-report-markdown__table-cell--with-border",
-                              )}
-                            >
-                              {renderInlineText(cell)}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      ))}
-    </div>
-  );
-}
-
-function ProReportTopBar({
-  onBack,
-}: {
-  onBack?: () => void;
-}) {
+function ProReportTopBar({ onBack }: { onBack?: () => void }) {
   return (
     <nav className="am-pro-report-topbar" aria-label="报告导航">
       <button
@@ -679,20 +505,21 @@ function ProReportModuleShell({
           className="am-pro-template-module__line"
           style={{ "--am-pro-module-accent": accent } as CSSProperties}
         />
-        {meta ? <span className="am-pro-template-module__meta">{meta}</span> : null}
+        {meta ? (
+          <span className="am-pro-template-module__meta">{meta}</span>
+        ) : null}
       </div>
       {children}
     </section>
   );
 }
 
-function ProFollowupIndex({
-  count,
-}: {
-  count: number;
-}) {
+function ProFollowupIndex({ count }: { count: number }) {
   return (
-    <div className="am-pro-followup-index" aria-label={`本报告有 ${count} 条追问`}>
+    <div
+      className="am-pro-followup-index"
+      aria-label={`本报告有 ${count} 条追问`}
+    >
       <span>
         <FollowupGlyph />
         本报告有 {count} 条追问
@@ -741,7 +568,8 @@ function ProEnergyRingsView({ cards }: { cards: ProTemplateCard[] }) {
             style={
               {
                 "--am-pro-ring-inset": `${index * 18}px`,
-                "--am-pro-ring-color": card.color ?? fallbackColors[index] ?? "#C8A066",
+                "--am-pro-ring-color":
+                  card.color ?? fallbackColors[index] ?? "#C8A066",
               } as CSSProperties
             }
           />
@@ -755,7 +583,8 @@ function ProEnergyRingsView({ cards }: { cards: ProTemplateCard[] }) {
             key={card.id}
             style={
               {
-                "--am-pro-ring-color": card.color ?? fallbackColors[index] ?? "#C8A066",
+                "--am-pro-ring-color":
+                  card.color ?? fallbackColors[index] ?? "#C8A066",
               } as CSSProperties
             }
           >
@@ -797,10 +626,32 @@ function ProAdjustmentCards({ cards }: { cards: ProTemplateCard[] }) {
 
 function FollowupGlyph() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.1A8 8 0 1 1 21 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M9.5 10.2a2.7 2.7 0 0 1 5.1 1.4c0 1.8-2.1 2.1-2.1 3.4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M12.5 17.4h.01" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M21 12a8 8 0 0 1-8 8H7l-4 2 1.4-4.1A8 8 0 1 1 21 12Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 10.2a2.7 2.7 0 0 1 5.1 1.4c0 1.8-2.1 2.1-2.1 3.4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12.5 17.4h.01"
+        stroke="currentColor"
+        strokeWidth="2.3"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -815,12 +666,20 @@ function ChevronGlyph({ expanded }: { expanded?: boolean }) {
       aria-hidden="true"
       className={expanded ? "is-expanded" : undefined}
     >
-      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="m6 9 6 6 6-6"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function createSeedRounds(state: "thinking" | "answered" | "multi-collapsed"): FollowupRound[] {
+function createSeedRounds(
+  state: "thinking" | "answered" | "multi-collapsed",
+): FollowupRound[] {
   if (state === "thinking") {
     return [{ question: "哪一圈最适合我先调整？" }];
   }
@@ -862,13 +721,20 @@ function ProInlineFollowup({
   state: MandalaFlowState;
   uploadDraft?: MobileWebUploadDraft;
   themeLabel: string;
-  initialState: "collapsed" | "input" | "thinking" | "answered" | "multi-collapsed";
+  initialState:
+    | "collapsed"
+    | "input"
+    | "thinking"
+    | "answered"
+    | "multi-collapsed";
 }) {
   const [panelOpen, setPanelOpen] = useState(initialState !== "collapsed");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [input, setInput] = useState("");
   const [rounds, setRounds] = useState<FollowupRound[]>(() =>
-    initialState === "thinking" || initialState === "answered" || initialState === "multi-collapsed"
+    initialState === "thinking" ||
+    initialState === "answered" ||
+    initialState === "multi-collapsed"
       ? createSeedRounds(initialState)
       : [],
   );
@@ -1003,14 +869,22 @@ function ProInlineFollowup({
             className="am-pro-followup-history__toggle"
             onClick={() => setHistoryOpen((current) => !current)}
           >
-            <span>已追问 {historyRounds.length} 次，{historyOpen ? "收起历史" : "展开全部"}</span>
+            <span>
+              已追问 {historyRounds.length} 次，
+              {historyOpen ? "收起历史" : "展开全部"}
+            </span>
             <ChevronGlyph expanded={historyOpen} />
           </button>
           {historyOpen ? (
             <div className="am-pro-followup-history__list">
               {historyRounds.map((round, index) => (
-                <div key={`${round.question}-${index}`} className="am-pro-followup-round is-history">
-                  <div className="am-pro-followup-question">{round.question}</div>
+                <div
+                  key={`${round.question}-${index}`}
+                  className="am-pro-followup-round is-history"
+                >
+                  <div className="am-pro-followup-question">
+                    {round.question}
+                  </div>
                   {round.answer ? (
                     <div className="am-pro-followup-answer">
                       <span>补充解读</span>
@@ -1083,7 +957,10 @@ export function MobileWebProReportPage({
   const [saved, setSaved] = useState(false);
   const previewImage =
     uploadDraft?.imagePath ?? state.selectedImage?.imagePath ?? null;
-  const reportDocument = useMemo(() => buildReportDocument(state, "pro"), [state]);
+  const reportDocument = useMemo(
+    () => buildReportDocument(state, "pro"),
+    [state],
+  );
   const title = useMemo(
     () => extractProTitle(state) || reportDocument.title,
     [reportDocument.title, state],
@@ -1104,7 +981,8 @@ export function MobileWebProReportPage({
     () => extractProSummary(state, sections, reportDocument.summary),
     [reportDocument.summary, sections, state],
   );
-  const hasProReport = state.report?.version === "pro" && documentSections.length > 0;
+  const hasProReport =
+    state.report?.version === "pro" && documentSections.length > 0;
   const isError = state.step === "error" && Boolean(state.lastError);
   const isGenerating = !hasProReport && !isError;
   const structuredDate = getStructuredString(state.report?.structured, [
@@ -1114,66 +992,114 @@ export function MobileWebProReportPage({
     "createdAt",
     "date",
   ]);
-  const generatedAt = useMemo(
-    () => {
-      const sourceDate = structuredDate ? new Date(structuredDate) : new Date();
-      const validDate = Number.isNaN(sourceDate.getTime()) ? new Date() : sourceDate;
-      return validDate.toLocaleDateString("zh-CN", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    },
-    [structuredDate],
-  );
+  const generatedAt = useMemo(() => {
+    const sourceDate = structuredDate ? new Date(structuredDate) : new Date();
+    const validDate = Number.isNaN(sourceDate.getTime())
+      ? new Date()
+      : sourceDate;
+    return validDate.toLocaleDateString("zh-CN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }, [structuredDate]);
   const pageStyle = {
     "--am-pattern-image": `url(${brandPattern})`,
   } as CSSProperties;
   const themeLabel = getThemeDisplayName(uploadDraft?.theme) ?? "财富关系";
   const mainlineModule =
-    findModule(reportDocument.modules, ["mainline", "summary", "深层主线", "主线"]) ??
+    findModule(reportDocument.modules, [
+      "mainline",
+      "summary",
+      "深层主线",
+      "主线",
+    ]) ??
     reportDocument.modules[0] ??
     null;
-  const deepReadModule =
-    findModule(reportDocument.modules, ["deep", "reading", "深度解读", "深度"]);
-  const energyModule =
-    findModule(reportDocument.modules, ["three", "circle", "energy", "三圈", "能量"]);
-  const originModule =
-    findModule(reportDocument.modules, ["formation", "origin", "reason", "模式形成", "原因"]);
-  const adjustmentModule =
-    findModule(reportDocument.modules, ["practice", "suggestion", "adjustment", "调节", "建议"]);
+  const deepReadModule = findModule(reportDocument.modules, [
+    "deep",
+    "reading",
+    "深度解读",
+    "深度",
+  ]);
+  const energyModule = findModule(reportDocument.modules, [
+    "three",
+    "circle",
+    "energy",
+    "三圈",
+    "能量",
+  ]);
+  const originModule = findModule(reportDocument.modules, [
+    "formation",
+    "origin",
+    "reason",
+    "模式形成",
+    "原因",
+  ]);
+  const adjustmentModule = findModule(reportDocument.modules, [
+    "practice",
+    "suggestion",
+    "adjustment",
+    "调节",
+    "建议",
+  ]);
   const mainlineText =
     summary ||
     extractFirstParagraph(
-      findSection(documentSections, mainlineModule, ["mainline", "summary", "深层主线", "主线"])?.body ??
-        getModuleText(mainlineModule),
+      findSection(documentSections, mainlineModule, [
+        "mainline",
+        "summary",
+        "深层主线",
+        "主线",
+      ])?.body ?? getModuleText(mainlineModule),
     );
   const deepReadCards = buildTemplateCards(
     deepReadModule,
-    findSection(documentSections, deepReadModule, ["deep", "reading", "深度解读", "深度"]),
+    findSection(documentSections, deepReadModule, [
+      "deep",
+      "reading",
+      "深度解读",
+      "深度",
+    ]),
     "深度线索",
   );
   const energyCards = buildTemplateCards(
     energyModule,
-    findSection(documentSections, energyModule, ["three", "circle", "energy", "三圈", "能量"]),
+    findSection(documentSections, energyModule, [
+      "three",
+      "circle",
+      "energy",
+      "三圈",
+      "能量",
+    ]),
     "能量圈",
   );
   const originText =
     extractFirstParagraph(
-      findSection(documentSections, originModule, ["formation", "origin", "reason", "模式形成", "原因"])?.body ??
-        getModuleText(originModule),
-    ) ||
-    extractFirstParagraph(documentSections[3]?.section.body ?? "");
+      findSection(documentSections, originModule, [
+        "formation",
+        "origin",
+        "reason",
+        "模式形成",
+        "原因",
+      ])?.body ?? getModuleText(originModule),
+    ) || extractFirstParagraph(documentSections[3]?.section.body ?? "");
   const adjustmentCards = buildTemplateCards(
     adjustmentModule,
-    findSection(documentSections, adjustmentModule, ["practice", "suggestion", "adjustment", "调节", "建议"]),
+    findSection(documentSections, adjustmentModule, [
+      "practice",
+      "suggestion",
+      "adjustment",
+      "调节",
+      "建议",
+    ]),
     "调节方向",
   );
-  const deepReadDisplayCards = normalizeCards(
-    deepReadCards,
-    mainlineText,
-    ["核心线索", "关系线索", "行动线索"],
-  );
+  const deepReadDisplayCards = normalizeCards(deepReadCards, mainlineText, [
+    "核心线索",
+    "关系线索",
+    "行动线索",
+  ]);
   const energyDisplayCards = normalizeCards(
     energyCards.length ? energyCards : deepReadDisplayCards,
     mainlineText,
@@ -1191,13 +1117,14 @@ export function MobileWebProReportPage({
     energyModule,
     originModule,
     adjustmentModule,
-  ].map((module, index) =>
-    module ??
-    reportDocument.modules[index] ?? {
-      id: `fallback-module-${index + 1}`,
-      title: `模块 ${index + 1}`,
-      body: "",
-    },
+  ].map(
+    (module, index) =>
+      module ??
+      reportDocument.modules[index] ?? {
+        id: `fallback-module-${index + 1}`,
+        title: `模块 ${index + 1}`,
+        body: "",
+      },
   );
 
   if (isError) {
@@ -1209,7 +1136,9 @@ export function MobileWebProReportPage({
             <h2 className="am-pro-report-error-card__title">
               Pro 报告暂时没有顺利打开
             </h2>
-            <p className="am-pro-report-error-card__message">{state.lastError}</p>
+            <p className="am-pro-report-error-card__message">
+              {state.lastError}
+            </p>
             <button
               type="button"
               onClick={onRetryAction}
@@ -1232,9 +1161,18 @@ export function MobileWebProReportPage({
           <section className="am-pro-report-hero">
             <div className="am-pro-report-hero__pattern" />
             <span className="am-pro-report-hero__glow" aria-hidden="true" />
-            <span className="am-pro-report-particle am-pro-report-particle--one" aria-hidden="true" />
-            <span className="am-pro-report-particle am-pro-report-particle--two" aria-hidden="true" />
-            <span className="am-pro-report-particle am-pro-report-particle--three" aria-hidden="true" />
+            <span
+              className="am-pro-report-particle am-pro-report-particle--one"
+              aria-hidden="true"
+            />
+            <span
+              className="am-pro-report-particle am-pro-report-particle--two"
+              aria-hidden="true"
+            />
+            <span
+              className="am-pro-report-particle am-pro-report-particle--three"
+              aria-hidden="true"
+            />
             <div className="am-pro-report-hero__inner">
               <div className="am-pro-report-hero__content">
                 <ProMandalaPreview imagePath={previewImage} />
@@ -1255,9 +1193,12 @@ export function MobileWebProReportPage({
                   <div className="am-pro-report-waiting-card__icon">
                     <LoadingGlyph />
                   </div>
-                  <p className="am-pro-report-waiting-card__title">Pro 报告还在准备中</p>
+                  <p className="am-pro-report-waiting-card__title">
+                    Pro 报告还在准备中
+                  </p>
                   <p className="am-pro-report-waiting-card__body">
-                    正常流程会先停留在全局 Loading 页；如果你是直接打开了当前页面，可以手动再刷新一次。
+                    正常流程会先停留在全局 Loading
+                    页；如果你是直接打开了当前页面，可以手动再刷新一次。
                   </p>
                   <button
                     type="button"
@@ -1273,7 +1214,11 @@ export function MobileWebProReportPage({
                 <>
                   <ProFollowupIndex count={4} />
 
-                  <ProReportModuleShell index="01" title="深层主线" accent="#D4A054">
+                  <ProReportModuleShell
+                    index="01"
+                    title="深层主线"
+                    accent="#D4A054"
+                  >
                     <ProMainlineCard text={mainlineText} />
                   </ProReportModuleShell>
                   <ProInlineFollowup
@@ -1316,7 +1261,11 @@ export function MobileWebProReportPage({
                     initialState="thinking"
                   />
 
-                  <ProReportModuleShell index="04" title="模式形成的原因" accent="#8B6AAE">
+                  <ProReportModuleShell
+                    index="04"
+                    title="模式形成的原因"
+                    accent="#8B6AAE"
+                  >
                     <ProCreamTextCard text={originText || mainlineText} />
                   </ProReportModuleShell>
                   <ProInlineFollowup
@@ -1374,7 +1323,9 @@ export function MobileWebProReportPage({
                   alt="一镜一梳"
                   className="am-pro-report-footer-brand__logo"
                 />
-                <span className="am-pro-report-footer-brand__text">一镜一梳</span>
+                <span className="am-pro-report-footer-brand__text">
+                  一镜一梳
+                </span>
               </div>
             </div>
           </section>

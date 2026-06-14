@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .runtime_paths import AIMANDALA_ROOT, BACKEND_ROOT, relative_to_known_root
+from .runtime_paths import AIMANDALA_ROOT, relative_to_known_root
 
 HEALING_KB_ROOT = AIMANDALA_ROOT / "docs" / "疗愈体系知识库"
 METHOD_SOURCE = (

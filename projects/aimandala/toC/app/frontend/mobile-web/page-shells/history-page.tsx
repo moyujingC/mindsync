@@ -3,9 +3,20 @@ import { useState } from "react";
 import { MobileWebAppShell } from "../app-shell";
 import { createHistoryPageDescriptor } from "../pages";
 import { mobileWebRoutes } from "../routes";
-import { HistoryRecordCard, type HistoryFilterId } from "../components/history-cards";
-import { SharedAppTopBar, SharedTopicSelector, sharedTopicSelectorOptions, type SharedTopicSelectorOption } from "../../shared/ui";
-import type { InterpretationListQuery, InterpretationRecordResponse } from "../../shared/types";
+import {
+  HistoryRecordCard,
+  type HistoryFilterId,
+} from "../components/history-cards";
+import {
+  SharedAppTopBar,
+  SharedTopicSelector,
+  sharedTopicSelectorOptions,
+  type SharedTopicSelectorOption,
+} from "../../shared/ui";
+import type {
+  InterpretationListQuery,
+  InterpretationRecordResponse,
+} from "../../shared/types";
 
 const historyThemeOptions: SharedTopicSelectorOption[] = [
   {
@@ -117,7 +128,10 @@ export function MobileWebHistoryPage({
       case "ready":
         return item.recordReady;
       case "review":
-        return pendingItems.some((pendingItem) => pendingItem.interpretationId === item.interpretationId);
+        return pendingItems.some(
+          (pendingItem) =>
+            pendingItem.interpretationId === item.interpretationId,
+        );
       case "pending":
         return !item.recordReady;
       case "all":
@@ -129,21 +143,29 @@ export function MobileWebHistoryPage({
     filteredItems.reduce((map, item) => {
       const key = `${item.themeLabel}__${item.subtitle}`;
       const existing = map.get(key);
-      if (!existing || (existing.focusReportType === "lite" && item.focusReportType === "pro")) {
+      if (
+        !existing ||
+        (existing.focusReportType === "lite" && item.focusReportType === "pro")
+      ) {
         map.set(key, item);
       }
       return map;
-    }, new Map<string, typeof descriptor.items[number]>()),
+    }, new Map<string, (typeof descriptor.items)[number]>()),
   ).map(([, item]) => item);
 
   const getRecordImage = (interpretationId: string) => {
-    const record = records.find((candidate) => candidate.interpretation_id === interpretationId);
+    const record = records.find(
+      (candidate) => candidate.interpretation_id === interpretationId,
+    );
     return record?.image_url ?? undefined;
   };
 
   return (
     <MobileWebAppShell
-      route={mobileWebRoutes.find((route) => route.id === "history") ?? mobileWebRoutes[0]}
+      route={
+        mobileWebRoutes.find((route) => route.id === "history") ??
+        mobileWebRoutes[0]
+      }
       className="mw-history-shell"
       environmentLabel={environmentLabel}
       environmentDetail={environmentDetail}
@@ -160,25 +182,73 @@ export function MobileWebHistoryPage({
         />
 
         <section className="mw-history-intro">
-          <div className="mw-history-intro__halo mw-history-intro__halo--top" aria-hidden="true" />
-          <div className="mw-history-intro__halo mw-history-intro__halo--bottom" aria-hidden="true" />
+          <div
+            className="mw-history-intro__halo mw-history-intro__halo--top"
+            aria-hidden="true"
+          />
+          <div
+            className="mw-history-intro__halo mw-history-intro__halo--bottom"
+            aria-hidden="true"
+          />
           <div className="mw-history-intro__content">
             <div className="mw-history-intro__sky" />
             <div className="mw-history-intro__moon" />
-            <span className="mw-history-intro__cloud mw-history-intro__cloud--one" aria-hidden="true" />
-            <span className="mw-history-intro__cloud mw-history-intro__cloud--two" aria-hidden="true" />
-            <span className="mw-history-intro__cloud mw-history-intro__cloud--three" aria-hidden="true" />
-            <span className="mw-history-intro__star mw-history-intro__star--one" aria-hidden="true" />
-            <span className="mw-history-intro__star mw-history-intro__star--two" aria-hidden="true" />
-            <span className="mw-history-intro__star mw-history-intro__star--three" aria-hidden="true" />
-            <span className="mw-history-intro__star mw-history-intro__star--four" aria-hidden="true" />
-            <span className="mw-history-intro__star mw-history-intro__star--five" aria-hidden="true" />
-            <span className="mw-history-intro__crane mw-history-intro__crane--one" aria-hidden="true" />
-            <span className="mw-history-intro__crane mw-history-intro__crane--two" aria-hidden="true" />
-            <span className="mw-history-intro__mountain mw-history-intro__mountain--back-right" aria-hidden="true" />
-            <span className="mw-history-intro__mountain mw-history-intro__mountain--back-left" aria-hidden="true" />
-            <span className="mw-history-intro__mountain mw-history-intro__mountain--mid" aria-hidden="true" />
-            <span className="mw-history-intro__mountain mw-history-intro__mountain--edge" aria-hidden="true" />
+            <span
+              className="mw-history-intro__cloud mw-history-intro__cloud--one"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__cloud mw-history-intro__cloud--two"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__cloud mw-history-intro__cloud--three"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__star mw-history-intro__star--one"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__star mw-history-intro__star--two"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__star mw-history-intro__star--three"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__star mw-history-intro__star--four"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__star mw-history-intro__star--five"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__crane mw-history-intro__crane--one"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__crane mw-history-intro__crane--two"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__mountain mw-history-intro__mountain--back-right"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__mountain mw-history-intro__mountain--back-left"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__mountain mw-history-intro__mountain--mid"
+              aria-hidden="true"
+            />
+            <span
+              className="mw-history-intro__mountain mw-history-intro__mountain--edge"
+              aria-hidden="true"
+            />
             <span className="mw-history-intro__lotus" aria-hidden="true" />
             <h2>查看已生成的解读记录</h2>
             <p>{descriptor.subtitle}</p>
@@ -193,7 +263,8 @@ export function MobileWebHistoryPage({
             <div className="mw-history-record-list">
               {pendingItems.map((item, index) => {
                 const imageUrl = getRecordImage(item.interpretationId);
-                const isBusy = actionBusy && activeRecordId === item.interpretationId;
+                const isBusy =
+                  actionBusy && activeRecordId === item.interpretationId;
 
                 return (
                   <HistoryRecordCard
@@ -232,7 +303,10 @@ export function MobileWebHistoryPage({
             </article>
           </div>
 
-          <div className="mw-history-separator mw-history-separator--compact" aria-hidden="true">
+          <div
+            className="mw-history-separator mw-history-separator--compact"
+            aria-hidden="true"
+          >
             <span />
           </div>
 
@@ -260,7 +334,9 @@ export function MobileWebHistoryPage({
               options={historyThemeOptions}
               value={getHistoryThemeValue(activeTheme)}
               disabled={filterBusy}
-              onChange={(nextValue) => onThemeChange?.(nextValue === "all" ? undefined : nextValue)}
+              onChange={(nextValue) =>
+                onThemeChange?.(nextValue === "all" ? undefined : nextValue)
+              }
             />
           </section>
 
@@ -321,8 +397,12 @@ export function MobileWebHistoryPage({
             <div className="mw-history-record-list mw-history-record-list--all">
               {filteredSessions.map((item, index) => {
                 const imageUrl = getRecordImage(item.interpretationId);
-                const isBusy = actionBusy && activeRecordId === item.interpretationId;
-                const isPendingPreviewItem = pendingItems.some((pendingItem) => pendingItem.interpretationId === item.interpretationId);
+                const isBusy =
+                  actionBusy && activeRecordId === item.interpretationId;
+                const isPendingPreviewItem = pendingItems.some(
+                  (pendingItem) =>
+                    pendingItem.interpretationId === item.interpretationId,
+                );
 
                 return (
                   <HistoryRecordCard

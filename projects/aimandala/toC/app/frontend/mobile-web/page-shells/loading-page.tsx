@@ -73,9 +73,13 @@ function resolveLoadingUiState(
 ): LoadingUiState {
   const stages = isPro ? proStages : liteStages;
   const generationStage =
-    state.status?.generation_stage ?? state.interpretation?.generation_stage ?? null;
+    state.status?.generation_stage ??
+    state.interpretation?.generation_stage ??
+    null;
   const rawProgress =
-    state.status?.generation_progress ?? state.interpretation?.generation_progress ?? null;
+    state.status?.generation_progress ??
+    state.interpretation?.generation_progress ??
+    null;
   const detectionReady = Boolean(state.detection);
   const ready = hasReadyReport(state, isPro);
 
@@ -103,8 +107,10 @@ function resolveLoadingUiState(
         currentStageIndex: 4,
         currentMessage: "正在整理 Pro 完整解读与问答上下文...",
         estimatedTime: "预计约 2 分钟",
-        versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
-        speedNote: "Lite 核心结果已经完成，当前正在补充更深层的能量结构与解释。",
+        versionDescription:
+          "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+        speedNote:
+          "Lite 核心结果已经完成，当前正在补充更深层的能量结构与解释。",
       };
     }
 
@@ -115,7 +121,8 @@ function resolveLoadingUiState(
         currentStageIndex: 3,
         currentMessage: "Lite 已完成，正在进入 Pro 深度分析...",
         estimatedTime: "预计约 2 分钟",
-        versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+        versionDescription:
+          "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
         speedNote: "基础线索已经准备好，接下来会展开更完整的深层解读。",
       };
     }
@@ -123,11 +130,14 @@ function resolveLoadingUiState(
     if (generationStage === "generating" || state.step === "liteGenerating") {
       return {
         stages,
-        progress: clampProgress(rawProgress == null ? 42 : Math.max(36, Math.min(58, rawProgress))),
+        progress: clampProgress(
+          rawProgress == null ? 42 : Math.max(36, Math.min(58, rawProgress)),
+        ),
         currentStageIndex: 2,
         currentMessage: "正在生成基础线索，随后展开 Pro 深度分析...",
         estimatedTime: "预计约 2 分钟",
-        versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+        versionDescription:
+          "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
         speedNote: "深度版会先完成基础骨架，再继续生成更深入的结构判断。",
       };
     }
@@ -139,7 +149,8 @@ function resolveLoadingUiState(
         currentStageIndex: 1,
         currentMessage: "识别画面结构与三圈能量...",
         estimatedTime: "预计约 2 分钟",
-        versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+        versionDescription:
+          "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
         speedNote: "正在确认三圈结构，为后续深度解读建立基础。",
       };
     }
@@ -156,7 +167,9 @@ function resolveLoadingUiState(
   }
 
   if (generationStage === "generating" || state.step === "liteGenerating") {
-    const progress = clampProgress(rawProgress == null ? 38 : Math.max(28, Math.min(92, rawProgress)));
+    const progress = clampProgress(
+      rawProgress == null ? 38 : Math.max(28, Math.min(92, rawProgress)),
+    );
     if (progress >= 70) {
       return {
         stages,
@@ -246,44 +259,65 @@ function FloatingParticlesSmall() {
 
 function LoadingDoneIcon() {
   return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M20 6L9 17L4 12"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
 function LoadingWaitingIcon() {
   return (
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg
+      width="10"
+      height="10"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
       <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
-
-function LoadingVersionIcon({ isPro }: { isPro: boolean }) {
-  if (isPro) {
-    return (
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 3.5L14.4 8.36L19.77 9.14L15.88 12.94L16.8 18.29L12 15.77L7.2 18.29L8.12 12.94L4.23 9.14L9.6 8.36L12 3.5Z" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M9.5 18.5H14.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M10 21H14" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M8.7 15.3C7.33 14.3 6.5 12.68 6.5 10.92C6.5 7.93 8.96 5.5 12 5.5C15.04 5.5 17.5 7.93 17.5 10.92C17.5 12.68 16.67 14.3 15.3 15.3C14.74 15.71 14.4 16.33 14.4 17V17.5H9.6V17C9.6 16.33 9.26 15.71 8.7 15.3Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
     </svg>
   );
 }
 
 function LoadingTipIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M9.5 18.5H14.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M10 21H14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M8.7 15.3C7.33 14.3 6.5 12.68 6.5 10.92C6.5 7.93 8.96 5.5 12 5.5C15.04 5.5 17.5 7.93 17.5 10.92C17.5 12.68 16.67 14.3 15.3 15.3C14.74 15.71 14.4 16.33 14.4 17V17.5H9.6V17C9.6 16.33 9.26 15.71 8.7 15.3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M9.5 18.5H14.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10 21H14"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M8.7 15.3C7.33 14.3 6.5 12.68 6.5 10.92C6.5 7.93 8.96 5.5 12 5.5C15.04 5.5 17.5 7.93 17.5 10.92C17.5 12.68 16.67 14.3 15.3 15.3C14.74 15.71 14.4 16.33 14.4 17V17.5H9.6V17C9.6 16.33 9.26 15.71 8.7 15.3Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -307,7 +341,10 @@ export function MobileWebLoadingPage({
     return () => window.clearInterval(timer);
   }, []);
 
-  const loadingUi = useMemo(() => resolveLoadingUiState(state, isPro), [state, isPro]);
+  const loadingUi = useMemo(
+    () => resolveLoadingUiState(state, isPro),
+    [state, isPro],
+  );
   const { currentStageIndex, progress, stages } = loadingUi;
   const showLeaveLater = typeof onLeaveLater === "function";
   const estimatedSeconds = Math.max(
@@ -317,11 +354,7 @@ export function MobileWebLoadingPage({
 
   return (
     <div className="am-page am-loading-page">
-      <SharedAppTopBar
-        title="解读中"
-        backLabel="返回上传页"
-        onBack={onBack}
-      />
+      <SharedAppTopBar title="解读中" backLabel="返回上传页" onBack={onBack} />
 
       <div className="am-loading-body" style={loadingPatternStyle}>
         <div className="am-pattern-overlay am-loading-surface-pattern" />
@@ -349,7 +382,10 @@ export function MobileWebLoadingPage({
             <small>%</small>
           </div>
           <div className="am-loading-progress-track">
-            <div className="am-loading-progress-fill" style={{ width: `${progress}%` }} />
+            <div
+              className="am-loading-progress-fill"
+              style={{ width: `${progress}%` }}
+            />
             <div
               className="am-loading-progress-shimmer"
               style={{
@@ -385,11 +421,22 @@ export function MobileWebLoadingPage({
           <div className="am-loading-log-title">正在分析：</div>
           <div className="am-loading-log-list">
             {stages.map((item, index) => {
-              const status = index < currentStageIndex ? "done" : index === currentStageIndex ? "active" : "waiting";
+              const status =
+                index < currentStageIndex
+                  ? "done"
+                  : index === currentStageIndex
+                    ? "active"
+                    : "waiting";
               return (
                 <div key={item} className={`am-loading-log-item is-${status}`}>
                   <span className="am-loading-log-dot" aria-hidden="true">
-                    {status === "done" ? <LoadingDoneIcon /> : status === "waiting" ? <LoadingWaitingIcon /> : <span className="am-loading-log-dot__pulse" />}
+                    {status === "done" ? (
+                      <LoadingDoneIcon />
+                    ) : status === "waiting" ? (
+                      <LoadingWaitingIcon />
+                    ) : (
+                      <span className="am-loading-log-dot__pulse" />
+                    )}
                   </span>
                   <span>{item}</span>
                 </div>
@@ -413,7 +460,10 @@ export function MobileWebLoadingPage({
           <p>{tips[tipIndex]}</p>
           <div className="am-loading-tip-dots">
             {tips.map((_, index) => (
-              <span key={index} className={index === tipIndex ? "is-active" : ""} />
+              <span
+                key={index}
+                className={index === tipIndex ? "is-active" : ""}
+              />
             ))}
           </div>
         </div>

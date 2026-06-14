@@ -1,6 +1,16 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+} from "react";
 
-export type SharedTopicIconNode = ["path" | "circle" | "rect", Record<string, string>];
+export type SharedTopicIconNode = [
+  "path" | "circle" | "rect",
+  Record<string, string>,
+];
 
 export interface SharedTopicSelectorOption {
   value: string;
@@ -9,7 +19,9 @@ export interface SharedTopicSelectorOption {
   icon: SharedTopicIconNode[];
 }
 
-const ICON_CHECK: SharedTopicIconNode[] = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+const ICON_CHECK: SharedTopicIconNode[] = [
+  ["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }],
+];
 const ICON_COINS: SharedTopicIconNode[] = [
   ["circle", { cx: "8", cy: "8", r: "6", key: "3yglwk" }],
   ["path", { d: "M18.09 10.37A6 6 0 1 1 10.34 18", key: "t5s6rm" }],
@@ -17,7 +29,13 @@ const ICON_COINS: SharedTopicIconNode[] = [
   ["path", { d: "m16.71 13.88.7.71-2.82 2.82", key: "1rbuyh" }],
 ];
 const ICON_HEART: SharedTopicIconNode[] = [
-  ["path", { d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z", key: "c3ymky" }],
+  [
+    "path",
+    {
+      d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
+      key: "c3ymky",
+    },
+  ],
 ];
 const ICON_USER: SharedTopicIconNode[] = [
   ["path", { d: "M18 21a6 6 0 0 0-12 0", key: "u1" }],
@@ -43,21 +61,65 @@ const ICON_USERS_ROUND: SharedTopicIconNode[] = [
 ];
 const ICON_BRIEFCASE: SharedTopicIconNode[] = [
   ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
-  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }],
+  [
+    "rect",
+    { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" },
+  ],
 ];
 const ICON_ACTIVITY: SharedTopicIconNode[] = [
-  ["path", { d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2", key: "169zse" }],
+  [
+    "path",
+    {
+      d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2",
+      key: "169zse",
+    },
+  ],
 ];
 
 export const sharedTopicSelectorOptions: SharedTopicSelectorOption[] = [
   { value: "wealth", label: "财富", subLabel: "关系", icon: ICON_COINS },
-  { value: "intimate_relationship", label: "亲密", subLabel: "关系", icon: ICON_HEART },
-  { value: "mother_relationship", label: "母亲", subLabel: "关系", icon: ICON_USER },
-  { value: "father_relationship", label: "父亲", subLabel: "关系", icon: ICON_USERS },
-  { value: "parent_child_relationship", label: "亲子", subLabel: "关系", icon: ICON_BABY },
-  { value: "personal_growth", label: "人际", subLabel: "关系", icon: ICON_USERS_ROUND },
-  { value: "career_development", label: "事业", subLabel: "发展", icon: ICON_BRIEFCASE },
-  { value: "body_health", label: "身体", subLabel: "健康", icon: ICON_ACTIVITY },
+  {
+    value: "intimate_relationship",
+    label: "亲密",
+    subLabel: "关系",
+    icon: ICON_HEART,
+  },
+  {
+    value: "mother_relationship",
+    label: "母亲",
+    subLabel: "关系",
+    icon: ICON_USER,
+  },
+  {
+    value: "father_relationship",
+    label: "父亲",
+    subLabel: "关系",
+    icon: ICON_USERS,
+  },
+  {
+    value: "parent_child_relationship",
+    label: "亲子",
+    subLabel: "关系",
+    icon: ICON_BABY,
+  },
+  {
+    value: "personal_growth",
+    label: "人际",
+    subLabel: "关系",
+    icon: ICON_USERS_ROUND,
+  },
+  {
+    value: "career_development",
+    label: "事业",
+    subLabel: "发展",
+    icon: ICON_BRIEFCASE,
+  },
+  {
+    value: "body_health",
+    label: "身体",
+    subLabel: "健康",
+    icon: ICON_ACTIVITY,
+  },
 ];
 
 function LucideIcon({
@@ -91,11 +153,13 @@ function LucideIcon({
     >
       {iconNode.map(([tag, attrs]) => {
         const { key, ...rest } = attrs;
-        return tag === "path"
-          ? <path key={key} {...rest} />
-          : tag === "circle"
-            ? <circle key={key} {...rest} />
-            : <rect key={key} {...rest} />;
+        return tag === "path" ? (
+          <path key={key} {...rest} />
+        ) : tag === "circle" ? (
+          <circle key={key} {...rest} />
+        ) : (
+          <rect key={key} {...rest} />
+        );
       })}
     </svg>
   );
@@ -118,7 +182,9 @@ export function SharedTopicSelector({
   disabled = false,
   onChange,
 }: SharedTopicSelectorProps) {
-  const normalizedValue = options.some((option) => option.value === value) ? value : options[0]?.value;
+  const normalizedValue = options.some((option) => option.value === value)
+    ? value
+    : options[0]?.value;
   const [selected, setSelected] = useState(normalizedValue);
   const scrollRef = useRef<HTMLDivElement>(null);
   const dragStateRef = useRef({
@@ -168,9 +234,13 @@ export function SharedTopicSelector({
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
-    const selectedIndex = options.findIndex((option) => option.value === selected);
+    const selectedIndex = options.findIndex(
+      (option) => option.value === selected,
+    );
     if (selectedIndex >= 0) {
-      const selectedButton = container.children[selectedIndex] as HTMLElement | undefined;
+      const selectedButton = container.children[selectedIndex] as
+        | HTMLElement
+        | undefined;
       selectedButton?.scrollIntoView({ inline: "nearest", block: "nearest" });
     }
   }, [options, selected]);
@@ -213,7 +283,11 @@ export function SharedTopicSelector({
                 </div>
               ) : null}
               <span className={`${prefix}__icon`}>
-                <LucideIcon iconNode={option.icon} size={22} strokeWidth={1.5} />
+                <LucideIcon
+                  iconNode={option.icon}
+                  size={22}
+                  strokeWidth={1.5}
+                />
               </span>
               <span className={`${prefix}__label`}>{option.label}</span>
               <span className={`${prefix}__sub`}>{option.subLabel}</span>

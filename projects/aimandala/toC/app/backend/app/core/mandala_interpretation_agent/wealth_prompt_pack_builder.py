@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from .topic_prompt_pack_builder import TopicPromptPack as WealthPromptPack
 from .topic_prompt_pack_builder import TopicPromptPackBuilder
 from .topic_prompt_pack_registry import get_topic_config
 

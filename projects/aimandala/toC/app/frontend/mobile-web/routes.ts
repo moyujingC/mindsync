@@ -22,11 +22,36 @@ export interface MobileWebRouteDefinition {
 export const mobileWebRoutes: MobileWebRouteDefinition[] = [
   { id: "landing", path: "/", title: "一镜一梳", previewLabel: "落地页" },
   { id: "upload", path: "/upload", title: "上传画作", previewLabel: "上传" },
-  { id: "reportEntry", path: "/report-entry", title: "解读确认页", previewLabel: "付款" },
-  { id: "loading", path: "/loading", title: "解读生成中", previewLabel: "加载" },
-  { id: "report", path: "/report", title: "新版解读报告", previewLabel: "解读报告" },
-  { id: "reportLite", path: "/report/lite", title: "Lite 解读报告", previewLabel: "Lite 报告" },
-  { id: "reportPro", path: "/report/pro", title: "Pro 解读报告", previewLabel: "Pro 报告" },
+  {
+    id: "reportEntry",
+    path: "/report-entry",
+    title: "解读确认页",
+    previewLabel: "付款",
+  },
+  {
+    id: "loading",
+    path: "/loading",
+    title: "解读生成中",
+    previewLabel: "加载",
+  },
+  {
+    id: "report",
+    path: "/report",
+    title: "新版解读报告",
+    previewLabel: "解读报告",
+  },
+  {
+    id: "reportLite",
+    path: "/report/lite",
+    title: "Lite 解读报告",
+    previewLabel: "Lite 报告",
+  },
+  {
+    id: "reportPro",
+    path: "/report/pro",
+    title: "Pro 解读报告",
+    previewLabel: "Pro 报告",
+  },
   { id: "history", path: "/history", title: "历史解读", previewLabel: "历史" },
   {
     id: "historyRecordDetail",

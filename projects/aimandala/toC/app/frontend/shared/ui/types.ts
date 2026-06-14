@@ -17,9 +17,13 @@ export interface SharedHistorySummary {
   pending: number;
 }
 
-export type SharedHistoryFilterId = "all" | "ready" | "pending";
+export type SharedHistoryFilterId = "all" | "ready" | "pending" | "review";
 
-export type SharedHistoryStatusTone = "ready" | "pending" | "proReady" | "proPending";
+export type SharedHistoryStatusTone =
+  | "ready"
+  | "pending"
+  | "proReady"
+  | "proPending";
 
 export interface SharedHistoryRecordItem {
   interpretationId: string;
@@ -36,5 +40,6 @@ export interface SharedHistoryRecordItem {
   helperNote?: string;
   stageLabel: string;
   progressLabel: string;
+  theme: string;
   themeLabel: string;
 }
