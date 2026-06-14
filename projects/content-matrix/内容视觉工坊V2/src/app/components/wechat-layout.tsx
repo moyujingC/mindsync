@@ -264,6 +264,11 @@ export function WechatLayout() {
       wechatArticleBlocks,
     ]
   );
+  const previewPaneHtml = useMemo(() => {
+    if (importedHtml) return sanitizePreviewHtml(importedHtml);
+    if (importedText.trim()) return plainTextToPreviewHtml(importedText);
+    return previewArticleHtml;
+  }, [importedHtml, importedText, previewArticleHtml]);
 
   function receivePastedSample(html: string, text: string) {
     const nextText = (text || stripHtml(html)).trim();
@@ -706,7 +711,7 @@ export function WechatLayout() {
           </div>
 
           <div className="px-7 pt-5 pb-8">
-            <div dangerouslySetInnerHTML={{ __html: previewArticleHtml }} />
+            <div dangerouslySetInnerHTML={{ __html: previewPaneHtml }} />
 
           </div>
         </div>
@@ -1422,8 +1427,37 @@ function styleToString(style: Record<string, string | undefined>) {
 
 function sanitizePreviewHtml(html: string) {
   const doc = new DOMParser().parseFromString(html, "text/html");
-  doc.querySelectorAll("script,style").forEach((node) => node.remove());
-  return doc.body.innerHTML.slice(0, 1000);
+  doc
+    .querySelectorAll("script,style,iframe,object,embed,link,meta")
+    .forEach((node) => node.remove());
+  doc.body.querySelectorAll<HTMLElement>("*").forEach((node) => {
+    Array.from(node.attributes).forEach((attr) => {
+      const name = attr.name.toLowerCase();
+      const value = attr.value.trim().toLowerCase();
+      if (name.startsWith("on")) {
+        node.removeAttribute(attr.name);
+        return;
+      }
+      if ((name === "href" || name === "src") && value.startsWith("javascript:")) {
+        node.removeAttribute(attr.name);
+      }
+    });
+  });
+  return doc.body.innerHTML;
+}
+
+function plainTextToPreviewHtml(text: string) {
+  return text
+    .split(/\n{2,}/)
+    .map((chunk) => chunk.trim())
+    .filter(Boolean)
+    .map(
+      (chunk) =>
+        `<p style="margin:16px 0;color:#393D49;font-size:15px;line-height:1.8;text-align:justify;">${escapeHtml(
+          chunk
+        ).replace(/\n/g, "<br />")}</p>`
+    )
+    .join("");
 }
 
 function getInlineCssValue(node: HTMLElement, property: string) {
