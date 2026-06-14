@@ -1104,23 +1104,6 @@ function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArt
       continue;
     }
 
-    if (/^([一二三四五六七八九十]+、|[0-9]+\.)/.test(chunk)) {
-      const next = chunks[index + 1];
-      lastSectionKey = toWechatSectionKey(chunk);
-      if (next && !looksLikeWechatStandaloneBlock(next)) {
-        blocks.push({
-          type: "heading",
-          level: "primary",
-          title: chunk,
-          body: next,
-        });
-        index += 1;
-      } else {
-        blocks.push({ type: "heading", level: "primary", title: chunk });
-      }
-      continue;
-    }
-
     blocks.push({ type: "paragraph", text: chunk });
   }
 
@@ -1140,8 +1123,7 @@ function looksLikeWechatStandaloneBlock(chunk: string) {
     /^>\s*/.test(chunk) ||
     /^(提示|备注|Note)[:：]/i.test(chunk) ||
     /^(图|图片)[:：]/.test(chunk) ||
-    /^#{1,3}\s+/.test(chunk) ||
-    /^([一二三四五六七八九十]+、|[0-9]+\.)/.test(chunk)
+    /^#{1,3}\s+/.test(chunk)
   );
 }
 
