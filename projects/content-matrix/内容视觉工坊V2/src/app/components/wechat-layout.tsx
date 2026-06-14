@@ -54,7 +54,8 @@ type WechatStyleTemplate = {
   containerStyle: string;
   titleStyle: string;
   metaStyle: string;
-  headingStyle: string;
+  primaryHeadingStyle: string;
+  secondaryHeadingStyle: string;
   paragraphStyle: string;
   quoteStyle: string;
   noteStyle: string;
@@ -62,6 +63,14 @@ type WechatStyleTemplate = {
   figcaptionStyle: string;
   footerStyle: string;
 };
+
+type WechatArticleBlock =
+  | { type: "eyebrow"; text: string }
+  | { type: "paragraph"; text: string }
+  | { type: "quote"; text: string }
+  | { type: "heading"; level: "primary" | "secondary"; title: string; body?: string }
+  | { type: "note"; text: string }
+  | { type: "image"; label: string; sectionKey?: string };
 
 const DEFAULT_THEME: WechatTheme = {
   titleColor: "#303543",
@@ -208,6 +217,10 @@ export function WechatLayout() {
     () => extractWechatStyleTemplate(importedHtml, activeTheme, mapping),
     [activeTheme, importedHtml, mapping]
   );
+  const wechatArticleBlocks = useMemo(
+    () => buildWechatArticleBlocks(currentArticle.body, mapping),
+    [currentArticle.body, mapping]
+  );
 
   const samplePreview = useMemo(() => {
     if (importedHtml) return { mode: "html" as const, value: importedHtml };
@@ -237,7 +250,7 @@ export function WechatLayout() {
         styleTemplate,
         currentArticle.title,
         articleMetaLine,
-        currentArticleBlocks,
+        wechatArticleBlocks,
         previewCover,
         inlineImageMap
       ),
@@ -245,10 +258,10 @@ export function WechatLayout() {
       activeTheme,
       articleMetaLine,
       currentArticle.title,
-      currentArticleBlocks,
       inlineImageMap,
       previewCover,
       styleTemplate,
+      wechatArticleBlocks,
     ]
   );
 
@@ -373,7 +386,7 @@ export function WechatLayout() {
         styleTemplate,
         currentArticle.title,
         articleMetaLine,
-        currentArticleBlocks,
+        wechatArticleBlocks,
         previewCover,
         inlineImageMap
       );
@@ -412,14 +425,14 @@ export function WechatLayout() {
             {
               k: "h1h2",
               t: "# 作为一级标题",
-              s: "## 作为二级标题",
-              note: "适用于完整文档",
+              s: "## / 一、 作为二级标题",
+              note: "适用于保留文章大标题的完整文档",
             },
             {
               k: "h2h3",
               t: "## 作为一级标题",
-              s: "### 作为二级标题",
-              note: "适用于已经省略 H1 的稿件",
+              s: "### / 一、 作为一级标题",
+              note: "适用于正文里已经省略 H1 的稿件",
             },
           ].map((o) => {
             const active = mapping === o.k;
@@ -1036,6 +1049,107 @@ function stripInlineMarkdown(text: string) {
   return text.replace(/\*\*([^*]+)\*\*/g, "$1");
 }
 
+function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArticleBlock[] {
+  const chunks = body
+    .split(/\n{2,}/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const blocks: WechatArticleBlock[] = [];
+  let lastSectionKey: string | undefined;
+
+  for (let index = 0; index < chunks.length; index += 1) {
+    const chunk = chunks[index];
+    const markdownHeading = chunk.match(/^(#{1,3})\s+(.+)$/);
+
+    if (/^(写在前面|前言|导读)$/u.test(chunk)) {
+      blocks.push({ type: "eyebrow", text: chunk });
+      continue;
+    }
+
+    if (/^>\s*/.test(chunk)) {
+      blocks.push({ type: "quote", text: chunk.replace(/^>\s*/, "") });
+      continue;
+    }
+
+    if (/^(提示|备注|Note)[:：]/i.test(chunk)) {
+      blocks.push({
+        type: "note",
+        text: chunk.replace(/^(提示|备注|Note)[:：]\s*/i, ""),
+      });
+      continue;
+    }
+
+    if (/^(图|图片)[:：]/.test(chunk)) {
+      blocks.push({
+        type: "image",
+        label: chunk.replace(/^(图|图片)[:：]\s*/, ""),
+        sectionKey: lastSectionKey,
+      });
+      continue;
+    }
+
+    if (markdownHeading) {
+      const hashLevel = markdownHeading[1].length;
+      const title = markdownHeading[2].trim();
+      const mappedLevel = mapMarkdownHeadingLevel(hashLevel, mapping);
+      const next = chunks[index + 1];
+      lastSectionKey = toWechatSectionKey(title);
+
+      if (next && !looksLikeWechatStandaloneBlock(next)) {
+        blocks.push({ type: "heading", level: mappedLevel, title, body: next });
+        index += 1;
+      } else {
+        blocks.push({ type: "heading", level: mappedLevel, title });
+      }
+      continue;
+    }
+
+    if (/^([一二三四五六七八九十]+、|[0-9]+\.)/.test(chunk)) {
+      const next = chunks[index + 1];
+      lastSectionKey = toWechatSectionKey(chunk);
+      const numberedHeadingLevel = mapping === "h1h2" ? "secondary" : "primary";
+      if (next && !looksLikeWechatStandaloneBlock(next)) {
+        blocks.push({
+          type: "heading",
+          level: numberedHeadingLevel,
+          title: chunk,
+          body: next,
+        });
+        index += 1;
+      } else {
+        blocks.push({ type: "heading", level: numberedHeadingLevel, title: chunk });
+      }
+      continue;
+    }
+
+    blocks.push({ type: "paragraph", text: chunk });
+  }
+
+  return blocks.length > 0 ? blocks : [{ type: "paragraph", text: body.trim() }];
+}
+
+function mapMarkdownHeadingLevel(hashLevel: number, mapping: MappingMode) {
+  if (mapping === "h1h2") {
+    return hashLevel <= 1 ? "primary" : "secondary";
+  }
+  return hashLevel <= 2 ? "primary" : "secondary";
+}
+
+function looksLikeWechatStandaloneBlock(chunk: string) {
+  return (
+    /^(写在前面|前言|导读)$/u.test(chunk) ||
+    /^>\s*/.test(chunk) ||
+    /^(提示|备注|Note)[:：]/i.test(chunk) ||
+    /^(图|图片)[:：]/.test(chunk) ||
+    /^#{1,3}\s+/.test(chunk) ||
+    /^([一二三四五六七八九十]+、|[0-9]+\.)/.test(chunk)
+  );
+}
+
+function toWechatSectionKey(value: string) {
+  return value.replace(/\s+/g, " ").trim().toLowerCase();
+}
+
 function inlineMarkdownToHtml(text: string) {
   return text
     .split(/(\*\*[^*]+\*\*)/g)
@@ -1062,15 +1176,20 @@ function extractWechatStyleTemplate(
   ).filter((node) => getTextDensity(node) > 0);
 
   const headingSelectors = mapping === "h1h2" ? ["h1", "h2"] : ["h2", "h3"];
+  const visualHeadingNodes = rankVisualHeadingNodes(candidates);
   const titleNode =
     findFirstStyledNode(doc.body, ["h1"]) ??
     findLargestTextNode(candidates, { preferShort: true });
-  const headingNode =
-    findFirstStyledNode(doc.body, headingSelectors) ??
-    findHeadingLikeNode(candidates) ??
+  const primaryHeadingNode =
+    findFirstStyledNode(doc.body, [headingSelectors[0]]) ??
+    visualHeadingNodes[0] ??
     titleNode;
+  const secondaryHeadingNode =
+    findFirstStyledNode(doc.body, [headingSelectors[1]]) ??
+    visualHeadingNodes.find((node) => node !== primaryHeadingNode) ??
+    primaryHeadingNode;
   const paragraphNode =
-    findParagraphLikeNode(candidates, headingNode, titleNode) ?? candidates[0];
+    findParagraphLikeNode(candidates, primaryHeadingNode, titleNode) ?? candidates[0];
   const quoteNode = findQuoteLikeNode(candidates) ?? paragraphNode;
   const metaNode = findMetaLikeNode(candidates, paragraphNode) ?? paragraphNode;
   const firstElement = doc.body.firstElementChild;
@@ -1085,7 +1204,20 @@ function extractWechatStyleTemplate(
     ),
     titleStyle: mergeStyleStrings(fallback.titleStyle, collectStyleChain(titleNode)),
     metaStyle: mergeStyleStrings(fallback.metaStyle, collectStyleChain(metaNode)),
-    headingStyle: mergeStyleStrings(fallback.headingStyle, collectStyleChain(headingNode)),
+    primaryHeadingStyle: normalizeHeadingStyle(
+      mergeStyleStrings(
+        fallback.primaryHeadingStyle,
+        collectStyleChain(primaryHeadingNode)
+      ),
+      "primary"
+    ),
+    secondaryHeadingStyle: normalizeHeadingStyle(
+      mergeStyleStrings(
+        fallback.secondaryHeadingStyle,
+        collectStyleChain(secondaryHeadingNode)
+      ),
+      "secondary"
+    ),
     paragraphStyle: mergeStyleStrings(
       fallback.paragraphStyle,
       collectStyleChain(paragraphNode)
@@ -1106,7 +1238,11 @@ function buildFallbackStyleTemplate(theme: WechatTheme): WechatStyleTemplate {
     containerStyle: `font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};color:${theme.bodyColor};background:#ffffff;padding:0 30px;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;`,
     titleStyle: `margin:0 0 12px;color:${theme.titleColor};font-size:${theme.titleFontSize}px;line-height:1.45;font-weight:600;letter-spacing:0;`,
     metaStyle: `margin:0 0 18px;color:${theme.metaColor};font-size:11px;line-height:1.6;`,
-    headingStyle: `margin:0 0 15px;color:${theme.accentColor};font-size:${theme.headingFontSize}px;line-height:1.5;letter-spacing:0;font-weight:600;`,
+    primaryHeadingStyle: `margin:0 0 15px;color:${theme.accentColor};font-size:${theme.headingFontSize}px;line-height:1.5;letter-spacing:0;font-weight:600;`,
+    secondaryHeadingStyle: `margin:0 0 12px;color:${theme.accentColor};font-size:${Math.max(
+      theme.headingFontSize - 2,
+      theme.bodyFontSize
+    )}px;line-height:1.55;letter-spacing:0;font-weight:600;`,
     paragraphStyle: `margin:18px 0 0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;`,
     quoteStyle: `margin:20px 0 12px;padding:10px 14px;border-left:3px solid ${theme.accentColor};background:${theme.blockBg};color:${theme.accentColor};font-size:${theme.quoteFontSize}px;line-height:${theme.bodyLineHeight};border-radius:0 8px 8px 0;`,
     noteStyle: `margin:18px 0 0;padding:10px 12px;border:1px solid #ECEAE3;border-radius:8px;background:#FAF7F2;color:${theme.bodyColor};font-size:${Math.max(
@@ -1157,6 +1293,28 @@ function findHeadingLikeNode(nodes: HTMLElement[]) {
       })
       .sort((a, b) => scoreStyledNode(b) - scoreStyledNode(a))[0] ?? null
   );
+}
+
+function rankVisualHeadingNodes(nodes: HTMLElement[]) {
+  const ranked = nodes
+    .filter((node) => {
+      const textLength = getTextDensity(node);
+      if (textLength === 0 || textLength > 48) return false;
+      const fontSize = parsePixel(getInlineCssValue(node, "font-size"), 0);
+      const weight = getInlineCssValue(node, "font-weight");
+      return fontSize >= 15 || /bold|[5-9]00/i.test(weight);
+    })
+    .sort((a, b) => {
+      const aFont = parsePixel(getInlineCssValue(a, "font-size"), 0);
+      const bFont = parsePixel(getInlineCssValue(b, "font-size"), 0);
+      if (bFont !== aFont) return bFont - aFont;
+      return scoreStyledNode(b) - scoreStyledNode(a);
+    });
+
+  return ranked.filter((node, index) => {
+    const text = node.textContent?.trim();
+    return text && ranked.findIndex((item) => item.textContent?.trim() === text) === index;
+  });
 }
 
 function findParagraphLikeNode(
@@ -1233,6 +1391,27 @@ function mergeStyleStrings(base: string, override: string) {
   return styleToString({
     ...parseStyleString(base),
     ...parseStyleString(override),
+  });
+}
+
+function normalizeHeadingStyle(style: string, level: "primary" | "secondary") {
+  const parsed = parseStyleString(style);
+  const baseSize = parsePixel(parsed["font-size"], level === "primary" ? 18 : 16);
+  if (level === "primary") {
+    return styleToString({
+      ...parsed,
+      "font-size": `${Math.max(baseSize, 17)}px`,
+      "font-weight": parsed["font-weight"] || "600",
+      "margin-bottom": parsed["margin-bottom"] || "15px",
+    });
+  }
+
+  return styleToString({
+    ...parsed,
+    "font-size": `${Math.max(baseSize - 2, 14)}px`,
+    "font-weight": parsed["font-weight"] || "500",
+    "margin-bottom": parsed["margin-bottom"] || "10px",
+    opacity: parsed.opacity || "0.92",
   });
 }
 
@@ -1388,7 +1567,7 @@ function buildWechatArticleHtml(
   template: WechatStyleTemplate,
   title: string,
   meta: string,
-  blocks: ArticleBlock[],
+  blocks: WechatArticleBlock[],
   coverImageUrl: string | null,
   inlineImageMap: Map<string, string> | null
 ) {
@@ -1455,16 +1634,28 @@ function buildWechatArticleHtml(
       `;
     }
 
-    return `
+    if (block.type === "heading") {
+      const headingStyle =
+        block.level === "primary"
+          ? template.primaryHeadingStyle
+          : template.secondaryHeadingStyle;
+      return `
       <section style="margin-top:34px;">
-        <h2 style="${template.headingStyle}">
+        <h2 style="${headingStyle}">
           ${escapeHtml(block.title)}
         </h2>
-        <p style="${template.paragraphStyle}">
-          ${inlineMarkdownToHtml(block.body)}
-        </p>
+        ${
+          block.body
+            ? `<p style="${template.paragraphStyle}">
+              ${inlineMarkdownToHtml(block.body)}
+            </p>`
+            : ""
+        }
       </section>
     `;
+    }
+
+    return "";
   }).join("");
 
   return `
