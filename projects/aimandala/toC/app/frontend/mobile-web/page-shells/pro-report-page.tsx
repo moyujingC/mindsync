@@ -940,7 +940,12 @@ function ProInlineFollowup({
         ),
       );
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : "追问暂时没有成功，请稍后再试。");
+      const message = nextError instanceof Error ? nextError.message : "";
+      setError(
+        message === "Failed to fetch"
+          ? "追问暂时没有连上服务，请稍后再试。"
+          : message || "追问暂时没有成功，请稍后再试。",
+      );
     } finally {
       setSending(false);
     }

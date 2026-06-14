@@ -47,9 +47,10 @@ function isFalseyFlag(value: string | undefined): boolean {
 }
 
 export function isReportFollowupEnabled(): boolean {
-  const fromImportMeta = (
-    import.meta as ImportMeta & { env?: ImportMetaEnvLike }
-  ).env?.VITE_AIMANDALA_REPORT_FOLLOWUP_ENABLED;
+  const importMetaEnv = (
+    import.meta as ImportMeta & { env?: ImportMetaEnvLike & { DEV?: boolean } }
+  ).env;
+  const fromImportMeta = importMetaEnv?.VITE_AIMANDALA_REPORT_FOLLOWUP_ENABLED;
 
   const processLike = globalThis as typeof globalThis & {
     process?: {
@@ -65,5 +66,13 @@ export function isReportFollowupEnabled(): boolean {
     return false;
   }
 
-  return isTruthyFlag(fromImportMeta) || isTruthyFlag(fromProcess) || (!fromImportMeta && !fromProcess);
+  if (isTruthyFlag(fromImportMeta) || isTruthyFlag(fromProcess)) {
+    return true;
+  }
+
+  if (importMetaEnv?.DEV && !fromImportMeta && !fromProcess) {
+    return false;
+  }
+
+  return !fromImportMeta && !fromProcess;
 }

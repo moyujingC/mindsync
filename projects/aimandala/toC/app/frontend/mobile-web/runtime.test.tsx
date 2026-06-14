@@ -389,11 +389,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.querySelector(".mw-history-record__action")).toBeTruthy();
+      expect(container.querySelector(".mw-history-record__cta-inline")).toBeTruthy();
     });
 
     const detailButton = container.querySelector<HTMLButtonElement>(
-      ".mw-history-record__action",
+      ".mw-history-record__cta-inline",
     );
     expect(detailButton).toBeTruthy();
 
@@ -403,11 +403,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("打开 Lite 报告");
+      expect(container.textContent).toContain("查看 Lite");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("打开 Lite 报告"),
+      (item) => item.textContent?.includes("查看 Lite"),
     );
     expect(liteButton).toBeTruthy();
 

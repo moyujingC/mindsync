@@ -163,6 +163,26 @@ describe("MobileWebApp", () => {
     expect(html).not.toContain("追问记录");
   });
 
+  it("reportLite 路由的升级入口会进入 Pro 升级直生成页", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="reportLite"
+        flowState={flowState}
+        uploadDraft={{
+          imagePath: "/tmp/sample.png",
+          theme: "wealth",
+          paintingIntention: "",
+          paintingFeeling: "",
+        }}
+      />,
+    );
+
+    expect(html).toContain("解读报告(Lite版)");
+    expect(html).toContain("升级到 Pro");
+    expect(html).toContain("Lite 已完成");
+    expect(html).toContain("Pro 深度版");
+  });
+
   it("reportPro 路由渲染 Pro 报告与段落级追问", () => {
     const proFlowState: MandalaFlowState = {
       ...flowState,
@@ -273,9 +293,10 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("Pro 版完整解读");
-    expect(html).toContain("正在生成基础线索，随后展开 Pro 深度分析");
-    expect(html).not.toContain("Pro 解读会继续在后台生成");
+    expect(html).toContain("正在解读中");
+    expect(html).toContain("生成 Lite 基础线索");
+    expect(html).toContain("展开 Pro 深度分析");
+    expect(html).toContain("整理完整解读与问答上下文");
     expect(html).not.toContain("稍后去历史记录查看");
   });
 
@@ -310,11 +331,9 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("立即刷新");
-    expect(html).toContain("最近更新于 16:20:00");
-    expect(html).toContain("阶段：正在生成 Lite 解读");
-    expect(html).toContain("进度：约 52%");
-    expect(html).toContain("查看详情与进度");
+    expect(html).toContain("生成中");
+    expect(html).toContain("Pro 完整解读 · 生成中");
+    expect(html).toContain("查看进度");
   });
 
   it("historyRecordDetail 路由会渲染版本进度与解读轨迹", () => {

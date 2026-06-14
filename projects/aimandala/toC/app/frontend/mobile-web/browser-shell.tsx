@@ -604,7 +604,7 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    if (route === "report") {
+    if (route === "report" || route === "reportLite" || route === "reportPro") {
       if (previewFlowState?.step === "error") {
         const interpretationId = previewFlowState.interpretation?.interpretation_id;
         if (interpretationId) {
@@ -631,6 +631,7 @@ export function MobileWebBrowserShell() {
       }
 
       const isProReport =
+        route === "reportPro" ||
         previewFlowState?.report?.version === "pro" ||
         previewFlowState?.step === "proReady";
       if (!isProReport) {
@@ -666,7 +667,7 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    if (route === "report") {
+    if (route === "report" || route === "reportLite" || route === "reportPro") {
       setPreviewFlowState(null);
       setPreviewHistoryRecords(null);
       setPreviewHistoryQuery({ filter: "all", limit: 20 });
