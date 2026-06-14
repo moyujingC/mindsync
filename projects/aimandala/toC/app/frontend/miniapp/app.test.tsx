@@ -11,9 +11,9 @@ describe("MiniappApp", () => {
     );
 
     expect(html).toContain("当前为 miniapp 静态壳预览");
-    expect(html).toContain("历史记录详情");
-    expect(html).toContain("打开 Lite 报告");
-    expect(html).toContain("打开 Pro 报告");
+    expect(html).toContain("解读详情");
+    expect(html).toContain("查看 Lite");
+    expect(html).toContain("查看 Pro");
   });
 
   it("history 路由渲染 miniapp 静态历史闭环", () => {
@@ -23,7 +23,8 @@ describe("MiniappApp", () => {
 
     expect(html).toContain("当前为 miniapp 静态壳预览");
     expect(html).toContain("历史记录");
-    expect(html).toContain("查看记录详情");
+    expect(html).toContain("待查看");
+    expect(html).toContain("生成中");
   });
 
   it("runtime 模式会在历史页渲染 miniapp 联调环境标识", () => {

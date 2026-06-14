@@ -28,15 +28,12 @@ export const DEFAULT_PREVIEW_DRAFT: MobileWebUploadDraft = {
 export const PREVIEW_ROUTE_OPTIONS: Array<{
   label: string;
   value: MobileWebRouteId;
-}> = [
-  { label: "落地页", value: "landing" },
-  { label: "上传", value: "upload" },
-  { label: "付款", value: "reportEntry" },
-  { label: "加载", value: "loading" },
-  { label: "新版解读报告", value: "report" },
-  { label: "历史", value: "history" },
-  { label: "历史记录详情", value: "historyRecordDetail" },
-];
+}> = mobileWebRoutes
+  .filter((route) => route.id !== "historyRecordDetail")
+  .map((route) => ({
+    label: route.previewLabel ?? route.title,
+    value: route.id,
+  }));
 
 export const PREVIEW_POLLING_INTERVAL_MS = 1500;
 export const PREVIEW_POLLING_MAX_ATTEMPTS = 8;
@@ -89,11 +86,16 @@ export function createPreviewRouteInput(
       };
 
     case "report":
+    case "reportLite":
+    case "reportPro":
       return {
         route,
         params: {
           interpretationId,
-          uploadDraft: draft,
+          uploadDraft:
+            route === "reportPro"
+              ? { ...draft, reportType: "pro", reportVariant: "pro" }
+              : { ...draft, reportType: "lite", reportVariant: "lite" },
         },
       };
 
@@ -112,6 +114,16 @@ export function createPreviewRouteInput(
         route,
         params: {
           interpretationId,
+          uploadDraft: draft,
+        },
+      };
+
+    case "historyRecordDetailNotUpgraded":
+    case "historyRecordDetailGenerating":
+    case "historyRecordDetailViewable":
+      return {
+        route,
+        params: {
           uploadDraft: draft,
         },
       };
@@ -150,7 +162,7 @@ export async function finalizePreviewSelectedReport(
   } = args;
 
   let finalState = state;
-  if (getDraftReportVariant(draft) === "pro") {
+  if (getDraftReportVariant(draft) === "pro" && state.report?.version !== "pro") {
     const proReport = await refreshMobileWebReport(
       interpretationId,
       "pro",
@@ -172,7 +184,7 @@ export async function finalizePreviewSelectedReport(
   void userId;
   void historyQuery;
   setPreviewHistoryRecords(null);
-  setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
-  setPreviewHistoryStatusDetail("财富报告已生成；历史列表需要后续按新 report_id 存储模型重做。");
+  setPreviewHistoryStatusLabel("报告已写入历史记录");
+  setPreviewHistoryStatusDetail("你可以从历史页重新打开这份报告，并继续测试报告追问。");
   setPreviewHistoryStatusTone("preview");
 }

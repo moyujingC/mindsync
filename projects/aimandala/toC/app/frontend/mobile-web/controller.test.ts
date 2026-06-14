@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../shared/api", () => ({
   createWealthReport: vi.fn(),
+  getWealthReport: vi.fn(),
   uploadImage: vi.fn(),
 }));
 
@@ -126,16 +127,19 @@ describe("mobile-web controller", () => {
     );
   });
 
-  it("refreshMobileWebReport 在当前 API 下明确不可用", async () => {
+  it("refreshMobileWebReport 可以通过 report_id 恢复已存报告", async () => {
+    vi.mocked(api.getWealthReport).mockResolvedValue(
+      createWealthReportResponse("lite"),
+    );
+
     const snapshot = await refreshMobileWebReport(
       "wealth-1",
       "lite",
       initialMandalaFlowState,
     );
 
-    expect(snapshot.state.step).toBe("error");
-    expect(snapshot.state.lastError).toContain(
-      "Report refresh is not available",
-    );
+    expect(snapshot.state.step).toBe("liteReady");
+    expect(snapshot.report?.interpretation_id).toBe("wealth-1");
+    expect(api.getWealthReport).toHaveBeenCalledWith("wealth-1");
   });
 });

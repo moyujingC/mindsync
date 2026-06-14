@@ -1,0 +1,2161 @@
+import { useId, useState } from "react";
+import JSZip from "jszip";
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  ClipboardPaste,
+  Download,
+  ExternalLink,
+  FileText,
+  Image as ImageIcon,
+  Layout,
+  Minus,
+  Pencil,
+  Plus,
+  Quote,
+  RefreshCw,
+  Sparkles,
+  Upload,
+  Wand2,
+} from "lucide-react";
+import { Btn, COLORS, Divider, FoggyArt, Panel, Tag } from "./ui-kit";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import { COVER_DRAFTS, ILLUSTRATIONS } from "./workbench-data";
+import { KnowledgeCardResults, ResultRow } from "./workbench-panels";
+import type { CardPlan } from "../content-planning";
+import type {
+  GeneratedImageItem,
+  WorkbenchCoverThumbMode,
+  WorkbenchImportedMarkdownMeta,
+  WorkbenchStatusMessage,
+} from "../workspace";
+import { downloadGeneratedImage } from "../api";
+import { formatScopeLabel } from "./use-workbench-controller";
+
+export function WorkbenchLeftSidebar({
+  inputMode,
+  setInputMode,
+  currentArticle,
+  setCurrentArticle,
+  currentArticleMeta,
+  outputs,
+  toggleOutput,
+  coverThumbMode,
+  setCoverThumbMode,
+  splitStrategy,
+  setSplitStrategy,
+  minCards,
+  setMinCards,
+  maxCards,
+  setMaxCards,
+  handleStartGeneration,
+  isGenerating,
+  estimatedCredits,
+  statusState,
+  importedMarkdownMeta,
+  handleImportMarkdown,
+  handleReplan,
+  setActiveTab,
+}: {
+  inputMode: "upload" | "paste";
+  setInputMode: (mode: "upload" | "paste") => void;
+  currentArticle: { title: string; body: string };
+  setCurrentArticle: (article: { title: string; body: string }) => void;
+  currentArticleMeta: string;
+  outputs: {
+    knowledge: boolean;
+    quote: boolean;
+    cover: boolean;
+    inline: boolean;
+    layout: boolean;
+  };
+  toggleOutput: (
+    key: "knowledge" | "quote" | "cover" | "inline" | "layout"
+  ) => void;
+  coverThumbMode: WorkbenchCoverThumbMode;
+  setCoverThumbMode: (mode: WorkbenchCoverThumbMode) => void;
+  splitStrategy: "auto" | "less" | "more";
+  setSplitStrategy: (strategy: "auto" | "less" | "more") => void;
+  minCards: number;
+  setMinCards: React.Dispatch<React.SetStateAction<number>>;
+  maxCards: number;
+  setMaxCards: React.Dispatch<React.SetStateAction<number>>;
+  handleStartGeneration: () => void;
+  isGenerating: boolean;
+  estimatedCredits: number;
+  statusState: WorkbenchStatusMessage | null;
+  importedMarkdownMeta: WorkbenchImportedMarkdownMeta | null;
+  handleImportMarkdown: (file: File | null) => void;
+  handleReplan: () => Promise<unknown>;
+  setActiveTab: (tab: "workbench" | "wechat" | "assets" | "image" | "sync") => void;
+}) {
+  const uploadInputId = useId();
+  return (
+    <aside
+      className="overflow-y-auto px-6 py-6 border-r"
+      style={{ borderColor: COLORS.border, background: COLORS.pageBg }}
+    >
+      <Step kicker="01" title="原稿输入" />
+      <div className="flex p-1 rounded-md mb-3 mt-2.5" style={{ background: COLORS.borderSoft }}>
+        {[
+          { k: "upload" as const, l: "上传 Markdown", I: Upload },
+          { k: "paste" as const, l: "粘贴正文", I: ClipboardPaste },
+        ].map((item) => {
+          const Icon = item.I;
+          const active = inputMode === item.k;
+          return (
+            <button
+              key={item.k}
+              onClick={() => setInputMode(item.k)}
+              className="flex-1 flex items-center justify-center gap-1.5 h-7 rounded"
+              style={{
+                background: active ? COLORS.surface : "transparent",
+                color: active ? COLORS.text : COLORS.textMuted,
+                fontSize: 12.5,
+                boxShadow: active ? "0 1px 1.5px rgba(43,55,72,0.05)" : "none",
+              }}
+            >
+              <Icon size={12} strokeWidth={1.6} />
+              {item.l}
+            </button>
+          );
+        })}
+      </div>
+
+      {inputMode === "upload" ? (
+        <div
+          className="rounded-md px-3.5 py-3 flex items-center gap-3"
+          style={{
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.border}`,
+          }}
+        >
+          <div
+            className="w-9 h-9 rounded flex items-center justify-center shrink-0"
+            style={{ background: COLORS.blueTint, color: COLORS.blueDeep }}
+          >
+            <FileText size={16} strokeWidth={1.5} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div style={{ color: COLORS.text, fontSize: 13 }}>
+              {importedMarkdownMeta?.fileName || "尚未导入 Markdown"}
+            </div>
+            <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 1 }}>
+              {importedMarkdownMeta
+                ? `${importedMarkdownMeta.wordCount} 字 · ${new Date(
+                    importedMarkdownMeta.importedAt
+                  ).toLocaleTimeString("zh-CN", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })} 导入`
+                : "仅支持 .md / Markdown / 纯文本"}
+            </div>
+          </div>
+          <label
+            htmlFor={uploadInputId}
+            style={{ color: COLORS.textMuted, fontSize: 12, cursor: "pointer" }}
+            className="hover:underline"
+          >
+            {importedMarkdownMeta ? "替换" : "导入"}
+          </label>
+          <input
+            id={uploadInputId}
+            type="file"
+            accept=".md,text/markdown,text/plain"
+            className="hidden"
+            onChange={(event) => {
+              void handleImportMarkdown(event.target.files?.[0] ?? null);
+              event.target.value = "";
+            }}
+          />
+        </div>
+      ) : null}
+
+      <div className="space-y-2 mt-2">
+        <input
+          value={currentArticle.title}
+          onChange={(event) =>
+            setCurrentArticle({ ...currentArticle, title: event.target.value })
+          }
+          className="w-full px-3 rounded-md outline-none"
+          style={{
+            height: 34,
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.border}`,
+            color: COLORS.text,
+            fontSize: 13,
+          }}
+          placeholder="文章标题"
+        />
+        <textarea
+          value={currentArticle.body}
+          onChange={(event) =>
+            setCurrentArticle({ ...currentArticle, body: event.target.value })
+          }
+          className="w-full px-3 py-2.5 rounded-md outline-none resize-none"
+          style={{
+            height: 110,
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.border}`,
+            color: COLORS.textMid,
+            fontSize: 12.5,
+            lineHeight: 1.7,
+          }}
+        />
+        <div
+          className="flex items-center justify-between"
+          style={{ color: COLORS.textFaint, fontSize: 11 }}
+        >
+          <span>{currentArticleMeta}</span>
+          <span>自动保存</span>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <Step kicker="02" title="本次输出类型" />
+      </div>
+
+      <SectionLabel>本次生成内容</SectionLabel>
+      <div
+        className="rounded-md overflow-hidden"
+        style={{
+          background: COLORS.surface,
+          border: `1px solid ${COLORS.border}`,
+        }}
+      >
+        {[
+          { k: "knowledge" as const, l: "知识卡片", n: "自动", auto: true },
+          { k: "quote" as const, l: "金句底图", n: "按勾选" },
+          { k: "cover" as const, l: "公众号封面", n: "3 组" },
+          { k: "inline" as const, l: "正文配图", n: "3" },
+        ].map((item, index, arr) => (
+          <CompactToggle
+            key={item.k}
+            label={item.l}
+            count={item.n}
+            auto={item.auto}
+            checked={outputs[item.k]}
+            onChange={() => toggleOutput(item.k)}
+            last={index === arr.length - 1}
+          />
+        ))}
+      </div>
+
+      {outputs.cover ? (
+        <div
+          className="mt-2 rounded-md px-3.5 py-3"
+          style={{
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.borderSoft}`,
+          }}
+        >
+          <div className="mb-2" style={{ color: COLORS.textFaint, fontSize: 11 }}>
+            公众号小封面
+          </div>
+          <div className="flex p-0.5 rounded" style={{ background: COLORS.borderSoft }}>
+            {[
+              { k: "crop" as const, l: "从大封面裁切" },
+              { k: "separate" as const, l: "单独生成小图" },
+            ].map((item) => {
+              const active = coverThumbMode === item.k;
+              return (
+                <button
+                  key={item.k}
+                  onClick={() => setCoverThumbMode(item.k)}
+                  className="flex-1 h-6 rounded text-center"
+                  style={{
+                    background: active ? COLORS.surface : "transparent",
+                    color: active ? COLORS.text : COLORS.textMuted,
+                    fontSize: 11.5,
+                    boxShadow: active ? "0 1px 1.5px rgba(43,55,72,0.05)" : "none",
+                  }}
+                >
+                  {item.l}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-2" style={{ color: COLORS.textFaint, fontSize: 10.5, lineHeight: 1.5 }}>
+            {coverThumbMode === "crop"
+              ? "默认使用大封面中心 1:1 裁切，要求标题位于中心安全区。"
+              : "沿用程序生成的小封面方案，适合以后单独打磨。"}
+          </div>
+        </div>
+      ) : null}
+
+      <SectionLabel className="mt-3">后续处理</SectionLabel>
+      <div
+        className="rounded-md overflow-hidden"
+        style={{
+          background: COLORS.surface,
+          border: `1px solid ${COLORS.borderSoft}`,
+        }}
+      >
+        <CompactToggle
+          label="公众号排版"
+          count="—"
+          checked={outputs.layout}
+          onChange={() => toggleOutput("layout")}
+          last
+        />
+      </div>
+
+      {outputs.knowledge ? (
+        <div
+          className="mt-2 rounded-md px-3.5 py-3"
+          style={{
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.borderSoft}`,
+          }}
+        >
+          <div className="flex items-start gap-1.5">
+            <Wand2
+              size={11}
+              strokeWidth={1.6}
+              color={COLORS.blue}
+              style={{ marginTop: 3 }}
+            />
+            <span style={{ color: COLORS.textMid, fontSize: 11.5, lineHeight: 1.55 }}>
+              由模型自动判断拆分张数，下面两项用于约束模型，而非手工指定。
+            </span>
+          </div>
+
+          <div className="mt-3">
+            <div className="mb-1.5" style={{ color: COLORS.textFaint, fontSize: 11 }}>
+              拆分倾向
+            </div>
+            <div className="flex p-0.5 rounded" style={{ background: COLORS.borderSoft }}>
+              {[
+                { k: "less" as const, l: "偏少" },
+                { k: "auto" as const, l: "自动" },
+                { k: "more" as const, l: "偏多" },
+              ].map((item) => {
+                const active = splitStrategy === item.k;
+                return (
+                  <button
+                    key={item.k}
+                    onClick={() => setSplitStrategy(item.k)}
+                    className="flex-1 h-6 rounded text-center"
+                    style={{
+                      background: active ? COLORS.surface : "transparent",
+                      color: active ? COLORS.text : COLORS.textMuted,
+                      fontSize: 11.5,
+                      boxShadow: active ? "0 1px 1.5px rgba(43,55,72,0.05)" : "none",
+                    }}
+                  >
+                    {item.l}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <div className="mb-1.5 flex items-baseline justify-between">
+              <span style={{ color: COLORS.textFaint, fontSize: 11 }}>数量边界</span>
+              <span style={{ color: COLORS.text, fontSize: 12.5 }}>
+                {minCards} – {maxCards} 张
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <RangeField
+                label="最少"
+                value={minCards}
+                onMinus={() => setMinCards(Math.max(1, minCards - 1))}
+                onPlus={() => setMinCards(Math.min(maxCards - 1, minCards + 1))}
+              />
+              <RangeField
+                label="最多"
+                value={maxCards}
+                onMinus={() => setMaxCards(Math.max(minCards + 1, maxCards - 1))}
+                onPlus={() => setMaxCards(Math.min(8, maxCards + 1))}
+              />
+            </div>
+            <div className="mt-1.5" style={{ color: COLORS.textFaint, fontSize: 10.5 }}>
+              系统将把最终张数控制在 {minCards} – {maxCards} 张之间
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mt-5 flex items-center gap-2">
+        <Btn
+          variant="primary"
+          size="lg"
+          className="flex-1"
+          onClick={handleStartGeneration}
+          disabled={isGenerating}
+        >
+          <Sparkles size={14} strokeWidth={1.6} />
+          {isGenerating ? "生成中..." : "开始生成"}
+        </Btn>
+        <Btn variant="ghost" size="lg" onClick={() => void handleReplan()} disabled={isGenerating}>
+          <RefreshCw size={12} strokeWidth={1.6} />
+          重新拆解
+        </Btn>
+      </div>
+      <div className="mt-2 text-center" style={{ color: COLORS.textFaint, fontSize: 11 }}>
+        预计 ≈ {Math.max(24, estimatedCredits * 8)}s · 消耗 {estimatedCredits} 张额度
+      </div>
+      {statusState ? (
+        <div
+          className="mt-2 rounded-md px-3 py-2"
+          style={{
+            background: statusState.level === "error" ? "#FAF2EE" : COLORS.surface,
+            border: `1px solid ${statusState.level === "error" ? "#E8D8CF" : COLORS.borderSoft}`,
+            color: statusState.level === "error" ? "#8A5A46" : COLORS.textMid,
+            fontSize: 11.5,
+            lineHeight: 1.6,
+          }}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <span style={{ color: statusState.level === "error" ? "#8A5A46" : COLORS.textFaint }}>
+              {statusState.level === "error"
+                ? formatScopeLabel(statusState.scope)
+                : formatStatusScope(statusState.scope)}
+            </span>
+            <span style={{ color: COLORS.textFaint, fontSize: 10.5 }}>
+              {new Date(statusState.timestamp).toLocaleTimeString("zh-CN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })}
+            </span>
+          </div>
+          <div className="mt-1">{statusState.text}</div>
+        </div>
+      ) : null}
+
+      <Divider />
+      <div className="my-5" />
+
+      <div className="flex items-center justify-between">
+        <div style={{ color: COLORS.textFaint, fontSize: 11, letterSpacing: "0.12em" }}>
+          STYLE · 摘要
+        </div>
+        <button
+          onClick={() => setActiveTab("assets")}
+          className="flex items-center gap-1"
+          style={{ color: COLORS.blue, fontSize: 12 }}
+        >
+          管理风格
+          <ExternalLink size={11} strokeWidth={1.6} />
+        </button>
+      </div>
+
+      <div
+        className="mt-2.5 rounded-md overflow-hidden"
+        style={{
+          background: COLORS.surface,
+          border: `1px solid ${COLORS.border}`,
+        }}
+      >
+        {[
+          ["知识卡片", "蓝雾静读"],
+          ["正文配图", "留白水墨"],
+          ["公众号封面", "蓝雾静读 · 主图偏左"],
+        ].map(([key, value], index, arr) => (
+          <div
+            key={key}
+            className="px-3.5 py-2.5 flex items-center justify-between"
+            style={{
+              borderBottom: index === arr.length - 1 ? "none" : `1px solid ${COLORS.borderSoft}`,
+            }}
+          >
+            <span style={{ color: COLORS.textFaint, fontSize: 11.5 }}>{key}</span>
+            <span className="flex items-center gap-1.5" style={{ color: COLORS.text, fontSize: 12.5 }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: COLORS.blueMid }} />
+              {value}
+            </span>
+          </div>
+        ))}
+      </div>
+      <button
+        onClick={() => setActiveTab("assets")}
+        className="mt-2 flex items-center gap-1 mx-auto"
+        style={{ color: COLORS.textMuted, fontSize: 11.5 }}
+      >
+        调整本次任务风格
+        <ChevronRight size={11} strokeWidth={1.6} />
+      </button>
+    </aside>
+  );
+}
+
+function formatStatusScope(scope: string) {
+  if (scope === "planning") return "内容拆解";
+  if (scope === "quote-generation") return "金句底图";
+  if (scope === "inline-image-generation") return "正文配图";
+  if (scope.startsWith("inline-image-")) {
+    const index = scope.replace("inline-image-", "");
+    return `正文配图 ${String(Number(index)).padStart(2, "0")}`;
+  }
+  if (scope === "cover-generation") return "公众号封面";
+  if (scope === "markdown-import") return "Markdown 导入";
+  if (scope.startsWith("knowledge-card-")) {
+    const index = scope.replace("knowledge-card-", "");
+    return `知识卡 ${String(Number(index)).padStart(2, "0")}`;
+  }
+  return "当前任务";
+}
+
+export function WorkbenchCenterSection({
+  currentArticle,
+  currentArticleMeta,
+  plannedCards,
+  plannedQuotes,
+  selectedQuotes,
+  toggleQuote,
+  openQuotes,
+  setOpenQuotes,
+  openCovers,
+  setOpenCovers,
+  openIllus,
+  setOpenIllus,
+  handleReplan,
+  latestGeneration,
+  knowledgePreset,
+  knowledgeImagesByCard,
+  lockedKnowledgeCardIndexes,
+  knowledgeCardStatuses,
+  knowledgeCardHistories,
+  regeneratingCardIndex,
+  replaceCardInputRef,
+  handleKnowledgeCardFileChange,
+  toggleKnowledgeCardLock,
+  handleFinalizeKnowledgeCard,
+  openKnowledgeCardEditor,
+  handleRegenerateKnowledgeCard,
+  handleReplaceKnowledgeCardClick,
+  handleRollbackKnowledgeCard,
+  quotePreset,
+  quoteGeneration,
+  quoteGenerationSelection,
+  replanRevision,
+  handleGenerateQuoteCard,
+  coverPreset,
+  coverGeneration,
+  coverSelection,
+  coverThumbMode,
+  handleSelectCover,
+  handleFinalizeCover,
+  inlinePreset,
+  plannedInlineImages,
+  inlineGeneration,
+}: {
+  currentArticle: { title: string };
+  currentArticleMeta: string;
+  plannedCards: CardPlan[];
+  plannedQuotes: string[];
+  selectedQuotes: number[];
+  toggleQuote: (index: number) => void;
+  openQuotes: boolean;
+  setOpenQuotes: React.Dispatch<React.SetStateAction<boolean>>;
+  openCovers: boolean;
+  setOpenCovers: React.Dispatch<React.SetStateAction<boolean>>;
+  openIllus: boolean;
+  setOpenIllus: React.Dispatch<React.SetStateAction<boolean>>;
+  handleReplan: () => Promise<unknown>;
+  latestGeneration: {
+    title: string;
+    purposeLabel: string;
+    styleName: string;
+    images: Array<{ id: string; imageUrl: string }>;
+  } | null;
+  knowledgePreset?: { aspect: string; w: number; h: number };
+  knowledgeImagesByCard: Map<number, any>;
+  lockedKnowledgeCardIndexes: number[];
+  knowledgeCardStatuses: Record<string, any>;
+  knowledgeCardHistories: Record<string, Array<unknown> | undefined>;
+  regeneratingCardIndex: number | null;
+  replaceCardInputRef: React.RefObject<HTMLInputElement | null>;
+  handleKnowledgeCardFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  toggleKnowledgeCardLock: (cardIndex: number) => void;
+  handleFinalizeKnowledgeCard: (cardIndex: number) => void;
+  openKnowledgeCardEditor: (cardIndex: number) => void;
+  handleRegenerateKnowledgeCard: (cardIndex: number) => Promise<void>;
+  handleReplaceKnowledgeCardClick: (cardIndex: number) => void;
+  handleRollbackKnowledgeCard: (cardIndex: number) => void;
+  quotePreset?: { w: number; h: number };
+  quoteGeneration?: { images: Array<{ imageUrl: string }> };
+  quoteGenerationSelection?: {
+    selectedQuoteIndexes: number[];
+    selectedQuoteTexts: string[];
+    generatedAtPlanningRevision: number;
+  } | null;
+  replanRevision: number;
+  handleGenerateQuoteCard: () => Promise<void>;
+  coverPreset?: { w: number; h: number };
+  coverGeneration?: { images: Array<{ imageUrl: string }> };
+  coverSelection?: {
+    selectedCoverIndex: number;
+    finalizedCoverIndex?: number | null;
+    updatedAt: string;
+  } | null;
+  coverThumbMode: WorkbenchCoverThumbMode;
+  handleSelectCover: (index: number) => void;
+  handleFinalizeCover: (index: number) => void;
+  inlinePreset?: { w: number; h: number };
+  plannedInlineImages: Array<any>;
+  inlineGeneration?: { images: Array<{ imageUrl: string }> };
+}) {
+  const [inspectionCardIndex, setInspectionCardIndex] = useState<number | null>(null);
+  const inspectionCard =
+    inspectionCardIndex == null
+      ? null
+      : plannedCards.find((card) => card.index === inspectionCardIndex) || null;
+
+  return (
+    <section className="overflow-y-auto px-9 py-6">
+      <div className="max-w-[800px] mx-auto">
+        <div className="mb-5">
+          <div style={{ color: COLORS.textFaint, fontSize: 11, letterSpacing: "0.12em" }}>
+            CURRENT ARTICLE
+          </div>
+          <div className="mt-1 flex items-baseline gap-3" style={{ color: COLORS.text }}>
+            <span style={{ fontSize: 21, letterSpacing: "0.02em" }}>{currentArticle.title}</span>
+            <span style={{ color: COLORS.textFaint, fontSize: 12 }}>
+              2026/06/09 · {currentArticleMeta}
+            </span>
+          </div>
+        </div>
+
+        <Panel padded={false} className="mb-3">
+          <div className="px-5 pt-4 pb-3 flex items-end justify-between">
+            <div>
+              <div style={{ color: COLORS.textFaint, fontSize: 11, letterSpacing: "0.12em" }}>
+                01 / SPLIT
+              </div>
+              <div className="mt-0.5" style={{ color: COLORS.text, fontSize: 16, letterSpacing: "0.02em" }}>
+                内容拆解
+              </div>
+            </div>
+            <div className="flex items-center gap-3" style={{ color: COLORS.textFaint, fontSize: 12 }}>
+              <span className="flex items-center gap-1.5" style={{ color: COLORS.textMid }}>
+                <Wand2 size={11} strokeWidth={1.6} color={COLORS.blue} />
+                本次生成 {plannedCards.length} 张知识卡 · 根据文章结构自动拆分
+              </span>
+              <button
+                onClick={() => void handleReplan()}
+                className="flex items-center gap-1"
+                style={{ color: COLORS.textMid, fontSize: 12 }}
+              >
+                调整拆卡策略 <ChevronRight size={11} strokeWidth={1.6} />
+              </button>
+            </div>
+          </div>
+
+          <div className="px-5 pb-5">
+            <div className="space-y-2">
+              {plannedCards.map((card) => (
+                <div
+                  key={`${card.index}-${card.title}`}
+                  className="flex items-start gap-3 px-3.5 py-3 rounded-md"
+                  style={{
+                    background: COLORS.surfaceAlt,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                  }}
+                >
+                  <div
+                    className="w-7 h-7 rounded flex items-center justify-center shrink-0"
+                    style={{
+                      background: COLORS.blueTint,
+                      color: COLORS.blueDeep,
+                      fontSize: 11,
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    {String(card.index).padStart(2, "0")}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div style={{ color: COLORS.text, fontSize: 13.5 }}>{card.title}</div>
+                    <div style={{ color: COLORS.textMuted, fontSize: 12, marginTop: 2 }}>
+                      {card.summary}
+                    </div>
+                    <button
+                      onClick={() => setInspectionCardIndex(card.index)}
+                      className="mt-2 flex items-center gap-1"
+                      style={{ color: COLORS.blueDeep, fontSize: 11.5 }}
+                    >
+                      查看完整拆解 <ChevronRight size={11} strokeWidth={1.6} />
+                    </button>
+                  </div>
+                  <CheckCircle2 size={15} strokeWidth={1.6} color={COLORS.success} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </Panel>
+
+        <Dialog
+          open={inspectionCard != null}
+          onOpenChange={(open) => {
+            if (!open) setInspectionCardIndex(null);
+          }}
+        >
+          <DialogContent className="max-w-[760px]">
+            <DialogHeader>
+              <DialogTitle>
+                {inspectionCard
+                  ? `知识卡 ${String(inspectionCard.index).padStart(2, "0")} · 完整拆解`
+                  : "完整拆解"}
+              </DialogTitle>
+              <DialogDescription>
+                这里展示当前卡片的完整拆解内容，便于直接判断生成质量。
+              </DialogDescription>
+            </DialogHeader>
+            {inspectionCard ? (
+              <div className="max-h-[70vh] overflow-y-auto pr-2 space-y-4">
+                <div>
+                  <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>标题</div>
+                  <div style={{ color: COLORS.text, fontSize: 15 }}>{inspectionCard.title}</div>
+                </div>
+                <div>
+                  <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>摘要</div>
+                  <div style={{ color: COLORS.textMid, fontSize: 13.5, lineHeight: 1.7 }}>
+                    {inspectionCard.summary}
+                  </div>
+                </div>
+                {inspectionCard.contentSections?.length ? (
+                  <div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 8 }}>
+                      内容区域
+                    </div>
+                    <div className="space-y-3">
+                      {inspectionCard.contentSections.map((section, sectionIndex) => (
+                        <div
+                          key={`${section.name}-${sectionIndex}`}
+                          className="rounded-md px-3.5 py-3"
+                          style={{
+                            background: COLORS.surfaceAlt,
+                            border: `1px solid ${COLORS.borderSoft}`,
+                          }}
+                        >
+                          <div style={{ color: COLORS.text, fontSize: 13 }}>
+                            {section.name}
+                          </div>
+                          <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 2 }}>
+                            {section.position}
+                          </div>
+                          <div className="mt-2 space-y-2">
+                            {section.items.map((item, itemIndex) => (
+                              <div key={`${item.text}-${itemIndex}`}>
+                                <div style={{ color: COLORS.textMid, fontSize: 12.5, lineHeight: 1.7 }}>
+                                  {item.text}
+                                </div>
+                                <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 2 }}>
+                                  插画：{item.illustration}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {inspectionCard.textBlocks?.length ? (
+                  <div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>
+                      信息点
+                    </div>
+                    <div className="space-y-1.5">
+                      {inspectionCard.textBlocks.map((block, index) => (
+                        <div key={`${block}-${index}`} style={{ color: COLORS.textMid, fontSize: 12.5 }}>
+                          {index + 1}. {block}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {inspectionCard.promptText ? (
+                  <div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>
+                      完整 Prompt
+                    </div>
+                    <pre
+                      className="rounded-md p-3 whitespace-pre-wrap break-words"
+                      style={{
+                        background: COLORS.surfaceAlt,
+                        border: `1px solid ${COLORS.borderSoft}`,
+                        color: COLORS.textMid,
+                        fontSize: 12,
+                        lineHeight: 1.7,
+                        fontFamily:
+                          'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace',
+                      }}
+                    >
+                      {inspectionCard.promptText}
+                    </pre>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </DialogContent>
+        </Dialog>
+
+        <QuoteSummaryCard
+          plannedQuotes={plannedQuotes}
+          selectedQuotes={selectedQuotes}
+          toggleQuote={toggleQuote}
+          openQuotes={openQuotes}
+          setOpenQuotes={setOpenQuotes}
+          handleGenerateQuoteCard={handleGenerateQuoteCard}
+        />
+
+        <div className="space-y-2 mb-3">
+          <SecondaryRow
+            icon={<ImageIcon size={13} strokeWidth={1.6} color={COLORS.textMuted} />}
+            label="封面主题草案"
+            count={3}
+            open={openCovers}
+            onToggle={() => setOpenCovers(!openCovers)}
+          >
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              {COVER_DRAFTS.map((item, index) => (
+                <div
+                  key={index}
+                  className="rounded-md overflow-hidden flex items-center gap-2.5 pr-2"
+                  style={{
+                    background: COLORS.surfaceAlt,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                  }}
+                >
+                  <FoggyArt hue={index} variant={item.variant} style={{ width: 56, height: 44 }} />
+                  <div className="flex-1 min-w-0 py-1">
+                    <div style={{ color: COLORS.text, fontSize: 12 }} className="truncate">
+                      {item.title}
+                    </div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 10.5 }} className="truncate">
+                      {item.note}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SecondaryRow>
+
+          <SecondaryRow
+            icon={<Layout size={13} strokeWidth={1.6} color={COLORS.textMuted} />}
+            label="正文配图建议"
+            count={3}
+            open={openIllus}
+            onToggle={() => setOpenIllus(!openIllus)}
+          >
+            <div className="space-y-1.5 mt-3">
+              {ILLUSTRATIONS.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 px-3 py-2 rounded-md"
+                  style={{
+                    background: COLORS.surfaceAlt,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                  }}
+                >
+                  <FoggyArt hue={index + 2} variant={item.variant} style={{ width: 36, height: 28 }} />
+                  <span style={{ color: COLORS.text, fontSize: 12.5 }}>{item.title}</span>
+                </div>
+              ))}
+            </div>
+          </SecondaryRow>
+        </div>
+
+        <WorkbenchResultsPanel
+          currentArticle={currentArticle}
+          latestGeneration={latestGeneration}
+          plannedCards={plannedCards}
+          knowledgePreset={knowledgePreset}
+          knowledgeImagesByCard={knowledgeImagesByCard}
+          lockedKnowledgeCardIndexes={lockedKnowledgeCardIndexes}
+          knowledgeCardStatuses={knowledgeCardStatuses}
+          knowledgeCardHistories={knowledgeCardHistories}
+          regeneratingCardIndex={regeneratingCardIndex}
+          replaceCardInputRef={replaceCardInputRef}
+          handleKnowledgeCardFileChange={handleKnowledgeCardFileChange}
+          toggleKnowledgeCardLock={toggleKnowledgeCardLock}
+          handleFinalizeKnowledgeCard={handleFinalizeKnowledgeCard}
+          openKnowledgeCardEditor={openKnowledgeCardEditor}
+          handleRegenerateKnowledgeCard={handleRegenerateKnowledgeCard}
+          handleReplaceKnowledgeCardClick={handleReplaceKnowledgeCardClick}
+          handleRollbackKnowledgeCard={handleRollbackKnowledgeCard}
+          quotePreset={quotePreset}
+          quoteGeneration={quoteGeneration}
+          quoteGenerationSelection={quoteGenerationSelection}
+          replanRevision={replanRevision}
+          plannedQuotes={plannedQuotes}
+          selectedQuotes={selectedQuotes}
+          handleGenerateQuoteCard={handleGenerateQuoteCard}
+          coverPreset={coverPreset}
+          coverGeneration={coverGeneration}
+          coverSelection={coverSelection}
+          coverThumbMode={coverThumbMode}
+          handleSelectCover={handleSelectCover}
+          handleFinalizeCover={handleFinalizeCover}
+          inlinePreset={inlinePreset}
+          plannedInlineImages={plannedInlineImages}
+          inlineGeneration={inlineGeneration}
+        />
+      </div>
+    </section>
+  );
+}
+
+export function WorkbenchEditorDialog({
+  editingCardIndex,
+  closeKnowledgeCardEditor,
+  editingCardTitle,
+  setEditingCardTitle,
+  editingCardSummary,
+  setEditingCardSummary,
+  saveKnowledgeCardDraft,
+  handleEditAndRegenerateKnowledgeCard,
+}: {
+  editingCardIndex: number | null;
+  closeKnowledgeCardEditor: () => void;
+  editingCardTitle: string;
+  setEditingCardTitle: React.Dispatch<React.SetStateAction<string>>;
+  editingCardSummary: string;
+  setEditingCardSummary: React.Dispatch<React.SetStateAction<string>>;
+  saveKnowledgeCardDraft: () => void;
+  handleEditAndRegenerateKnowledgeCard: () => Promise<void>;
+}) {
+  return (
+    <Dialog
+      open={editingCardIndex != null}
+      onOpenChange={(open) => {
+        if (!open) closeKnowledgeCardEditor();
+      }}
+    >
+      <DialogContent className="max-w-[560px]">
+        <DialogHeader>
+          <DialogTitle>编辑知识卡文案</DialogTitle>
+          <DialogDescription>
+            修改标题和摘要后，可以直接保存或保存并重生成当前卡片。
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <div style={{ color: COLORS.textMid, fontSize: 12, marginBottom: 6 }}>标题</div>
+            <input
+              value={editingCardTitle}
+              onChange={(event) => setEditingCardTitle(event.target.value)}
+              className="w-full px-3 rounded-md outline-none"
+              style={{
+                height: 36,
+                background: COLORS.pageBg,
+                border: `1px solid ${COLORS.border}`,
+                color: COLORS.text,
+                fontSize: 13,
+              }}
+            />
+          </div>
+          <div>
+            <div style={{ color: COLORS.textMid, fontSize: 12, marginBottom: 6 }}>摘要</div>
+            <textarea
+              value={editingCardSummary}
+              onChange={(event) => setEditingCardSummary(event.target.value)}
+              className="w-full px-3 py-2 rounded-md outline-none resize-none"
+              style={{
+                height: 120,
+                background: COLORS.pageBg,
+                border: `1px solid ${COLORS.border}`,
+                color: COLORS.text,
+                fontSize: 13,
+                lineHeight: 1.7,
+              }}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Btn variant="ghost" size="md" onClick={closeKnowledgeCardEditor}>
+            取消
+          </Btn>
+          <Btn variant="secondary" size="md" onClick={saveKnowledgeCardDraft}>
+            仅保存
+          </Btn>
+          <Btn variant="primary" size="md" onClick={() => void handleEditAndRegenerateKnowledgeCard()}>
+            保存并重生成
+          </Btn>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function WorkbenchResultsPanel({
+  currentArticle,
+  latestGeneration,
+  plannedCards,
+  knowledgePreset,
+  knowledgeImagesByCard,
+  lockedKnowledgeCardIndexes,
+  knowledgeCardStatuses,
+  knowledgeCardHistories,
+  regeneratingCardIndex,
+  replaceCardInputRef,
+  handleKnowledgeCardFileChange,
+  toggleKnowledgeCardLock,
+  handleFinalizeKnowledgeCard,
+  openKnowledgeCardEditor,
+  handleRegenerateKnowledgeCard,
+  handleReplaceKnowledgeCardClick,
+  handleRollbackKnowledgeCard,
+  quotePreset,
+  quoteGeneration,
+  quoteGenerationSelection,
+  replanRevision,
+  plannedQuotes,
+  selectedQuotes,
+  handleGenerateQuoteCard,
+  coverPreset,
+  coverGeneration,
+  coverSelection,
+  coverThumbMode,
+  handleSelectCover,
+  handleFinalizeCover,
+  inlinePreset,
+  plannedInlineImages,
+  inlineGeneration,
+}: any) {
+  const [previewImage, setPreviewImage] = useState<{
+    imageUrl: string;
+    alt: string;
+    sourceImage?: GeneratedImageItem;
+  } | null>(null);
+  const [isDownloadingAll, setIsDownloadingAll] = useState(false);
+  const [isExportingReleasePack, setIsExportingReleasePack] = useState(false);
+  const [exportFeedback, setExportFeedback] = useState<string>("");
+  const currentQuoteTexts = selectedQuotes
+    .map((index: number) => plannedQuotes[index])
+    .filter(Boolean);
+  const generatedQuoteTexts = quoteGenerationSelection?.selectedQuoteTexts?.length
+    ? quoteGenerationSelection.selectedQuoteTexts
+    : [];
+  const hasGeneratedQuote = Boolean(quoteGeneration?.images?.[0]);
+  const quoteBindingIsStale =
+    hasGeneratedQuote &&
+    ((quoteGenerationSelection?.generatedAtPlanningRevision ?? replanRevision) !==
+      replanRevision ||
+      JSON.stringify(generatedQuoteTexts) !== JSON.stringify(currentQuoteTexts));
+  const selectedCoverIndex = coverSelection?.selectedCoverIndex ?? 0;
+  const finalizedCoverIndex = coverSelection?.finalizedCoverIndex ?? null;
+  const getCoverImage = (index: number, variant: "large" | "thumb") =>
+    coverGeneration?.images.find(
+      (image) =>
+        image.coverLink?.index === index + 1 &&
+        (image.coverLink.variant || "large") === variant
+    );
+  const finalizedKnowledgeImages = plannedCards
+    .map((card) => {
+      const status = knowledgeCardStatuses[String(card.index)];
+      const image = knowledgeImagesByCard.get(card.index);
+      if (!status?.finalized || !image) return null;
+      return {
+        kind: "knowledge" as const,
+        cardIndex: card.index,
+        title: card.title,
+        imageUrl: image.imageUrl,
+      };
+    })
+    .filter(Boolean);
+  const fallbackKnowledgeImages = plannedCards
+    .map((card) => {
+      const image = knowledgeImagesByCard.get(card.index);
+      if (!image) return null;
+      return {
+        kind: "knowledge" as const,
+        cardIndex: card.index,
+        title: card.title,
+        imageUrl: image.imageUrl,
+      };
+    })
+    .filter(Boolean);
+  const exportKnowledgeImages =
+    finalizedKnowledgeImages.length > 0 ? finalizedKnowledgeImages : fallbackKnowledgeImages;
+  const releaseCoverIndex =
+    finalizedCoverIndex != null
+      ? finalizedCoverIndex
+      : getCoverImage(selectedCoverIndex, "large") || getCoverImage(selectedCoverIndex, "thumb")
+        ? selectedCoverIndex
+        : null;
+  const releaseCoverLarge =
+    releaseCoverIndex != null ? getCoverImage(releaseCoverIndex, "large") ?? null : null;
+  const releaseCoverThumb =
+    releaseCoverIndex != null ? getCoverImage(releaseCoverIndex, "thumb") ?? null : null;
+  const releaseInlineImages = plannedInlineImages
+    .map((item: any, index: number) => {
+      const image = inlineGeneration?.images[index];
+      if (!image) return null;
+      return {
+        kind: "inline" as const,
+        index,
+        sectionHeading: item.sectionHeading,
+        imageUrl: image.imageUrl,
+      };
+    })
+    .filter(Boolean);
+  const releaseAssets = [
+    releaseCoverLarge
+      ? {
+          kind: "cover" as const,
+          imageUrl: releaseCoverLarge.imageUrl,
+          sourceImage: releaseCoverLarge,
+          filename:
+            releaseCoverIndex === finalizedCoverIndex
+              ? "release-cover-large-final.png"
+              : "release-cover-large-selected.png",
+          label:
+            releaseCoverIndex === finalizedCoverIndex
+              ? "公众号大封面（已定稿）"
+              : "公众号大封面（当前已选）",
+        }
+      : null,
+    releaseCoverThumb
+      ? {
+          kind: "cover" as const,
+          imageUrl: releaseCoverThumb.imageUrl,
+          sourceImage: releaseCoverThumb,
+          filename:
+            releaseCoverIndex === finalizedCoverIndex
+              ? "release-cover-thumb-final.png"
+              : "release-cover-thumb-selected.png",
+          label:
+            releaseCoverIndex === finalizedCoverIndex
+              ? "公众号小封面（已定稿）"
+              : "公众号小封面（当前已选）",
+        }
+      : null,
+    ...exportKnowledgeImages.map((item: any) => ({
+      kind: item.kind,
+      imageUrl: item.imageUrl,
+      filename: `release-knowledge-card-${String(item.cardIndex).padStart(2, "0")}.png`,
+      label: `知识卡 ${String(item.cardIndex).padStart(2, "0")} · ${item.title}`,
+    })),
+    quoteGeneration?.images[0]
+      ? {
+          kind: "quote" as const,
+          imageUrl: quoteGeneration.images[0].imageUrl,
+          filename: "release-quote-background.png",
+          label: generatedQuoteTexts[0]
+            ? `金句底图 · ${generatedQuoteTexts[0]}`
+            : "金句底图",
+        }
+      : null,
+    ...releaseInlineImages.map((item: any) => ({
+      kind: item.kind,
+      imageUrl: item.imageUrl,
+      filename: `release-inline-${String(item.index + 1).padStart(2, "0")}.png`,
+      label: `正文配图 ${item.index + 1} · ${item.sectionHeading}`,
+    })),
+  ].filter(Boolean) as Array<{
+    kind: "cover" | "knowledge" | "quote" | "inline";
+    imageUrl: string;
+    sourceImage?: GeneratedImageItem;
+    filename: string;
+    label: string;
+  }>;
+  const downloadableImages = [
+    ...(Array.from(knowledgeImagesByCard.values()) as Array<{ imageUrl: string }>),
+    ...(quoteGeneration?.images ?? []),
+    ...(coverGeneration?.images ?? []),
+    ...(inlineGeneration?.images ?? []),
+  ];
+
+  function handlePreviewImage(imageUrl: string, alt: string, sourceImage?: GeneratedImageItem) {
+    setPreviewImage({ imageUrl, alt, sourceImage });
+  }
+
+  async function downloadImage(url: string, filename: string) {
+    try {
+      const blob = await downloadGeneratedImage(url);
+      downloadBlob(blob, filename);
+      setExportFeedback(`已开始下载：${filename}`);
+    } catch {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setExportFeedback(`已尝试打开原图地址：${filename}`);
+    }
+  }
+
+  async function downloadImageAsset(image: GeneratedImageItem, filename: string) {
+    try {
+      const blob = await buildDownloadBlob(image);
+      downloadBlob(blob, filename);
+      setExportFeedback(`已开始下载：${filename}`);
+    } catch {
+      await downloadImage(image.imageUrl, filename);
+    }
+  }
+
+  async function buildDownloadBlob(image: GeneratedImageItem) {
+    const blob = await downloadGeneratedImage(image.imageUrl);
+    if (!isCroppedCoverThumb(image)) {
+      return blob;
+    }
+    return await cropBlobToSquarePng(blob, image.width || 383);
+  }
+
+  function isCroppedCoverThumb(image: GeneratedImageItem) {
+    return (
+      image.coverLink?.variant === "thumb" &&
+      !image.imageUrl.startsWith("data:image/svg")
+    );
+  }
+
+  async function cropBlobToSquarePng(blob: Blob, size: number) {
+    const bitmap = await createImageBitmap(blob);
+    const side = Math.min(bitmap.width, bitmap.height);
+    const sourceX = Math.max(0, (bitmap.width - side) / 2);
+    const sourceY = Math.max(0, (bitmap.height - side) / 2);
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      bitmap.close();
+      throw new Error("无法创建图片裁切画布");
+    }
+    context.drawImage(bitmap, sourceX, sourceY, side, side, 0, 0, size, size);
+    bitmap.close();
+    return await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((nextBlob) => {
+        if (nextBlob) {
+          resolve(nextBlob);
+        } else {
+          reject(new Error("封面小图裁切失败"));
+        }
+      }, "image/png");
+    });
+  }
+
+  function downloadBlob(blob: Blob, filename: string) {
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  }
+
+  function downloadTextFile(content: string, filename: string) {
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    downloadBlob(blob, filename);
+  }
+
+  async function buildZipBlob(files: Array<{ filename: string; blob: Blob }>) {
+    const zip = new JSZip();
+    for (const file of files) {
+      zip.file(file.filename, file.blob);
+    }
+    return await zip.generateAsync({ type: "blob" });
+  }
+
+  function slugifyFilename(value: string) {
+    return value
+      .trim()
+      .replace(/[\\/:*?"<>|]+/g, "-")
+      .replace(/\s+/g, "-")
+      .slice(0, 48);
+  }
+
+  async function handleDownloadAll() {
+    if (downloadableImages.length === 0 || isDownloadingAll) return;
+    setIsDownloadingAll(true);
+    setExportFeedback("");
+    try {
+      const files = await Promise.all(
+        downloadableImages.map(async (image, index) => ({
+          filename: `content-visual-${String(index + 1).padStart(2, "0")}.png`,
+          blob: await buildDownloadBlob(image as GeneratedImageItem),
+        }))
+      );
+      const zipBlob = await buildZipBlob(files);
+      downloadBlob(
+        zipBlob,
+        `${slugifyFilename(currentArticle.title || "content-visual")}-all-assets.zip`
+      );
+      setExportFeedback(`已打包 ${files.length} 个文件，开始下载 zip 压缩包`);
+    } catch (error) {
+      setExportFeedback(error instanceof Error ? `全部下载失败：${error.message}` : "全部下载失败");
+    } finally {
+      setIsDownloadingAll(false);
+    }
+  }
+
+  async function handleExportReleasePack() {
+    if (releaseAssets.length === 0 || isExportingReleasePack) return;
+    setIsExportingReleasePack(true);
+    setExportFeedback("");
+    try {
+      const manifestLines = [
+        `文章标题：${currentArticle.title}`,
+        `导出时间：${new Date().toLocaleString("zh-CN", { hour12: false })}`,
+        `封面：${
+          releaseCoverIndex == null
+            ? "无"
+            : releaseCoverIndex === finalizedCoverIndex
+              ? `已定稿 #${releaseCoverIndex + 1}`
+              : `当前已选 #${releaseCoverIndex + 1}`
+        }`,
+        `知识卡：${
+          finalizedKnowledgeImages.length > 0
+            ? `定稿 ${finalizedKnowledgeImages.length} 张`
+            : `未定稿，改为导出当前结果 ${exportKnowledgeImages.length} 张`
+        }`,
+        `金句底图：${quoteGeneration?.images[0] ? "已包含" : "无"}`,
+        `正文配图：${releaseInlineImages.length} 张`,
+        "",
+        "素材清单：",
+        ...releaseAssets.map((item, index) => `${index + 1}. ${item.label} -> ${item.filename}`),
+      ];
+      const manifestBlob = new Blob([manifestLines.join("\n")], {
+        type: "text/plain;charset=utf-8",
+      });
+      const assetFiles = await Promise.all(
+        releaseAssets.map(async (asset) => ({
+          filename: asset.filename,
+          blob: asset.sourceImage
+            ? await buildDownloadBlob(asset.sourceImage)
+            : await downloadGeneratedImage(asset.imageUrl),
+        }))
+      );
+      const files = [
+        { filename: "release-assets-manifest.txt", blob: manifestBlob },
+        ...assetFiles,
+      ];
+      const zipBlob = await buildZipBlob(files);
+      downloadBlob(
+        zipBlob,
+        `${slugifyFilename(currentArticle.title || "content-visual")}-release-assets.zip`
+      );
+      setExportFeedback(`已打包 ${files.length} 个定稿文件，开始下载 zip 压缩包`);
+    } catch (error) {
+      setExportFeedback(
+        error instanceof Error ? `导出定稿失败：${error.message}` : "导出定稿失败"
+      );
+    } finally {
+      setIsExportingReleasePack(false);
+    }
+  }
+
+  return (
+    <Panel>
+      <div className="flex items-end justify-between mb-3">
+        <div>
+          <div style={{ color: COLORS.textFaint, fontSize: 11, letterSpacing: "0.12em" }}>
+            02 / RESULTS
+          </div>
+          <div className="mt-0.5" style={{ color: COLORS.text, fontSize: 16, letterSpacing: "0.02em" }}>
+            生成结果总览
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Btn
+            variant="secondary"
+            size="sm"
+            onClick={() => void handleExportReleasePack()}
+            disabled={releaseAssets.length === 0 || isExportingReleasePack}
+          >
+            {isExportingReleasePack ? "导出中" : "导出定稿"}
+          </Btn>
+          <button
+            className="flex items-center gap-1"
+            style={{ color: COLORS.blue, fontSize: 12 }}
+            onClick={() => void handleDownloadAll()}
+            disabled={downloadableImages.length === 0 || isDownloadingAll}
+          >
+            {isDownloadingAll ? "下载中" : "全部下载"} <ArrowUpRight size={12} strokeWidth={1.6} />
+          </button>
+        </div>
+      </div>
+
+      <div
+        className="mb-4 rounded-md px-3.5 py-2.5 flex items-center justify-between gap-4"
+        style={{
+          background: COLORS.pageBg,
+          border: `1px solid ${COLORS.borderSoft}`,
+        }}
+      >
+        <div style={{ color: COLORS.textFaint, fontSize: 11.5 }}>
+          定稿导出会优先带出封面定稿、知识卡定稿；如果还没定稿，会退回当前可用结果，并附一份发布素材清单。
+        </div>
+        <div className="flex items-center gap-2 text-right" style={{ color: COLORS.textMid, fontSize: 11.5 }}>
+          <span>封面 {[releaseCoverLarge, releaseCoverThumb].filter(Boolean).length}</span>
+          <span>知识卡 {exportKnowledgeImages.length}</span>
+          <span>金句 {quoteGeneration?.images[0] ? 1 : 0}</span>
+          <span>配图 {releaseInlineImages.length}</span>
+        </div>
+      </div>
+
+      {exportFeedback ? (
+        <div
+          className="mb-4 rounded-md px-3.5 py-2.5"
+          style={{
+            background: COLORS.surface,
+            border: `1px solid ${COLORS.borderSoft}`,
+            color: COLORS.textMid,
+            fontSize: 11.5,
+            lineHeight: 1.6,
+          }}
+        >
+          {exportFeedback}
+        </div>
+      ) : null}
+
+      {latestGeneration ? (
+        <div
+          className="mb-5 rounded-md px-4 py-3 flex items-center gap-3"
+          style={{
+            background: COLORS.pageBg,
+            border: `1px solid ${COLORS.borderSoft}`,
+          }}
+        >
+          <div
+            className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
+            style={{ background: COLORS.blueTint, color: COLORS.blueDeep }}
+          >
+            <ImageIcon size={16} strokeWidth={1.6} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div style={{ color: COLORS.text, fontSize: 12.5 }}>最近真实出图</div>
+            <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 2 }}>
+              {latestGeneration.purposeLabel} · {latestGeneration.styleName} · {latestGeneration.images.length} 张
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {latestGeneration.images.slice(0, 2).map((image: any) => (
+              <img
+                key={image.id}
+                src={image.imageUrl}
+                alt={latestGeneration.title}
+                onClick={() => handlePreviewImage(image.imageUrl, latestGeneration.title)}
+                className="rounded"
+                style={{
+                  width: 42,
+                  height: 42,
+                  objectFit: "cover",
+                  border: `1px solid ${COLORS.borderSoft}`,
+                  cursor: "zoom-in",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <KnowledgeCardResults
+        plannedCards={plannedCards}
+        knowledgeSizeLabel={
+          knowledgePreset
+            ? `${knowledgePreset.aspect} 高清 · ${knowledgePreset.w}×${knowledgePreset.h}`
+            : "3:4 高清 · 1280×1706"
+        }
+        knowledgeAspectRatio={
+          knowledgePreset ? `${knowledgePreset.w} / ${knowledgePreset.h}` : "1280 / 1706"
+        }
+        knowledgeImagesByCard={knowledgeImagesByCard}
+        lockedKnowledgeCardIndexes={lockedKnowledgeCardIndexes}
+        knowledgeCardStatuses={knowledgeCardStatuses}
+        knowledgeCardHistories={knowledgeCardHistories}
+        regeneratingCardIndex={regeneratingCardIndex}
+        replaceCardInputRef={replaceCardInputRef}
+        onReplaceInputChange={handleKnowledgeCardFileChange}
+        onToggleLock={toggleKnowledgeCardLock}
+        onFinalize={handleFinalizeKnowledgeCard}
+        onEdit={openKnowledgeCardEditor}
+        onRegenerate={(cardIndex) => {
+          void handleRegenerateKnowledgeCard(cardIndex);
+        }}
+        onReplace={handleReplaceKnowledgeCardClick}
+        onRollback={handleRollbackKnowledgeCard}
+        onPreview={handlePreviewImage}
+      />
+
+      <div className="grid grid-cols-2 gap-5 mt-5">
+        <div>
+          <ResultRow
+            label="金句底图（公众号横版）"
+            size={quotePreset ? `公众号正文 · ${quotePreset.w}×${quotePreset.h}` : "公众号正文 · 1080×608"}
+            count={quoteGeneration?.images.length ?? 0}
+          />
+          <div className="mt-2" style={{ color: COLORS.textFaint, fontSize: 11, lineHeight: 1.6 }}>
+            <div>
+              对应金句：
+              <span style={{ color: COLORS.textMid }}>
+                {generatedQuoteTexts[0] ? `「${generatedQuoteTexts[0]}」` : "暂无已绑定结果"}
+              </span>
+            </div>
+            {!hasGeneratedQuote && currentQuoteTexts[0] ? (
+              <div style={{ marginTop: 2 }}>
+                当前勾选：<span style={{ color: COLORS.textMid }}>「{currentQuoteTexts[0]}」</span>
+              </div>
+            ) : null}
+            {quoteBindingIsStale ? (
+              <div style={{ color: "#8A5A46", marginTop: 2 }}>
+                当前展示的是上一轮所选金句结果，再次点击“生成金句底图”才会更新。
+              </div>
+            ) : null}
+          </div>
+          <div
+            className="mt-2.5 rounded-md p-5 flex flex-col justify-between"
+            style={{
+              aspectRatio: quotePreset ? `${quotePreset.w} / ${quotePreset.h}` : "1080 / 608",
+              background: "linear-gradient(160deg,#E2E8EE 0%,#A8B7C8 100%)",
+              border: `1px solid ${COLORS.borderSoft}`,
+            }}
+          >
+            {quoteGeneration?.images[0] ? (
+              <img
+                src={quoteGeneration.images[0].imageUrl}
+                alt="最新金句卡"
+                onClick={() => handlePreviewImage(quoteGeneration.images[0].imageUrl, "金句底图")}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: 6,
+                  cursor: "zoom-in",
+                }}
+              />
+            ) : (
+              <>
+                <Quote size={20} strokeWidth={1.4} color="#3F4E62" />
+                <div style={{ color: "#2B3645", fontSize: 17, lineHeight: 1.55, letterSpacing: "0.02em" }}>
+                {((selectedQuotes.length > 0 ? plannedQuotes[selectedQuotes[0]] : null) ??
+                    "尚未生成金句底图")
+                    .split("，")
+                    .map((line: string, index: number, list: string[]) => (
+                      <span key={`${line}-${index}`}>
+                        {line}
+                        {index < list.length - 1 ? "，" : ""}
+                        {index < list.length - 1 ? <br /> : null}
+                      </span>
+                    ))}
+                </div>
+                <div style={{ color: "#3F4E62", fontSize: 10.5 }}>—— 论专注 v3</div>
+              </>
+            )}
+          </div>
+          <div className="mt-2 flex justify-end">
+            <Btn
+              size="sm"
+              onClick={() => void handleGenerateQuoteCard()}
+              disabled={selectedQuotes.length === 0}
+              style={{
+                background: "#8B6F44",
+                color: "#FBFAF7",
+                border: "1px solid #8B6F44",
+              }}
+            >
+              重新生成金句底图
+            </Btn>
+          </div>
+        </div>
+        <div>
+          <ResultRow
+            label="公众号封面组合"
+            size={coverThumbMode === "crop" ? "大图 AI · 小图中心裁切" : "大图 AI · 小图单独生成"}
+            count={3}
+          />
+          <div className="space-y-2 mt-2.5">
+            {COVER_DRAFTS.map((item, index) => (
+              <div
+                key={index}
+                className="w-full rounded-md overflow-hidden"
+                style={{
+                  border: `1px solid ${index === selectedCoverIndex ? COLORS.blueDeep : COLORS.borderSoft}`,
+                  background: index === selectedCoverIndex ? COLORS.blueTint : COLORS.surfaceAlt,
+                }}
+              >
+                <button
+                  onClick={() => handleSelectCover(index)}
+                  className="w-full flex items-center overflow-hidden text-left"
+                  style={{ minHeight: 82 }}
+                >
+                  <div
+                    className="flex items-center gap-1.5 shrink-0 p-2"
+                    style={{ width: 178, height: 82, background: COLORS.surface }}
+                  >
+                    {getCoverImage(index, "large") ? (
+                      <img
+                        src={getCoverImage(index, "large")?.imageUrl}
+                        alt={`封面大图 ${index + 1}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          const image = getCoverImage(index, "large");
+                          if (image) handlePreviewImage(image.imageUrl, `封面大图 ${index + 1}`, image);
+                        }}
+                        style={{
+                          width: 116,
+                          height: 50,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                          cursor: "zoom-in",
+                          border: `1px solid ${COLORS.borderSoft}`,
+                        }}
+                      />
+                    ) : (
+                      <FoggyArt
+                        hue={index}
+                        variant={item.variant}
+                        style={{
+                          width: 116,
+                          height: 50,
+                          borderRadius: 4,
+                          border: `1px solid ${COLORS.borderSoft}`,
+                        }}
+                      />
+                    )}
+                    {getCoverImage(index, "thumb") ? (
+                      <img
+                        src={getCoverImage(index, "thumb")?.imageUrl}
+                        alt={`封面小图 ${index + 1}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          const image = getCoverImage(index, "thumb");
+                          if (image) handlePreviewImage(image.imageUrl, `封面小图 ${index + 1}`, image);
+                        }}
+                        style={{
+                          width: 50,
+                          height: 50,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                          cursor: "zoom-in",
+                          border: `1px solid ${COLORS.borderSoft}`,
+                        }}
+                      />
+                    ) : (
+                      <FoggyArt
+                        hue={index + 1}
+                        variant={item.variant}
+                        style={{
+                          width: 50,
+                          height: 50,
+                          borderRadius: 4,
+                          border: `1px solid ${COLORS.borderSoft}`,
+                        }}
+                      />
+                    )}
+                  </div>
+                  <div className="flex-1 px-3 min-w-0">
+                    <div style={{ color: COLORS.text, fontSize: 12.5 }} className="truncate">
+                      {item.title}
+                    </div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11 }} className="truncate">
+                      {item.note} · 大图 + 小封面标签
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {index === selectedCoverIndex ? <Tag tone="blue">已选</Tag> : null}
+                    {index === finalizedCoverIndex ? <Tag tone="success">已定稿</Tag> : null}
+                  </div>
+                  <div className="w-3" />
+                </button>
+                <div
+                  className="px-3 py-2 flex items-center justify-between gap-2"
+                  style={{
+                    borderTop: `1px solid ${COLORS.borderSoft}`,
+                    background: COLORS.surface,
+                  }}
+                >
+                  <div className="flex items-center gap-1.5">
+                    {getCoverImage(index, "large") ? (
+                      <Btn
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const image = getCoverImage(index, "large");
+                          if (image) {
+                            void downloadImageAsset(
+                              image,
+                              `wechat-cover-large-${String(index + 1).padStart(2, "0")}.png`
+                            );
+                          }
+                        }}
+                      >
+                        <Download size={12} strokeWidth={1.6} />
+                        大图
+                      </Btn>
+                    ) : null}
+                    {getCoverImage(index, "thumb") ? (
+                      <Btn
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const image = getCoverImage(index, "thumb");
+                          if (image) {
+                            void downloadImageAsset(
+                              image,
+                              `wechat-cover-thumb-${String(index + 1).padStart(2, "0")}.png`
+                            );
+                          }
+                        }}
+                      >
+                        <Download size={12} strokeWidth={1.6} />
+                        小图
+                      </Btn>
+                    ) : null}
+                  </div>
+                  <Btn
+                    variant={index === finalizedCoverIndex ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => handleFinalizeCover(index)}
+                  >
+                    {index === finalizedCoverIndex ? "当前定稿" : "设为定稿"}
+                  </Btn>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <ResultRow
+          label="公众号正文配图"
+          size={inlinePreset ? `横版默认 · ${inlinePreset.w}×${inlinePreset.h}` : "横版默认 · 1080×608"}
+          count={plannedInlineImages.length}
+        />
+        <div className="grid grid-cols-3 gap-3 mt-2.5">
+          {plannedInlineImages.map((item: any, index: number) => (
+            <div
+              key={`${item.sectionHeading}-${index}`}
+              className="rounded-md overflow-hidden"
+              style={{ border: `1px solid ${COLORS.borderSoft}` }}
+            >
+              {inlineGeneration?.images[index] ? (
+                <img
+                  src={inlineGeneration.images[index].imageUrl}
+                  alt={`正文配图 ${index + 1}`}
+                  onClick={() =>
+                    handlePreviewImage(inlineGeneration.images[index].imageUrl, `正文配图 ${index + 1}`)
+                  }
+                  style={{
+                    width: "100%",
+                    aspectRatio: inlinePreset ? `${inlinePreset.w} / ${inlinePreset.h}` : "1080 / 608",
+                    objectFit: "cover",
+                    cursor: "zoom-in",
+                  }}
+                />
+              ) : (
+                <FoggyArt
+                  hue={index + 1}
+                  variant={
+                    "variant" in item && item.variant
+                      ? item.variant
+                      : index % 3 === 0
+                        ? "wave"
+                        : index % 3 === 1
+                          ? "mountain"
+                          : "leaf"
+                  }
+                  style={{
+                    aspectRatio: inlinePreset ? `${inlinePreset.w} / ${inlinePreset.h}` : "1080 / 608",
+                  }}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Dialog
+        open={previewImage != null}
+        onOpenChange={(open) => {
+          if (!open) setPreviewImage(null);
+        }}
+      >
+        <DialogContent className="max-w-[980px]">
+          <DialogHeader>
+            <DialogTitle>{previewImage?.alt || "图片预览"}</DialogTitle>
+            <DialogDescription>这里展示当前图片的放大预览。</DialogDescription>
+          </DialogHeader>
+          {previewImage ? (
+            <div className="max-h-[75vh] overflow-auto">
+              {previewImage.sourceImage && isCroppedCoverThumb(previewImage.sourceImage) ? (
+                <div
+                  style={{
+                    width: "min(75vh, 520px)",
+                    aspectRatio: "1 / 1",
+                    margin: "0 auto",
+                    overflow: "hidden",
+                    borderRadius: 8,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                  }}
+                >
+                  <img
+                    src={previewImage.imageUrl}
+                    alt={previewImage.alt}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+              ) : (
+                <img
+                  src={previewImage.imageUrl}
+                  alt={previewImage.alt}
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    objectFit: "contain",
+                    borderRadius: 8,
+                    border: `1px solid ${COLORS.borderSoft}`,
+                  }}
+                />
+              )}
+            </div>
+          ) : null}
+          {previewImage ? (
+            <DialogFooter>
+              <Btn
+                variant="secondary"
+                size="md"
+                onClick={() =>
+                  void (previewImage.sourceImage
+                    ? downloadImageAsset(
+                        previewImage.sourceImage,
+                        `${(previewImage.alt || "preview").replace(/\s+/g, "-")}.png`
+                      )
+                    : downloadImage(
+                        previewImage.imageUrl,
+                        `${(previewImage.alt || "preview").replace(/\s+/g, "-")}.png`
+                      ))
+                }
+              >
+                下载当前图片
+              </Btn>
+            </DialogFooter>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+    </Panel>
+  );
+}
+
+function QuoteSummaryCard({
+  plannedQuotes,
+  selectedQuotes,
+  toggleQuote,
+  openQuotes,
+  setOpenQuotes,
+  handleGenerateQuoteCard,
+}: {
+  plannedQuotes: string[];
+  selectedQuotes: number[];
+  toggleQuote: (index: number) => void;
+  openQuotes: boolean;
+  setOpenQuotes: React.Dispatch<React.SetStateAction<boolean>>;
+  handleGenerateQuoteCard: () => Promise<void>;
+}) {
+  return (
+    <div
+      className="rounded-lg mb-3 overflow-hidden"
+      style={{
+        background: "#F1ECE3",
+        border: `1px solid #E1D7C2`,
+      }}
+    >
+      <div className="px-5 py-3.5 flex items-center gap-4">
+        <div
+          className="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
+          style={{
+            background: "rgba(139,111,68,0.12)",
+            color: "#8B6F44",
+          }}
+        >
+          <Quote size={15} strokeWidth={1.6} />
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-baseline gap-2.5">
+            <span style={{ color: "#3D3328", fontSize: 13.5 }}>候选金句</span>
+            <span style={{ color: "#8B6F44", fontSize: 12 }}>
+              {plannedQuotes.length} 条 · 已选 {selectedQuotes.length} / {plannedQuotes.length}
+            </span>
+          </div>
+        <div className="mt-1 truncate" style={{ color: "#7A6244", fontSize: 11.5 }}>
+            {selectedQuotes.length > 0
+              ? `「${plannedQuotes[selectedQuotes[0]] ?? "当前选择已失效"}」`
+              : "尚未选择候选金句"}
+        </div>
+        </div>
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            onClick={() => setOpenQuotes(!openQuotes)}
+            className="flex items-center gap-1 px-2.5 h-7 rounded"
+            style={{
+              color: "#8B6F44",
+              fontSize: 12,
+            }}
+          >
+            {openQuotes ? "收起候选" : "查看候选"}
+            {openQuotes ? (
+              <ChevronDown size={11} strokeWidth={1.6} />
+            ) : (
+              <ChevronRight size={11} strokeWidth={1.6} />
+            )}
+          </button>
+          <Btn
+            size="sm"
+            onClick={() => void handleGenerateQuoteCard()}
+            disabled={selectedQuotes.length === 0}
+            style={{
+              background: "#8B6F44",
+              color: "#FBFAF7",
+              border: "1px solid #8B6F44",
+            }}
+          >
+            生成金句底图 · {selectedQuotes.length}
+          </Btn>
+        </div>
+      </div>
+
+      {openQuotes ? (
+        <div
+          className="px-5 pb-4 pt-1 space-y-2"
+          style={{
+            borderTop: `1px solid rgba(225,215,194,0.7)`,
+          }}
+        >
+          {plannedQuotes.map((quote, index) => {
+            const checked = selectedQuotes.includes(index);
+            return (
+              <button
+                key={index}
+                onClick={() => toggleQuote(index)}
+                className="w-full flex items-start gap-3 px-3.5 py-2.5 rounded-md text-left transition-colors mt-2"
+                style={{
+                  background: checked ? "#FBFAF7" : "rgba(255,255,255,0.45)",
+                  border: `1px solid ${checked ? "#C9A86A" : "rgba(225,215,194,0.7)"}`,
+                }}
+              >
+                <span
+                  className="mt-0.5 w-3.5 h-3.5 rounded-sm flex items-center justify-center shrink-0"
+                  style={{
+                    background: checked ? "#8B6F44" : "transparent",
+                    border: `1.4px solid ${checked ? "#8B6F44" : "#B5A992"}`,
+                  }}
+                >
+                  {checked ? <CheckCircle2 size={9} strokeWidth={2.5} color="#FBFAF7" /> : null}
+                </span>
+                <span style={{ color: "#3D3328", fontSize: 13, lineHeight: 1.7 }}>{quote}</span>
+              </button>
+            );
+          })}
+          <div className="flex items-center justify-end mt-1">
+            <button className="flex items-center gap-1" style={{ color: "#8B6F44", fontSize: 11.5 }}>
+              <Pencil size={11} strokeWidth={1.6} />
+              编辑文案
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function SectionLabel({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`mb-1.5 flex items-center gap-2 ${className ?? ""}`.trim()}
+      style={{ color: COLORS.textFaint, fontSize: 10.5, letterSpacing: "0.06em" }}
+    >
+      <span>{children}</span>
+      <span className="flex-1" style={{ height: 1, background: COLORS.borderSoft }} />
+    </div>
+  );
+}
+
+function Step({ kicker, title }: { kicker: string; title: string }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span
+        className="flex items-center justify-center"
+        style={{
+          width: 20,
+          height: 20,
+          borderRadius: 4,
+          background: COLORS.blueTint,
+          color: COLORS.blueDeep,
+          fontSize: 10.5,
+          letterSpacing: "0.04em",
+        }}
+      >
+        {kicker}
+      </span>
+      <span style={{ color: COLORS.text, fontSize: 13.5 }}>{title}</span>
+    </div>
+  );
+}
+
+function CompactToggle({
+  label,
+  count,
+  auto,
+  checked,
+  onChange,
+  last,
+}: {
+  label: string;
+  count: string;
+  auto?: boolean;
+  checked: boolean;
+  onChange: () => void;
+  last?: boolean;
+}) {
+  return (
+    <button
+      onClick={onChange}
+      className="w-full flex items-center justify-between px-3.5"
+      style={{
+        height: 36,
+        borderBottom: last ? "none" : `1px solid ${COLORS.borderSoft}`,
+      }}
+    >
+      <span className="flex items-center gap-2.5" style={{ color: COLORS.text, fontSize: 13 }}>
+        <span
+          className="w-3.5 h-3.5 rounded-sm flex items-center justify-center"
+          style={{
+            background: checked ? COLORS.blueDeep : "transparent",
+            border: `1.3px solid ${checked ? COLORS.blueDeep : COLORS.textFaint}`,
+          }}
+        >
+          {checked ? <CheckCircle2 size={9} strokeWidth={2.5} color="#FBFAF7" /> : null}
+        </span>
+        {label}
+      </span>
+      <span className="flex items-center gap-1.5" style={{ color: COLORS.textFaint, fontSize: 11 }}>
+        {auto ? <Wand2 size={10} strokeWidth={1.6} color={COLORS.blue} /> : null}
+        <span style={{ color: auto ? COLORS.blueDeep : COLORS.textFaint }}>{count}</span>
+      </span>
+    </button>
+  );
+}
+
+function RangeField({
+  label,
+  value,
+  onMinus,
+  onPlus,
+}: {
+  label: string;
+  value: number;
+  onMinus: () => void;
+  onPlus: () => void;
+}) {
+  return (
+    <div
+      className="flex-1 flex items-center justify-between rounded-md"
+      style={{
+        background: COLORS.surfaceAlt,
+        border: `1px solid ${COLORS.borderSoft}`,
+        height: 30,
+        paddingLeft: 10,
+        paddingRight: 4,
+      }}
+    >
+      <span style={{ color: COLORS.textFaint, fontSize: 11 }}>{label}</span>
+      <div className="flex items-center">
+        <button
+          onClick={onMinus}
+          className="w-6 h-6 flex items-center justify-center rounded"
+          style={{ color: COLORS.textMuted }}
+        >
+          <Minus size={11} strokeWidth={1.6} />
+        </button>
+        <span className="w-5 text-center" style={{ color: COLORS.text, fontSize: 12.5 }}>
+          {value}
+        </span>
+        <button
+          onClick={onPlus}
+          className="w-6 h-6 flex items-center justify-center rounded"
+          style={{ color: COLORS.textMuted }}
+        >
+          <Plus size={11} strokeWidth={1.6} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SecondaryRow({
+  icon,
+  label,
+  count,
+  open,
+  onToggle,
+  children,
+}: {
+  icon?: React.ReactNode;
+  label: string;
+  count: number;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="rounded-md"
+      style={{
+        background: COLORS.surface,
+        border: `1px solid ${COLORS.borderSoft}`,
+      }}
+    >
+      <button onClick={onToggle} className="w-full px-4 h-10 flex items-center justify-between">
+        <span className="flex items-center gap-2">
+          {icon}
+          <span style={{ color: COLORS.textMid, fontSize: 12.5 }}>{label}</span>
+          <span
+            className="px-1.5 rounded"
+            style={{
+              background: COLORS.borderSoft,
+              color: COLORS.textMuted,
+              fontSize: 10.5,
+              height: 16,
+              lineHeight: "16px",
+            }}
+          >
+            {count}
+          </span>
+        </span>
+        <span className="flex items-center gap-1" style={{ color: COLORS.textMuted, fontSize: 11.5 }}>
+          {open ? "收起" : "展开"}
+          {open ? (
+            <ChevronDown size={11} strokeWidth={1.6} />
+          ) : (
+            <ChevronRight size={11} strokeWidth={1.6} />
+          )}
+        </span>
+      </button>
+      {open ? <div className="px-4 pb-4">{children}</div> : null}
+    </div>
+  );
+}

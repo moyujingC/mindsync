@@ -6,9 +6,10 @@ import { MobileWebHistoryPage } from "./page-shells/history-page";
 import { MobileWebHistoryRecordDetailPage } from "./page-shells/history-record-detail-page";
 import { MobileWebReportEntryPage } from "./page-shells/report-entry-page";
 import { MobileWebReportPage } from "./page-shells/report-page";
+import { MobileWebProReportPage } from "./page-shells/pro-report-page";
 import { MobileWebUploadPage } from "./page-shells/upload-page";
 import type { HistoryFilterId } from "./components/history-cards";
-import type { MobileWebRouteId } from "./routes";
+import { isHistoryRecordDetailRoute, type MobileWebRouteId } from "./routes";
 import type {
   DetectCirclesResponse,
   InterpretationListQuery,
@@ -20,7 +21,7 @@ import type {
   MobileWebReportProductType,
   MobileWebUploadDraft,
 } from "./state";
-import { getDraftReportVariant } from "./state";
+import { getDraftReportVariant, hasDraftResolvedCircleRadii } from "./state";
 
 export interface MobileWebAppProps {
   route: MobileWebRouteId;
@@ -103,6 +104,7 @@ export function MobileWebApp({
   onLoadingLeaveLater,
   onReportPrimaryAction,
   onReportSecondaryAction,
+  onReportBackAction,
   reportPrimaryDisabled = false,
   reportPrimaryLabel,
   reportSecondaryLabel,
@@ -148,6 +150,22 @@ export function MobileWebApp({
       if (!uploadDraft) {
         return "Missing upload draft";
       }
+      if (!hasDraftResolvedCircleRadii(uploadDraft)) {
+        return (
+          <MobileWebUploadPage
+            draft={uploadDraft}
+            detection={detection}
+            environmentLabel={environmentLabel}
+            environmentDetail={environmentDetail}
+            environmentTone={environmentTone}
+            isUploading={isUploading}
+            errorMessage={uploadErrorMessage}
+            onDraftChange={onUploadDraftChange}
+            onContinue={onUploadContinue}
+            onBack={onUploadBack}
+          />
+        );
+      }
       return (
         <MobileWebReportEntryPage
           draft={uploadDraft}
@@ -166,12 +184,43 @@ export function MobileWebApp({
           state={flowState}
           isPro={uploadDraft ? getDraftReportVariant(uploadDraft) === "pro" : false}
           onBack={onReportSecondaryAction}
-          onClose={onReportSecondaryAction}
           onLeaveLater={onLoadingLeaveLater}
         />
       );
 
     case "report":
+      if (!flowState) {
+        return "Missing flow state";
+      }
+      if (flowState.report?.version === "pro" || flowState.step === "proReady") {
+        return (
+          <MobileWebProReportPage
+            state={flowState}
+            uploadDraft={uploadDraft}
+            onBackAction={onReportBackAction ?? onReportSecondaryAction}
+            onRestartAction={onReportSecondaryAction}
+            onRetryAction={onReportPrimaryAction}
+          />
+        );
+      }
+      return (
+        <MobileWebReportPage
+          route={route}
+          state={flowState}
+          uploadDraft={uploadDraft}
+          environmentLabel={environmentLabel}
+          environmentDetail={environmentDetail}
+          environmentTone={environmentTone}
+          onPrimaryAction={onReportPrimaryAction}
+          onSecondaryAction={onReportSecondaryAction}
+          primaryDisabled={reportPrimaryDisabled}
+          primaryLabel={reportPrimaryLabel}
+          secondaryLabel={reportSecondaryLabel}
+          footerHint={reportFooterHint}
+        />
+      );
+
+    case "reportLite":
       if (!flowState) {
         return "Missing flow state";
       }
@@ -189,6 +238,20 @@ export function MobileWebApp({
           primaryLabel={reportPrimaryLabel}
           secondaryLabel={reportSecondaryLabel}
           footerHint={reportFooterHint}
+        />
+      );
+
+    case "reportPro":
+      if (!flowState) {
+        return "Missing flow state";
+      }
+      return (
+        <MobileWebProReportPage
+          state={flowState}
+          uploadDraft={uploadDraft}
+          onBackAction={onReportBackAction ?? onReportSecondaryAction}
+          onRestartAction={onReportSecondaryAction}
+          onRetryAction={onReportPrimaryAction}
         />
       );
 
@@ -219,11 +282,15 @@ export function MobileWebApp({
       );
 
     case "historyRecordDetail":
+    case "historyRecordDetailNotUpgraded":
+    case "historyRecordDetailGenerating":
+    case "historyRecordDetailViewable":
       if (!record) {
         return "Missing history record";
       }
       return (
         <MobileWebHistoryRecordDetailPage
+          route={route}
           record={record}
           openingReportType={activeHistoryRecordReportType}
           environmentLabel={environmentLabel}
@@ -235,6 +302,6 @@ export function MobileWebApp({
       );
 
     default:
-      return "Unknown route";
+      return isHistoryRecordDetailRoute(route) ? "Missing history record" : "Unknown route";
   }
 }

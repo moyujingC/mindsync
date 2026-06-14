@@ -42,10 +42,15 @@ function isTruthyFlag(value: string | undefined): boolean {
   return value === "1" || value === "true" || value === "TRUE";
 }
 
+function isFalseyFlag(value: string | undefined): boolean {
+  return value === "0" || value === "false" || value === "FALSE";
+}
+
 export function isReportFollowupEnabled(): boolean {
-  const fromImportMeta = (
-    import.meta as ImportMeta & { env?: ImportMetaEnvLike }
-  ).env?.VITE_AIMANDALA_REPORT_FOLLOWUP_ENABLED;
+  const importMetaEnv = (
+    import.meta as ImportMeta & { env?: ImportMetaEnvLike & { DEV?: boolean } }
+  ).env;
+  const fromImportMeta = importMetaEnv?.VITE_AIMANDALA_REPORT_FOLLOWUP_ENABLED;
 
   const processLike = globalThis as typeof globalThis & {
     process?: {
@@ -57,5 +62,17 @@ export function isReportFollowupEnabled(): boolean {
     processLike.process?.env?.AIMANDALA_REPORT_FOLLOWUP_ENABLED ||
     processLike.process?.env?.NEXT_PUBLIC_AIMANDALA_REPORT_FOLLOWUP_ENABLED;
 
-  return isTruthyFlag(fromImportMeta) || isTruthyFlag(fromProcess);
+  if (isFalseyFlag(fromImportMeta) || isFalseyFlag(fromProcess)) {
+    return false;
+  }
+
+  if (isTruthyFlag(fromImportMeta) || isTruthyFlag(fromProcess)) {
+    return true;
+  }
+
+  if (importMetaEnv?.DEV && !fromImportMeta && !fromProcess) {
+    return false;
+  }
+
+  return !fromImportMeta && !fromProcess;
 }

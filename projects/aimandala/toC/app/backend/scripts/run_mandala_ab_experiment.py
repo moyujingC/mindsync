@@ -7,7 +7,7 @@ import json
 import os
 import sys
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date
 from pathlib import Path
 from typing import Any, Literal
 
@@ -251,14 +251,14 @@ def _write_comparison(path: Path, *, case: AbCaseInput, a_result: dict[str, Any]
         f"- 生产角色：{a_result['run_summary'].get('production_role')}" if a_result else "- 生产角色：未运行",
         f"- 可复用视觉基准：{a_result['run_summary'].get('reusable_visual_baseline')}" if a_result else "- 可复用视觉基准：未运行",
         f"- 质量门：{a_result['quality_gate'].get('passed')}" if a_result else "- 质量门：未运行",
-        f"- 报告：a/final_report.md",
+        "- 报告：a/final_report.md",
         "",
         "## B 方案",
         "",
         f"- 生产角色：{b_result['run_summary'].get('production_role')}" if b_result else "- 生产角色：未运行",
         f"- 可复用视觉基准：{b_result['run_summary'].get('reusable_visual_baseline')}" if b_result else "- 可复用视觉基准：未运行",
         f"- 质量门：{b_result['quality_gate'].get('passed')}" if b_result else "- 质量门：未运行",
-        f"- 报告：b/final_report.md",
+        "- 报告：b/final_report.md",
         "",
         "## 人工评审建议",
         "",

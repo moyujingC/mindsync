@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type UIEvent } from "react";
 
 import logoNiwu from "../assets/logo-niwu.webp";
 import logoNiwuHero from "../assets/logo-niwu-hero.png";
@@ -298,33 +298,27 @@ const heroRingStyle = {
 } as CSSProperties;
 
 export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandingPageProps) {
+  const pageRef = useRef<HTMLDivElement | null>(null);
   const [showScrollCue, setShowScrollCue] = useState(true);
   const [compareOpen, setCompareOpen] = useState(true);
+  const scrollCueHideThreshold = 32;
 
   useEffect(() => {
-    const dismissScrollCue = () => {
-      setShowScrollCue(false);
-    };
+    const pageElement = pageRef.current;
+    if (!pageElement) {
+      return undefined;
+    }
 
-    const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowDown" || event.key === "PageDown" || event.key === " " || event.key === "Spacebar") {
-        dismissScrollCue();
-      }
-    };
+    setShowScrollCue(pageElement.scrollTop < scrollCueHideThreshold);
+    return undefined;
+  }, [scrollCueHideThreshold]);
 
-    window.addEventListener("wheel", dismissScrollCue, { passive: true });
-    window.addEventListener("touchmove", dismissScrollCue, { passive: true });
-    window.addEventListener("keydown", handleKeydown);
-
-    return () => {
-      window.removeEventListener("wheel", dismissScrollCue);
-      window.removeEventListener("touchmove", dismissScrollCue);
-      window.removeEventListener("keydown", handleKeydown);
-    };
-  }, []);
+  const handlePageScroll = (event: UIEvent<HTMLDivElement>) => {
+    setShowScrollCue(event.currentTarget.scrollTop < scrollCueHideThreshold);
+  };
 
   return (
-    <div className="am-page am-landing-page" style={heroRingStyle}>
+    <div ref={pageRef} className="am-page am-landing-page" style={heroRingStyle} onScroll={handlePageScroll}>
       <section className="am-landing-hero">
         <div className="am-pattern-overlay" />
         <div className="am-ambient-glow am-ambient-glow--right" />
@@ -414,7 +408,7 @@ export function MobileWebLandingPage({ onStart, onOpenHistory }: MobileWebLandin
       <section className="am-landing-section am-landing-section--final">
         <div className="am-pattern-overlay" />
         <div className="am-landing-section__glow am-landing-section__glow--final" />
-        <h3>准备好读读你的画了吗？</h3>
+        <h3>准备好解读你的画了吗？</h3>
         <button type="button" className="am-primary-cta am-primary-cta--compact" onClick={onStart}>
           <span className="am-primary-cta__shine" aria-hidden="true" />
           <span className="am-primary-cta__label">开始上传画作</span>

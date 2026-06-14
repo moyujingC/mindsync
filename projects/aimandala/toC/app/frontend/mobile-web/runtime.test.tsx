@@ -159,11 +159,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("确认支付并开始 Lite 解读");
+      expect(container.textContent).toContain("确认解读");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -217,11 +217,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("确认支付并开始 Lite 解读");
+      expect(container.textContent).toContain("确认解读");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -289,11 +289,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("确认支付并开始 Lite 解读");
+      expect(container.textContent).toContain("确认解读");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -343,11 +343,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("确认支付并开始 Lite 解读");
+      expect(container.textContent).toContain("确认解读");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -389,11 +389,13 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.querySelector(".mw-history-record__action")).toBeTruthy();
+      expect(
+        container.querySelector(".mw-history-record__cta-inline"),
+      ).toBeTruthy();
     });
 
     const detailButton = container.querySelector<HTMLButtonElement>(
-      ".mw-history-record__action",
+      ".mw-history-record__cta-inline",
     );
     expect(detailButton).toBeTruthy();
 
@@ -403,11 +405,11 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("打开 Lite 报告");
+      expect(container.textContent).toContain("查看 Lite");
     });
 
     const liteButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("打开 Lite 报告"),
+      (item) => item.textContent?.includes("查看 Lite"),
     );
     expect(liteButton).toBeTruthy();
 
@@ -422,7 +424,7 @@ describe("MobileWebRuntime", () => {
     });
   });
 
-  it("Lite 报告页底部主按钮会进入 Pro 升级付款页", async () => {
+  it("Lite 报告页底部主按钮会进入 Pro 升级直生成页", async () => {
     const input: MobileWebRouteInput = {
       route: "upload",
       params: {
@@ -459,7 +461,7 @@ describe("MobileWebRuntime", () => {
     });
 
     const litePayButton = Array.from(container.querySelectorAll("button")).find(
-      (item) => item.textContent?.includes("确认支付并开始 Lite 解读"),
+      (item) => item.textContent?.includes("确认解读"),
     );
     expect(litePayButton).toBeTruthy();
 
@@ -483,8 +485,8 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("确认升级到 Pro 深度解读");
-      expect(container.textContent).toContain("确认支付并升级到 Pro");
+      expect(container.textContent).toContain("升级到 Pro 深度解读");
+      expect(container.textContent).toContain("升级 Pro版");
       expect(container.textContent).toContain("再付 29 元升级");
     });
   });

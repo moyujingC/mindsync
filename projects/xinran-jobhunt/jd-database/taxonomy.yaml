@@ -1,0 +1,148 @@
+version: 0.1.0
+last_updated: 2026-06-09
+description: >
+  馨冉求职 JD 数据库岗位分类法。用于后续新样本归类、分桶分析和口径统一。
+
+primary_tracks:
+  - id: "ai-pm"
+    label: "AI 产品经理"
+    description: "以产品定义、工作流设计、业务落地和用户价值为主重心的岗位。"
+    subtracks:
+      - id: "ai-native-collaboration"
+        label: "AI Native 协作 / 知识工作型"
+        description: "强调用户工作流、Agent 交互、MVP、Vibe Coding 和知识工作提效。"
+        examples:
+          - "北京寻途未来科技-AI Agent产品经理（小而美AI Native团队）"
+      - id: "ai-native-enterprise-platform"
+        label: "AI Native 企业平台 / 复杂系统型"
+        description: "强调企业协作平台、权限治理、复杂系统抽象和 Agent 工作台。"
+        examples:
+          - "上海尊范科技有限公司-产品经理（AI Native）"
+      - id: "commercialization-enhancement"
+        label: "商业化 / 广告投放增强型"
+        description: "本质仍是商业化、电商广告或增长产品，AI 是增强层。"
+        examples:
+          - "上海某大型电子商务公司-商业化-AI Native产品经理"
+      - id: "ecommerce-service-agent"
+        label: "电商服务 / 智能客服 Agent 型"
+        description: "面向售前、售后、客服、人机协同的 Agent 服务产品。"
+        examples:
+          - "拼多多集团-PDD-Agent智能服务产品"
+      - id: "education-tech"
+        label: "教育科技 / 高校场景型"
+        description: "面向高校、课程、实验室、实训、培训产品的 AI PM。"
+        examples:
+          - "北京软通动力教育科技有限公司-AI产品经理（高校方向）"
+      - id: "industry-business-ai-pm"
+        label: "行业业务落地型 AI PM"
+        description: "强调业务洞察、方案设计、PRD 和业务侧落地。"
+        examples:
+          - "平安健康保险-AI产品经理"
+          - "夏晖物流-AI产品经理（智慧供应链）"
+      - id: "engineering-ai-pm"
+        label: "工程化 AI PM"
+        description: "强调 Agent、RAG、工作流、评估、Guardrails 和工程协同。"
+        examples:
+          - "药明生物-Agent AI Product Manager"
+      - id: "high-compliance-ai-pm"
+        label: "高合规行业 AI PM"
+        description: "强调行业合规、生态协同、治理要求和跨部门影响力。"
+        examples:
+          - "罗氏-AI产品经理（患者管理）"
+      - id: "title-duty-misaligned-pm"
+        label: "标题与职责错位型 PM"
+        description: "标题写产品经理，但实际更偏模型运营、数据或混合职责。"
+        examples:
+          - "上海海能证券投资顾问-AI大模型产品经理"
+
+  - id: "ai-consulting"
+    label: "AI 转型咨询 / 解决方案"
+    description: "以复杂业务问题抽象、方案设计、客户沟通、转型推进和商业化落地为主重心的岗位。"
+    subtracks:
+      - id: "solution-ai-pm"
+        label: "方案型 AI 产品经理 / 企业级 AI 方案岗"
+        description: "强调业务抽象、方案设计、交付推进、知识闭环和行业数字化。"
+        examples:
+          - "英湃（成都）科技有限公司-AI产品经理"
+      - id: "engineering-solution-architect"
+        label: "工程型 AI 解决方案架构师"
+        description: "强调代码、POC、售前、技术布道、SDK / Demo 资产沉淀。"
+        examples:
+          - "某大型互联网上市公司-AI解决方案架构师"
+      - id: "growth-customer-solution"
+        label: "业务增长 / 客户方案型"
+        description: "强调客户需求洞察、行业机会判断、原型、生态共建和增长目标。"
+        examples:
+          - "蚂蚁集团-客户技术解决方案架构师-AI方向"
+      - id: "ai-ops-enablement"
+        label: "AI 业务赋能 / AI Ops / 内部转型推进型"
+        description: "面向企业内部 AI 化落地、Prompt / Agent / Skill / MCP 推广和知识治理。"
+        examples:
+          - "艾特士信息咨询（成都）有限公司-AI应用业务伙伴"
+      - id: "strategy-planning"
+        label: "战略规划 / 客户诊断型"
+        description: "强调客户诊断、结构化分析、方案路径设计和战略落地。"
+        examples:
+          - "上海某小型人工智能公司-AI战略规划专家"
+      - id: "platform-commercialization"
+        label: "平台技术商业化型方案架构"
+        description: "强调 MaaS、平台接入、模型微调、推理优化和规模化售卖。"
+        examples:
+          - "字节跳动-机器学习平台产品解决方案架构师-火山方舟MaaS"
+      - id: "pure-presales"
+        label: "纯售前侧"
+        description: "强调客户沟通、方案写作、销售协同和签约前技术支持。"
+        examples:
+          - "DXC Technology-AI售前架构师"
+
+  - id: "fde"
+    label: "FDE / Builder / 交付工程"
+    description: "以客户场景落地、交付、部署、集成、Demo、工作流搭建或工具构建为主重心的岗位。"
+    subtracks:
+      - id: "standard-enterprise-fde"
+        label: "标准企业交付型 FDE"
+        description: "强调私有化部署、系统集成、Skill 开发、Graph RAG、结果负责。"
+        examples:
+          - "网易-FDE工程师"
+      - id: "ai-workflow-fde"
+        label: "AI 应用工作流型 FDE"
+        description: "强调 Agent 工作流、Demo、场景抽象、低代码平台和复杂流程拆解。"
+        examples:
+          - "字节跳动-豆包AI大模型FDE-火山方舟MaaS"
+          - "西井科技（上海）有限公司-FDE-前沿部署工程师（采购供应链应用）"
+      - id: "builder-tooling"
+        label: "Builder / 业务工具搭建型"
+        description: "强调 Agent、Workflow、AI Coding、RAG、知识库和业务工具搭建。"
+        examples:
+          - "美团-AI Builder（自营维修项目）"
+          - "KN Group-AI Builder"
+      - id: "prototype-demo-hybrid"
+        label: "原型 / Demo 驱动型混合角色"
+        description: "强调原型、展示脚本、轻量开发和里程碑交付。"
+        examples:
+          - "上海瀚讯信息技术股份有限公司-AI native产品原型 Builder"
+      - id: "pseudo-fde-engineering"
+        label: "伪FDE / AI应用平台工程"
+        description: "标题接近 FDE 或解决方案，但本质更偏平台开发、后端、模型工程。"
+        examples:
+          - "上海沁恩商务信息咨询-AI应用开发-AI解决方案工程师"
+
+cross_cutting_dimensions:
+  - id: "high-compliance"
+    label: "高合规行业"
+    description: "医疗、保险、金融、政务等行业，合规和治理约束显著。"
+  - id: "title-duty-misalignment"
+    label: "标题与职责错位"
+    description: "岗位标题不能准确代表真实职责重心，需重点观察。"
+  - id: "boss-analysis-paired"
+    label: "BOSS 分析配对样本"
+    description: "同一岗位同时具备 JD 正文和 BOSS 竞争力分析。"
+  - id: "real-human-positive-signal"
+    label: "真人正反馈样本"
+    description: "平台分低，但招聘方继续沟通、主动要简历或推进流程。"
+
+classification_rules:
+  - "primary_track 按真实职责重心归类，不按岗位标题字面归类。"
+  - "当岗位明显是混合画像时，single-track 只标主重心，次重心放 secondary_track。"
+  - "带有高合规、标题错位、BOSS 配对、真人正反馈等特征时，应在正文分析中额外标注。"
+  - "taxonomy 用于持续归类和横向分析，不直接替代单条 JD 的具体判断。"

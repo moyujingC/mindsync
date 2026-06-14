@@ -47,8 +47,9 @@
 
 1. [ToC-MVP-技术方案.md](./ToC-MVP-技术方案.md)
 2. [解读智能层-曼陀罗解读智能体架构.md](./解读智能层-曼陀罗解读智能体架构.md)
-3. [CI-CD与自动修复架构.md](./CI-CD与自动修复架构.md)
-4. [Paperclip-Automation-节点方案.md](./Paperclip-Automation-节点方案.md)
+3. [报告结构模板与高频迭代架构.md](./报告结构模板与高频迭代架构.md)
+4. [CI-CD与自动修复架构.md](./CI-CD与自动修复架构.md)
+5. [Paperclip-Automation-节点方案.md](./Paperclip-Automation-节点方案.md)
 
 ## 4. 当前架构阅读顺序
 
@@ -57,9 +58,12 @@
 2. 再看 `解读智能层-曼陀罗解读智能体架构`
    - 理解报告生成为什么从 legacy report pipeline（旧报告流水线）切到 `mandala_interpretation_agent`
    - 理解新目标链路是 `visual_draft / prompt_pack / final_report / quality_gate`
-3. 再看 `../疗愈体系知识库/README.md`
+3. 再看 `报告结构模板与高频迭代架构`
+   - 理解 Lite / Pro 报告页为什么应从 Markdown 主渲染切到 `ReportDocument` 结构化模板
+   - 理解段落级追问、追问线程和折叠记录如何挂在模块锚点上
+4. 再看 `../疗愈体系知识库/README.md`
    - 理解三圈五行方法、知识源入口和知识包压缩依据
-4. 最后看 CI/CD 与 Automation 两份专项架构
+5. 最后看 CI/CD 与 Automation 两份专项架构
    - 理解 `mvp-ci`、增强链路、Paperclip Automation 节点和 heartbeat 治理边界
 
 ## 5. 当前文档使用规则

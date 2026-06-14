@@ -38,6 +38,7 @@ const historyFilterOptions: Array<{
   { id: "all", label: "全部" },
   { id: "ready", label: "可查看" },
   { id: "pending", label: "生成中" },
+  { id: "review", label: "待复盘" },
 ];
 
 export interface SharedHistoryFilterTabsProps {
@@ -100,7 +101,7 @@ export function SharedHistoryThemeTabs({
             }}
             disabled={disabled}
           >
-            {isAll ? "全部议题" : getThemeDisplayName(theme) ?? theme}
+            {isAll ? "全部议题" : (getThemeDisplayName(theme) ?? theme)}
           </button>
         );
       })}
@@ -154,8 +155,13 @@ function getProgressPercent(progressLabel: string): number | null {
   return Math.min(100, Math.max(0, value));
 }
 
-function getEmptyStateCopy(activeFilter: SharedHistoryFilterId, activeTheme?: string): string {
-  const themeLabel = activeTheme ? (getThemeDisplayName(activeTheme) ?? activeTheme) : null;
+function getEmptyStateCopy(
+  activeFilter: SharedHistoryFilterId,
+  activeTheme?: string,
+): string {
+  const themeLabel = activeTheme
+    ? (getThemeDisplayName(activeTheme) ?? activeTheme)
+    : null;
 
   switch (activeFilter) {
     case "ready":
@@ -166,6 +172,10 @@ function getEmptyStateCopy(activeFilter: SharedHistoryFilterId, activeTheme?: st
       return themeLabel
         ? `当前议题“${themeLabel}”下没有生成中的记录，后续新的解读流程会出现在这里。`
         : "当前没有生成中的记录，后续新的解读流程会出现在这里。";
+    case "review":
+      return themeLabel
+        ? `当前议题“${themeLabel}”下没有待复盘记录。`
+        : "当前没有待复盘记录。";
     case "all":
       return themeLabel
         ? `当前议题“${themeLabel}”下还没有生成过 To C 解读，后续可从上传主路径进入。`
@@ -193,7 +203,10 @@ export function SharedHistoryRecordsList({
   activeRecordId = null,
 }: SharedHistoryRecordsListProps) {
   const filteredItems = items.filter((item) => {
-    if (activeTheme && item.themeLabel !== (getThemeDisplayName(activeTheme) ?? activeTheme)) {
+    if (
+      activeTheme &&
+      item.themeLabel !== (getThemeDisplayName(activeTheme) ?? activeTheme)
+    ) {
       return false;
     }
 
@@ -202,6 +215,8 @@ export function SharedHistoryRecordsList({
         return item.recordReady;
       case "pending":
         return !item.recordReady;
+      case "review":
+        return item.statusTone === "proReady" || item.statusTone === "ready";
       case "all":
         return true;
     }
@@ -220,7 +235,11 @@ export function SharedHistoryRecordsList({
             >
               <div className="am-card__header mw-card__header">
                 <h3>{item.title}</h3>
-                <span className={`am-badge mw-badge mw-badge--${item.statusTone}`}>{item.statusLabel}</span>
+                <span
+                  className={`am-badge mw-badge mw-badge--${item.statusTone}`}
+                >
+                  {item.statusLabel}
+                </span>
               </div>
               <p>{item.subtitle}</p>
               <p>{item.statusDetail}</p>
@@ -230,7 +249,9 @@ export function SharedHistoryRecordsList({
                 >
                   <div className="mw-history-progress__row">
                     <p className="mw-meta">阶段：{item.stageLabel}</p>
-                    <p className="mw-meta mw-history-progress__value">进度：{item.progressLabel}</p>
+                    <p className="mw-meta mw-history-progress__value">
+                      进度：{item.progressLabel}
+                    </p>
                   </div>
                   {progressPercent !== null ? (
                     <div className="mw-progress">
@@ -245,8 +266,12 @@ export function SharedHistoryRecordsList({
               {item.helperNote ? (
                 <p className="mw-meta mw-meta--soft">{item.helperNote}</p>
               ) : null}
-              <p className="mw-meta">议题：{item.themeLabel} · 可查看版本：{item.versionSummary}</p>
-              <p className="mw-meta">Interpretation ID: {item.interpretationId}</p>
+              <p className="mw-meta">
+                议题：{item.themeLabel} · 可查看版本：{item.versionSummary}
+              </p>
+              <p className="mw-meta">
+                Interpretation ID: {item.interpretationId}
+              </p>
               <div className="mw-button-row">
                 {actionBusy && activeRecordId === item.interpretationId ? (
                   <p className="mw-meta">当前正在刷新这条记录的真实状态。</p>

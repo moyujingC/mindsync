@@ -9,6 +9,7 @@ import {
   SharedUploadChecklistCard,
   SharedUploadDetectionCard,
   SharedUploadDraftSummaryCard,
+  resolveReportEntryRedeemResult,
 } from "./index";
 
 const flowState: MandalaFlowState = {
@@ -64,6 +65,7 @@ describe("shared ui", () => {
             helperNote: "无需一直停留在等待页。",
             stageLabel: "正在生成 Lite 解读",
             progressLabel: "约 52%",
+            theme: "intimate_relationship",
             themeLabel: "亲密关系",
           },
         ]}
@@ -80,20 +82,21 @@ describe("shared ui", () => {
     const html = renderToStaticMarkup(
       <SharedReportEntrySelectionPage
         descriptor={{
-          statusLabel: "作品识别完成",
-          title: "确认支付 Lite 解读",
-          description: "支付完成后，会立即进入 Lite 解读生成页。",
+          statusLabel: "待支付",
+          title: "开始 Lite 解读",
+          description: "点击开始后，会立即进入 Lite 解读生成页。",
           themeLabel: "亲密关系",
           footnote: "本次会先生成 Lite 报告；看完后，再决定要不要升级。",
           heroHint: "这一步会先帮你拿到第一份 Lite 解读。",
-          redeemHint: "系统会在支付前校验兑换码；支付成功后会直接开始 Lite 解读。",
+          redeemHint: "兑换码会先保留在表单里；当前 MVP 生成链路不会校验支付。",
           cards: [
             {
               id: "lite",
               title: "Lite",
               description: "先快速看清这次画面最明显的状态主线。",
+              bulletsTitle: "读完你会更清楚",
               bullets: ["重点接住状态主线"],
-              cta: "确认支付并开始 Lite 解读",
+              cta: "确认解读",
               note: "适合快速进入。",
               priceLabel: "9.9 元",
               tone: "lite",
@@ -104,8 +107,56 @@ describe("shared ui", () => {
       />,
     );
 
-    expect(html).toContain("确认支付并开始 Lite 解读");
+    expect(html).toContain("确认解读");
     expect(html).toContain("优惠券 / 兑换码");
+    expect(html).toContain("读完你会更清楚");
+  });
+
+  it("计算 report-entry 兑换结果", () => {
+    expect(
+      resolveReportEntryRedeemResult({
+        cardId: "lite",
+        code: "MVP_LITE",
+        priceLabel: "9.9 元",
+      }),
+    ).toEqual({
+      state: "success",
+      message: "兑换成功：MVP 体验券已应用。",
+      discountLabel: "9.9 元",
+      payableLabel: "0 元",
+    });
+    expect(
+      resolveReportEntryRedeemResult({
+        cardId: "pro",
+        code: "mvp-pro",
+        priceLabel: "再付 29 元升级",
+      }),
+    ).toEqual({
+      state: "success",
+      message: "兑换成功：MVP 体验券已应用。",
+      discountLabel: "29 元",
+      payableLabel: "0 元",
+    });
+    expect(
+      resolveReportEntryRedeemResult({
+        cardId: "lite",
+        code: "",
+        priceLabel: "9.9 元",
+      }),
+    ).toEqual({
+      state: "empty",
+      message: "请先输入优惠券或兑换码。",
+    });
+    expect(
+      resolveReportEntryRedeemResult({
+        cardId: "lite",
+        code: "MVP_PRO",
+        priceLabel: "9.9 元",
+      }),
+    ).toEqual({
+      state: "error",
+      message: "兑换失败：兑换码无效或不适用于当前解读版本。",
+    });
   });
 
   it("渲染 upload shared cards", () => {

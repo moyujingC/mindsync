@@ -88,4 +88,27 @@ describe("ensureUploadedImagePath", () => {
 
     expect(api.uploadImage).not.toHaveBeenCalled();
   });
+
+  it("预览模式允许直接复用已有图片路径", async () => {
+    const onResolved = vi.fn();
+
+    const uploaded = await ensureUploadedImagePath(
+      {
+        imagePath: "/tmp/local-preview.png",
+        theme: "wealth",
+        paintingIntention: "",
+        paintingFeeling: "",
+      },
+      onResolved,
+      { allowExistingImagePath: true },
+    );
+
+    expect(uploaded).toMatchObject({
+      image_path: "/tmp/local-preview.png",
+      storage_backend: "preview",
+      storage_key: "/tmp/local-preview.png",
+    });
+    expect(onResolved).toHaveBeenCalledWith(uploaded);
+    expect(api.uploadImage).not.toHaveBeenCalled();
+  });
 });

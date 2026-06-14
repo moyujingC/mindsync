@@ -17,9 +17,9 @@ import {
 
 const DEFAULTS = {
   dev: {
-    apiBase: "http://101.43.98.40",
-    homepageUrl: "http://101.43.98.40",
-    healthUrl: "http://101.43.98.40:8000/health",
+    apiBase: "https://dev-web-api.jingshu.cc",
+    homepageUrl: "https://dev-web.jingshu.cc",
+    healthUrl: "https://dev-web-api.jingshu.cc/health",
   },
   prod: {
     apiBase: "https://web-api.jingshu.cc",

@@ -1,10 +1,11 @@
 body {
-  background: #141e38;
+  background: var(--am-dev-shell-canvas);
   font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
 }
 
 .browser-shell {
   min-height: 100vh;
+  background: var(--am-dev-shell-canvas);
 }
 
 .browser-shell__panel {
@@ -39,11 +40,7 @@ body {
 }
 
 .browser-shell__panel--review {
-  background: linear-gradient(
-    180deg,
-    rgba(35, 49, 86, 0.92) 0%,
-    rgba(25, 37, 67, 0.96) 100%
-  );
+  background: var(--am-dev-shell-review);
 }
 
 .browser-shell__viewport {
@@ -75,12 +72,27 @@ body {
 .browser-shell__phone {
   width: min(100%, 430px);
   margin: 0 auto;
+  height: min(852px, calc(100vh - 48px));
   min-height: 780px;
+  display: flex;
+  flex-direction: column;
   padding: 0;
   border: 0;
   border-radius: 32px;
-  background: #141e38;
-  box-shadow: 0 24px 80px rgba(15, 27, 51, 0.28);
+  background: var(--am-dev-shell-phone-bg);
+  box-shadow: var(--am-dev-shell-phone-shadow);
+  overflow: hidden;
+}
+
+.browser-shell__phone > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+}
+
+.browser-shell__phone > .am-upload-page {
   overflow: hidden;
 }
 
@@ -114,9 +126,9 @@ body {
   width: fit-content;
   margin-top: 6px;
   padding: 8px 12px;
-  border: 1px solid rgba(205, 172, 119, 0.28);
+  border: 1px solid var(--am-dev-shell-version-border);
   border-radius: 999px;
-  background: rgba(205, 172, 119, 0.1);
+  background: var(--am-dev-shell-version-bg);
   color: var(--am-dev-text-primary);
 }
 
@@ -136,7 +148,7 @@ body {
   border: 0;
   border-radius: 999px;
   padding: 10px 14px;
-  background: rgba(139, 103, 55, 0.14);
+  background: var(--am-dev-shell-toggle-bg);
   color: var(--am-dev-text-warning);
   font-weight: 600;
 }
@@ -150,9 +162,9 @@ body {
 .browser-shell__status-card {
   grid-column: 1 / -1;
   padding: 16px;
-  border: 1px solid rgba(139, 103, 55, 0.18);
+  border: 1px solid var(--am-dev-shell-status-border);
   border-radius: 18px;
-  background: rgba(255, 252, 247, 0.72);
+  background: var(--am-dev-shell-status-bg);
 }
 
 .browser-shell__status-card-header {
@@ -274,6 +286,7 @@ body {
   }
 
   .browser-shell__phone {
+    height: min(852px, calc(100vh - 32px));
     min-height: auto;
   }
 }

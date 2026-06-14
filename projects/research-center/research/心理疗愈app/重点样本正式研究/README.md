@@ -1,0 +1,60 @@
+# 重点样本正式研究
+
+> 目标：把 4 个重点样本沉淀成可复用的正式研究底稿，供后续继续核验、学习、对外改写和内部产品反哺使用。  
+> 当前状态：进行中  
+> 最近更新：2026-06-07
+
+## 使用原则
+
+每篇正式研究文档统一分成三层：
+
+1. 已核验事实  
+2. 创业判断  
+3. 不能写成事实的说法 / 待继续核验问题  
+
+这样做的目的很直接：
+
+- 方便后续继续补证据
+- 方便从正式稿改写成网站内容
+- 避免把推断、体验感受、行业猜测写成事实
+
+## 当前样本清单
+
+| 编号 | 产品 | 当前状态 | 备注 |
+| --- | --- | --- | --- |
+| 01 | Ash / Slingshot AI | 已完成首稿 | 已按统一结构重写 |
+| 02 | Rosebud | 已完成首稿 | 已补官网、帮助中心、隐私政策与融资报道核验 |
+| 03 | Rocky.ai | 已完成首稿 | 已补官网、帮助中心、隐私政策与平台架构核验 |
+| 04 | Eleos Health | 已完成首稿 | 已补官网、产品页、安全页与官方发布稿核验 |
+
+## 建议写作顺序
+
+1. Ash  
+2. Rosebud  
+3. Rocky.ai  
+4. Eleos Health
+
+这个顺序对应四种不同的研究价值：
+
+- `Ash`：高关系强度 + 高安全责任 + 垂直模型叙事
+- `Rosebud`：长期记忆 + 自我记录 + 个性化反思
+- `Rocky.ai`：企业教练平台 + RAG（检索增强生成）+ 多智能体（multi-agent）
+- `Eleos Health`：临床工作流 AI + 合规 + 人机协作
+
+## 产出用途
+
+这些文档优先服务两件事：
+
+1. 你自己学习和继续研究  
+2. 后续从中筛选适合公开分享的内容，再同步到观察室网站
+
+现阶段不需要为了网站表达压缩研究深度。
+
+## 当前完成度
+
+4 个重点样本的首轮正式研究稿已经齐了：
+
+- [01_Ash_Slingshot_AI_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/01_Ash_Slingshot_AI_正式研究文档.md)
+- [02_Rosebud_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/02_Rosebud_正式研究文档.md)
+- [03_Rocky_ai_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/03_Rocky_ai_正式研究文档.md)
+- [04_Eleos_Health_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/04_Eleos_Health_正式研究文档.md)

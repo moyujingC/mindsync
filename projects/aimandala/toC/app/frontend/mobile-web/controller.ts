@@ -5,7 +5,7 @@ import {
   initialMandalaFlowState,
   selectImage,
 } from "../shared/core";
-import { createWealthReport } from "../shared/api";
+import { createWealthReport, getWealthReport } from "../shared/api";
 import type {
   DetectCirclesResponse,
   InterpretationVersion,
@@ -15,6 +15,10 @@ import type {
   WealthReportResponse,
 } from "../shared/types";
 import type { MobileWebReportVariant } from "./state";
+import {
+  createStateFromWealthReport,
+  restoreGeneratedReportState,
+} from "./generated-report-store";
 
 export interface MobileWebFlowSnapshot {
   state: MandalaFlowState;
@@ -134,14 +138,39 @@ export async function refreshMobileWebReport(
   reportType: InterpretationVersion,
   currentState: MandalaFlowState = initialMandalaFlowState,
 ): Promise<MobileWebFlowSnapshot> {
-  let state = currentState;
+  const localState = restoreGeneratedReportState(interpretationId);
+  if (localState) {
+    return {
+      state: localState,
+      detection: localState.detection ?? undefined,
+      report: localState.report ?? undefined,
+    };
+  }
 
-  return {
-    state: applyError(
+  try {
+    const wealthReport = await getWealthReport(interpretationId);
+    if (wealthReport.report_mode !== reportType) {
+      return {
+        state: applyError(
+          currentState,
+          `当前记录是 ${wealthReport.report_mode} 报告，不能作为 ${reportType} 报告打开。`,
+        ),
+      };
+    }
+    const state = createStateFromWealthReport(wealthReport);
+    return {
       state,
-      `Report refresh is not available for ${interpretationId} (${reportType}) on the current report API.`,
-    ),
-  };
+      report: state.report ?? undefined,
+      wealthReport,
+    };
+  } catch (error) {
+    return {
+      state: applyError(
+        currentState,
+        error instanceof Error ? error.message : "报告恢复失败，请稍后重试。",
+      ),
+    };
+  }
 }
 
 export async function pollMobileWebReportUntilReady(

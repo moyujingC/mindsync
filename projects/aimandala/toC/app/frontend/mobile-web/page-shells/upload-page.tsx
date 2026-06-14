@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ChangeEvent } fro
 
 import type { MobileWebUploadDraft } from "../state";
 import type { DetectCirclesResponse } from "../../shared/types";
+import { SharedAppTopBar, SharedTopicSelector } from "../../shared/ui";
 
 export interface MobileWebUploadPageProps {
   draft: MobileWebUploadDraft;
@@ -16,23 +17,8 @@ export interface MobileWebUploadPageProps {
   onBack?: () => void;
 }
 
-type ThemeItem = {
-  value: string;
-  label: string;
-  subLabel: string;
-  icon: IconNode[];
-};
-
 const DEFAULT_INNER_RADIUS = 0.35;
 const DEFAULT_MIDDLE_RADIUS = 0.65;
-
-function NavBackIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M14.5 6.5L9 12L14.5 17.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function UploadGlyph() {
   return (
@@ -46,45 +32,6 @@ function UploadGlyph() {
 
 type IconNode = ["path" | "circle" | "rect", Record<string, string>];
 
-const ICON_CHECK: IconNode[] = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-const ICON_COINS: IconNode[] = [
-  ["circle", { cx: "8", cy: "8", r: "6", key: "3yglwk" }],
-  ["path", { d: "M18.09 10.37A6 6 0 1 1 10.34 18", key: "t5s6rm" }],
-  ["path", { d: "M7 6h1v4", key: "1obek4" }],
-  ["path", { d: "m16.71 13.88.7.71-2.82 2.82", key: "1rbuyh" }],
-];
-const ICON_HEART: IconNode[] = [
-  ["path", { d: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z", key: "c3ymky" }],
-];
-const ICON_USER: IconNode[] = [
-  ["path", { d: "M18 21a6 6 0 0 0-12 0", key: "u1" }],
-  ["circle", { cx: "12", cy: "8", r: "4", key: "u2" }],
-];
-const ICON_USERS: IconNode[] = [
-  ["path", { d: "M16 21a4 4 0 0 0-8 0", key: "us1" }],
-  ["circle", { cx: "12", cy: "9", r: "3", key: "us2" }],
-  ["path", { d: "M22 21a4 4 0 0 0-3-3.87", key: "us3" }],
-  ["path", { d: "M2 21a4 4 0 0 1 3-3.87", key: "us4" }],
-];
-const ICON_BABY: IconNode[] = [
-  ["path", { d: "M9 12h6", key: "b1" }],
-  ["path", { d: "M10 16h4", key: "b2" }],
-  ["circle", { cx: "12", cy: "10", r: "5", key: "b3" }],
-  ["path", { d: "M10 4.5c.8-1 2.2-1.5 3.5-1", key: "b4" }],
-];
-const ICON_USERS_ROUND: IconNode[] = [
-  ["path", { d: "M2 21a8 8 0 0 1 12 0", key: "ur1" }],
-  ["circle", { cx: "8", cy: "8", r: "4", key: "ur2" }],
-  ["path", { d: "M14 21a6 6 0 0 1 8 0", key: "ur3" }],
-  ["circle", { cx: "18", cy: "9", r: "3", key: "ur4" }],
-];
-const ICON_BRIEFCASE: IconNode[] = [
-  ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
-  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }],
-];
-const ICON_ACTIVITY: IconNode[] = [
-  ["path", { d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2", key: "169zse" }],
-];
 const ICON_BOOK_OPEN: IconNode[] = [
   ["path", { d: "M12 7v14", key: "1akyts" }],
   [
@@ -162,17 +109,6 @@ function LucideIcon({
     </svg>
   );
 }
-
-const themes: ThemeItem[] = [
-  { value: "wealth", label: "财富", subLabel: "关系", icon: ICON_COINS },
-  { value: "intimate_relationship", label: "亲密", subLabel: "关系", icon: ICON_HEART },
-  { value: "mother_relationship", label: "母亲", subLabel: "关系", icon: ICON_USER },
-  { value: "father_relationship", label: "父亲", subLabel: "关系", icon: ICON_USERS },
-  { value: "parent_child_relationship", label: "亲子", subLabel: "关系", icon: ICON_BABY },
-  { value: "personal_growth", label: "人际", subLabel: "关系", icon: ICON_USERS_ROUND },
-  { value: "career_development", label: "事业", subLabel: "发展", icon: ICON_BRIEFCASE },
-  { value: "body_health", label: "身体", subLabel: "健康", icon: ICON_ACTIVITY },
-];
 
 function UploadSlider({
   label,
@@ -364,142 +300,6 @@ function TextInputField({
   );
 }
 
-function ThemeSelector({
-  value,
-  onChange,
-}: {
-  value?: string;
-  onChange?: (nextValue: string) => void;
-}) {
-  const normalizedValue = themes.some((theme) => theme.value === value) ? value : themes[0].value;
-  const [selected, setSelected] = useState(normalizedValue);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const dragStateRef = useRef({
-    pointerId: -1,
-    startX: 0,
-    startScrollLeft: 0,
-    moved: false,
-  });
-  const suppressNextClickRef = useRef(false);
-
-  useEffect(() => {
-    if (normalizedValue !== selected) {
-      setSelected(normalizedValue);
-    }
-  }, [normalizedValue, selected]);
-
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    const container = scrollRef.current;
-    if (!container) return;
-    if (container.scrollWidth <= container.clientWidth) return;
-    dragStateRef.current.pointerId = event.pointerId;
-    dragStateRef.current.startX = event.clientX;
-    dragStateRef.current.startScrollLeft = container.scrollLeft;
-    dragStateRef.current.moved = false;
-  };
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    const container = scrollRef.current;
-    if (!container) return;
-    if (dragStateRef.current.pointerId !== event.pointerId) return;
-    const deltaX = event.clientX - dragStateRef.current.startX;
-    if (Math.abs(deltaX) > 10) {
-      dragStateRef.current.moved = true;
-    }
-    container.scrollLeft = dragStateRef.current.startScrollLeft - deltaX;
-  };
-
-  const handlePointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (dragStateRef.current.pointerId !== event.pointerId) return;
-    suppressNextClickRef.current = dragStateRef.current.moved;
-    dragStateRef.current.pointerId = -1;
-    window.setTimeout(() => {
-      suppressNextClickRef.current = false;
-    }, 120);
-  };
-
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    const selectedIndex = themes.findIndex((theme) => theme.value === selected);
-    if (selectedIndex >= 0) {
-      const selectedButton = container.children[selectedIndex] as HTMLElement | undefined;
-      selectedButton?.scrollIntoView({ inline: "nearest", block: "nearest" });
-    }
-  }, [selected]);
-
-  return (
-    <div className="am-theme-selector">
-      <p className="am-theme-selector__title">
-        当前解读议题 <span className="am-theme-selector__required">*</span>
-      </p>
-
-      <div
-        ref={scrollRef}
-        className="am-scrollbar-hide am-theme-selector__scroll"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerEnd}
-        onPointerCancel={handlePointerEnd}
-        onPointerLeave={handlePointerEnd}
-      >
-        {themes.map((theme) => {
-          const isSelected = selected === theme.value;
-          return (
-            <button
-              key={theme.value}
-              type="button"
-              className={`am-theme-selector__card${isSelected ? " is-active" : ""}`}
-              onClick={(event) => {
-                if (suppressNextClickRef.current) {
-                  event.preventDefault();
-                  return;
-                }
-                setSelected(theme.value);
-                onChange?.(theme.value);
-              }}
-            >
-              {isSelected ? <div className="am-theme-selector__glow" /> : null}
-
-              {isSelected ? (
-                <div className="am-theme-selector__check">
-                  <LucideIcon iconNode={ICON_CHECK} size={10} strokeWidth={3} />
-                </div>
-              ) : null}
-
-              <span className="am-theme-selector__icon">
-                <LucideIcon
-                  iconNode={theme.icon}
-                  size={22}
-                  strokeWidth={1.5}
-                />
-              </span>
-              <span className="am-theme-selector__label">
-                {theme.label}
-              </span>
-              <span className="am-theme-selector__sub">
-                {theme.subLabel}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="am-theme-selector__dots">
-        {themes.map((theme) => {
-          const isSelected = selected === theme.value;
-          return (
-            <div
-              key={`dot-${theme.value}`}
-              className={`am-theme-selector__dot${isSelected ? " is-active" : ""}`}
-            />
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 function BottomPanel({
   canContinue,
   isUploading,
@@ -554,8 +354,7 @@ function BottomPanel({
           >
             隐私政策
           </button>
-          <br />
-          画作将被加密存储并仅用于解读
+          {" "}画作将被加密存储并仅用于解读
         </p>
       </div>
     </div>
@@ -607,6 +406,11 @@ export function MobileWebUploadPage({
     ["--am-upload-inner" as string]: `${innerRadius}%`,
     ["--am-upload-middle" as string]: `${middleRadius}%`,
   } as CSSProperties;
+  const showOriginalImage = () => {
+    if (!previewSrc) return;
+    setShowOriginalPreview(true);
+  };
+  const hideOriginalImage = () => setShowOriginalPreview(false);
 
   useEffect(() => {
     if (!isGuideOpen) return;
@@ -909,6 +713,18 @@ export function MobileWebUploadPage({
 
   return (
     <div className="am-page am-upload-page">
+      <SharedAppTopBar
+        title="上传曼陀罗画作"
+        backLabel="返回首页"
+        onBack={onBack}
+        trailing={environmentLabel ? (
+          <div className={`am-dev-pill am-dev-pill--${environmentTone} am-dev-pill--upload`}>
+            <strong>{environmentLabel}</strong>
+            <span>{environmentDetail}</span>
+          </div>
+        ) : undefined}
+      />
+
       <div className="am-upload-hero">
         <div className="am-upload-hero__glow am-upload-hero__glow--right" />
         <div className="am-upload-hero__glow am-upload-hero__glow--left" />
@@ -918,31 +734,20 @@ export function MobileWebUploadPage({
         <div className="am-upload-hero__spark am-upload-hero__spark--right" />
         <div className="am-upload-hero__spark am-upload-hero__spark--mid" />
 
-        <div className="am-upload-topbar">
-          <button type="button" className="am-upload-back" onClick={onBack} aria-label="返回首页">
-            <NavBackIcon />
-          </button>
-          <h1 className="am-upload-title">上传曼陀罗画作</h1>
-          {environmentLabel ? (
-            <div className={`am-dev-pill am-dev-pill--${environmentTone} am-dev-pill--upload`}>
-              <strong>{environmentLabel}</strong>
-              <span>{environmentDetail}</span>
-            </div>
-          ) : (
-            <div className="am-upload-topbar__spacer" aria-hidden="true" />
-          )}
-        </div>
-
         <div className="am-upload-preview-zone">
           <div className="am-upload-disc-shell">
             <div className="am-upload-disc-shell__halo" />
             <div className="am-upload-disc-shell__rim" />
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--top" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--top-right" />
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--right" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--bottom-right" />
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--bottom" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--bottom-left" />
             <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--left" />
+            <div className="am-upload-disc-shell__spark am-upload-disc-shell__spark--top-left" />
             <div
-              className={`am-upload-disc${isDragOver ? " is-dragover" : ""}${previewSrc ? " has-image" : ""}`}
+              className={`am-upload-disc${isDragOver ? " is-dragover" : ""}${previewSrc ? " has-image" : ""}${showOriginalPreview ? " is-showing-original" : ""}`}
               style={discStyle}
               role="button"
               tabIndex={0}
@@ -987,6 +792,12 @@ export function MobileWebUploadPage({
                   }}
                 />
               ) : null}
+              {previewSrc ? (
+                <>
+                  <div className="am-upload-disc__boundary am-upload-disc__boundary--inner" aria-hidden="true" />
+                  <div className="am-upload-disc__boundary am-upload-disc__boundary--middle" aria-hidden="true" />
+                </>
+              ) : null}
               {!previewSrc ? (
                 <button
                   type="button"
@@ -997,7 +808,7 @@ export function MobileWebUploadPage({
                   }}
                 >
                   <span className="am-upload-disc__placeholder-icon"><UploadGlyph /></span>
-                  <span className="am-upload-disc__placeholder-text">{isDragOver ? "释放以上传" : "点击上传"}</span>
+                  <span className="am-upload-disc__placeholder-text">{isDragOver ? "释放以上传" : "点击上传或拍照"}</span>
                 </button>
               ) : null}
               {previewSrc ? (
@@ -1040,15 +851,22 @@ export function MobileWebUploadPage({
           </button>
           <button
             type="button"
-            className="am-upload-action-button"
+            className={`am-upload-action-button${showOriginalPreview ? " is-pressed" : ""}`}
             disabled={!previewSrc}
-            onPointerDown={() => {
+            onPointerDown={(event) => {
               if (!previewSrc) return;
-              setShowOriginalPreview(true);
+              event.currentTarget.setPointerCapture?.(event.pointerId);
+              showOriginalImage();
             }}
-            onPointerUp={() => setShowOriginalPreview(false)}
-            onPointerLeave={() => setShowOriginalPreview(false)}
-            onPointerCancel={() => setShowOriginalPreview(false)}
+            onPointerUp={hideOriginalImage}
+            onPointerCancel={hideOriginalImage}
+            onMouseDown={showOriginalImage}
+            onMouseUp={hideOriginalImage}
+            onMouseLeave={hideOriginalImage}
+            onTouchStart={showOriginalImage}
+            onTouchEnd={hideOriginalImage}
+            onTouchCancel={hideOriginalImage}
+            onBlur={hideOriginalImage}
           >
             <LucideIcon iconNode={ICON_EYE} size={13} strokeWidth={1.8} />
             <span>按住查看原图</span>
@@ -1093,8 +911,10 @@ export function MobileWebUploadPage({
             </div>
           ) : null}
 
-          <ThemeSelector
+          <SharedTopicSelector
+            prefix="am-theme-selector"
             value={draft.theme}
+            title={<>选择解读议题 <span className="am-theme-selector__required">*</span></>}
             onChange={(nextValue) => onDraftChange?.({ theme: nextValue })}
           />
 

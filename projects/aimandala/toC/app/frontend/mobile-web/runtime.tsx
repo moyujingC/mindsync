@@ -4,6 +4,7 @@ import { MobileWebApp } from "./app";
 import { resolveMobileWebCanonicalUserId } from "./identity";
 import { loadHistoryPage } from "./loaders";
 import type { HistoryFilterId } from "./components/history-cards";
+import { isHistoryRecordDetailRoute } from "./routes";
 import {
   resolveMobileWebRouteProps,
   type MobileWebRouteInput,
@@ -30,12 +31,17 @@ import type {
 } from "../shared/types";
 import {
   getDraftReportVariant,
+  hasDraftResolvedCircleRadii,
   mergeMobileWebUploadDraft,
   toMobileWebUploadAssetRef,
   toStartCreatePayload,
   type MobileWebReportProductType,
   type MobileWebUploadDraft,
 } from "./state";
+import {
+  getGeneratedReportEntry,
+  saveGeneratedReport,
+} from "./generated-report-store";
 
 export interface MobileWebRouteLoaderState {
   loading: boolean;
@@ -231,7 +237,7 @@ function getDraftFromInput(
   if (
     input.route === "report" ||
     input.route === "history" ||
-    input.route === "historyRecordDetail"
+    isHistoryRecordDetailRoute(input.route)
   ) {
     return input.params.uploadDraft ?? null;
   }
@@ -915,12 +921,16 @@ export function MobileWebRuntime({
       if (!record) {
         return;
       }
+      const entry = getGeneratedReportEntry(interpretationId);
+      if (entry) {
+        setRuntimeUploadDraft(entry.draft);
+      }
 
       setRuntimeProps({
         ...currentRuntimeProps,
         route: "historyRecordDetail",
         record,
-        uploadDraft: currentUploadDraft ?? undefined,
+        uploadDraft: entry?.draft ?? currentUploadDraft ?? undefined,
       });
     } finally {
       setRuntimeHistoryOpeningId(null);
@@ -988,11 +998,14 @@ export function MobileWebRuntime({
 
     const interpretationId = recordToOpen.interpretation_id;
     const imagePath =
+      getGeneratedReportEntry(interpretationId)?.draft.uploadAsset?.runtimeImagePath ??
+      getGeneratedReportEntry(interpretationId)?.draft.imagePath ??
       currentUploadDraft?.uploadAsset?.runtimeImagePath ??
       currentUploadDraft?.imagePath ??
       null;
+    const storedDraft = getGeneratedReportEntry(interpretationId)?.draft;
     const nextDraft = mergeMobileWebUploadDraft(
-      currentUploadDraft ?? uploadDraftForReturn,
+      storedDraft ?? currentUploadDraft ?? uploadDraftForReturn,
       {
         reportType,
       },
@@ -1128,6 +1141,11 @@ export function MobileWebRuntime({
         ...draftToUse,
         uploadAsset: nextAssetRef,
       };
+      saveGeneratedReport({
+        userId,
+        draft: nextDraft,
+        state: result.state,
+      });
       setRuntimeProps({
         route: result.state.step === "liteGenerating" ? "loading" : "report",
         flowState: result.state,
@@ -1228,6 +1246,9 @@ export function MobileWebRuntime({
           },
         );
         setRuntimeUploadDraft(nextDraft);
+        if (!hasDraftResolvedCircleRadii(nextDraft)) {
+          return;
+        }
         setRuntimeProps({
           route: "reportEntry",
           uploadDraft: nextDraft,
@@ -1284,7 +1305,7 @@ export function MobileWebRuntime({
       historyFilterBusy={runtimeHistoryBusy}
       historyActionBusy={
         runtimeBusy &&
-        (currentRuntimeProps.route === "history" || currentRuntimeProps.route === "historyRecordDetail")
+        (currentRuntimeProps.route === "history" || isHistoryRecordDetailRoute(currentRuntimeProps.route))
       }
       activeHistoryRecordId={runtimeHistoryOpeningId}
       activeHistoryRecordReportType={runtimeHistoryOpeningReportType}

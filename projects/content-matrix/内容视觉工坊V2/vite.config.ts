@@ -1,0 +1,225 @@
+import { defineConfig, loadEnv } from 'vite'
+import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
+import type { Connect } from 'vite'
+import {
+  planCardsWithLLM,
+  planKnowledgeCardsFromArticle,
+  planWechatCoverFromArticle,
+  planWechatCoverWithLLM,
+} from './server/content-planning'
+import { generateImagesWithModel } from './server/image-generation'
+
+
+function figmaAssetResolver() {
+  return {
+    name: 'figma-asset-resolver',
+    resolveId(id) {
+      if (id.startsWith('figma:asset/')) {
+        const filename = id.replace('figma:asset/', '')
+        return path.resolve(__dirname, 'src/assets', filename)
+      }
+    },
+  }
+}
+
+function jsonBodyParser(req: Connect.IncomingMessage): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let body = ''
+    req.on('data', (chunk) => {
+      body += chunk
+    })
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {})
+      } catch (error) {
+        reject(error)
+      }
+    })
+    req.on('error', reject)
+  })
+}
+
+function localGenerateImagesApi() {
+  return {
+    name: 'local-generate-images-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/generate-images', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'POST') {
+          next()
+          return
+        }
+
+        try {
+          const body = await jsonBodyParser(req)
+          const result = await generateImagesWithModel(body)
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify(result))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'generate-images-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
+function localDownloadImageApi() {
+  return {
+    name: 'local-download-image-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/download-image', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'GET') {
+          next()
+          return
+        }
+
+        try {
+          const requestUrl = new URL(req.url || '', 'http://localhost')
+          const targetUrl = requestUrl.searchParams.get('url')
+          if (!targetUrl) {
+            res.statusCode = 400
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({
+              error: 'missing-url',
+              message: '缺少图片地址',
+            }))
+            return
+          }
+
+          const upstream = await fetch(targetUrl)
+          if (!upstream.ok) {
+            res.statusCode = upstream.status
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({
+              error: 'download-image-failed',
+              message: `图片下载失败: ${upstream.status}`,
+            }))
+            return
+          }
+
+          const arrayBuffer = await upstream.arrayBuffer()
+          res.statusCode = 200
+          res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/octet-stream')
+          res.end(Buffer.from(arrayBuffer))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'download-image-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
+function localPlanCardsApi() {
+  return {
+    name: 'local-plan-cards-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/plan-cards', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'POST') {
+          next()
+          return
+        }
+
+        try {
+          const body = await jsonBodyParser(req)
+          let planned
+
+          try {
+            planned = await planCardsWithLLM(body)
+          } catch (error) {
+            console.warn('[plan-cards] falling back to local planner:', error instanceof Error ? error.message : error)
+            planned = {
+              provider: 'local-fallback',
+              ...planKnowledgeCardsFromArticle(body),
+            }
+          }
+
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify(planned))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'plan-cards-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
+function localPlanCoverApi() {
+  return {
+    name: 'local-plan-cover-api',
+    configureServer(server: any) {
+      server.middlewares.use('/api/plan-cover', async (req: Connect.IncomingMessage, res: any, next: any) => {
+        if (req.method !== 'POST') {
+          next()
+          return
+        }
+
+        try {
+          const body = await jsonBodyParser(req)
+          let planned
+
+          try {
+            planned = await planWechatCoverWithLLM(body)
+          } catch (error) {
+            console.warn('[plan-cover] falling back to local planner:', error instanceof Error ? error.message : error)
+            planned = {
+              provider: 'local-fallback',
+              ...planWechatCoverFromArticle(body),
+            }
+          }
+
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify(planned))
+        } catch (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({
+            error: 'plan-cover-failed',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          }))
+        }
+      })
+    },
+  }
+}
+
+export default defineConfig(({ mode }) => {
+  Object.assign(process.env, loadEnv(mode, __dirname, ''))
+
+  return {
+    plugins: [
+      figmaAssetResolver(),
+      localPlanCardsApi(),
+      localPlanCoverApi(),
+      localGenerateImagesApi(),
+      localDownloadImageApi(),
+      // The React and Tailwind plugins are both required for Make, even if
+      // Tailwind is not being actively used – do not remove them
+      react(),
+      tailwindcss(),
+    ],
+    resolve: {
+      alias: {
+        // Alias @ to the src directory
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
+    // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
+    assetsInclude: ['**/*.svg', '**/*.csv'],
+  }
+})

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MobileWebApp } from "./app";
 import { MiniappApp } from "../miniapp/app";
 import type { MiniappRouteId } from "../miniapp/routes";
-import { createPreviewAppProps } from "./fixtures";
+import { createPreviewAppProps, createPreviewHistoryRecords } from "./fixtures";
 import {
   createBrowserFileFromFixture,
   mobileWebDevFixturePresets,
@@ -30,15 +30,23 @@ import {
   resolveMobileWebSession,
   updateMobileWebSessionCanonicalUserId,
 } from "./identity";
-import { mobileWebRoutes, type MobileWebRouteId } from "./routes";
+import { isHistoryRecordDetailRoute, mobileWebRoutes, type MobileWebRouteId } from "./routes";
 import {
   getDraftReportVariant,
+  hasDraftResolvedCircleRadii,
   mergeMobileWebUploadDraft,
   toMobileWebUploadAssetRef,
   toStartCreatePayload,
   type MobileWebReportProductType,
   type MobileWebUploadDraft,
 } from "./state";
+import {
+  appendGeneratedReportForDebug,
+  getGeneratedReportEntry,
+  listGeneratedReportRecords,
+  saveGeneratedReport,
+  seedGeneratedReportsForDebug,
+} from "./generated-report-store";
 import { ensureUploadedImagePath } from "./upload-runtime";
 import type { HistoryFilterId } from "./components/history-cards";
 import type {
@@ -147,7 +155,7 @@ function formatHistoryRefreshHint(date = new Date()): string {
 
 function resolvePreviewReportFooterState(
   flowState: MandalaFlowState | null,
-  draft: MobileWebUploadDraft,
+  _draft: MobileWebUploadDraft,
 ) {
   if (!flowState || flowState.step === "liteGenerating" || flowState.step === "error") {
     return {};
@@ -167,6 +175,10 @@ function resolvePreviewReportFooterState(
     secondaryLabel: "重新上传画作",
     footerHint: "如果你想继续深入读这幅画，可以在 Lite 基础上升级到 Pro 完整解读。",
   };
+}
+
+function resolvePreviewRedeemCode(reportType: MobileWebReportProductType): string {
+  return reportType === "pro" ? "MVP-PRO" : "MVP-LITE";
 }
 
 export function MobileWebBrowserShell() {
@@ -212,6 +224,7 @@ export function MobileWebBrowserShell() {
     useState<InterpretationVersion | null>(null);
   const [fixtureLoadingId, setFixtureLoadingId] =
     useState<string | null>(null);
+  const [historySeedAdding, setHistorySeedAdding] = useState(false);
   const [runtimeDebugState, setRuntimeDebugState] = useState<RuntimeDebugState | null>(null);
   const userId = session.canonicalUserId;
   const activePreviewImagePath = draft.uploadAsset?.runtimeImagePath ?? draft.imagePath;
@@ -270,6 +283,21 @@ export function MobileWebBrowserShell() {
     persistMobileWebSession(session);
   }, [session]);
 
+  useEffect(() => {
+    if (!localDebugEnabled) {
+      return;
+    }
+
+    const seededRecords = seedGeneratedReportsForDebug(session.canonicalUserId);
+    if (route === "history" && !previewHistoryRecords?.length && seededRecords.length > 0) {
+      void refreshPreviewHistory(previewHistoryQuery, {
+        successLabel: "已载入历史页对齐样例",
+        successDetail: "当前历史页使用预设样例数据，便于直接对齐 Figma 版的列表、筛选和状态层级。",
+        successTone: "preview",
+      });
+    }
+  }, [localDebugEnabled, previewHistoryQuery, previewHistoryRecords?.length, route, session.canonicalUserId]);
+
   function commitUserIdInput(nextValue: string) {
     setUserIdInput(nextValue);
 
@@ -291,8 +319,6 @@ export function MobileWebBrowserShell() {
       preserveRecordsOnError?: boolean;
     },
   ) {
-    void nextQuery;
-    void options;
     if (draft.browserFile && !draft.uploadAsset) {
       setPreviewHistoryStatusLabel("当前显示占位历史记录");
       setPreviewHistoryStatusDetail("当前浏览器文件还没完成上传换路径，因此历史页先不请求真实接口。");
@@ -301,10 +327,13 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    setPreviewHistoryRecords(null);
-    setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
-    setPreviewHistoryStatusDetail("当前只保留财富报告生成入口，历史列表需要按新 report_id 存储模型重做。");
-    setPreviewHistoryStatusTone("preview");
+    const records = localDebugEnabled
+      ? createPreviewHistoryRecords()
+      : listGeneratedReportRecords(nextQuery);
+    setPreviewHistoryRecords(records);
+    setPreviewHistoryStatusLabel(options?.successLabel ?? (records.length ? (localDebugEnabled ? "已载入 Figma 对齐历史样例" : "已读取本地生成历史") : "暂无本地历史记录"));
+    setPreviewHistoryStatusDetail(options?.successDetail ?? (records.length ? (localDebugEnabled ? "当前历史页使用预设样例数据，专门用于对齐首卡以下的视觉和信息层级。" : "当前历史页展示本浏览器内生成过的 Lite / Pro 报告。") : "完成一次 Lite 或 Pro 解读后，这里会出现可回看的报告。"));
+    setPreviewHistoryStatusTone(options?.successTone ?? "preview");
     setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
   }
 
@@ -325,10 +354,10 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryRefreshing(true);
 
       if (!cancelled) {
-        setPreviewHistoryRecords(null);
+        setPreviewHistoryRecords(localDebugEnabled ? createPreviewHistoryRecords() : listGeneratedReportRecords(previewHistoryQuery));
         setPreviewHistoryRefreshHint(formatHistoryRefreshHint());
-        setPreviewHistoryStatusLabel("历史记录暂未接入当前报告 API");
-        setPreviewHistoryStatusDetail("自动刷新已停用；历史列表会在新报告存储模型完成后重做。");
+        setPreviewHistoryStatusLabel(localDebugEnabled ? "已刷新历史样例" : "已刷新本地历史记录");
+        setPreviewHistoryStatusDetail(localDebugEnabled ? "当前历史页继续使用预设样例数据，方便稳定调试 Figma 对齐。" : "当前历史页展示本浏览器内生成过的 Lite / Pro 报告。");
         setPreviewHistoryStatusTone("preview");
       }
       setPreviewHistoryRefreshing(false);
@@ -365,6 +394,27 @@ export function MobileWebBrowserShell() {
       failureTone: "preview",
       preserveRecordsOnError: true,
     });
+  }
+
+  async function handleAppendHistorySeed() {
+    if (historySeedAdding) {
+      return;
+    }
+
+    setHistorySeedAdding(true);
+    try {
+      appendGeneratedReportForDebug(session.canonicalUserId);
+      await refreshPreviewHistory(previewHistoryQuery, {
+        successLabel: "已追加 1 条本地调试历史",
+        successDetail: "这条记录已写入当前浏览器的本地历史存储，可直接继续调试历史页。",
+        successTone: "preview",
+      });
+      if (route !== "history") {
+        setRoute("history");
+      }
+    } finally {
+      setHistorySeedAdding(false);
+    }
   }
 
   useEffect(() => {
@@ -554,7 +604,7 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    if (route === "report") {
+    if (route === "report" || route === "reportLite" || route === "reportPro") {
       if (previewFlowState?.step === "error") {
         const interpretationId = previewFlowState.interpretation?.interpretation_id;
         if (interpretationId) {
@@ -581,6 +631,7 @@ export function MobileWebBrowserShell() {
       }
 
       const isProReport =
+        route === "reportPro" ||
         previewFlowState?.report?.version === "pro" ||
         previewFlowState?.step === "proReady";
       if (!isProReport) {
@@ -616,7 +667,7 @@ export function MobileWebBrowserShell() {
       return;
     }
 
-    if (route === "report") {
+    if (route === "report" || route === "reportLite" || route === "reportPro") {
       setPreviewFlowState(null);
       setPreviewHistoryRecords(null);
       setPreviewHistoryQuery({ filter: "all", limit: 20 });
@@ -637,6 +688,7 @@ export function MobileWebBrowserShell() {
 
     const nextDraft = mergeMobileWebUploadDraft(draft, {
       reportType,
+      redeemCode: draft.redeemCode?.trim() || resolvePreviewRedeemCode(reportType),
     });
     setDraft(nextDraft);
     setPreviewFlowState(null);
@@ -652,8 +704,24 @@ export function MobileWebBrowserShell() {
             uploadAsset: toMobileWebUploadAssetRef(uploaded),
           }));
         },
+        { allowExistingImagePath: previewMode },
       );
       const nextAssetRef = toMobileWebUploadAssetRef(resolvedImagePath);
+      const draftWithUpload = { ...nextDraft, uploadAsset: nextAssetRef };
+      if (previewMode) {
+        const previewReportState = createPreviewAppProps("report", draftWithUpload).flowState;
+        if (!previewReportState) {
+          throw new Error("本地预览报告状态生成失败。");
+        }
+        setPreviewFlowState(previewReportState);
+        saveGeneratedReport({
+          userId,
+          draft: draftWithUpload,
+          state: previewReportState,
+        });
+        setRoute("report");
+        return;
+      }
       const result = await runMobileWebReportFlow(
         toStartCreatePayload(
           {
@@ -664,8 +732,12 @@ export function MobileWebBrowserShell() {
         ),
         getDraftReportVariant(nextDraft),
       );
-      const draftWithUpload = { ...nextDraft, uploadAsset: nextAssetRef };
       setPreviewFlowState(result.state);
+      saveGeneratedReport({
+        userId,
+        draft: draftWithUpload,
+        state: result.state,
+      });
       if (result.state.step === "liteGenerating") {
         setRoute("loading");
         return;
@@ -706,6 +778,10 @@ export function MobileWebBrowserShell() {
     setPreviewHistoryOpeningId(interpretationId);
     try {
       setInterpretationId(interpretationId);
+      const entry = getGeneratedReportEntry(interpretationId);
+      if (entry) {
+        setDraft(entry.draft);
+      }
       setRoute("historyRecordDetail");
     } finally {
       setPreviewHistoryOpeningId(null);
@@ -729,7 +805,8 @@ export function MobileWebBrowserShell() {
       );
       setPreviewFlowState(refreshed.state);
       setInterpretationId(interpretationId);
-      setDraft((current) => mergeMobileWebUploadDraft(current, { reportType }));
+      const entry = getGeneratedReportEntry(interpretationId);
+      setDraft((current) => mergeMobileWebUploadDraft(entry?.draft ?? current, { reportType }));
 
       if (reportType === "pro") {
         const proReady =
@@ -841,6 +918,23 @@ export function MobileWebBrowserShell() {
                         </button>
                       );
                     })}
+                  </div>
+                </div>
+
+                <div className="field">
+                  <span>历史调试</span>
+                  <div className="browser-shell__fixture-list">
+                    <button
+                      type="button"
+                      className="mw-secondary-button mw-secondary-button--inline browser-shell__fixture-button"
+                      onClick={() => {
+                        void handleAppendHistorySeed();
+                      }}
+                      disabled={historySeedAdding}
+                    >
+                      <span>本地历史</span>
+                      <span>{historySeedAdding ? "追加中..." : "加 1 条数据"}</span>
+                    </button>
                   </div>
                 </div>
 
@@ -1037,7 +1131,7 @@ export function MobileWebBrowserShell() {
                 isUploading={previewFlowRunning && route === "upload"}
                 historyActionBusy={
                   previewFlowRunning &&
-                  (route === "history" || route === "historyRecordDetail")
+                  (route === "history" || isHistoryRecordDetailRoute(route))
                 }
                 activeHistoryRecordId={previewHistoryOpeningId}
                 activeHistoryRecordReportType={previewHistoryOpeningReportType}
@@ -1077,7 +1171,11 @@ export function MobileWebBrowserShell() {
                   }
                 }}
                 onUploadContinue={async () => {
-                  setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "lite" }));
+                  const nextDraft = mergeMobileWebUploadDraft(draft, { reportType: "lite" });
+                  setDraft(nextDraft);
+                  if (!hasDraftResolvedCircleRadii(nextDraft)) {
+                    return;
+                  }
                   setRoute("reportEntry");
                 }}
                 onUploadBack={() => {

@@ -13,7 +13,6 @@ from .runtime_paths import relative_to_known_root
 from .topic_prompt_pack_registry import (
     APP_ADAPTATION_ROOT,
     GENERATED_PROMPT_PACKS_ROOT,
-    TOPIC_REPORT_PACKS_ROOT,
     TopicPromptPackConfig,
 )
 

@@ -49,6 +49,31 @@ const flowState: MandalaFlowState = {
       title: "Lite 解读报告",
       summary: "你正在把注意力收回自己身上。",
       report_mode: "lite",
+      modules: [
+        {
+          id: "summary",
+          type: "summary",
+          title: "整体印象",
+          body: "你正在把注意力收回自己身上。",
+        },
+        {
+          id: "insights",
+          type: "insight_list",
+          title: "六个核心看见",
+          items: [
+            { id: "base", label: "你的底色", content: "你正在重新确认自己的底色。" },
+            { id: "energy", label: "你的能量", content: "能量正在从收束走向打开。" },
+          ],
+        },
+        {
+          id: "practice",
+          type: "practice_suggestion",
+          title: "一个小实验",
+          action: "这周先做一次小表达。",
+          observe: "观察身体有没有一点松开。",
+          body: "这周先做一次小表达。\n观察身体有没有一点松开。",
+        },
+      ],
     },
     report: "# Lite 解读报告\n\n你正在把注意力收回自己身上。",
     ai_qa_context: null,
@@ -96,7 +121,7 @@ describe("MobileWebApp", () => {
     expect(html).toContain("滑动了解详情");
   });
 
-  it("report 主路由默认渲染 Lite 解读报告页壳", () => {
+  it("report 主路由默认渲染 Figma Lite 报告模板", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="report"
@@ -110,12 +135,16 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("这份报告已经按新版解读链路生成");
-    expect(html).toContain("阅读路径：Lite 解读报告");
-    expect(html).toContain("重新上传画作");
+    expect(html).toContain("解读报告(Lite版)");
+    expect(html).toContain("整体印象");
+    expect(html).toContain("六个核心看见");
+    expect(html).toContain("一个小实验");
+    expect(html).toContain("升级到 Pro");
+    expect(html).toContain("保存报告");
+    expect(html).toContain("重新上传");
   });
 
-  it("report 主路由默认不渲染追问入口", () => {
+  it("report 主路由默认不渲染 Lite 追问入口", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="report"
@@ -129,8 +158,74 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).not.toContain("对这份报告有疑问，可以问曼曼");
-    expect(html).not.toContain("输入你想继续追问的报告问题");
+    expect(html).toContain("解读报告(Lite版)");
+    expect(html).not.toContain("请输入你想追问的问题");
+    expect(html).not.toContain("追问记录");
+  });
+
+  it("reportLite 路由的升级入口会进入 Pro 升级直生成页", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="reportLite"
+        flowState={flowState}
+        uploadDraft={{
+          imagePath: "/tmp/sample.png",
+          theme: "wealth",
+          paintingIntention: "",
+          paintingFeeling: "",
+        }}
+      />,
+    );
+
+    expect(html).toContain("解读报告(Lite版)");
+    expect(html).toContain("升级到 Pro");
+    expect(html).toContain("Lite 已完成");
+    expect(html).toContain("Pro 深度版");
+  });
+
+  it("reportPro 路由渲染 Pro 报告与段落级追问", () => {
+    const proFlowState: MandalaFlowState = {
+      ...flowState,
+      step: "proReady",
+      status: {
+        ...flowState.status!,
+        version_purchased: ["lite", "pro"],
+        can_upgrade: false,
+      },
+      report: {
+        ...flowState.report!,
+        version: "pro",
+        title: "Pro 解读报告",
+        report:
+          "# Pro 解读报告\n## 深层主线\n你正在把注意力收回自己身上。\n\n## 深度解读\n画面中的收束感提示你正在保护真实感受。\n\n## 三圈能量\n内圈较稳，中圈有重复。\n\n## 模式形成原因\n你习惯先确认安全，再表达需要。\n\n## 调节建议\n这周可以先做一次小而真实的表达。",
+      },
+    };
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="reportPro"
+        flowState={proFlowState}
+        uploadDraft={{
+          imagePath: "/tmp/sample.png",
+          theme: "wealth",
+          reportType: "pro",
+          reportVariant: "pro",
+          paintingIntention: "",
+          paintingFeeling: "",
+        }}
+      />,
+    );
+
+    expect(html).toContain("解读报告(Pro版)");
+    expect(html).toContain("Pro 解读报告");
+    expect(html).toContain("深层主线");
+    expect(html).toContain("深度解读");
+    expect(html).toContain("三圈能量");
+    expect(html).toContain("模式形成的原因");
+    expect(html).toContain("调节建议");
+    expect(html).toContain("追问");
+    expect(html).toContain("请输入你想追问的问题");
+    expect(html).toContain("追问记录");
+    expect(html).not.toContain("AI 助手随时为你解答");
   });
 
   it("report 错误态不渲染正文占位和上传调试信息", () => {
@@ -198,10 +293,29 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("Pro 版完整解读");
-    expect(html).toContain("正在生成基础线索，随后展开 Pro 深度分析");
-    expect(html).not.toContain("Pro 解读会继续在后台生成");
+    expect(html).toContain("正在解读中");
+    expect(html).toContain("生成 Lite 基础线索");
+    expect(html).toContain("展开 Pro 深度分析");
+    expect(html).toContain("整理完整解读与问答上下文");
     expect(html).not.toContain("稍后去历史记录查看");
+  });
+
+  it("reportEntry 路由缺少三圈结果时回退到上传页", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="reportEntry"
+        uploadDraft={{
+          imagePath: "/tmp/sample.png",
+          theme: "wealth",
+          paintingIntention: "",
+          paintingFeeling: "",
+        }}
+      />,
+    );
+
+    expect(html).toContain("上传曼陀罗画作");
+    expect(html).not.toContain("待支付");
+    expect(html).not.toContain("确认解读");
   });
 
   it("history 路由会渲染刷新提示与生成中的阶段进度", () => {
@@ -217,14 +331,26 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("立即刷新");
-    expect(html).toContain("最近更新于 16:20:00");
-    expect(html).toContain("阶段：正在生成 Lite 解读");
-    expect(html).toContain("进度：约 52%");
-    expect(html).toContain("查看详情与进度");
+    expect(html).toContain("生成中");
+    expect(html).toContain("Pro 完整解读 · 生成中");
+    expect(html).toContain("查看进度");
   });
 
-  it("historyRecordDetail 路由会渲染版本选择与升级历史", () => {
+  it("history 路由会渲染自定义时间范围入口", () => {
+    const html = renderToStaticMarkup(
+      <MobileWebApp
+        route="history"
+        records={[historyRecord]}
+        historyQuery={{ filter: "all", limit: 20 }}
+      />,
+    );
+
+    expect(html).toContain("最近几月");
+    expect(html).toContain("自定义范围");
+    expect(html).toContain("aria-pressed=\"true\"");
+  });
+
+  it("historyRecordDetail 路由会渲染版本进度与解读轨迹", () => {
     const html = renderToStaticMarkup(
       <MobileWebApp
         route="historyRecordDetail"
@@ -238,10 +364,66 @@ describe("MobileWebApp", () => {
       />,
     );
 
-    expect(html).toContain("历史记录详情");
-    expect(html).toContain("打开 Lite 报告");
-    expect(html).toContain("打开 Pro 报告");
-    expect(html).toContain("版本演进");
-    expect(html).toContain("Lite / Pro");
+    expect(html).toContain("解读详情");
+    expect(html).toContain("查看 Lite");
+    expect(html).toContain("查看 Pro");
+    expect(html).toContain("这次解读的过程");
+    expect(html).toContain("Lite");
+    expect(html).toContain("Pro");
+  });
+
+  it("historyRecordDetail 三种状态路由都可直接渲染", () => {
+    const notUpgraded = renderToStaticMarkup(
+      <MobileWebApp
+        route="historyRecordDetailNotUpgraded"
+        record={{
+          ...historyRecord,
+          interpretation_id: "detail-not-upgraded",
+          status: "completed",
+          generation_stage: "report_ready",
+          generation_progress: 100,
+          version_purchased: ["lite"],
+          can_upgrade: true,
+        }}
+      />,
+    );
+    const generating = renderToStaticMarkup(
+      <MobileWebApp
+        route="historyRecordDetailGenerating"
+        record={{
+          ...historyRecord,
+          interpretation_id: "detail-generating",
+          status: "processing",
+          generation_stage: "generating_pro",
+          generation_progress: 62,
+          version_purchased: ["lite", "pro"],
+          can_upgrade: false,
+        }}
+      />,
+    );
+    const viewable = renderToStaticMarkup(
+      <MobileWebApp
+        route="historyRecordDetailViewable"
+        record={{
+          ...historyRecord,
+          interpretation_id: "detail-viewable",
+          status: "completed",
+          generation_stage: "report_ready",
+          generation_progress: 100,
+          version_purchased: ["lite", "pro"],
+          can_upgrade: false,
+        }}
+      />,
+    );
+
+    expect(notUpgraded).toContain("查看 Lite");
+    expect(notUpgraded).toContain("未升级");
+    expect(generating).toContain("查看进度");
+    expect(generating).toContain("生成中");
+    expect(viewable).toContain("查看 Pro");
+    expect(viewable).toContain("已可查看");
+    expect(viewable).toContain("这是本次解读的第一步");
+    expect(viewable).toContain("mw-history-detail-step--lite");
+    expect(viewable).not.toContain("is-compact");
   });
 });
