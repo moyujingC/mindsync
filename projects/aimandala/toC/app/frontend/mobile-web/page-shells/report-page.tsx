@@ -61,11 +61,7 @@ const PRO_DEEPER_POINTS = [
 function formatReportDate(source?: string): string {
   const parsedDate = source ? new Date(source) : new Date();
   const validDate = Number.isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
-  return validDate.toLocaleDateString("zh-CN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return `${validDate.getFullYear()}年${validDate.getMonth() + 1}月${validDate.getDate()}日`;
 }
 
 function ReportBackIcon() {
