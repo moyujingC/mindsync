@@ -1016,6 +1016,12 @@
   gap: 8px;
 }
 
+.mw-history-time-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .mw-history-pill {
   min-height: 30px;
   padding: 0 12px;
@@ -1045,8 +1051,19 @@
   font-size: 12px;
 }
 
+.mw-history-pill--time-mode,
 .mw-history-pill--limit {
+  min-height: 26px;
+  padding: 4px 12px;
+  color: rgb(232 220 200 / 0.4);
+  font-family: var(--am-font-body);
   font-size: 12px;
+  font-weight: 500;
+}
+
+.mw-history-pill--time-mode.is-active,
+.mw-history-pill--limit.is-active {
+  color: #ede4d4;
 }
 
 .mw-history-theme__scroll {

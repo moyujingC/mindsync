@@ -18,9 +18,12 @@ const historyThemeOptions: SharedTopicSelectorOption[] = [
   ...sharedTopicSelectorOptions,
 ];
 
-const limitOptions = [
-  { kind: "meta", label: "最近几月" },
-  { kind: "meta", label: "自定义范围" },
+const timeModeOptions = [
+  { id: "recent", label: "最近几月" },
+  { id: "custom", label: "自定义范围" },
+] as const;
+
+const recentMonthOptions = [
   { value: 10, label: "1 个月" },
   { value: 20, label: "3 个月" },
   { value: 50, label: "6 个月" },
@@ -256,22 +259,32 @@ export function MobileWebHistoryPage({
 
           <section className="mw-history-filter-block">
             <h3>时间范围</h3>
-            <div className="mw-history-pill-row mw-history-pill-row--limit">
-              {limitOptions.map((option) => (
-                <button
-                  key={"value" in option ? option.value : option.label}
-                  type="button"
-                  className={`mw-history-pill mw-history-pill--limit${"value" in option && activeLimit === option.value ? " is-active" : ""}`}
-                  onClick={() => {
-                    if ("value" in option) {
-                      onLimitChange?.(option.value);
-                    }
-                  }}
-                  disabled={filterBusy}
-                >
-                  {option.label}
-                </button>
-              ))}
+            <div className="mw-history-time-filter">
+              <div className="mw-history-pill-row mw-history-pill-row--time-mode">
+                {timeModeOptions.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    className={`mw-history-pill mw-history-pill--time-mode${option.id === "recent" ? " is-active" : ""}`}
+                    disabled={filterBusy}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              <div className="mw-history-pill-row mw-history-pill-row--limit">
+                {recentMonthOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={`mw-history-pill mw-history-pill--limit${activeLimit === option.value ? " is-active" : ""}`}
+                    onClick={() => onLimitChange?.(option.value)}
+                    disabled={filterBusy}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </section>
 
