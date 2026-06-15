@@ -249,7 +249,12 @@ export function WechatLayout() {
   const previewArticleHtml = useMemo(
     () =>
       importedHtml
-        ? buildArticleHtmlFromSample(importedHtml, currentArticle.title, currentArticle.body)
+        ? buildArticleHtmlFromSample(
+            importedHtml,
+            currentArticle.title,
+            currentArticle.body,
+            wechatArticleBlocks
+          )
         : buildWechatArticleHtml(
             styleTemplate,
             currentArticle.title,
@@ -1512,28 +1517,42 @@ function plainTextToPreviewHtml(text: string) {
     .join("");
 }
 
-function buildArticleHtmlFromSample(sampleHtml: string, title: string, body: string) {
-  const doc = new DOMParser().parseFromString(sanitizePreviewHtml(sampleHtml), "text/html");
-  const replacementTexts = buildArticleReplacementTexts(title, body);
-  const textNodes = collectReplaceableTextNodes(doc.body);
+type SampleTextRole = "title" | "primary" | "secondary" | "quote" | "body";
 
-  textNodes.forEach((node, index) => {
-    if (index < replacementTexts.length) {
-      node.textContent = replacementTexts[index];
+type SampleTextSlot = {
+  node: Text;
+  role: SampleTextRole;
+};
+
+function buildArticleHtmlFromSample(
+  sampleHtml: string,
+  title: string,
+  body: string,
+  blocks: WechatArticleBlock[]
+) {
+  const doc = new DOMParser().parseFromString(sanitizePreviewHtml(sampleHtml), "text/html");
+  const slots = collectSampleTextSlots(doc.body);
+  const replacementItems = buildArticleReplacementItems(title, body, blocks);
+
+  slots.forEach((slot, index) => {
+    const nextItem = findReplacementForSlot(slot.role, replacementItems);
+
+    if (nextItem) {
+      slot.node.textContent = nextItem.text;
+      nextItem.used = true;
     } else {
-      const parent = node.parentElement;
-      node.textContent = "";
-      parent?.remove();
+      removeTextNodeBlock(slot.node);
     }
   });
 
-  if (replacementTexts.length > textNodes.length) {
+  const remainingItems = replacementItems.filter((item) => !item.used);
+  if (remainingItems.length > 0) {
     const container = findAppendContainer(doc.body);
-    replacementTexts.slice(textNodes.length).forEach((text) => {
+    remainingItems.forEach((item) => {
       const p = doc.createElement("p");
-      const referenceStyle = findReferenceParagraphStyle(doc.body);
+      const referenceStyle = findReferenceStyleForRole(doc.body, item.role);
       if (referenceStyle) p.setAttribute("style", referenceStyle);
-      p.textContent = text;
+      p.textContent = item.text;
       container.appendChild(p);
     });
   }
@@ -1541,29 +1560,105 @@ function buildArticleHtmlFromSample(sampleHtml: string, title: string, body: str
   return doc.body.innerHTML;
 }
 
-function buildArticleReplacementTexts(title: string, body: string) {
-  const chunks = body
-    .split(/\n{2,}/)
-    .map((chunk) => stripInlineMarkdown(chunk).replace(/^#{1,6}\s+/, "").trim())
-    .filter(Boolean)
-    .map((chunk) => chunk.replace(/^>\s*/, ""));
-  return [title, ...chunks, ARTICLE_FOOTER];
+function findReplacementForSlot(
+  role: SampleTextRole,
+  items: Array<{ role: SampleTextRole; text: string; used?: boolean }>
+) {
+  if (role === "body") {
+    return items.find((item) => item.role === "body" && !item.used);
+  }
+
+  return items.find((item) => item.role === role && !item.used);
 }
 
-function collectReplaceableTextNodes(root: HTMLElement) {
-  const nodes: Text[] = [];
+function buildArticleReplacementItems(
+  title: string,
+  body: string,
+  blocks: WechatArticleBlock[]
+) {
+  const items: Array<{ role: SampleTextRole; text: string; used?: boolean }> = [
+    { role: "title", text: title },
+  ];
+
+  if (blocks.length > 0) {
+    blocks.forEach((block) => {
+      if (block.type === "heading") {
+        items.push({
+          role: block.level === "primary" ? "primary" : "secondary",
+          text: block.title,
+        });
+        if (block.body) items.push({ role: "body", text: stripInlineMarkdown(block.body) });
+        return;
+      }
+
+      if (block.type === "quote") {
+        items.push({ role: "quote", text: stripInlineMarkdown(block.text) });
+        return;
+      }
+
+      if (block.type === "image") {
+        items.push({ role: "body", text: block.label });
+        return;
+      }
+
+      items.push({ role: "body", text: stripInlineMarkdown(block.text) });
+    });
+  } else {
+    body
+      .split(/\n{2,}/)
+      .map((chunk) => stripInlineMarkdown(chunk).replace(/^#{1,6}\s+/, "").trim())
+      .filter(Boolean)
+      .forEach((chunk) => items.push({ role: "body", text: chunk.replace(/^>\s*/, "") }));
+  }
+
+  items.push({ role: "body", text: ARTICLE_FOOTER });
+  return items;
+}
+
+function collectSampleTextSlots(root: HTMLElement) {
+  const nodes: SampleTextSlot[] = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   let current = walker.nextNode();
   while (current) {
     const text = current.textContent?.replace(/\s+/g, " ").trim() || "";
-    if (text.length >= 2) nodes.push(current as Text);
+    if (text.length >= 2) {
+      const node = current as Text;
+      const parent = node.parentElement;
+      if (parent && !["SCRIPT", "STYLE"].includes(parent.tagName)) {
+        nodes.push({ node, role: detectSampleTextRole(parent) });
+      }
+    }
     current = walker.nextNode();
   }
-  return nodes.filter((node) => {
-    const parent = node.parentElement;
-    if (!parent) return false;
-    return !["SCRIPT", "STYLE"].includes(parent.tagName);
-  });
+  return nodes;
+}
+
+function detectSampleTextRole(element: HTMLElement): SampleTextRole {
+  const tag = element.tagName.toLowerCase();
+  const style = collectStyleChain(element);
+  const textLength = element.textContent?.replace(/\s+/g, "").length || 0;
+  const fontSize = parsePixel(getInlineCssValue(element, "font-size"), 0);
+  const fontWeight = getInlineCssValue(element, "font-weight") || "";
+
+  if (tag === "blockquote" || /border-left|quote|blockquote/i.test(style)) return "quote";
+  if (tag === "h1") return "title";
+  if (tag === "h2") return "primary";
+  if (tag === "h3") return "secondary";
+  if (textLength <= 40 && (fontSize >= 17 || /bold|[6-9]00/i.test(fontWeight))) {
+    return "primary";
+  }
+  if (textLength <= 48 && (fontSize >= 15 || /[5]00/i.test(fontWeight))) {
+    return "secondary";
+  }
+  return "body";
+}
+
+function removeTextNodeBlock(node: Text) {
+  const parent = node.parentElement;
+  node.textContent = "";
+  if (!parent) return;
+  if ((parent.textContent || "").trim()) return;
+  parent.remove();
 }
 
 function findAppendContainer(root: HTMLElement) {
@@ -1575,10 +1670,20 @@ function findAppendContainer(root: HTMLElement) {
   );
 }
 
-function findReferenceParagraphStyle(root: HTMLElement) {
+function findReferenceStyleForRole(root: HTMLElement, role: SampleTextRole) {
+  const candidates = Array.from(root.querySelectorAll<HTMLElement>("h1,h2,h3,p,section,div,blockquote"));
+  const roleNode = candidates.find((node) => detectSampleTextRole(node) === role);
+  if (roleNode?.getAttribute("style")) return roleNode.getAttribute("style") || "";
+  if (role !== "body") {
+    return "";
+  }
   return (
-    Array.from(root.querySelectorAll<HTMLElement>("p,section,div"))
-      .find((node) => (node.textContent?.trim().length || 0) > 20)
+    candidates
+      .find(
+        (node) =>
+          detectSampleTextRole(node) === "body" &&
+          (node.textContent?.trim().length || 0) > 20
+      )
       ?.getAttribute("style") || ""
   );
 }
