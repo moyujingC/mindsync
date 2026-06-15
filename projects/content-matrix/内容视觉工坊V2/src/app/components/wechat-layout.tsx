@@ -248,18 +248,22 @@ export function WechatLayout() {
   );
   const previewArticleHtml = useMemo(
     () =>
-      buildWechatArticleHtml(
-        styleTemplate,
-        currentArticle.title,
-        articleMetaLine,
-        wechatArticleBlocks,
-        previewCover,
-        inlineImageMap
-      ),
+      importedHtml
+        ? buildArticleHtmlFromSample(importedHtml, currentArticle.title, currentArticle.body)
+        : buildWechatArticleHtml(
+            styleTemplate,
+            currentArticle.title,
+            articleMetaLine,
+            wechatArticleBlocks,
+            previewCover,
+            inlineImageMap
+          ),
     [
       activeTheme,
       articleMetaLine,
+      currentArticle.body,
       currentArticle.title,
+      importedHtml,
       inlineImageMap,
       previewCover,
       styleTemplate,
@@ -1506,6 +1510,77 @@ function plainTextToPreviewHtml(text: string) {
         ).replace(/\n/g, "<br />")}</p>`
     )
     .join("");
+}
+
+function buildArticleHtmlFromSample(sampleHtml: string, title: string, body: string) {
+  const doc = new DOMParser().parseFromString(sanitizePreviewHtml(sampleHtml), "text/html");
+  const replacementTexts = buildArticleReplacementTexts(title, body);
+  const textNodes = collectReplaceableTextNodes(doc.body);
+
+  textNodes.forEach((node, index) => {
+    if (index < replacementTexts.length) {
+      node.textContent = replacementTexts[index];
+    } else {
+      const parent = node.parentElement;
+      node.textContent = "";
+      parent?.remove();
+    }
+  });
+
+  if (replacementTexts.length > textNodes.length) {
+    const container = findAppendContainer(doc.body);
+    replacementTexts.slice(textNodes.length).forEach((text) => {
+      const p = doc.createElement("p");
+      const referenceStyle = findReferenceParagraphStyle(doc.body);
+      if (referenceStyle) p.setAttribute("style", referenceStyle);
+      p.textContent = text;
+      container.appendChild(p);
+    });
+  }
+
+  return doc.body.innerHTML;
+}
+
+function buildArticleReplacementTexts(title: string, body: string) {
+  const chunks = body
+    .split(/\n{2,}/)
+    .map((chunk) => stripInlineMarkdown(chunk).replace(/^#{1,6}\s+/, "").trim())
+    .filter(Boolean)
+    .map((chunk) => chunk.replace(/^>\s*/, ""));
+  return [title, ...chunks, ARTICLE_FOOTER];
+}
+
+function collectReplaceableTextNodes(root: HTMLElement) {
+  const nodes: Text[] = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let current = walker.nextNode();
+  while (current) {
+    const text = current.textContent?.replace(/\s+/g, " ").trim() || "";
+    if (text.length >= 2) nodes.push(current as Text);
+    current = walker.nextNode();
+  }
+  return nodes.filter((node) => {
+    const parent = node.parentElement;
+    if (!parent) return false;
+    return !["SCRIPT", "STYLE"].includes(parent.tagName);
+  });
+}
+
+function findAppendContainer(root: HTMLElement) {
+  return (
+    Array.from(root.querySelectorAll<HTMLElement>("section,div"))
+      .filter((node) => node.textContent?.trim())
+      .sort((a, b) => (b.textContent?.length || 0) - (a.textContent?.length || 0))[0] ||
+    root
+  );
+}
+
+function findReferenceParagraphStyle(root: HTMLElement) {
+  return (
+    Array.from(root.querySelectorAll<HTMLElement>("p,section,div"))
+      .find((node) => (node.textContent?.trim().length || 0) > 20)
+      ?.getAttribute("style") || ""
+  );
 }
 
 function getInlineCssValue(node: HTMLElement, property: string) {
