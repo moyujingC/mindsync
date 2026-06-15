@@ -129,14 +129,14 @@ AIMANDALA_LLM_CHAT_MODEL=deepseek-v4-pro
 
 视觉模型可以走主配置 `AIMANDALA_LLM_VISION_*`，也可以走 fallback 配置 `AIMANDALA_LLM_VISION_FALLBACK_*`。
 本地做财富回归时，可以直接复制 `.env.regression.example` 生成私有文件。
-财富视觉回归必须使用和应用一致的 Qwen/DashScope 视觉路线，例如：
+财富视觉回归必须使用和应用一致的火山方舟视觉路线，例如：
 
 ```bash
-AIMANDALA_LLM_VISION_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-AIMANDALA_LLM_VISION_MODEL=qwen-vl-max-latest
+AIMANDALA_LLM_VISION_BASE_URL=https://ark.cn-beijing.volces.com/api/v3
+AIMANDALA_LLM_VISION_MODEL=ep-20260316095322-94wf5
 ```
 
-如果文字模型不是 DeepSeek v4，或视觉模型不是 Qwen/DashScope，`run_wealth_report_regression.py --check-env` 会判定未 ready。否则测试只能证明流程可跑，不能作为报告质量或画面识别质量评估依据。
+如果文字模型不是 DeepSeek v4，或视觉模型不是火山方舟 endpoint，`run_wealth_report_regression.py --check-env` 会判定未 ready。否则测试只能证明流程可跑，不能作为报告质量或画面识别质量评估依据。
 
 ## 11 个完整案例基础图像解读
 
@@ -144,7 +144,7 @@ AIMANDALA_LLM_VISION_MODEL=qwen-vl-max-latest
 
 ```bash
 python3 projects/aimandala/toC/app/backend/scripts/run_case_foundation_image_reading.py \
-  --vision-provider qwen \
+  --vision-provider doubao \
   --thinking-mode off \
   --check-env
 ```

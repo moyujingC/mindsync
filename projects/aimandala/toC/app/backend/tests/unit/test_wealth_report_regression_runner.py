@@ -78,8 +78,8 @@ def test_build_env_check_payload_accepts_loaded_private_env(monkeypatch, tmp_pat
                     "AIMANDALA_LLM_BASE_URL=https://api.deepseek.com",
                     "AIMANDALA_LLM_MODEL=deepseek-v4-pro",
                     "AIMANDALA_LLM_VISION_FALLBACK_API_KEY=file-vision-key",
-                    "AIMANDALA_LLM_VISION_FALLBACK_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1",
-                    "AIMANDALA_LLM_VISION_FALLBACK_MODEL=qwen-vl-max-latest",
+                    "AIMANDALA_LLM_VISION_FALLBACK_BASE_URL=https://ark.cn-beijing.volces.com/api/v3",
+                    "AIMANDALA_LLM_VISION_FALLBACK_MODEL=ep-20260316095322-94wf5",
             ]
         ),
         encoding="utf-8",
@@ -129,7 +129,7 @@ def test_build_env_check_payload_requires_any_vision_route(monkeypatch):
     assert "AIMANDALA_LLM_VISION_* or AIMANDALA_LLM_VISION_FALLBACK_*" in payload["missing_required"]
 
 
-def test_build_env_check_payload_requires_qwen_dashscope_vision_route(monkeypatch):
+def test_build_env_check_payload_requires_volcengine_ark_vision_route(monkeypatch):
     runner = _load_runner_module()
     monkeypatch.setenv("AIMANDALA_LLM_API_KEY", "text-key")
     monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "vision-key")
@@ -145,7 +145,7 @@ def test_build_env_check_payload_requires_qwen_dashscope_vision_route(monkeypatc
     assert payload["ready"] is False
     assert payload["vision_ready"] is True
     assert payload["app_vision_ready"] is False
-    assert "Qwen/DashScope vision route matching app runtime" in payload["missing_required"]
+    assert "Volcengine Ark vision route matching app runtime" in payload["missing_required"]
 
 
 def test_build_env_check_payload_requires_deepseek_v4_text_route(monkeypatch):
@@ -156,9 +156,9 @@ def test_build_env_check_payload_requires_deepseek_v4_text_route(monkeypatch):
     monkeypatch.setenv("AIMANDALA_LLM_VISION_API_KEY", "vision-key")
     monkeypatch.setenv(
         "AIMANDALA_LLM_VISION_BASE_URL",
-        "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "https://ark.cn-beijing.volces.com/api/v3",
     )
-    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "qwen-vl-max-latest")
+    monkeypatch.setenv("AIMANDALA_LLM_VISION_MODEL", "ep-20260316095322-94wf5")
     monkeypatch.setenv("AIMANDALA_REDEEM_CODES", "CODE-LITE:lite")
     monkeypatch.delenv("AIMANDALA_LLM_CHAT_BASE_URL", raising=False)
     monkeypatch.delenv("AIMANDALA_LLM_CHAT_MODEL", raising=False)

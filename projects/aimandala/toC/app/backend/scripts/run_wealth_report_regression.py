@@ -244,8 +244,8 @@ def build_env_check_payload(*, planned_runs: list[dict]) -> dict:
     ]
     primary_vision_ready = all(os.getenv(name) for name in primary_vision_required)
     fallback_vision_ready = all(os.getenv(name) for name in fallback_vision_required)
-    primary_vision_matches_app = _is_qwen_dashscope_vision_route("AIMANDALA_LLM_VISION")
-    fallback_vision_matches_app = _is_qwen_dashscope_vision_route("AIMANDALA_LLM_VISION_FALLBACK")
+    primary_vision_matches_app = _is_app_vision_route("AIMANDALA_LLM_VISION")
+    fallback_vision_matches_app = _is_app_vision_route("AIMANDALA_LLM_VISION_FALLBACK")
     vision_ready = primary_vision_ready or fallback_vision_ready
     app_vision_ready = (
         (primary_vision_ready and primary_vision_matches_app)
@@ -263,7 +263,7 @@ def build_env_check_payload(*, planned_runs: list[dict]) -> dict:
     if not vision_ready:
         missing_agent_required.append("AIMANDALA_LLM_VISION_* or AIMANDALA_LLM_VISION_FALLBACK_*")
     elif not app_vision_ready:
-        missing_agent_required.append("Qwen/DashScope vision route matching app runtime")
+        missing_agent_required.append("Volcengine Ark vision route matching app runtime")
     missing_api_required = [
         name
         for name in ["AIMANDALA_REDEEM_CODES"]
@@ -291,7 +291,7 @@ def build_env_check_payload(*, planned_runs: list[dict]) -> dict:
         "notes": [
             "Only set/missing status is reported; secret values are never printed.",
             "Report quality regression must use the same DeepSeek v4 text route as the app runtime.",
-            "Real image regression must use the same Qwen/DashScope vision route as the app runtime.",
+            "Real image regression must use the same Volcengine Ark vision route as the app runtime.",
             "AIMANDALA_REDEEM_CODES is required for /api/wealth-reports E2E checks, not for this agent regression runner.",
         ],
     }
@@ -311,10 +311,10 @@ def _is_deepseek_v4_text_route() -> bool:
     return "deepseek" in base_url and model.startswith("deepseek-v4")
 
 
-def _is_qwen_dashscope_vision_route(prefix: str) -> bool:
+def _is_app_vision_route(prefix: str) -> bool:
     base_url = os.getenv(f"{prefix}_BASE_URL", "").strip().lower()
     model = os.getenv(f"{prefix}_MODEL", "").strip().lower()
-    return "dashscope.aliyuncs.com" in base_url and model.startswith("qwen")
+    return "ark.cn-beijing.volces.com/api/v3" in base_url and model.startswith("ep-")
 
 
 def resolve_repo_path(raw_path: str) -> Path:
