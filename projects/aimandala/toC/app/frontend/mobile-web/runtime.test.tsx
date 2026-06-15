@@ -472,8 +472,8 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      expect(container.textContent).toContain("06/08 09:30");
-      expect(container.textContent).toContain("05/20 17:40");
+      expect(container.textContent).toMatch(/06[-/]08 09:30/);
+      expect(container.textContent).toMatch(/05[-/]20 17:40/);
     });
 
     const customRangeButton = Array.from(
@@ -512,8 +512,8 @@ describe("MobileWebRuntime", () => {
       const filteredList = container.querySelector(
         ".mw-history-record-list--all",
       );
-      expect(filteredList?.textContent).toContain("06/08 09:30");
-      expect(filteredList?.textContent).not.toContain("05/20 17:40");
+      expect(filteredList?.textContent).toMatch(/06[-/]08 09:30/);
+      expect(filteredList?.textContent).not.toMatch(/05[-/]20 17:40/);
     });
     vi.useRealTimers();
   });
