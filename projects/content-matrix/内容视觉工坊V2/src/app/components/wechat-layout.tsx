@@ -1,4 +1,5 @@
 import {
+  type CSSProperties,
   type ClipboardEvent as ReactClipboardEvent,
   useEffect,
   useMemo,
@@ -69,6 +70,22 @@ type WechatArticleBlock =
   | { type: "heading"; level: "primary" | "secondary"; title: string; body?: string }
   | { type: "list"; ordered: boolean; items: string[] }
   | { type: "image"; label: string; sectionKey?: string };
+
+type SampleBlockRole =
+  | "primary"
+  | "secondary"
+  | "body"
+  | "bold"
+  | "quote"
+  | "meta";
+
+type SampleBlockPreview = {
+  id: string;
+  role: SampleBlockRole;
+  label: string;
+  text: string;
+  style: string;
+};
 
 const DEFAULT_THEME: WechatTheme = {
   titleColor: "#303543",
@@ -179,7 +196,7 @@ export function WechatLayout() {
     );
     const styledBodyNodes = doc
       ? Array.from(doc.body.querySelectorAll<HTMLElement>("p,section,span,div")).filter(
-          (node) => node.textContent?.trim()
+          (node) => node.textContent?.trim() && isPlainParagraphCandidate(node)
         )
       : [];
 
@@ -214,6 +231,10 @@ export function WechatLayout() {
   const styleTemplate = useMemo(
     () => extractWechatStyleTemplate(importedHtml, activeTheme, mapping),
     [activeTheme, importedHtml, mapping]
+  );
+  const sampleBlocks = useMemo(
+    () => extractSampleBlockPreviews(importedHtml, importedText, mapping, styleTemplate),
+    [importedHtml, importedText, mapping, styleTemplate]
   );
   const wechatArticleBlocks = useMemo(
     () => buildWechatArticleBlocks(currentArticle.body, mapping),
@@ -964,105 +985,55 @@ export function WechatLayout() {
             </button>
           </div>
           <div className="space-y-2">
-            <div
-              className="px-3 py-2 rounded text-xs"
-              style={{
-                background: COLORS.surfaceAlt,
-                border: `1px solid ${COLORS.borderSoft}`,
-                color: activeTheme.accentColor,
-                fontSize: activeTheme.headingFontSize,
-              }}
-            >
-              一、为什么注意力会碎片化
-            </div>
-            <div
-              className="px-3 py-2 rounded"
-              style={{
-                background: COLORS.surfaceAlt,
-                border: `1px solid ${COLORS.borderSoft}`,
-                color: activeTheme.bodyColor,
-                fontSize: activeTheme.bodyFontSize,
-                lineHeight: activeTheme.bodyLineHeight,
-              }}
-            >
-              真正的专注从来不是用力，而是放弃……
-            </div>
-            <div
-              className="px-3 py-2 rounded"
-              style={{
-                borderLeft: `3px solid ${activeTheme.accentColor}`,
-                background: activeTheme.blockBg,
-                color: activeTheme.accentColor,
-                fontSize: activeTheme.quoteFontSize,
-                lineHeight: 1.6,
-              }}
-            >
-              引用块 · 用于金句段
-            </div>
-            {showAllSampleBlocks && (
-              <>
+            {(showAllSampleBlocks ? sampleBlocks : sampleBlocks.slice(0, 4)).map(
+              (block) => (
                 <div
-                  className="px-3 py-2 rounded"
+                  key={block.id}
+                  className="rounded overflow-hidden"
                   style={{
-                    background: COLORS.surfaceAlt,
                     border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.titleColor,
-                    fontSize: activeTheme.titleFontSize,
-                    lineHeight: 1.45,
-                    fontWeight: 600,
+                    background: COLORS.surface,
                   }}
                 >
-                  AI提升了效率，为何难获轻松？
+                  <div
+                    className="px-3 py-1.5 flex items-center justify-between"
+                    style={{
+                      background: COLORS.surfaceAlt,
+                      borderBottom: `1px solid ${COLORS.borderSoft}`,
+                    }}
+                  >
+                    <span style={{ color: COLORS.blueDeep, fontSize: 11 }}>
+                      {block.label}
+                    </span>
+                    <span style={{ color: COLORS.textFaint, fontSize: 10.5 }}>
+                      来自富文本样本
+                    </span>
+                  </div>
+                  <div
+                    className="px-3 py-2"
+                    style={{
+                      ...sampleBlockStyleForRole(block.role, activeTheme),
+                      ...parseReactStyle(block.style),
+                    }}
+                  >
+                    {block.text}
+                  </div>
                 </div>
-                <div
-                  className="px-3 py-2 rounded"
-                  style={{
-                    background: COLORS.surfaceAlt,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.bodyColor,
-                    fontSize: activeTheme.bodyFontSize,
-                    lineHeight: activeTheme.bodyLineHeight,
-                  }}
-                >
-                  正文段落 · 用于普通叙述。这里检查字号、行高、段间距和整体阅读密度。
-                </div>
-                <div
-                  className="px-3 py-2 rounded"
-                  style={{
-                    background: COLORS.surfaceAlt,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.bodyColor,
-                    fontSize: activeTheme.bodyFontSize,
-                    lineHeight: activeTheme.bodyLineHeight,
-                  }}
-                >
-                  加粗正文 · <strong style={{ fontWeight: 700 }}>用于强调句，检查粗体在预览和复制后的稳定性。</strong>
-                </div>
-                <div
-                  className="px-3 py-2 rounded"
-                  style={{
-                    background: "#FAF7F2",
-                    border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.bodyColor,
-                    fontSize: Math.max(activeTheme.bodyFontSize - 1, 12),
-                    lineHeight: activeTheme.bodyLineHeight,
-                  }}
-                >
-                  提示块 · 用于补充说明、发布提醒或编辑备注。
-                </div>
-                <div
-                  className="px-3 py-2 rounded"
-                  style={{
-                    background: COLORS.surfaceAlt,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.metaColor,
-                    fontSize: 11,
-                    lineHeight: 1.6,
-                  }}
-                >
-                  辅助信息 · 静读笔记 · 2026-06-09 · 8 分钟阅读
-                </div>
-              </>
+              )
+            )}
+            {sampleBlocks.length === 0 && (
+              <div
+                className="px-3 py-2 rounded"
+                style={{
+                  background: COLORS.surfaceAlt,
+                  border: `1px solid ${COLORS.borderSoft}`,
+                  color: COLORS.textFaint,
+                  fontSize: 12,
+                  lineHeight: 1.6,
+                }}
+              >
+                尚未识别到样本块。请先粘贴富文本样本。
+              </div>
             )}
           </div>
         </div>
@@ -1560,6 +1531,166 @@ function plainTextToPreviewHtml(text: string) {
         ).replace(/\n/g, "<br />")}</p>`
     )
     .join("");
+}
+
+function extractSampleBlockPreviews(
+  importedHtml: string,
+  importedText: string,
+  mapping: MappingMode,
+  template: WechatStyleTemplate
+): SampleBlockPreview[] {
+  if (!importedHtml) {
+    return importedText
+      .split(/\n{2,}/)
+      .map((chunk) => chunk.trim())
+      .filter(Boolean)
+      .slice(0, 12)
+      .map((text, index) => ({
+        id: `text-${index}`,
+        role: detectPlainTextSampleRole(text, mapping),
+        label: sampleRoleLabel(detectPlainTextSampleRole(text, mapping)),
+        text: stripInlineMarkdown(text).replace(/^#{1,6}\s+/, "").replace(/^>\s*/, ""),
+        style: template.paragraphStyle,
+      }));
+  }
+
+  const doc = new DOMParser().parseFromString(sanitizePreviewHtml(importedHtml), "text/html");
+  const nodes = Array.from(
+    doc.body.querySelectorAll<HTMLElement>("h1,h2,h3,p,blockquote,li")
+  ).filter((node) => {
+    const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
+    return text.length >= 2 && !node.querySelector("h1,h2,h3,p,blockquote,li");
+  });
+
+  const blocks: SampleBlockPreview[] = [];
+  const seen = new Set<string>();
+
+  nodes.forEach((node, index) => {
+    const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
+    const role = detectHtmlSampleRole(node, mapping);
+    const dedupeKey = `${role}:${text}`;
+    if (seen.has(dedupeKey)) return;
+    seen.add(dedupeKey);
+
+    blocks.push({
+      id: `html-${index}`,
+      role,
+      label: sampleRoleLabel(role),
+      text: text.length > 72 ? `${text.slice(0, 72)}...` : text,
+      style: collectStyleChain(node),
+    });
+  });
+
+  return blocks.slice(0, 16);
+}
+
+function detectPlainTextSampleRole(text: string, mapping: MappingMode): SampleBlockRole {
+  const heading = text.match(/^(#{1,3})\s+(.+)$/);
+  if (heading) {
+    return mapMarkdownHeadingLevel(heading[1].length, mapping) === "primary"
+      ? "primary"
+      : "secondary";
+  }
+  if (/^>\s*/.test(text)) return "quote";
+  if (/^\*\*[^*]+\*\*$/.test(text)) return "bold";
+  return "body";
+}
+
+function detectHtmlSampleRole(node: HTMLElement, mapping: MappingMode): SampleBlockRole {
+  const tag = node.tagName.toLowerCase();
+  const textLength = getTextDensity(node);
+
+  if (tag === "blockquote" || node.closest("blockquote")) return "quote";
+  if (mapping === "h1h2") {
+    if (tag === "h1") return "primary";
+    if (tag === "h2") return "secondary";
+  } else {
+    if (tag === "h1" && isSectionHeadingText(node.textContent || "")) return "primary";
+    if (tag === "h2") return "primary";
+    if (tag === "h3") return "secondary";
+    if (tag === "h1") return "meta";
+  }
+  if (tag === "h1" || tag === "h2" || tag === "h3") return "secondary";
+  if (tag === "p" && node.querySelector("strong,b") && textLength <= 120) return "bold";
+  return "body";
+}
+
+function isSectionHeadingText(text: string) {
+  return /^([一二三四五六七八九十]+、|\d+[.、])/.test(text.trim());
+}
+
+function sampleRoleLabel(role: SampleBlockRole) {
+  const labels: Record<SampleBlockRole, string> = {
+    primary: "一级标题",
+    secondary: "二级标题",
+    body: "正文段落",
+    bold: "加粗正文",
+    quote: "引用块",
+    meta: "辅助信息",
+  };
+  return labels[role];
+}
+
+function sampleBlockStyleForRole(role: SampleBlockRole, theme: WechatTheme) {
+  const base = {
+    color: theme.bodyColor,
+    fontSize: theme.bodyFontSize,
+    lineHeight: theme.bodyLineHeight,
+  };
+
+  if (role === "primary") {
+    return {
+      ...base,
+      color: theme.accentColor,
+      fontSize: theme.headingFontSize,
+      fontWeight: 600,
+    };
+  }
+  if (role === "secondary") {
+    return {
+      ...base,
+      color: theme.accentColor,
+      fontSize: Math.max(theme.headingFontSize - 2, theme.bodyFontSize),
+      fontWeight: 600,
+    };
+  }
+  if (role === "quote") {
+    return {
+      ...base,
+      color: theme.accentColor,
+      fontSize: theme.quoteFontSize,
+      background: theme.blockBg,
+      borderLeft: `3px solid ${theme.accentColor}`,
+      padding: "10px 12px",
+    };
+  }
+  if (role === "bold") {
+    return {
+      ...base,
+      fontWeight: 700,
+    };
+  }
+  if (role === "meta") {
+    return {
+      ...base,
+      color: theme.metaColor,
+      fontSize: 11,
+      lineHeight: 1.6,
+    };
+  }
+  return base;
+}
+
+function parseReactStyle(style: string): CSSProperties {
+  return Object.entries(parseStyleString(style)).reduce<CSSProperties>(
+    (acc, [property, value]) => {
+      const camelProperty = property.replace(/-([a-z])/g, (_, char: string) =>
+        char.toUpperCase()
+      );
+      return { ...acc, [camelProperty]: value };
+    },
+    {}
+  );
 }
 
 function getInlineCssValue(node: HTMLElement, property: string) {
