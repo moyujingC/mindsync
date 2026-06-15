@@ -1384,10 +1384,40 @@ function findParagraphLikeNode(
     nodes
       .filter((node) => {
         const textLength = getTextDensity(node);
-        return node !== headingNode && node !== titleNode && textLength >= 28;
+        return (
+          node !== headingNode &&
+          node !== titleNode &&
+          textLength >= 28 &&
+          isPlainParagraphCandidate(node)
+        );
       })
-      .sort((a, b) => scoreStyledNode(b) - scoreStyledNode(a))[0] ?? null
+      .sort((a, b) => {
+        const aTagScore = a.tagName.toLowerCase() === "p" ? 1 : 0;
+        const bTagScore = b.tagName.toLowerCase() === "p" ? 1 : 0;
+        if (bTagScore !== aTagScore) return bTagScore - aTagScore;
+        return getTextDensity(b) - getTextDensity(a);
+      })[0] ?? null
   );
+}
+
+function isPlainParagraphCandidate(node: HTMLElement) {
+  const tag = node.tagName.toLowerCase();
+  const style = collectStyleChain(node);
+  const hasNestedBlocks = Boolean(
+    node.querySelector("p,section,blockquote,h1,h2,h3,ol,ul")
+  );
+  const background = getInlineCssValue(node, "background") ||
+    getInlineCssValue(node, "background-color");
+
+  if (tag === "blockquote") return false;
+  if (node.closest("blockquote")) return false;
+  if (hasNestedBlocks) return false;
+  if (/border-left|blockquote|quote/i.test(style)) return false;
+  if (background && !/^(transparent|rgba?\(0,\s*0,\s*0,\s*0\)|none)$/i.test(background)) {
+    return false;
+  }
+
+  return tag === "p" || tag === "span" || tag === "div" || tag === "section";
 }
 
 function findQuoteLikeNode(nodes: HTMLElement[]) {
