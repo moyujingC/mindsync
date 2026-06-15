@@ -1579,6 +1579,13 @@ function extractSampleBlockPreviews(
     const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
     return text.length >= 2 && !node.querySelector("h1,h2,h3,p,blockquote,li");
   });
+  const boldNodes = Array.from(doc.body.querySelectorAll<HTMLElement>("strong,b,[style]"))
+    .filter((node) => {
+      const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
+      if (text.length < 4) return false;
+      if (node.closest("h1,h2,h3,blockquote")) return false;
+      return isBoldSampleNode(node);
+    });
 
   const blocks: SampleBlockPreview[] = [];
   const seen = new Set<string>();
@@ -1600,7 +1607,22 @@ function extractSampleBlockPreviews(
     });
   });
 
-  return blocks.slice(0, 16);
+  boldNodes.forEach((node, index) => {
+    const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
+    const dedupeKey = `bold:${text}`;
+    if (seen.has(dedupeKey)) return;
+    seen.add(dedupeKey);
+
+    blocks.push({
+      id: `bold-${index}`,
+      role: "bold",
+      label: sampleRoleLabel("bold"),
+      text: text.length > 72 ? `${text.slice(0, 72)}...` : text,
+      style: collectStyleChain(node),
+    });
+  });
+
+  return limitSampleBlocks(blocks, 18);
 }
 
 function detectPlainTextSampleRole(text: string, mapping: MappingMode): SampleBlockRole {
@@ -1644,6 +1666,39 @@ function detectHtmlSampleRole(
 
 function isSectionHeadingText(text: string) {
   return /^([一二三四五六七八九十]+、|\d+[.、])/.test(text.trim());
+}
+
+function isBoldSampleNode(node: HTMLElement) {
+  const tag = node.tagName.toLowerCase();
+  const style = node.getAttribute("style") || "";
+  const weight = getInlineCssValue(node, "font-weight");
+  return tag === "strong" || tag === "b" || /bold|[6-9]00/i.test(`${style};${weight}`);
+}
+
+function limitSampleBlocks(blocks: SampleBlockPreview[], limit: number) {
+  const requiredRoles: SampleBlockRole[] = ["primary", "secondary", "body", "quote", "bold"];
+  const selected: SampleBlockPreview[] = [];
+  const selectedIds = new Set<string>();
+
+  requiredRoles.forEach((role) => {
+    const block = blocks.find((item) => item.role === role);
+    if (!block || selectedIds.has(block.id)) return;
+    selected.push(block);
+    selectedIds.add(block.id);
+  });
+
+  blocks.forEach((block) => {
+    if (selected.length >= limit) return;
+    if (selectedIds.has(block.id)) return;
+    selected.push(block);
+    selectedIds.add(block.id);
+  });
+
+  return selected.sort((a, b) => {
+    const aIndex = blocks.findIndex((item) => item.id === a.id);
+    const bIndex = blocks.findIndex((item) => item.id === b.id);
+    return aIndex - bIndex;
+  });
 }
 
 function findSampleStyleNode(node: HTMLElement | null) {
