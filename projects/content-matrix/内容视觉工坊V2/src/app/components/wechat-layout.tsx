@@ -103,7 +103,6 @@ const DEFAULT_THEME: WechatTheme = {
 export function WechatLayout() {
   const {
     currentArticle,
-    currentArticleMeta,
     generationRecords,
     workbenchState,
   } =
@@ -246,10 +245,6 @@ export function WechatLayout() {
     if (importedText.trim()) return { mode: "text" as const, value: importedText };
     return null;
   }, [importedHtml, importedText]);
-  const articleMetaLine = useMemo(
-    () => buildArticleMetaLine(currentArticleMeta),
-    [currentArticleMeta]
-  );
   const coverGeneration = generationRecords.find((item) => item.purposeKey === "wx_cover");
   const inlineGeneration = generationRecords.find((item) => item.purposeKey === "wx_inline");
   const selectedCoverIndex = workbenchState.coverSelection?.selectedCoverIndex ?? 0;
@@ -268,14 +263,12 @@ export function WechatLayout() {
       buildWechatArticleHtml(
         styleTemplate,
         currentArticle.title,
-        articleMetaLine,
         wechatArticleBlocks,
         previewCover,
         inlineImageMap
       ),
     [
       activeTheme,
-      articleMetaLine,
       currentArticle.body,
       currentArticle.title,
       importedHtml,
@@ -1890,7 +1883,6 @@ function copyWechatArticleWithCopyEvent(html: string, plainText: string) {
 function buildWechatArticleHtml(
   template: WechatStyleTemplate,
   title: string,
-  meta: string,
   blocks: WechatArticleBlock[],
   coverImageUrl: string | null,
   inlineImageMap: Map<string, string> | null
@@ -1985,19 +1977,10 @@ function buildWechatArticleHtml(
       <h1 style="${template.titleStyle}">
         ${escapeHtml(title)}
       </h1>
-      <p style="${template.metaStyle}">
-        ${escapeHtml(meta)}
-      </p>
       ${coverHtml}
       ${blocksHtml}
     </section>
   `.trim();
-}
-
-function buildArticleMetaLine(articleMeta: string) {
-  const charCount = Number(articleMeta.match(/(\d+)\s*字/u)?.[1] ?? 0);
-  const readingMinutes = Math.max(1, Math.ceil(charCount / 420));
-  return `静读笔记 · 2026-06-09 · ${readingMinutes} 分钟阅读`;
 }
 
 function deriveWechatTheme(
