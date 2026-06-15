@@ -107,51 +107,51 @@ export default function MandalaApp() {
             items={[
               {
                 title: "启动页",
-                src: "/works/mandala-app/landing.png",
+                src: "/works/mandala-app/01-landing.png",
                 alt: "一镜一梳启动页截图",
                 body: "启动页先给出产品气质、价值承诺和单一主按钮，目标不是解释全部功能，而是让首次用户明确这是一款围绕曼陀罗解读展开的自我探索产品。",
               },
               {
                 title: "方案选择",
-                src: "/works/mandala-app/plan-comparison.png",
+                src: "/works/mandala-app/02-plan-comparison.png",
                 alt: "一镜一梳 Lite 和 Pro 方案对比截图",
                 body: "用 Lite / Pro 两档方案把价格、内容范围和升级路径说清楚，帮助用户先建立预期，再决定是否深入。",
               },
               {
-                title: "常见问题",
-                src: "/works/mandala-app/faq.png",
-                alt: "一镜一梳常见问题截图",
-                body: "FAQ 页集中回答产品定义、画作要求、结果准确性、隐私保护和优惠券使用，减少高信任场景里的不确定感。",
-              },
-              {
-                title: "上传页",
-                src: "/works/mandala-app/upload.png",
-                alt: "一镜一梳上传页截图",
+                title: "上传画作",
+                src: "/works/mandala-app/03-upload.png",
+                alt: "一镜一梳上传画作截图",
                 body: "上传页把三圈边界调整、当前议题选择、创作意图和创作感受放在同一主路径里，体现这个产品不是简单传图，而是在组织图像证据和用户上下文。",
               },
               {
-                title: "支付页",
-                src: "/works/mandala-app/payment.png",
-                alt: "一镜一梳支付页截图",
+                title: "支付确认",
+                src: "/works/mandala-app/04-payment.png",
+                alt: "一镜一梳支付确认截图",
                 body: "付款页只承接 Lite 解读确认和最小支付动作，把版本、价格、适用场景和结果预期讲清楚，避免用户在高信任场景里被复杂商业动线打断。",
               },
               {
-                title: "历史列表",
-                src: "/works/mandala-app/history-list.png",
-                alt: "一镜一梳历史列表截图",
-                body: "历史页先展示已生成和待查看的解读记录，方便用户回看每次画作对应的结果，也让产品形成可复用的自我探索资产。",
-              },
-              {
-                title: "历史筛选",
-                src: "/works/mandala-app/history-filter.png",
-                alt: "一镜一梳历史筛选截图",
-                body: "历史筛选页提供状态、议题和时间范围的过滤能力，把记录管理做成可查找、可追踪的工作台，而不是简单的结果列表。",
-              },
-              {
                 title: "解读中",
-                src: "/works/mandala-app/loading.png",
+                src: "/works/mandala-app/05-loading.png",
                 alt: "一镜一梳解读中截图",
                 body: "解读中页面把进度、正在分析的步骤和知识提示展示出来，强化用户对生成过程的可见性，也降低等待时的不安感。",
+              },
+              {
+                title: "Lite 报告",
+                src: "/works/mandala-app/06-lite-report.png",
+                alt: "一镜一梳 Lite 解读报告截图",
+                body: "Lite 报告用分段结构呈现整体印象和核心看见，让首次体验用户快速获得可读、可回看的解读结果。",
+              },
+              {
+                title: "历史记录",
+                src: "/works/mandala-app/07-history.png",
+                alt: "一镜一梳历史解读列表截图",
+                body: "历史页展示已生成和待查看的解读记录，方便用户回看每次画作对应的结果，也让产品形成可复用的自我探索资产。",
+              },
+              {
+                title: "解读详情",
+                src: "/works/mandala-app/08-detail.png",
+                alt: "一镜一梳解读详情截图",
+                body: "详情页把当前状态、版本进度和 Lite / Pro 解读入口放在同一个页面里，帮助用户理解本次报告从初步解读到深入解读的路径。",
               },
             ]}
           />
