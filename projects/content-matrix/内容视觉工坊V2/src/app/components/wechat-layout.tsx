@@ -22,6 +22,7 @@ const STORAGE_KEY = "content-visual-studio.wechat-theme-library.v1";
 const ARTICLE_FOOTER = "—— 内容视觉工坊";
 
 type MappingMode = "h1h2" | "h2h3";
+type PreviewMode = "sample" | "article";
 
 type SavedWechatBaseline = {
   id: string;
@@ -103,6 +104,7 @@ export function WechatLayout() {
   const [statusMessage, setStatusMessage] = useState("尚未保存新的样式基准");
   const [isCopying, setIsCopying] = useState(false);
   const [showAllSampleBlocks, setShowAllSampleBlocks] = useState(false);
+  const [previewMode, setPreviewMode] = useState<PreviewMode>("sample");
   const pasteAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -265,10 +267,12 @@ export function WechatLayout() {
     ]
   );
   const previewPaneHtml = useMemo(() => {
-    if (importedHtml) return sanitizePreviewHtml(importedHtml);
-    if (importedText.trim()) return plainTextToPreviewHtml(importedText);
+    if (previewMode === "sample" && importedHtml) return sanitizePreviewHtml(importedHtml);
+    if (previewMode === "sample" && importedText.trim()) {
+      return plainTextToPreviewHtml(importedText);
+    }
     return previewArticleHtml;
-  }, [importedHtml, importedText, previewArticleHtml]);
+  }, [importedHtml, importedText, previewArticleHtml, previewMode]);
 
   function receivePastedSample(html: string, text: string) {
     const nextText = (text || stripHtml(html)).trim();
@@ -278,6 +282,7 @@ export function WechatLayout() {
     }
     setImportedHtml(html);
     setImportedText(nextText);
+    setPreviewMode("sample");
     setStatusMessage(html ? "已接收富文本样本 · 待保存" : "已接收纯文本样本 · 待保存");
   }
 
@@ -372,6 +377,7 @@ export function WechatLayout() {
       setImportedHtml("");
       setImportedText("");
       setMapping("h2h3");
+      setPreviewMode("article");
       setStatusMessage("主题已删除，当前主题库为空");
       return;
     }
@@ -395,7 +401,7 @@ export function WechatLayout() {
       }
 
       setStatusMessage(
-        samplePreview
+        previewMode === "sample" && samplePreview
           ? "预览窗富文本已复制，可直接粘贴到公众号编辑器"
           : "公众号正文已复制，可直接粘贴到公众号编辑器"
       );
@@ -652,7 +658,11 @@ export function WechatLayout() {
         <div className="mt-8 space-y-2">
           <Btn variant="primary" size="lg" block onClick={handleCopyWechatHtml}>
             <Copy size={15} strokeWidth={1.6} />
-            {isCopying ? "复制中..." : "复制公众号正文"}
+            {isCopying
+              ? "复制中..."
+              : previewMode === "article"
+                ? "复制当前文章排版"
+                : "复制预览富文本"}
           </Btn>
           <Btn variant="secondary" size="md" block onClick={handleSaveBaseline}>
             <Bookmark size={13} strokeWidth={1.6} />
@@ -687,17 +697,52 @@ export function WechatLayout() {
             "linear-gradient(180deg,#E9ECF0 0%,#E2E6EB 60%,#DDE2E8 100%)",
         }}
       >
-        <div
-          className="rounded-xl shadow-sm"
-          style={{
-            width: 420,
-            background: "#FFFFFF",
-            boxShadow:
-              "0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px rgba(60,72,90,0.10)",
-            border: `1px solid ${COLORS.border}`,
-            height: "fit-content",
-          }}
-        >
+        <div style={{ width: 420 }}>
+          <div
+            className="mb-3 rounded-md p-1 grid grid-cols-2"
+            style={{
+              background: COLORS.surface,
+              border: `1px solid ${COLORS.border}`,
+            }}
+          >
+            {[
+              { mode: "sample" as const, label: "预览样本" },
+              { mode: "article" as const, label: "排版当前文章" },
+            ].map((item) => {
+              const active = previewMode === item.mode;
+              const disabled = item.mode === "sample" && !samplePreview;
+              return (
+                <button
+                  key={item.mode}
+                  disabled={disabled}
+                  onClick={() => setPreviewMode(item.mode)}
+                  className="rounded px-3 py-2 transition-colors"
+                  style={{
+                    background: active ? COLORS.blueTint : "transparent",
+                    color: disabled
+                      ? COLORS.textFaint
+                      : active
+                        ? COLORS.blueDeep
+                        : COLORS.textMid,
+                    fontSize: 12.5,
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            className="rounded-xl shadow-sm"
+            style={{
+              background: "#FFFFFF",
+              boxShadow:
+                "0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px rgba(60,72,90,0.10)",
+              border: `1px solid ${COLORS.border}`,
+              height: "fit-content",
+            }}
+          >
           <div
             className="flex items-center justify-between px-5 pt-4"
             style={{ color: activeTheme.metaColor, fontSize: 11 }}
@@ -707,9 +752,10 @@ export function WechatLayout() {
             <span>●●●</span>
           </div>
 
-          <div className="px-7 pt-5 pb-8">
-            <div dangerouslySetInnerHTML={{ __html: previewPaneHtml }} />
+            <div className="px-7 pt-5 pb-8">
+              <div dangerouslySetInnerHTML={{ __html: previewPaneHtml }} />
 
+            </div>
           </div>
         </div>
       </section>
