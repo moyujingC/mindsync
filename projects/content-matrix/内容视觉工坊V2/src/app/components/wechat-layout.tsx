@@ -16,10 +16,9 @@ import {
   Trash2,
 } from "lucide-react";
 import { SectionTitle, Btn, Tag, COLORS, Divider, FoggyArt } from "./ui-kit";
-import { useWorkspace, type ArticleBlock } from "../workspace";
+import { useWorkspace } from "../workspace";
 
 const STORAGE_KEY = "content-visual-studio.wechat-theme-library.v1";
-const ARTICLE_FOOTER = "—— 内容视觉工坊";
 
 type MappingMode = "h1h2" | "h2h3";
 type PreviewMode = "sample" | "article";
@@ -62,15 +61,13 @@ type WechatStyleTemplate = {
   noteStyle: string;
   eyebrowStyle: string;
   figcaptionStyle: string;
-  footerStyle: string;
 };
 
 type WechatArticleBlock =
-  | { type: "eyebrow"; text: string }
   | { type: "paragraph"; text: string }
   | { type: "quote"; text: string }
   | { type: "heading"; level: "primary" | "secondary"; title: string; body?: string }
-  | { type: "note"; text: string }
+  | { type: "list"; ordered: boolean; items: string[] }
   | { type: "image"; label: string; sectionKey?: string };
 
 const DEFAULT_THEME: WechatTheme = {
@@ -89,7 +86,6 @@ const DEFAULT_THEME: WechatTheme = {
 export function WechatLayout() {
   const {
     currentArticle,
-    currentArticleBlocks,
     currentArticleMeta,
     generationRecords,
     workbenchState,
@@ -248,21 +244,14 @@ export function WechatLayout() {
   );
   const previewArticleHtml = useMemo(
     () =>
-      importedHtml
-        ? buildArticleHtmlFromSample(
-            importedHtml,
-            currentArticle.title,
-            currentArticle.body,
-            wechatArticleBlocks
-          )
-        : buildWechatArticleHtml(
-            styleTemplate,
-            currentArticle.title,
-            articleMetaLine,
-            wechatArticleBlocks,
-            previewCover,
-            inlineImageMap
-          ),
+      buildWechatArticleHtml(
+        styleTemplate,
+        currentArticle.title,
+        articleMetaLine,
+        wechatArticleBlocks,
+        previewCover,
+        inlineImageMap
+      ),
     [
       activeTheme,
       articleMetaLine,
@@ -1123,20 +1112,13 @@ function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArt
     const chunk = chunks[index];
     const markdownHeading = chunk.match(/^(#{1,3})\s+(.+)$/);
 
-    if (/^(写在前面|前言|导读)$/u.test(chunk)) {
-      blocks.push({ type: "eyebrow", text: chunk });
-      continue;
-    }
-
     if (/^>\s*/.test(chunk)) {
-      blocks.push({ type: "quote", text: chunk.replace(/^>\s*/, "") });
-      continue;
-    }
-
-    if (/^(提示|备注|Note)[:：]/i.test(chunk)) {
       blocks.push({
-        type: "note",
-        text: chunk.replace(/^(提示|备注|Note)[:：]\s*/i, ""),
+        type: "quote",
+        text: chunk
+          .split("\n")
+          .map((line) => line.replace(/^>\s*/, ""))
+          .join("\n"),
       });
       continue;
     }
@@ -1154,15 +1136,34 @@ function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArt
       const hashLevel = markdownHeading[1].length;
       const title = markdownHeading[2].trim();
       const mappedLevel = mapMarkdownHeadingLevel(hashLevel, mapping);
-      const next = chunks[index + 1];
       lastSectionKey = toWechatSectionKey(title);
+      blocks.push({ type: "heading", level: mappedLevel, title });
+      continue;
+    }
 
-      if (next && !looksLikeWechatStandaloneBlock(next)) {
-        blocks.push({ type: "heading", level: mappedLevel, title, body: next });
+    const orderedList = parseMarkdownList(chunk, true);
+    if (orderedList) {
+      const items = [...orderedList];
+      while (index + 1 < chunks.length) {
+        const nextList = parseMarkdownList(chunks[index + 1], true);
+        if (!nextList) break;
+        items.push(...nextList);
         index += 1;
-      } else {
-        blocks.push({ type: "heading", level: mappedLevel, title });
       }
+      blocks.push({ type: "list", ordered: true, items });
+      continue;
+    }
+
+    const unorderedList = parseMarkdownList(chunk, false);
+    if (unorderedList) {
+      const items = [...unorderedList];
+      while (index + 1 < chunks.length) {
+        const nextList = parseMarkdownList(chunks[index + 1], false);
+        if (!nextList) break;
+        items.push(...nextList);
+        index += 1;
+      }
+      blocks.push({ type: "list", ordered: false, items });
       continue;
     }
 
@@ -1179,14 +1180,30 @@ function mapMarkdownHeadingLevel(hashLevel: number, mapping: MappingMode) {
   return hashLevel <= 2 ? "primary" : "secondary";
 }
 
-function looksLikeWechatStandaloneBlock(chunk: string) {
-  return (
-    /^(写在前面|前言|导读)$/u.test(chunk) ||
-    /^>\s*/.test(chunk) ||
-    /^(提示|备注|Note)[:：]/i.test(chunk) ||
-    /^(图|图片)[:：]/.test(chunk) ||
-    /^#{1,3}\s+/.test(chunk)
-  );
+function parseMarkdownList(chunk: string, ordered: boolean) {
+  const lines = chunk
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (lines.length === 0) return null;
+
+  const items = lines.map((line) => parseMarkdownListItem(line, ordered));
+  if (items.some((item) => !item)) return null;
+  return items.filter((item): item is string => Boolean(item));
+}
+
+function parseMarkdownListItem(line: string, ordered: boolean) {
+  if (ordered) {
+    const boldNumbered = line.match(/^\*\*\d+[.、]\s*([^*]+)\*\*(.*)$/);
+    if (boldNumbered) return `**${boldNumbered[1].trim()}**${boldNumbered[2] || ""}`.trim();
+
+    return line.match(/^\d+[.、]\s*(.+)$/)?.[1]?.trim() ?? "";
+  }
+
+  const boldBulleted = line.match(/^\*\*[-*•]\s+([^*]+)\*\*(.*)$/);
+  if (boldBulleted) return `**${boldBulleted[1].trim()}**${boldBulleted[2] || ""}`.trim();
+
+  return line.match(/^[-*•]\s+(.+)$/)?.[1]?.trim() ?? "";
 }
 
 function toWechatSectionKey(value: string) {
@@ -1272,7 +1289,6 @@ function extractWechatStyleTemplate(
       fallback.figcaptionStyle,
       collectStyleChain(metaNode)
     ),
-    footerStyle: fallback.footerStyle,
   };
 }
 
@@ -1294,7 +1310,6 @@ function buildFallbackStyleTemplate(theme: WechatTheme): WechatStyleTemplate {
     )}px;line-height:${theme.bodyLineHeight};`,
     eyebrowStyle: `margin:18px 0 8px;color:${theme.accentColor};font-size:11.5px;letter-spacing:0.14em;`,
     figcaptionStyle: `margin-top:8px;color:${theme.metaColor};font-size:10.5px;line-height:1.6;text-align:center;`,
-    footerStyle: `margin:32px 0 0;padding-top:16px;border-top:1px solid #ECEAE3;color:${theme.metaColor};font-size:11px;line-height:1.6;`,
   };
 }
 
@@ -1517,177 +1532,6 @@ function plainTextToPreviewHtml(text: string) {
     .join("");
 }
 
-type SampleTextRole = "title" | "primary" | "secondary" | "quote" | "body";
-
-type SampleTextSlot = {
-  node: Text;
-  role: SampleTextRole;
-};
-
-function buildArticleHtmlFromSample(
-  sampleHtml: string,
-  title: string,
-  body: string,
-  blocks: WechatArticleBlock[]
-) {
-  const doc = new DOMParser().parseFromString(sanitizePreviewHtml(sampleHtml), "text/html");
-  const slots = collectSampleTextSlots(doc.body);
-  const replacementItems = buildArticleReplacementItems(title, body, blocks);
-
-  slots.forEach((slot, index) => {
-    const nextItem = findReplacementForSlot(slot.role, replacementItems);
-
-    if (nextItem) {
-      slot.node.textContent = nextItem.text;
-      nextItem.used = true;
-    } else {
-      removeTextNodeBlock(slot.node);
-    }
-  });
-
-  const remainingItems = replacementItems.filter((item) => !item.used);
-  if (remainingItems.length > 0) {
-    const container = findAppendContainer(doc.body);
-    remainingItems.forEach((item) => {
-      const p = doc.createElement("p");
-      const referenceStyle = findReferenceStyleForRole(doc.body, item.role);
-      if (referenceStyle) p.setAttribute("style", referenceStyle);
-      p.textContent = item.text;
-      container.appendChild(p);
-    });
-  }
-
-  return doc.body.innerHTML;
-}
-
-function findReplacementForSlot(
-  role: SampleTextRole,
-  items: Array<{ role: SampleTextRole; text: string; used?: boolean }>
-) {
-  if (role === "body") {
-    return items.find((item) => item.role === "body" && !item.used);
-  }
-
-  return items.find((item) => item.role === role && !item.used);
-}
-
-function buildArticleReplacementItems(
-  title: string,
-  body: string,
-  blocks: WechatArticleBlock[]
-) {
-  const items: Array<{ role: SampleTextRole; text: string; used?: boolean }> = [
-    { role: "title", text: title },
-  ];
-
-  if (blocks.length > 0) {
-    blocks.forEach((block) => {
-      if (block.type === "heading") {
-        items.push({
-          role: block.level === "primary" ? "primary" : "secondary",
-          text: block.title,
-        });
-        if (block.body) items.push({ role: "body", text: stripInlineMarkdown(block.body) });
-        return;
-      }
-
-      if (block.type === "quote") {
-        items.push({ role: "quote", text: stripInlineMarkdown(block.text) });
-        return;
-      }
-
-      if (block.type === "image") {
-        items.push({ role: "body", text: block.label });
-        return;
-      }
-
-      items.push({ role: "body", text: stripInlineMarkdown(block.text) });
-    });
-  } else {
-    body
-      .split(/\n{2,}/)
-      .map((chunk) => stripInlineMarkdown(chunk).replace(/^#{1,6}\s+/, "").trim())
-      .filter(Boolean)
-      .forEach((chunk) => items.push({ role: "body", text: chunk.replace(/^>\s*/, "") }));
-  }
-
-  items.push({ role: "body", text: ARTICLE_FOOTER });
-  return items;
-}
-
-function collectSampleTextSlots(root: HTMLElement) {
-  const nodes: SampleTextSlot[] = [];
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  let current = walker.nextNode();
-  while (current) {
-    const text = current.textContent?.replace(/\s+/g, " ").trim() || "";
-    if (text.length >= 2) {
-      const node = current as Text;
-      const parent = node.parentElement;
-      if (parent && !["SCRIPT", "STYLE"].includes(parent.tagName)) {
-        nodes.push({ node, role: detectSampleTextRole(parent) });
-      }
-    }
-    current = walker.nextNode();
-  }
-  return nodes;
-}
-
-function detectSampleTextRole(element: HTMLElement): SampleTextRole {
-  const tag = element.tagName.toLowerCase();
-  const style = collectStyleChain(element);
-  const textLength = element.textContent?.replace(/\s+/g, "").length || 0;
-  const fontSize = parsePixel(getInlineCssValue(element, "font-size"), 0);
-  const fontWeight = getInlineCssValue(element, "font-weight") || "";
-
-  if (tag === "blockquote" || /border-left|quote|blockquote/i.test(style)) return "quote";
-  if (tag === "h1") return "title";
-  if (tag === "h2") return "primary";
-  if (tag === "h3") return "secondary";
-  if (textLength <= 40 && (fontSize >= 17 || /bold|[6-9]00/i.test(fontWeight))) {
-    return "primary";
-  }
-  if (textLength <= 48 && (fontSize >= 15 || /[5]00/i.test(fontWeight))) {
-    return "secondary";
-  }
-  return "body";
-}
-
-function removeTextNodeBlock(node: Text) {
-  const parent = node.parentElement;
-  node.textContent = "";
-  if (!parent) return;
-  if ((parent.textContent || "").trim()) return;
-  parent.remove();
-}
-
-function findAppendContainer(root: HTMLElement) {
-  return (
-    Array.from(root.querySelectorAll<HTMLElement>("section,div"))
-      .filter((node) => node.textContent?.trim())
-      .sort((a, b) => (b.textContent?.length || 0) - (a.textContent?.length || 0))[0] ||
-    root
-  );
-}
-
-function findReferenceStyleForRole(root: HTMLElement, role: SampleTextRole) {
-  const candidates = Array.from(root.querySelectorAll<HTMLElement>("h1,h2,h3,p,section,div,blockquote"));
-  const roleNode = candidates.find((node) => detectSampleTextRole(node) === role);
-  if (roleNode?.getAttribute("style")) return roleNode.getAttribute("style") || "";
-  if (role !== "body") {
-    return "";
-  }
-  return (
-    candidates
-      .find(
-        (node) =>
-          detectSampleTextRole(node) === "body" &&
-          (node.textContent?.trim().length || 0) > 20
-      )
-      ?.getAttribute("style") || ""
-  );
-}
-
 function getInlineCssValue(node: HTMLElement, property: string) {
   const inline = node.style.getPropertyValue(property);
   if (inline) return inline.trim();
@@ -1802,20 +1646,8 @@ function buildWechatArticleHtml(
         <img src="${escapeHtml(coverImageUrl)}" alt="公众号封面预览" style="display:block;width:100%;height:auto;margin:0 auto;border-radius:8px;object-fit:cover;background:#f0f3fa;" />
       </figure>
     `
-    : `
-      <figure style="margin:18px 0 22px;text-align:center;">
-        <div style="aspect-ratio:16/9;border-radius:8px;background:linear-gradient(160deg,#DCE5EE 0%,#B9C7D5 100%);"></div>
-      </figure>
-    `;
+    : "";
   const blocksHtml = blocks.map((block) => {
-    if (block.type === "eyebrow") {
-      return `
-        <p style="${template.eyebrowStyle}">
-          ${inlineMarkdownToHtml(block.text)}
-        </p>
-      `;
-    }
-
     if (block.type === "paragraph") {
       return `
         <p style="${template.paragraphStyle}">
@@ -1832,11 +1664,21 @@ function buildWechatArticleHtml(
       `;
     }
 
-    if (block.type === "note") {
+    if (block.type === "list") {
+      const tag = block.ordered ? "ol" : "ul";
+      const items = block.items
+        .map(
+          (item) => `
+            <li style="margin:0 0 8px;padding-left:2px;">
+              ${inlineMarkdownToHtml(item)}
+            </li>
+          `
+        )
+        .join("");
       return `
-        <div style="${template.noteStyle}">
-          ${inlineMarkdownToHtml(block.text)}
-        </div>
+        <${tag} style="${template.paragraphStyle};padding-left:1.35em;">
+          ${items}
+        </${tag}>
       `;
     }
 
@@ -1892,33 +1734,8 @@ function buildWechatArticleHtml(
       </p>
       ${coverHtml}
       ${blocksHtml}
-      <p style="${template.footerStyle}">
-        ${escapeHtml(ARTICLE_FOOTER)}
-      </p>
     </section>
   `.trim();
-}
-
-function buildWechatArticleText(title: string, blocks: ArticleBlock[]) {
-  return [
-    title,
-    "",
-    ...blocks.flatMap((block) => {
-      if (
-        block.type === "paragraph" ||
-        block.type === "quote" ||
-        block.type === "eyebrow" ||
-        block.type === "note"
-      ) {
-        return [stripInlineMarkdown(block.text), ""];
-      }
-      if (block.type === "image") {
-        return [`[图片] ${block.label}`, ""];
-      }
-      return [block.title, stripInlineMarkdown(block.body), ""];
-    }),
-    ARTICLE_FOOTER,
-  ].join("\n");
 }
 
 function buildArticleMetaLine(articleMeta: string) {
