@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import {
   Star,
   ArrowUpRight,
@@ -7,6 +8,37 @@ import {
   FileType,
 } from "lucide-react";
 import { Btn, Tag, COLORS, FoggyArt, Panel } from "./ui-kit";
+
+const WECHAT_THEME_LIBRARY_KEY = "content-visual-studio.wechat-theme-library.v1";
+
+type SavedWechatBaseline = {
+  id: string;
+  name: string;
+  mapping: "h1h2" | "h2h3";
+  rawHtml: string;
+  plainText: string;
+  savedAt: string;
+};
+
+type SavedWechatThemeLibrary = {
+  activeThemeId: string;
+  themes: SavedWechatBaseline[];
+};
+
+type LayoutStyleAsset = {
+  id: string;
+  name: string;
+  source: string;
+  updated: string;
+  body: string;
+  title: string;
+  isDefault?: boolean;
+  placeholder?: boolean;
+  previewTitle: string;
+  previewBody: string;
+  bodyColor: string;
+  titleColor: string;
+};
 
 const IMAGE_STYLES = [
   {
@@ -44,29 +76,53 @@ const IMAGE_STYLES = [
   },
 ];
 
-const LAYOUT_STYLES = [
+const FALLBACK_LAYOUT_STYLES: LayoutStyleAsset[] = [
   {
+    id: "fallback-blue-fog",
     name: "蓝雾静读版",
     source: "富文本样本 · 公众号编辑器",
     updated: "2026 / 06 / 02",
     body: "#3F4754 · 15 / 1.85",
     title: "#5B6E84 · 16 / 1.5",
     isDefault: true,
+    previewTitle: "一、专注的真正成本",
+    previewBody: "真正的专注从来不是用力，而是放弃……",
+    bodyColor: "#3F4754",
+    titleColor: "#5B6E84",
   },
   {
+    id: "fallback-warm-gray",
     name: "暖灰晨间版",
     source: "富文本样本 · 飞书文档",
     updated: "2026 / 05 / 18",
     body: "#3D3328 · 15 / 1.8",
     title: "#7A6F5A · 17 / 1.4",
+    previewTitle: "一、专注的真正成本",
+    previewBody: "真正的专注从来不是用力，而是放弃……",
+    bodyColor: "#3D3328",
+    titleColor: "#7A6F5A",
   },
+];
+
+const PLACEHOLDER_LAYOUT_STYLE: LayoutStyleAsset = {
+  id: "placeholder",
+  name: "占位 · 待粘贴",
+  source: "未导入",
+  updated: "—",
+  body: "—",
+  title: "—",
+  placeholder: true,
+  previewTitle: "",
+  previewBody: "",
+  bodyColor: COLORS.textMid,
+  titleColor: COLORS.text,
+};
+
+const LAYOUT_STYLES: LayoutStyleAsset[] = [
+  ...FALLBACK_LAYOUT_STYLES,
   {
+    ...PLACEHOLDER_LAYOUT_STYLE,
     name: "占位 · 待粘贴",
-    source: "未导入",
-    updated: "—",
-    body: "—",
-    title: "—",
-    placeholder: true,
   },
 ];
 
@@ -106,6 +162,48 @@ const QUOTE_TPLS = [
 ];
 
 export function StyleAssets() {
+  const [themeLibrary, setThemeLibrary] = useState<SavedWechatThemeLibrary | null>(null);
+
+  useEffect(() => {
+    function readThemeLibrary() {
+      const raw = window.localStorage.getItem(WECHAT_THEME_LIBRARY_KEY);
+      if (!raw) {
+        setThemeLibrary(null);
+        return;
+      }
+
+      try {
+        setThemeLibrary(JSON.parse(raw) as SavedWechatThemeLibrary);
+      } catch {
+        setThemeLibrary(null);
+      }
+    }
+
+    readThemeLibrary();
+    window.addEventListener("storage", readThemeLibrary);
+    window.addEventListener("focus", readThemeLibrary);
+    return () => {
+      window.removeEventListener("storage", readThemeLibrary);
+      window.removeEventListener("focus", readThemeLibrary);
+    };
+  }, []);
+
+  const savedLayoutStyles = useMemo(() => {
+    const themes = themeLibrary?.themes ?? [];
+    if (themes.length === 0) return LAYOUT_STYLES;
+
+    const activeThemeId = themeLibrary?.activeThemeId || themes[0]?.id;
+    return [
+      ...themes.map((theme) => toLayoutStyleAsset(theme, theme.id === activeThemeId)),
+      PLACEHOLDER_LAYOUT_STYLE,
+    ];
+  }, [themeLibrary]);
+  const activeLayoutStyle =
+    savedLayoutStyles.find((style) => style.isDefault && !style.placeholder) ??
+    savedLayoutStyles.find((style) => !style.placeholder);
+  const savedLayoutCount = savedLayoutStyles.filter((style) => !style.placeholder).length;
+  const defaultLayoutCount = savedLayoutStyles.filter((style) => style.isDefault).length;
+
   return (
     <div className="overflow-y-auto h-full">
       <div className="max-w-[1240px] mx-auto px-10 py-8">
@@ -161,9 +259,9 @@ export function StyleAssets() {
               </div>
               <div className="mt-0.5 flex items-center gap-2">
                 <span style={{ color: COLORS.text, fontSize: 14 }}>
-                  蓝雾静读版
+                  {activeLayoutStyle?.name || "未保存排版样本"}
                 </span>
-                <Tag tone="blue">默认</Tag>
+                {activeLayoutStyle && <Tag tone="blue">默认</Tag>}
               </div>
             </div>
             <Btn variant="ghost" size="sm">
@@ -282,7 +380,7 @@ export function StyleAssets() {
           <SectionHead
             kicker="02 / TYPOGRAPHY"
             title="排版样式样本"
-            count="2 个样本 · 1 默认 · 1 占位"
+            count={`${savedLayoutCount} 个样本 · ${defaultLayoutCount} 默认 · 1 占位`}
             desc="抓取自公众号编辑器富文本样本，作为排版基准。在「公众号排版」页粘贴富文本即可保存到此处。"
             tools={[{ label: "对比" }]}
             action={
@@ -294,7 +392,7 @@ export function StyleAssets() {
           />
 
           <div className="grid grid-cols-3 gap-4 mt-5">
-            {LAYOUT_STYLES.map((s) => (
+            {savedLayoutStyles.map((s) => (
               <div
                 key={s.name}
                 className="rounded-lg p-5"
@@ -380,21 +478,21 @@ export function StyleAssets() {
                     >
                       <div
                         style={{
-                          color: s.name === "蓝雾静读版" ? "#5B6E84" : "#7A6F5A",
+                          color: s.titleColor,
                           fontSize: 12,
                         }}
                       >
-                        一、专注的真正成本
+                        {s.previewTitle}
                       </div>
                       <div
                         style={{
-                          color: s.name === "蓝雾静读版" ? "#3F4754" : "#3D3328",
+                          color: s.bodyColor,
                           fontSize: 11.5,
                           lineHeight: 1.85,
                           marginTop: 4,
                         }}
                       >
-                        真正的专注从来不是用力，而是放弃……
+                        {s.previewBody}
                       </div>
                     </div>
 
@@ -639,4 +737,114 @@ function SectionHead({
       </div>
     </div>
   );
+}
+
+function toLayoutStyleAsset(
+  theme: SavedWechatBaseline,
+  isDefault: boolean
+): LayoutStyleAsset {
+  const doc = theme.rawHtml
+    ? new DOMParser().parseFromString(theme.rawHtml, "text/html")
+    : null;
+  const styledNodes = doc
+    ? Array.from(doc.body.querySelectorAll<HTMLElement>("p,section,div,span,h1,h2,h3"))
+        .filter((node) => node.textContent?.trim())
+    : [];
+  const headingNodes = doc
+    ? Array.from(doc.body.querySelectorAll<HTMLElement>("h1,h2,h3")).filter((node) =>
+        node.textContent?.trim()
+      )
+    : [];
+  const textNodes = styledNodes.filter((node) => {
+    const text = node.textContent?.trim() || "";
+    return text.length >= 16;
+  });
+  const bodyNode = textNodes[0] ?? styledNodes[0] ?? null;
+  const titleNode = headingNodes[0] ?? styledNodes.find((node) => {
+    const text = node.textContent?.trim() || "";
+    const fontSize = parseCssNumber(getInlineCssValue(node, "font-size"));
+    const fontWeight = getInlineCssValue(node, "font-weight");
+    return text.length > 0 && text.length <= 40 && (fontSize >= 16 || /bold|[5-9]00/i.test(fontWeight));
+  }) ?? null;
+  const previewTitle = titleNode?.textContent?.trim() || firstNonEmptyLine(theme.plainText);
+  const previewBody =
+    textNodes.find((node) => node !== titleNode)?.textContent?.trim() ||
+    firstNonEmptyLine(theme.plainText, previewTitle);
+  const bodyColor = pickCssColor(getInlineCssValue(bodyNode, "color")) || "#3F4754";
+  const titleColor = pickCssColor(getInlineCssValue(titleNode, "color")) || bodyColor;
+  const bodyFontSize = formatCssSummary(getInlineCssValue(bodyNode, "font-size"), "15");
+  const bodyLineHeight = formatCssSummary(getInlineCssValue(bodyNode, "line-height"), "1.8");
+  const titleFontSize = formatCssSummary(getInlineCssValue(titleNode, "font-size"), "16");
+  const titleLineHeight = formatCssSummary(getInlineCssValue(titleNode, "line-height"), "1.5");
+
+  return {
+    id: theme.id,
+    name: theme.name,
+    source: "富文本样本 · 本地保存",
+    updated: formatSavedDate(theme.savedAt),
+    body: `${bodyColor} · ${bodyFontSize} / ${bodyLineHeight}`,
+    title: `${titleColor} · ${titleFontSize} / ${titleLineHeight}`,
+    isDefault,
+    previewTitle: truncateText(previewTitle || "排版样本", 22),
+    previewBody: truncateText(
+      previewBody || "在公众号排版页粘贴样本后，这里会显示样本摘要。",
+      42
+    ),
+    bodyColor,
+    titleColor,
+  };
+}
+
+function getInlineCssValue(node: HTMLElement | null, property: string) {
+  if (!node) return "";
+  const inline = node.style.getPropertyValue(property);
+  if (inline) return inline.trim();
+  const style = node.getAttribute("style") || "";
+  const escaped = property.replace("-", "\\-");
+  return new RegExp(`${escaped}\\s*:\\s*([^;]+)`, "i")
+    .exec(style)?.[1]
+    ?.trim() || "";
+}
+
+function parseCssNumber(value: string) {
+  const match = value.match(/[\d.]+/);
+  return match ? Number(match[0]) : 0;
+}
+
+function formatCssSummary(value: string, fallback: string) {
+  if (!value) return fallback;
+  return value.replace(/\s*px\b/i, "").trim() || fallback;
+}
+
+function pickCssColor(value: string) {
+  const trimmed = value.trim();
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(trimmed) || /^rgb/i.test(trimmed)) {
+    return trimmed;
+  }
+  return "";
+}
+
+function firstNonEmptyLine(text: string, except?: string) {
+  return (
+    text
+      .split(/\n+/)
+      .map((line) => line.trim())
+      .find((line) => line && line !== except) || ""
+  );
+}
+
+function truncateText(text: string, maxLength: number) {
+  const compact = text.replace(/\s+/g, " ").trim();
+  if (compact.length <= maxLength) return compact;
+  return `${compact.slice(0, maxLength)}...`;
+}
+
+function formatSavedDate(isoString: string) {
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return "—";
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join(" / ");
 }
