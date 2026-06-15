@@ -19,12 +19,6 @@ export async function ensureUploadedImagePath(
     return existingUpload;
   }
 
-  if (draft.browserFile) {
-    const uploaded = await uploadImage(draft.browserFile);
-    onResolved(uploaded);
-    return uploaded;
-  }
-
   if (options.allowExistingImagePath && draft.imagePath) {
     const uploaded: UploadImageResponse = {
       success: true,
@@ -37,6 +31,12 @@ export async function ensureUploadedImagePath(
       image_url: null,
       image_local_expires_at: null,
     };
+    onResolved(uploaded);
+    return uploaded;
+  }
+
+  if (draft.browserFile) {
+    const uploaded = await uploadImage(draft.browserFile);
     onResolved(uploaded);
     return uploaded;
   }

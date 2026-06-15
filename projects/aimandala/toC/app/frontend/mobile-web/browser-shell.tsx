@@ -709,7 +709,10 @@ export function MobileWebBrowserShell() {
       const nextAssetRef = toMobileWebUploadAssetRef(resolvedImagePath);
       const draftWithUpload = { ...nextDraft, uploadAsset: nextAssetRef };
       if (previewMode) {
-        const previewReportState = createPreviewAppProps("report", draftWithUpload).flowState;
+        const previewReportState = createPreviewAppProps(
+          getDraftReportVariant(nextDraft) === "pro" ? "reportPro" : "report",
+          draftWithUpload,
+        ).flowState;
         if (!previewReportState) {
           throw new Error("本地预览报告状态生成失败。");
         }
@@ -798,6 +801,23 @@ export function MobileWebBrowserShell() {
     setPreviewFlowRunning(true);
     setPreviewHistoryOpeningReportType(reportType);
     try {
+      const entry = getGeneratedReportEntry(interpretationId);
+      const nextDraft = mergeMobileWebUploadDraft(entry?.draft ?? draft, { reportType });
+      if (previewMode) {
+        const previewReportState = createPreviewAppProps(
+          reportType === "pro" ? "reportPro" : "report",
+          nextDraft,
+        ).flowState;
+        if (!previewReportState) {
+          throw new Error("本地预览报告状态生成失败。");
+        }
+        setPreviewFlowState(previewReportState);
+        setInterpretationId(interpretationId);
+        setDraft(nextDraft);
+        setRoute(reportType === "pro" ? "report" : previewReportState.step === "liteGenerating" ? "loading" : "report");
+        return;
+      }
+
       const refreshed = await refreshMobileWebReport(
         interpretationId,
         reportType,
@@ -805,8 +825,7 @@ export function MobileWebBrowserShell() {
       );
       setPreviewFlowState(refreshed.state);
       setInterpretationId(interpretationId);
-      const entry = getGeneratedReportEntry(interpretationId);
-      setDraft((current) => mergeMobileWebUploadDraft(entry?.draft ?? current, { reportType }));
+      setDraft(nextDraft);
 
       if (reportType === "pro") {
         const proReady =

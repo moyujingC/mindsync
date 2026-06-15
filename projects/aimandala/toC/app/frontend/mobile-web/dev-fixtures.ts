@@ -11,7 +11,13 @@ export interface MobileWebDevFixturePreset {
   contentType: string;
   draftPatch: Pick<
     MobileWebUploadDraft,
-    "theme" | "paintingIntention" | "paintingFeeling" | "reportType" | "reportVariant"
+    | "theme"
+    | "paintingIntention"
+    | "paintingFeeling"
+    | "reportType"
+    | "reportVariant"
+    | "innerRadius"
+    | "middleRadius"
   >;
 }
 
@@ -28,6 +34,8 @@ export const mobileWebDevFixturePresets: MobileWebDevFixturePreset[] = [
       reportVariant: "lite",
       paintingIntention: "",
       paintingFeeling: "",
+      innerRadius: 0.3,
+      middleRadius: 0.64,
     },
   },
   {
@@ -42,6 +50,8 @@ export const mobileWebDevFixturePresets: MobileWebDevFixturePreset[] = [
       reportVariant: "lite",
       paintingIntention: "",
       paintingFeeling: "",
+      innerRadius: 0.28,
+      middleRadius: 0.62,
     },
   },
 ];
