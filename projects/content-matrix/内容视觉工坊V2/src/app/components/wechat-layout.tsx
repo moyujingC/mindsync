@@ -1233,32 +1233,47 @@ function extractWechatStyleTemplate(
       fallback.containerStyle,
       pickContainerStyle(containerNode)
     ),
-    titleStyle: mergeStyleStrings(fallback.titleStyle, collectStyleChain(titleNode)),
-    metaStyle: mergeStyleStrings(fallback.metaStyle, collectStyleChain(metaNode)),
+    titleStyle: mergeStyleStrings(
+      fallback.titleStyle,
+      collectStyleChain(findSampleStyleNode(titleNode))
+    ),
+    metaStyle: mergeStyleStrings(
+      fallback.metaStyle,
+      collectStyleChain(findSampleStyleNode(metaNode))
+    ),
     primaryHeadingStyle: normalizeHeadingStyle(
       mergeStyleStrings(
         fallback.primaryHeadingStyle,
-        collectStyleChain(primaryHeadingNode)
+        collectStyleChain(findSampleStyleNode(primaryHeadingNode))
       ),
       "primary"
     ),
     secondaryHeadingStyle: normalizeHeadingStyle(
       mergeStyleStrings(
         fallback.secondaryHeadingStyle,
-        collectStyleChain(secondaryHeadingNode)
+        collectStyleChain(findSampleStyleNode(secondaryHeadingNode))
       ),
       "secondary"
     ),
     paragraphStyle: mergeStyleStrings(
       fallback.paragraphStyle,
-      collectStyleChain(paragraphNode)
+      collectStyleChain(findSampleStyleNode(paragraphNode))
     ),
-    quoteStyle: mergeStyleStrings(fallback.quoteStyle, collectStyleChain(quoteNode)),
-    noteStyle: mergeStyleStrings(fallback.noteStyle, collectStyleChain(quoteNode)),
-    eyebrowStyle: mergeStyleStrings(fallback.eyebrowStyle, collectStyleChain(metaNode)),
+    quoteStyle: mergeStyleStrings(
+      fallback.quoteStyle,
+      collectStyleChain(findSampleStyleNode(quoteNode))
+    ),
+    noteStyle: mergeStyleStrings(
+      fallback.noteStyle,
+      collectStyleChain(findSampleStyleNode(quoteNode))
+    ),
+    eyebrowStyle: mergeStyleStrings(
+      fallback.eyebrowStyle,
+      collectStyleChain(findSampleStyleNode(metaNode))
+    ),
     figcaptionStyle: mergeStyleStrings(
       fallback.figcaptionStyle,
-      collectStyleChain(metaNode)
+      collectStyleChain(findSampleStyleNode(metaNode))
     ),
   };
 }
@@ -1555,6 +1570,9 @@ function extractSampleBlockPreviews(
   }
 
   const doc = new DOMParser().parseFromString(sanitizePreviewHtml(importedHtml), "text/html");
+  const hasPrimaryHtmlHeading = Array.from(doc.body.querySelectorAll<HTMLElement>("h1")).some(
+    (node) => isSectionHeadingText(node.textContent || "")
+  );
   const nodes = Array.from(
     doc.body.querySelectorAll<HTMLElement>("h1,h2,h3,p,blockquote,li")
   ).filter((node) => {
@@ -1567,7 +1585,8 @@ function extractSampleBlockPreviews(
 
   nodes.forEach((node, index) => {
     const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
-    const role = detectHtmlSampleRole(node, mapping);
+    const role = detectHtmlSampleRole(node, mapping, hasPrimaryHtmlHeading);
+    const styleNode = findSampleStyleNode(node);
     const dedupeKey = `${role}:${text}`;
     if (seen.has(dedupeKey)) return;
     seen.add(dedupeKey);
@@ -1577,7 +1596,7 @@ function extractSampleBlockPreviews(
       role,
       label: sampleRoleLabel(role),
       text: text.length > 72 ? `${text.slice(0, 72)}...` : text,
-      style: collectStyleChain(node),
+      style: collectStyleChain(styleNode),
     });
   });
 
@@ -1596,11 +1615,19 @@ function detectPlainTextSampleRole(text: string, mapping: MappingMode): SampleBl
   return "body";
 }
 
-function detectHtmlSampleRole(node: HTMLElement, mapping: MappingMode): SampleBlockRole {
+function detectHtmlSampleRole(
+  node: HTMLElement,
+  mapping: MappingMode,
+  hasPrimaryHtmlHeading: boolean
+): SampleBlockRole {
   const tag = node.tagName.toLowerCase();
   const textLength = getTextDensity(node);
 
   if (tag === "blockquote" || node.closest("blockquote")) return "quote";
+  if (hasPrimaryHtmlHeading) {
+    if (tag === "h1") return "primary";
+    if (tag === "h2" || tag === "h3") return "secondary";
+  }
   if (mapping === "h1h2") {
     if (tag === "h1") return "primary";
     if (tag === "h2") return "secondary";
@@ -1617,6 +1644,19 @@ function detectHtmlSampleRole(node: HTMLElement, mapping: MappingMode): SampleBl
 
 function isSectionHeadingText(text: string) {
   return /^([一二三四五六七八九十]+、|\d+[.、])/.test(text.trim());
+}
+
+function findSampleStyleNode(node: HTMLElement | null) {
+  if (!node) return null;
+  const nodeText = node.textContent?.replace(/\s+/g, " ").trim() || "";
+  const styledDescendants = Array.from(node.querySelectorAll<HTMLElement>("[style]"))
+    .filter((item) => {
+      const text = item.textContent?.replace(/\s+/g, " ").trim() || "";
+      return text && (text === nodeText || nodeText.includes(text));
+    })
+    .sort((a, b) => scoreStyledNode(b) - scoreStyledNode(a));
+
+  return styledDescendants[0] ?? node;
 }
 
 function sampleRoleLabel(role: SampleBlockRole) {
