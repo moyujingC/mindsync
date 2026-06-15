@@ -441,8 +441,14 @@ describe("MobileWebRuntime", () => {
     vi.setSystemTime(new Date("2026-06-15T00:00:00+08:00"));
     vi.spyOn(loaders, "loadHistoryPage").mockResolvedValueOnce({
       records: [
-        createHistoryRecordWithDate("ipt-history-in-range", "2026-06-08T09:30:00+08:00"),
-        createHistoryRecordWithDate("ipt-history-out-range", "2026-05-20T17:40:00+08:00"),
+        createHistoryRecordWithDate(
+          "ipt-history-in-range",
+          "2026-06-08T09:30:00+08:00",
+        ),
+        createHistoryRecordWithDate(
+          "ipt-history-out-range",
+          "2026-05-20T17:40:00+08:00",
+        ),
       ],
     });
     const input: MobileWebRouteInput = {
@@ -470,17 +476,21 @@ describe("MobileWebRuntime", () => {
       expect(container.textContent).toContain("05/20 17:40");
     });
 
-    const customRangeButton = Array.from(container.querySelectorAll("button")).find(
-      (button) => button.textContent?.trim() === "自定义范围",
-    );
+    const customRangeButton = Array.from(
+      container.querySelectorAll("button"),
+    ).find((button) => button.textContent?.trim() === "自定义范围");
     expect(customRangeButton).toBeTruthy();
 
     await act(async () => {
-      customRangeButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      customRangeButton?.dispatchEvent(
+        new MouseEvent("click", { bubbles: true }),
+      );
     });
 
     const [startDateInput, endDateInput] = Array.from(
-      container.querySelectorAll<HTMLInputElement>(".mw-history-custom-range input"),
+      container.querySelectorAll<HTMLInputElement>(
+        ".mw-history-custom-range input",
+      ),
     );
     expect(startDateInput).toBeTruthy();
     expect(endDateInput).toBeTruthy();
@@ -499,7 +509,9 @@ describe("MobileWebRuntime", () => {
     });
 
     await waitForAssertion(() => {
-      const filteredList = container.querySelector(".mw-history-record-list--all");
+      const filteredList = container.querySelector(
+        ".mw-history-record-list--all",
+      );
       expect(filteredList?.textContent).toContain("06/08 09:30");
       expect(filteredList?.textContent).not.toContain("05/20 17:40");
     });
