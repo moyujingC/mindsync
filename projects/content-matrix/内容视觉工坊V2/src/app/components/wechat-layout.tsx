@@ -27,7 +27,7 @@ type PreviewMode = "sample" | "article";
 type SavedWechatBaseline = {
   id: string;
   name: string;
-  mapping: MappingMode;
+  mapping?: MappingMode;
   rawHtml: string;
   plainText: string;
   savedAt: string;
@@ -131,7 +131,6 @@ export function WechatLayout() {
       if (active) {
         setActiveThemeId(active.id);
         setThemeName(active.name);
-        setMapping(active.mapping);
         setImportedHtml(active.rawHtml);
         setImportedText(active.plainText);
       }
@@ -163,8 +162,9 @@ export function WechatLayout() {
     const doc = importedHtml
       ? new DOMParser().parseFromString(importedHtml, "text/html")
       : null;
-    const headingSelectors =
-      mapping === "h1h2"
+    const headingSelectors = doc
+      ? detectRichTextHeadingSelectorMap(doc.body)
+      : mapping === "h1h2"
         ? { primary: "h1", secondary: "h2" }
         : { primary: "h2", secondary: "h3" };
     const primaryHeadingNodes = doc
@@ -198,6 +198,12 @@ export function WechatLayout() {
           (node) => node.textContent?.trim() && isPlainParagraphCandidate(node)
         )
       : [];
+    const primaryFontNodes = doc
+      ? primaryHeadingNodes.map(findSampleStyleNode).filter((node): node is HTMLElement => Boolean(node))
+      : primaryHeadingNodes;
+    const secondaryFontNodes = doc
+      ? secondaryHeadingNodes.map(findSampleStyleNode).filter((node): node is HTMLElement => Boolean(node))
+      : secondaryHeadingNodes;
 
     return {
       paragraphCount,
@@ -208,11 +214,11 @@ export function WechatLayout() {
         "15 px"
       ),
       primaryHeadingFontSize: formatCssValue(
-        firstCssValue(primaryHeadingNodes, "font-size"),
+        firstCssValue(primaryFontNodes, "font-size"),
         mapping === "h1h2" ? "17 px" : "16 px"
       ),
       secondaryHeadingFontSize: formatCssValue(
-        firstCssValue(secondaryHeadingNodes, "font-size"),
+        firstCssValue(secondaryFontNodes, "font-size"),
         mapping === "h1h2" ? "16 px" : "15 px"
       ),
       lineHeight: formatCssValue(firstCssValue(styledBodyNodes, "line-height"), "1.85"),
@@ -224,12 +230,12 @@ export function WechatLayout() {
   }, [importedHtml, importedText, mapping]);
 
   const activeTheme = useMemo(
-    () => deriveWechatTheme(importedHtml, sampleSummary, mapping),
-    [importedHtml, sampleSummary, mapping]
+    () => deriveWechatTheme(importedHtml, sampleSummary),
+    [importedHtml, sampleSummary]
   );
   const styleTemplate = useMemo(
-    () => extractWechatStyleTemplate(importedHtml, activeTheme, mapping),
-    [activeTheme, importedHtml, mapping]
+    () => extractWechatStyleTemplate(importedHtml, activeTheme),
+    [activeTheme, importedHtml]
   );
   const sampleBlocks = useMemo(
     () => extractSampleBlockPreviews(importedHtml, importedText, mapping, styleTemplate),
@@ -311,7 +317,6 @@ export function WechatLayout() {
     const payload: SavedWechatBaseline = {
       id: activeThemeId || createThemeId(),
       name: themeName.trim() || "未命名排版",
-      mapping,
       rawHtml: importedHtml,
       plainText: importedText,
       savedAt: new Date().toISOString(),
@@ -335,7 +340,6 @@ export function WechatLayout() {
     if (!theme) return;
     setActiveThemeId(theme.id);
     setThemeName(theme.name);
-    setMapping(theme.mapping);
     setImportedHtml(theme.rawHtml);
     setImportedText(theme.plainText);
     const library: SavedWechatThemeLibrary = {
@@ -353,7 +357,6 @@ export function WechatLayout() {
     const payload: SavedWechatBaseline = {
       id: createThemeId(),
       name: `${(source?.name || themeName || "未命名排版").trim()} 副本`,
-      mapping,
       rawHtml: importedHtml,
       plainText: importedText,
       savedAt: new Date().toISOString(),
@@ -388,7 +391,6 @@ export function WechatLayout() {
       setThemeName("蓝雾静读版");
       setImportedHtml("");
       setImportedText("");
-      setMapping("h2h3");
       setPreviewMode("article");
       setStatusMessage("主题已删除，当前主题库为空");
       return;
@@ -398,7 +400,6 @@ export function WechatLayout() {
     setThemeName(nextActive.name);
     setImportedHtml(nextActive.rawHtml);
     setImportedText(nextActive.plainText);
-    setMapping(nextActive.mapping);
     setStatusMessage(`已删除主题，当前切换到 ${nextActive.name}`);
   }
 
@@ -434,10 +435,10 @@ export function WechatLayout() {
         <div
           style={{ color: COLORS.textFaint, fontSize: 11, letterSpacing: "0.12em" }}
         >
-          MAPPING
+          ARTICLE MAPPING
         </div>
         <div className="mt-1 mb-3" style={{ color: COLORS.text }}>
-          标题映射规则
+          当前文章标题映射
         </div>
 
         <div className="space-y-2">
@@ -446,13 +447,13 @@ export function WechatLayout() {
               k: "h1h2",
               t: "# 作为一级标题",
               s: "## 作为二级标题",
-              note: "适用于正文标题从 # 开始的稿件",
+              note: "只影响当前 Markdown 文章，不影响已保存样式",
             },
             {
               k: "h2h3",
               t: "## 作为一级标题",
               s: "### 作为二级标题",
-              note: "适用于 # 留给文章标题的稿件",
+              note: "样式资产照常使用，只改变当前文章层级",
             },
           ].map((o) => {
             const active = mapping === o.k;
@@ -633,7 +634,7 @@ export function WechatLayout() {
                             className="block truncate"
                             style={{ color: COLORS.textFaint, fontSize: 10.5, marginTop: 1 }}
                           >
-                            {formatSavedAt(theme.savedAt)} · {theme.mapping === "h1h2" ? "#/##" : "##/###"}
+                            {formatSavedAt(theme.savedAt)} · 样式资产
                           </span>
                         </span>
                         <span className="flex items-center gap-1.5 shrink-0">
@@ -1144,6 +1145,21 @@ function mapMarkdownHeadingLevel(hashLevel: number, mapping: MappingMode) {
   return hashLevel <= 2 ? "primary" : "secondary";
 }
 
+function detectRichTextHeadingSelectorMap(root: HTMLElement) {
+  const hasSectionH1 = Array.from(root.querySelectorAll<HTMLElement>("h1")).some((node) =>
+    isSectionHeadingText(node.textContent || "")
+  );
+
+  return hasSectionH1
+    ? { primary: "h1", secondary: "h2" }
+    : { primary: "h2", secondary: "h3" };
+}
+
+function detectRichTextHeadingSelectors(root: HTMLElement) {
+  const headingMap = detectRichTextHeadingSelectorMap(root);
+  return [headingMap.primary, headingMap.secondary];
+}
+
 function parseMarkdownList(chunk: string, ordered: boolean) {
   const lines = chunk
     .split("\n")
@@ -1187,8 +1203,7 @@ function inlineMarkdownToHtml(text: string) {
 
 function extractWechatStyleTemplate(
   importedHtml: string,
-  theme: WechatTheme,
-  mapping: MappingMode
+  theme: WechatTheme
 ): WechatStyleTemplate {
   const fallback = buildFallbackStyleTemplate(theme);
   if (!importedHtml) return fallback;
@@ -1199,7 +1214,7 @@ function extractWechatStyleTemplate(
     doc.body.querySelectorAll<HTMLElement>("section,p,div,blockquote,h1,h2,h3")
   ).filter((node) => getTextDensity(node) > 0);
 
-  const headingSelectors = mapping === "h1h2" ? ["h1", "h2"] : ["h2", "h3"];
+  const headingSelectors = detectRichTextHeadingSelectors(doc.body);
   const visualHeadingNodes = rankVisualHeadingNodes(candidates);
   const titleNode =
     findFirstStyledNode(doc.body, ["h1"]) ??
@@ -1563,9 +1578,7 @@ function extractSampleBlockPreviews(
   }
 
   const doc = new DOMParser().parseFromString(sanitizePreviewHtml(importedHtml), "text/html");
-  const hasPrimaryHtmlHeading = Array.from(doc.body.querySelectorAll<HTMLElement>("h1")).some(
-    (node) => isSectionHeadingText(node.textContent || "")
-  );
+  const headingSelectors = detectRichTextHeadingSelectorMap(doc.body);
   const nodes = Array.from(
     doc.body.querySelectorAll<HTMLElement>("h1,h2,h3,p,blockquote,li")
   ).filter((node) => {
@@ -1585,7 +1598,7 @@ function extractSampleBlockPreviews(
 
   nodes.forEach((node, index) => {
     const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
-    const role = detectHtmlSampleRole(node, mapping, hasPrimaryHtmlHeading);
+    const role = detectHtmlSampleRole(node, headingSelectors);
     const styleNode = findSampleStyleNode(node);
     const dedupeKey = `${role}:${text}`;
     if (seen.has(dedupeKey)) return;
@@ -1632,26 +1645,14 @@ function detectPlainTextSampleRole(text: string, mapping: MappingMode): SampleBl
 
 function detectHtmlSampleRole(
   node: HTMLElement,
-  mapping: MappingMode,
-  hasPrimaryHtmlHeading: boolean
+  headingSelectors: { primary: string; secondary: string }
 ): SampleBlockRole {
   const tag = node.tagName.toLowerCase();
   const textLength = getTextDensity(node);
 
   if (tag === "blockquote" || node.closest("blockquote")) return "quote";
-  if (hasPrimaryHtmlHeading) {
-    if (tag === "h1") return "primary";
-    if (tag === "h2" || tag === "h3") return "secondary";
-  }
-  if (mapping === "h1h2") {
-    if (tag === "h1") return "primary";
-    if (tag === "h2") return "secondary";
-  } else {
-    if (tag === "h1" && isSectionHeadingText(node.textContent || "")) return "primary";
-    if (tag === "h2") return "primary";
-    if (tag === "h3") return "secondary";
-    if (tag === "h1") return "meta";
-  }
+  if (tag === headingSelectors.primary) return "primary";
+  if (tag === headingSelectors.secondary) return "secondary";
   if (tag === "h1" || tag === "h2" || tag === "h3") return "secondary";
   if (tag === "p" && node.querySelector("strong,b") && textLength <= 120) return "bold";
   return "body";
@@ -1990,8 +1991,7 @@ function deriveWechatTheme(
     primaryHeadingFontSize: string;
     secondaryHeadingFontSize: string;
     lineHeight: string;
-  },
-  mapping: MappingMode
+  }
 ): WechatTheme {
   if (!importedHtml) {
     return {
@@ -2008,10 +2008,7 @@ function deriveWechatTheme(
 
   const doc = new DOMParser().parseFromString(importedHtml, "text/html");
   const styledNodes = Array.from(doc.body.querySelectorAll<HTMLElement>("[style]"));
-  const headingSelectors =
-    mapping === "h1h2"
-      ? { primary: "h1", secondary: "h2" }
-      : { primary: "h2", secondary: "h3" };
+  const headingSelectors = detectRichTextHeadingSelectorMap(doc.body);
   const primaryHeadingNodes = Array.from(
     doc.body.querySelectorAll<HTMLElement>(headingSelectors.primary)
   );
