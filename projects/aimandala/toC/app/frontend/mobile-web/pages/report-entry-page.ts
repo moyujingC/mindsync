@@ -5,6 +5,12 @@ import type {
 } from "../state";
 
 export type ReportEntryAvailability = "available";
+export type ReportPaymentState =
+  | "idle"
+  | "pending"
+  | "cancelled"
+  | "succeeded"
+  | "error";
 
 export interface ReportEntryCardDescriptor {
   id: MobileWebReportProductType;
@@ -27,20 +33,32 @@ export interface ReportEntryPageDescriptor {
   footnote: string;
   heroHint: string;
   redeemHint: string;
+  paymentHint?: string;
+  paymentState?: ReportPaymentState;
   cards: ReportEntryCardDescriptor[];
 }
 
 export function createReportEntryPageDescriptor(
   draft: Pick<MobileWebUploadDraft, "theme" | "reportType" | "reportVariant">,
+  paymentState: ReportPaymentState = "idle",
 ): ReportEntryPageDescriptor {
   const themeLabel = getThemeDisplayName(draft.theme) ?? "财富关系";
   const isProUpgrade = (draft.reportType ?? draft.reportVariant) === "pro";
+  const proPaymentHints: Record<ReportPaymentState, string> = {
+    idle: "点击后会发起 Pro 升级支付；支付确认前不会解锁 Pro 权益。",
+    pending:
+      "支付已发起，正在等待回调确认。请不要重复支付，可以稍后从历史记录恢复。",
+    cancelled: "本次支付已取消，Pro 权益未解锁。你可以重新发起升级。",
+    succeeded: "支付成功，正在刷新 Pro 权益。",
+    error: "支付或权益刷新暂时失败，Pro 权益未解锁。请稍后重试。",
+  };
 
   return {
-    statusLabel: "待支付",
+    statusLabel:
+      isProUpgrade && paymentState === "pending" ? "等待支付确认" : "待支付",
     title: isProUpgrade ? "升级到 Pro 深度解读" : "开始 Lite 解读",
     description: isProUpgrade
-      ? "点击升级后，会直接跳过 Pro 支付确认，继续生成 Pro 完整报告。"
+      ? "这一步会为当前这份 Lite 报告发起 Pro 升级。支付确认前不会展示 Pro 权益内容。"
       : "点击开始后，会直接生成 Lite 解读报告。",
     themeLabel,
     footnote: isProUpgrade
@@ -50,8 +68,10 @@ export function createReportEntryPageDescriptor(
       ? "这一步不是重新开始，而是在刚才那份 Lite 解读基础上继续深入。"
       : "这一步会使用刚才选择的 Lite 版本，当前先跳过真实支付。",
     redeemHint: isProUpgrade
-      ? "兑换码会先保留在表单里；当前 MVP 生成链路不会校验支付。"
+      ? "兑换码会先保留在表单里；Pro 权益只在支付或授权确认后解锁。"
       : "兑换码会先保留在表单里；当前 MVP 生成链路不会校验支付。",
+    paymentHint: isProUpgrade ? proPaymentHints[paymentState] : undefined,
+    paymentState: isProUpgrade ? paymentState : undefined,
     cards: isProUpgrade
       ? [
           {
@@ -61,9 +81,9 @@ export function createReportEntryPageDescriptor(
             bulletsTitle: "Pro 会继续展开",
             bullets: [
               "会展开更完整的状态解释链与现实连接",
-              "可继续看到三圈能量、失衡诊断与更深层建议",
+              "可继续看到三圈能量、失衡线索与更深层建议",
             ],
-            cta: "升级 Pro版",
+            cta: paymentState === "pending" ? "等待确认中" : "升级 Pro版",
             note: "适合已经读完 Lite，想继续看清这幅画更深层结构的人。",
             priceLabel: "再付 29 元升级",
             tone: "pro",

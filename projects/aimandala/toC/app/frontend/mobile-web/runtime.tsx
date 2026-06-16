@@ -58,9 +58,6 @@ type MobileWebRuntimePhase =
   | "report_ready"
   | "failed";
 
-const DEFAULT_INNER_RADIUS = 0.35;
-const DEFAULT_MIDDLE_RADIUS = 0.65;
-
 export function useMobileWebRouteLoader(
   input: MobileWebRouteInput,
 ): MobileWebRouteLoaderState {
@@ -129,14 +126,12 @@ export interface MobileWebRuntimeProps {
 }
 
 const defaultUploadDraft: MobileWebUploadDraft = {
-  imagePath: "/tmp/example-mandala.png",
+  imagePath: "",
   theme: "wealth",
   reportType: "lite",
   reportVariant: "lite",
   paintingIntention: "",
   paintingFeeling: "",
-  innerRadius: DEFAULT_INNER_RADIUS,
-  middleRadius: DEFAULT_MIDDLE_RADIUS,
 };
 
 function normalizeCircleRatio(value: number): number {
@@ -162,6 +157,13 @@ function createRuntimeLoadingState(
   draft: MobileWebUploadDraft,
   detection: DetectCirclesResponse,
 ): MandalaFlowState {
+  if (!draft.imagePath) {
+    return {
+      ...initialMandalaFlowState,
+      step: "liteGenerating",
+    };
+  }
+
   const selected = selectImage(initialMandalaFlowState, draft.imagePath);
   const detected = applyDetection(selected, detection);
 
@@ -1246,6 +1248,14 @@ export function MobileWebRuntime({
           },
         );
         setRuntimeUploadDraft(nextDraft);
+        if (!nextDraft.imagePath) {
+          setRuntimeUploadDetectError("请先上传或选择一张曼陀罗画作。");
+          setRuntimeProps({
+            route: "upload",
+            uploadDraft: nextDraft,
+          });
+          return;
+        }
         if (!hasDraftResolvedCircleRadii(nextDraft)) {
           return;
         }

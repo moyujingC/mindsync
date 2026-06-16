@@ -22,6 +22,7 @@ import type {
   MobileWebUploadDraft,
 } from "./state";
 import { getDraftReportVariant, hasDraftResolvedCircleRadii } from "./state";
+import type { ReportPaymentState } from "./pages/report-entry-page";
 
 export interface MobileWebAppProps {
   route: MobileWebRouteId;
@@ -45,6 +46,7 @@ export interface MobileWebAppProps {
   environmentDetail?: string;
   environmentTone?: "preview" | "runtime";
   uploadErrorMessage?: string | null;
+  reportEntryPaymentState?: ReportPaymentState;
   onLandingStart?: () => void;
   onLandingOpenHistory?: () => void;
   onUploadDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
@@ -93,6 +95,7 @@ export function MobileWebApp({
   environmentDetail,
   environmentTone,
   uploadErrorMessage = null,
+  reportEntryPaymentState = "idle",
   onLandingStart,
   onLandingOpenHistory,
   onUploadDraftChange,
@@ -169,6 +172,7 @@ export function MobileWebApp({
       return (
         <MobileWebReportEntryPage
           draft={uploadDraft}
+          paymentState={reportEntryPaymentState}
           onBack={onReportEntryBack}
           onDraftChange={onUploadDraftChange}
           onChooseReportType={onReportEntryChooseReportType}

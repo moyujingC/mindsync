@@ -91,10 +91,10 @@ function resolveLoadingUiState(
       currentMessage: "解读完成，即将跳转...",
       estimatedTime: isPro ? "预计约 2 分钟" : "预计约 60-90 秒",
       versionDescription: isPro
-        ? "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。"
+        ? "Pro 版包含三圈能量分析、失衡线索与报告内 AI 问答。"
         : "Lite 版会先整理核心线索与总体印象。",
       speedNote: isPro
-        ? "Pro 版会在 Lite 基础上继续生成三圈能量、失衡诊断与问答上下文"
+        ? "Pro 版会在 Lite 基础上继续生成三圈能量、失衡线索与问答上下文"
         : "Lite 版先呈现关键线索与总体印象，帮助你快速进入这次解读",
     };
   }
@@ -108,7 +108,7 @@ function resolveLoadingUiState(
         currentMessage: "正在整理 Pro 完整解读与问答上下文...",
         estimatedTime: "预计约 2 分钟",
         versionDescription:
-          "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+          "Pro 版包含三圈能量分析、失衡线索与报告内 AI 问答。",
         speedNote:
           "Lite 核心结果已经完成，当前正在补充更深层的能量结构与解释。",
       };
@@ -122,7 +122,7 @@ function resolveLoadingUiState(
         currentMessage: "Lite 已完成，正在进入 Pro 深度分析...",
         estimatedTime: "预计约 2 分钟",
         versionDescription:
-          "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+          "Pro 版包含三圈能量分析、失衡线索与报告内 AI 问答。",
         speedNote: "基础线索已经准备好，接下来会展开更完整的深层解读。",
       };
     }
@@ -137,7 +137,7 @@ function resolveLoadingUiState(
         currentMessage: "正在生成基础线索，随后展开 Pro 深度分析...",
         estimatedTime: "预计约 2 分钟",
         versionDescription:
-          "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+          "Pro 版包含三圈能量分析、失衡线索与报告内 AI 问答。",
         speedNote: "深度版会先完成基础骨架，再继续生成更深入的结构判断。",
       };
     }
@@ -150,7 +150,7 @@ function resolveLoadingUiState(
         currentMessage: "识别画面结构与三圈能量...",
         estimatedTime: "预计约 2 分钟",
         versionDescription:
-          "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+          "Pro 版包含三圈能量分析、失衡线索与报告内 AI 问答。",
         speedNote: "正在确认三圈结构，为后续深度解读建立基础。",
       };
     }
@@ -161,7 +161,7 @@ function resolveLoadingUiState(
       currentStageIndex: 0,
       currentMessage: "准备解读任务...",
       estimatedTime: "预计约 2 分钟",
-      versionDescription: "Pro 版包含三圈能量分析、失衡诊断与报告内 AI 问答。",
+      versionDescription: "Pro 版包含三圈能量分析、失衡线索与报告内 AI 问答。",
       speedNote: "正在接收画作与议题信息。",
     };
   }

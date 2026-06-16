@@ -117,7 +117,7 @@ export function createHistoryPageDescriptor(
         statusDetail = "这条记录已经拥有 Lite 与 Pro，可先进入详情页再选择要查看的版本。";
         actionLabel = "查看记录详情";
         statusTone = "proReady";
-        helperNote = "已包含三圈能量、失衡诊断与报告内 AI 问答。";
+        helperNote = "已包含三圈能量、失衡线索与报告内 AI 问答。";
       } else if (focusReportType === "lite" && presentation.isReady) {
         statusDetail = availableReportTypes.length > 1
           ? "这条记录已经有可查看版本，可先进入详情页，再决定打开 Lite 还是 Pro。"

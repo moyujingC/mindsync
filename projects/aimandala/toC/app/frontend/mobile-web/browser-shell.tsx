@@ -57,6 +57,7 @@ import type {
   InterpretationVersion,
   MandalaFlowState,
 } from "../shared/types";
+import type { ReportPaymentState } from "./pages/report-entry-page";
 import {
   applyError,
   getGenerationPresentation,
@@ -73,6 +74,8 @@ type RuntimeDebugState = {
   reportId: string | null;
   imagePath: string | null;
 };
+
+type PaymentQaScenario = "success" | "cancelled" | "delayed" | "error";
 
 function isSameRuntimeDebugState(
   current: RuntimeDebugState | null,
@@ -92,12 +95,10 @@ function isSameRuntimeDebugState(
 }
 
 function readBrowserShellInitialState() {
-  const defaultDraft = DEFAULT_PREVIEW_DRAFT;
-
   if (typeof window === "undefined") {
     return {
       route: "landing" as MobileWebRouteId,
-      draft: defaultDraft,
+      draft: DEFAULT_PREVIEW_DRAFT,
       interpretationId: "",
       session: createMobileWebGuestSession("ssr"),
       previewMode: import.meta.env.DEV,
@@ -115,6 +116,17 @@ function readBrowserShellInitialState() {
   const reportTypeParam = url.searchParams.get("reportType");
   const route = getRouteFromPathname(url.pathname);
   const localDebugEnabled = isLocalDebugHost(url.hostname) && !cleanMode;
+  const previewMode = previewParam === "0" ? false : previewParam === "1" ? true : import.meta.env.DEV;
+  const defaultDraft = previewMode
+    ? DEFAULT_PREVIEW_DRAFT
+    : {
+        imagePath: "",
+        theme: "wealth",
+        reportVariant: "lite" as const,
+        reportType: "lite" as const,
+        paintingIntention: "",
+        paintingFeeling: "",
+      };
 
   return {
     route,
@@ -137,7 +149,7 @@ function readBrowserShellInitialState() {
     session: resolveMobileWebSession({
       locationHref: url.toString(),
     }),
-    previewMode: previewParam === "0" ? false : previewParam === "1" ? true : import.meta.env.DEV,
+    previewMode,
     controlsOpen: controlsParam === "0" ? false : controlsParam === "1" ? true : (import.meta.env.DEV || localDebugEnabled),
     cleanMode,
     presetId: url.searchParams.get("preset"),
@@ -226,6 +238,10 @@ export function MobileWebBrowserShell() {
     useState<string | null>(null);
   const [historySeedAdding, setHistorySeedAdding] = useState(false);
   const [runtimeDebugState, setRuntimeDebugState] = useState<RuntimeDebugState | null>(null);
+  const [paymentQaScenario, setPaymentQaScenario] =
+    useState<PaymentQaScenario>("success");
+  const [reportEntryPaymentState, setReportEntryPaymentState] =
+    useState<ReportPaymentState>("idle");
   const userId = session.canonicalUserId;
   const activePreviewImagePath = draft.uploadAsset?.runtimeImagePath ?? draft.imagePath;
   const activePreviewStep = previewFlowState?.step ?? "idle";
@@ -635,6 +651,7 @@ export function MobileWebBrowserShell() {
         previewFlowState?.report?.version === "pro" ||
         previewFlowState?.step === "proReady";
       if (!isProReport) {
+        setReportEntryPaymentState("idle");
         setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "pro" }));
         setRoute("reportEntry");
         return;
@@ -675,6 +692,7 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryStatusDetail(null);
       setPreviewHistoryRefreshHint(null);
       setPreviewHistoryOpeningId(null);
+      setReportEntryPaymentState("idle");
       setRoute("upload");
     }
   }
@@ -684,6 +702,29 @@ export function MobileWebBrowserShell() {
   async function handlePreviewStartReport(reportType: MobileWebReportProductType) {
     if (previewFlowRunning) {
       return;
+    }
+
+    const isProUpgrade = reportType === "pro";
+    if (previewMode && isProUpgrade) {
+      if (paymentQaScenario === "cancelled") {
+        setReportEntryPaymentState("cancelled");
+        return;
+      }
+
+      if (paymentQaScenario === "delayed") {
+        setReportEntryPaymentState("pending");
+        setPreviewHistoryStatusLabel("Pro 支付回调仍在确认中");
+        setPreviewHistoryStatusDetail("当前不会解锁 Pro 权益。稍后可刷新权益或从历史记录恢复。");
+        setPreviewHistoryStatusTone("preview");
+        return;
+      }
+
+      if (paymentQaScenario === "error") {
+        setReportEntryPaymentState("error");
+        return;
+      }
+
+      setReportEntryPaymentState("succeeded");
     }
 
     const nextDraft = mergeMobileWebUploadDraft(draft, {
@@ -722,6 +763,7 @@ export function MobileWebBrowserShell() {
           draft: draftWithUpload,
           state: previewReportState,
         });
+        setReportEntryPaymentState("idle");
         setRoute("report");
         return;
       }
@@ -741,6 +783,7 @@ export function MobileWebBrowserShell() {
         draft: draftWithUpload,
         state: result.state,
       });
+      setReportEntryPaymentState("idle");
       if (result.state.step === "liteGenerating") {
         setRoute("loading");
         return;
@@ -870,6 +913,7 @@ export function MobileWebBrowserShell() {
       setPreviewHistoryStatusTone("preview");
       setPreviewHistoryRefreshHint(null);
       setPreviewHistoryOpeningId(null);
+      setReportEntryPaymentState("idle");
       setRoute("upload");
     } finally {
       setFixtureLoadingId(null);
@@ -1038,6 +1082,22 @@ export function MobileWebBrowserShell() {
                 </label>
 
                 <label className="field">
+                  <span>支付 QA 场景</span>
+                  <select
+                    value={paymentQaScenario}
+                    onChange={(event) => {
+                      setPaymentQaScenario(event.target.value as PaymentQaScenario);
+                      setReportEntryPaymentState("idle");
+                    }}
+                  >
+                    <option value="success">成功回调并刷新权益</option>
+                    <option value="cancelled">用户取消支付</option>
+                    <option value="delayed">成功回调延迟</option>
+                    <option value="error">支付或权益刷新失败</option>
+                  </select>
+                </label>
+
+                <label className="field">
                   <span>路由</span>
                   <select
                     value={route}
@@ -1191,6 +1251,7 @@ export function MobileWebBrowserShell() {
                 }}
                 onUploadContinue={async () => {
                   const nextDraft = mergeMobileWebUploadDraft(draft, { reportType: "lite" });
+                  setReportEntryPaymentState("idle");
                   setDraft(nextDraft);
                   if (!hasDraftResolvedCircleRadii(nextDraft)) {
                     return;
@@ -1202,15 +1263,18 @@ export function MobileWebBrowserShell() {
                 }}
                 onReportEntryBack={() => {
                   if ((draft.reportType ?? draft.reportVariant ?? "lite") === "pro" && previewFlowState) {
+                    setReportEntryPaymentState("idle");
                     setDraft((current) => mergeMobileWebUploadDraft(current, { reportType: "lite" }));
                     setRoute("report");
                     return;
                   }
+                  setReportEntryPaymentState("idle");
                   setRoute("upload");
                 }}
                 onReportEntryChooseReportType={async (reportType: MobileWebReportProductType) => {
                   await handlePreviewStartReport(reportType);
                 }}
+                reportEntryPaymentState={reportEntryPaymentState}
                 onLoadingLeaveLater={() => {
                   void handlePreviewLeaveLoadingLater();
                 }}

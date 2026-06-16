@@ -1,6 +1,9 @@
 import brandPattern from "../assets/pattern.webp";
 import { SharedReportEntrySelectionPage } from "../../shared/ui";
-import { createReportEntryPageDescriptor } from "../pages/report-entry-page";
+import {
+  createReportEntryPageDescriptor,
+  type ReportPaymentState,
+} from "../pages/report-entry-page";
 import type {
   MobileWebReportProductType,
   MobileWebUploadDraft,
@@ -9,6 +12,7 @@ import type { CSSProperties } from "react";
 
 export interface MobileWebReportEntryPageProps {
   draft: MobileWebUploadDraft;
+  paymentState?: ReportPaymentState;
   onBack?: () => void;
   onDraftChange?: (patch: Partial<MobileWebUploadDraft>) => void;
   onChooseReportType?: (reportType: MobileWebReportProductType) => void;
@@ -16,11 +20,12 @@ export interface MobileWebReportEntryPageProps {
 
 export function MobileWebReportEntryPage({
   draft,
+  paymentState = "idle",
   onBack,
   onDraftChange,
   onChooseReportType,
 }: MobileWebReportEntryPageProps) {
-  const descriptor = createReportEntryPageDescriptor(draft);
+  const descriptor = createReportEntryPageDescriptor(draft, paymentState);
   const heroPatternStyle = {
     ["--am-pattern-image" as string]: `url(${brandPattern})`,
   } as CSSProperties;

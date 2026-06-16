@@ -23,7 +23,7 @@ describe("report-entry page descriptor", () => {
     expect(descriptor.cards).toHaveLength(1);
   });
 
-  it("升级场景下切到 Pro 直生成页并显示升级价", () => {
+  it("升级场景下切到 Pro 支付确认页并显示升级价", () => {
     const descriptor = createReportEntryPageDescriptor({
       theme: "intimate_relationship",
       reportType: "pro",
@@ -33,8 +33,46 @@ describe("report-entry page descriptor", () => {
     expect(descriptor.themeLabel).toBe("亲密关系");
     expect(descriptor.statusLabel).toBe("待支付");
     expect(ids).toEqual(["pro"]);
-    expect(descriptor.description).toContain("Pro 完整报告");
+    expect(descriptor.description).toContain("发起 Pro 升级");
+    expect(descriptor.description).toContain("支付确认前不会展示 Pro 权益内容");
+    expect(descriptor.paymentHint).toContain("支付确认前不会解锁 Pro 权益");
     expect(descriptor.cards[0]?.priceLabel).toBe("再付 29 元升级");
     expect(descriptor.cards[0]?.cta).toBe("升级 Pro版");
+  });
+
+  it("Pro 支付回调延迟时显示等待确认并禁用继续升级", () => {
+    const descriptor = createReportEntryPageDescriptor(
+      {
+        theme: "wealth",
+        reportType: "pro",
+      },
+      "pending",
+    );
+
+    expect(descriptor.statusLabel).toBe("等待支付确认");
+    expect(descriptor.paymentHint).toContain("正在等待回调确认");
+    expect(descriptor.cards[0]?.cta).toBe("等待确认中");
+  });
+
+  it("Pro 支付失败或取消时不表达权益已解锁", () => {
+    const cancelled = createReportEntryPageDescriptor(
+      {
+        theme: "wealth",
+        reportType: "pro",
+      },
+      "cancelled",
+    );
+    const error = createReportEntryPageDescriptor(
+      {
+        theme: "wealth",
+        reportType: "pro",
+      },
+      "error",
+    );
+
+    expect(cancelled.paymentHint).toContain("Pro 权益未解锁");
+    expect(error.paymentHint).toContain("Pro 权益未解锁");
+    expect(cancelled.description).not.toContain("直接跳过");
+    expect(error.description).not.toContain("直接跳过");
   });
 });

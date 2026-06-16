@@ -27,6 +27,8 @@ export interface SharedReportEntryDescriptor {
   footnote: string;
   heroHint?: string;
   redeemHint?: string;
+  paymentHint?: string;
+  paymentState?: "idle" | "pending" | "cancelled" | "succeeded" | "error";
   cards: SharedReportEntryCardDescriptor[];
 }
 
@@ -223,15 +225,20 @@ function SharedReportEntryCard({
   priceLabel,
   availability,
   redeemCode,
+  paymentHint,
+  paymentState,
   onRedeemCodeChange,
   onClick,
 }: SharedReportEntryCardDescriptor & {
   redeemCode?: string;
   redeemHint?: string;
+  paymentHint?: string;
+  paymentState?: SharedReportEntryDescriptor["paymentState"];
   onRedeemCodeChange?: (value: string) => void;
   onClick?: () => void;
 }) {
   const isAvailable = availability === "available";
+  const isPaymentPending = paymentState === "pending";
   const redeemInputId = `am-report-entry-redeem-code-${id}`;
   const [redeemResult, setRedeemResult] = useState<RedeemResult | null>(null);
 
@@ -337,11 +344,18 @@ function SharedReportEntryCard({
           </div>
         ))}
       </div>
+      {paymentHint ? (
+        <p
+          className={`am-report-entry-card__note am-report-entry-card__note--payment am-report-entry-card__note--${paymentState ?? "idle"}`}
+        >
+          {paymentHint}
+        </p>
+      ) : null}
       {note ? <p className="am-report-entry-card__note">{note}</p> : null}
       <button
         type="button"
         onClick={onClick}
-        disabled={!isAvailable}
+        disabled={!isAvailable || isPaymentPending}
         className="am-report-entry-card__cta"
       >
         <span>{cta}</span>
@@ -406,6 +420,8 @@ export function SharedReportEntrySelectionPage({
             {...card}
             redeemCode={redeemCode}
             redeemHint={descriptor.redeemHint}
+            paymentHint={card.id === "pro" ? descriptor.paymentHint : undefined}
+            paymentState={descriptor.paymentState}
             onRedeemCodeChange={onRedeemCodeChange}
             onClick={
               card.availability === "available" && onChoose

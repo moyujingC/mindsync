@@ -376,6 +376,47 @@ describe("MobileWebRuntime", () => {
     expect(api.createWealthReport).not.toHaveBeenCalled();
   });
 
+  it("运行态上传页未选择画作时不会进入报告确认页", async () => {
+    const input: MobileWebRouteInput = {
+      route: "upload",
+      params: {
+        session: createMobileWebGuestSession("runtime-test"),
+        draft: {
+          imagePath: "",
+          theme: "wealth",
+          reportType: "lite",
+          reportVariant: "lite",
+          paintingIntention: "",
+          paintingFeeling: "",
+        },
+      },
+    };
+
+    await act(async () => {
+      root.render(<MobileWebRuntime input={input} />);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    });
+
+    await waitForAssertion(() => {
+      expect(container.textContent).toContain("点击上传或拍照");
+      expect(container.textContent).toContain("开始解读");
+    });
+
+    const startButton = Array.from(container.querySelectorAll("button")).find(
+      (item) => item.textContent?.includes("开始解读"),
+    );
+    expect(startButton).toBeTruthy();
+    expect(startButton?.hasAttribute("disabled")).toBe(true);
+
+    await act(async () => {
+      startButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(container.textContent).not.toContain("确认解读");
+    expect(api.uploadImage).not.toHaveBeenCalled();
+    expect(api.createWealthReport).not.toHaveBeenCalled();
+  });
+
   it("历史详情页点击打开 Lite 报告会跳转到报告页而不是停留原地", async () => {
     vi.spyOn(loaders, "loadHistoryPage").mockResolvedValueOnce({
       records: [createHistoryRecord()],
@@ -518,7 +559,7 @@ describe("MobileWebRuntime", () => {
     vi.useRealTimers();
   });
 
-  it("Lite 报告页底部主按钮会进入 Pro 升级直生成页", async () => {
+  it("Lite 报告页底部主按钮会进入 Pro 支付确认页", async () => {
     const input: MobileWebRouteInput = {
       route: "upload",
       params: {
@@ -582,6 +623,9 @@ describe("MobileWebRuntime", () => {
       expect(container.textContent).toContain("升级到 Pro 深度解读");
       expect(container.textContent).toContain("升级 Pro版");
       expect(container.textContent).toContain("再付 29 元升级");
+      expect(container.textContent).toContain(
+        "支付确认前不会展示 Pro 权益内容",
+      );
     });
   });
 });

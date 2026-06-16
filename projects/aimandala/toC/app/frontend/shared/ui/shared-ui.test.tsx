@@ -112,6 +112,43 @@ describe("shared ui", () => {
     expect(html).toContain("读完你会更清楚");
   });
 
+  it("渲染 Pro 支付等待态并禁用 CTA", () => {
+    const html = renderToStaticMarkup(
+      <SharedReportEntrySelectionPage
+        descriptor={{
+          statusLabel: "等待支付确认",
+          title: "升级到 Pro 深度解读",
+          description: "支付确认前不会展示 Pro 权益内容。",
+          themeLabel: "财富关系",
+          footnote: "这一步会沿用刚才同一幅画作与同一议题继续升级。",
+          heroHint: "这一步不是重新开始。",
+          redeemHint: "Pro 权益只在支付或授权确认后解锁。",
+          paymentHint:
+            "支付已发起，正在等待回调确认。请不要重复支付，可以稍后从历史记录恢复。",
+          paymentState: "pending",
+          cards: [
+            {
+              id: "pro",
+              title: "Pro",
+              description: "在 Lite 基础上继续深入。",
+              bulletsTitle: "Pro 会继续展开",
+              bullets: ["完整报告与追问能力"],
+              cta: "等待确认中",
+              note: "适合已经读完 Lite 的用户。",
+              priceLabel: "再付 29 元升级",
+              tone: "pro",
+              availability: "available",
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(html).toContain("等待支付确认");
+    expect(html).toContain("正在等待回调确认");
+    expect(html).toContain('disabled=""');
+  });
+
   it("计算 report-entry 兑换结果", () => {
     expect(
       resolveReportEntryRedeemResult({
