@@ -49,6 +49,20 @@ objects:
       - "作为个人求职执行项目，而不是抽象产品化实验"
       - "与怀瑾握瑜保持边界：前者服务当前求职闭环，后者探索可产品化的方法与服务模型"
 
+  - id: "e2093ff0-69b8-498e-a08d-a3040945cabb"
+    name: "智务工坊"
+    slug: "ai-task-studio"
+    kind: "product"
+    status: "draft"
+    goal: "AI 人工任务收入验证"
+    company_entry: "company/projects/智务工坊/PROJECT.md"
+    workspace_entry: "projects/ai-task-studio/PROJECT.md"
+    runtime_directory: "projects/ai-task-studio"
+    purpose:
+      - "承接 AI 人工任务、专家评测任务与平台型零工任务的收入验证"
+      - "在正式答题前完成任务研读、素材准备、问题规划与合规边界确认"
+      - "保证正式答题阶段以人工理解和人工输入为主，不依赖实时 AI 代答或复制粘贴"
+
   - id: "healing-courses"
     name: "疗愈课程体系"
     slug: "healing-courses"
