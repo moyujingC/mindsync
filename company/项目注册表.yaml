@@ -63,6 +63,20 @@ objects:
       - "在正式答题前完成任务研读、素材准备、问题规划与合规边界确认"
       - "保证正式答题阶段以人工理解和人工输入为主，不依赖实时 AI 代答或复制粘贴"
 
+  - id: "ai-consulting-studio"
+    name: "知行AI咨询"
+    slug: "ai-consulting-studio"
+    kind: "product"
+    status: "draft"
+    goal: "AI 咨询小单服务收入验证"
+    company_entry: "company/projects/知行AI咨询/PROJECT.md"
+    workspace_entry: "projects/ai-consulting-studio/PROJECT.md"
+    runtime_directory: "projects/ai-consulting-studio"
+    purpose:
+      - "承接 AI 工作流诊断、AI 文档/知识库整理等小型服务交付验证"
+      - "优先验证 999-4999 元级别的小单是否能形成现金流"
+      - "不承诺大而全的企业 AI 转型结果，也不承接求职定位陪跑"
+
   - id: "healing-courses"
     name: "疗愈课程体系"
     slug: "healing-courses"
