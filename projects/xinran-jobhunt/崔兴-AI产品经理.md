@@ -11,7 +11,7 @@
 * AI 产品设计：多模态输入、AI 报告生成链路、Prompt Pack、RAG 思路、AI Agent 体验边界
 * 产品方法：用户路径设计、PRD / 原型、MVP 范围控制、版本规划、需求优先级与体验迭代
 * 增长与商业：付费路径设计、Lite / Pro 分层、用户反馈收集、早期验证与转化假设
-* 技术协作：Python、React、TypeScript、API 理解、Monorepo、前后端联调与问题定位
+* 技术协作：Python、React、TypeScript、API 理解、Monorepo、云服务器部署、Nginx、域名 / HTTPS 配置、前后端联调与问题定位
 
 ## 融合创新期：AI 产品实践（2025.01 - 至今）
 
@@ -32,6 +32,7 @@
 * 通过 `agents / company / projects / shared / knowledge-base` 五层结构，降低 AI Agent 接手项目时的上下文成本
 * 将 AI 产品、研究、内容和求职材料纳入统一工作区，用项目入口和阶段产物支撑多项目并行推进
 * 建立 spec、task、QA、delivery 等项目推进闭环，让需求、实现、验证和交付有可追踪记录
+* 具备将作品集网站部署到云服务器的实操经验，能处理 Linux 服务器环境、Nginx 静态站点发布、域名解析、HTTPS 证书和线上连通性排查
 
 **产品能力体现**：能把长期混乱的信息、任务和协作关系整理成可维护系统，并用 AI 工具提升个人与项目推进效率。
 
