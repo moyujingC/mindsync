@@ -47,6 +47,75 @@ function resolveModelSize(width: number, height: number) {
   return width > height ? "1536x1024" : "1024x1536";
 }
 
+function hasImageApiConfig() {
+  return Boolean(process.env.AITECHFLUX_API_KEY?.trim());
+}
+
+function buildLocalPlaceholderImage(request: GenerateImagesRequest, index: number) {
+  const title =
+    request.cardLink?.title ||
+    request.coverLink?.title ||
+    request.inlineLink?.sectionHeading ||
+    request.articleTitle;
+  const subtitle = request.purposeLabel;
+  const palette =
+    request.purposeKey === "xhs_card"
+      ? { bg: "#F6F2EA", panel: "#FFFFFF", accent: "#7C8A9A", text: "#303642" }
+      : request.purposeKey === "wx_cover"
+        ? { bg: "#DDE7EF", panel: "#F7FAFC", accent: "#5C6F86", text: "#273241" }
+        : { bg: "#EEF2F3", panel: "#FFFFFF", accent: "#6E7F7A", text: "#2F3A37" };
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${request.width}" height="${request.height}" viewBox="0 0 ${request.width} ${request.height}">
+      <rect width="100%" height="100%" fill="${palette.bg}"/>
+      <rect x="${request.width * 0.08}" y="${request.height * 0.08}" width="${request.width * 0.84}" height="${request.height * 0.84}" rx="24" fill="${palette.panel}" opacity="0.92"/>
+      <circle cx="${request.width * 0.82}" cy="${request.height * 0.18}" r="${Math.min(request.width, request.height) * 0.055}" fill="${palette.accent}" opacity="0.28"/>
+      <rect x="${request.width * 0.15}" y="${request.height * 0.18}" width="${request.width * 0.16}" height="6" rx="3" fill="${palette.accent}" opacity="0.7"/>
+      <text x="${request.width * 0.15}" y="${request.height * 0.36}" fill="${palette.text}" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="${Math.max(22, Math.round(request.width * 0.045))}" font-weight="600">
+        ${escapeSvgText(title).slice(0, 22)}
+      </text>
+      <text x="${request.width * 0.15}" y="${request.height * 0.48}" fill="${palette.text}" opacity="0.68" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="${Math.max(14, Math.round(request.width * 0.024))}">
+        ${escapeSvgText(subtitle)}
+      </text>
+      <text x="${request.width * 0.15}" y="${request.height * 0.78}" fill="${palette.accent}" opacity="0.9" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="${Math.max(13, Math.round(request.width * 0.02))}">
+        本地占位图 ${index + 1} · 配置 AITECHFLUX_API_KEY 后生成真实图片
+      </text>
+    </svg>
+  `.trim();
+
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+}
+
+function escapeSvgText(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function generateLocalPlaceholderImages(request: GenerateImagesRequest) {
+  const prompt = buildPrompt(request);
+  return {
+    id: `gen-${Date.now().toString(36)}`,
+    source: "general-image" as const,
+    title: request.articleTitle,
+    purposeKey: request.purposeKey,
+    purposeLabel: request.purposeLabel,
+    presetLabel: request.presetLabel,
+    styleName: `${request.styleName} · 本地占位`,
+    images: Array.from({ length: request.count }, (_, index) => ({
+      id: crypto.randomUUID(),
+      imageUrl: buildLocalPlaceholderImage(request, index),
+      prompt,
+      width: request.width,
+      height: request.height,
+      cardLink: request.cardLink,
+      inlineLink: request.inlineLink,
+      coverLink: request.coverLink,
+    })),
+    createdAt: new Date().toISOString(),
+  };
+}
+
 async function readImageApiResponse(response: Response): Promise<ParsedImageApiResponse> {
   const rawText = await response.text();
   const contentType = response.headers.get("content-type") || "";
@@ -90,6 +159,10 @@ function buildNonJsonErrorMessage(status: number, contentType: string, rawText: 
 }
 
 export async function generateImagesWithModel(request: GenerateImagesRequest) {
+  if (!hasImageApiConfig()) {
+    return generateLocalPlaceholderImages(request);
+  }
+
   const apiKey = requireEnv("AITECHFLUX_API_KEY");
   const baseUrl =
     process.env.AITECHFLUX_BASE_URL?.trim() || "https://aitechflux.com/v1";

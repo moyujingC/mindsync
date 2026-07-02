@@ -1,4 +1,5 @@
 import {
+  type CSSProperties,
   type ClipboardEvent as ReactClipboardEvent,
   useEffect,
   useMemo,
@@ -16,17 +17,17 @@ import {
   Trash2,
 } from "lucide-react";
 import { SectionTitle, Btn, Tag, COLORS, Divider, FoggyArt } from "./ui-kit";
-import { useWorkspace, type ArticleBlock } from "../workspace";
+import { useWorkspace } from "../workspace";
 
 const STORAGE_KEY = "content-visual-studio.wechat-theme-library.v1";
-const ARTICLE_FOOTER = "—— 内容视觉工坊";
 
 type MappingMode = "h1h2" | "h2h3";
+type PreviewMode = "sample" | "article";
 
 type SavedWechatBaseline = {
   id: string;
   name: string;
-  mapping: MappingMode;
+  mapping?: MappingMode;
   rawHtml: string;
   plainText: string;
   savedAt: string;
@@ -50,6 +51,42 @@ type WechatTheme = {
   quoteFontSize: number;
 };
 
+type WechatStyleTemplate = {
+  containerStyle: string;
+  titleStyle: string;
+  metaStyle: string;
+  primaryHeadingStyle: string;
+  secondaryHeadingStyle: string;
+  paragraphStyle: string;
+  quoteStyle: string;
+  noteStyle: string;
+  eyebrowStyle: string;
+  figcaptionStyle: string;
+};
+
+type WechatArticleBlock =
+  | { type: "paragraph"; text: string }
+  | { type: "quote"; text: string }
+  | { type: "heading"; level: "primary" | "secondary"; title: string; body?: string }
+  | { type: "list"; ordered: boolean; items: string[] }
+  | { type: "image"; label: string; sectionKey?: string };
+
+type SampleBlockRole =
+  | "primary"
+  | "secondary"
+  | "body"
+  | "bold"
+  | "quote"
+  | "meta";
+
+type SampleBlockPreview = {
+  id: string;
+  role: SampleBlockRole;
+  label: string;
+  text: string;
+  style: string;
+};
+
 const DEFAULT_THEME: WechatTheme = {
   titleColor: "#303543",
   bodyColor: "#393D49",
@@ -66,8 +103,6 @@ const DEFAULT_THEME: WechatTheme = {
 export function WechatLayout() {
   const {
     currentArticle,
-    currentArticleBlocks,
-    currentArticleMeta,
     generationRecords,
     workbenchState,
   } =
@@ -81,6 +116,7 @@ export function WechatLayout() {
   const [statusMessage, setStatusMessage] = useState("尚未保存新的样式基准");
   const [isCopying, setIsCopying] = useState(false);
   const [showAllSampleBlocks, setShowAllSampleBlocks] = useState(false);
+  const [previewMode, setPreviewMode] = useState<PreviewMode>("sample");
   const pasteAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -95,7 +131,6 @@ export function WechatLayout() {
       if (active) {
         setActiveThemeId(active.id);
         setThemeName(active.name);
-        setMapping(active.mapping);
         setImportedHtml(active.rawHtml);
         setImportedText(active.plainText);
       }
@@ -127,8 +162,9 @@ export function WechatLayout() {
     const doc = importedHtml
       ? new DOMParser().parseFromString(importedHtml, "text/html")
       : null;
-    const headingSelectors =
-      mapping === "h1h2"
+    const headingSelectors = doc
+      ? detectRichTextHeadingSelectorMap(doc.body)
+      : mapping === "h1h2"
         ? { primary: "h1", secondary: "h2" }
         : { primary: "h2", secondary: "h3" };
     const primaryHeadingNodes = doc
@@ -159,9 +195,15 @@ export function WechatLayout() {
     );
     const styledBodyNodes = doc
       ? Array.from(doc.body.querySelectorAll<HTMLElement>("p,section,span,div")).filter(
-          (node) => node.textContent?.trim()
+          (node) => node.textContent?.trim() && isPlainParagraphCandidate(node)
         )
       : [];
+    const primaryFontNodes = doc
+      ? primaryHeadingNodes.map(findSampleStyleNode).filter((node): node is HTMLElement => Boolean(node))
+      : primaryHeadingNodes;
+    const secondaryFontNodes = doc
+      ? secondaryHeadingNodes.map(findSampleStyleNode).filter((node): node is HTMLElement => Boolean(node))
+      : secondaryHeadingNodes;
 
     return {
       paragraphCount,
@@ -172,11 +214,11 @@ export function WechatLayout() {
         "15 px"
       ),
       primaryHeadingFontSize: formatCssValue(
-        firstCssValue(primaryHeadingNodes, "font-size"),
+        firstCssValue(primaryFontNodes, "font-size"),
         mapping === "h1h2" ? "17 px" : "16 px"
       ),
       secondaryHeadingFontSize: formatCssValue(
-        firstCssValue(secondaryHeadingNodes, "font-size"),
+        firstCssValue(secondaryFontNodes, "font-size"),
         mapping === "h1h2" ? "16 px" : "15 px"
       ),
       lineHeight: formatCssValue(firstCssValue(styledBodyNodes, "line-height"), "1.85"),
@@ -188,8 +230,20 @@ export function WechatLayout() {
   }, [importedHtml, importedText, mapping]);
 
   const activeTheme = useMemo(
-    () => deriveWechatTheme(importedHtml, sampleSummary, mapping),
-    [importedHtml, sampleSummary, mapping]
+    () => deriveWechatTheme(importedHtml, sampleSummary),
+    [importedHtml, sampleSummary]
+  );
+  const styleTemplate = useMemo(
+    () => extractWechatStyleTemplate(importedHtml, activeTheme),
+    [activeTheme, importedHtml]
+  );
+  const sampleBlocks = useMemo(
+    () => extractSampleBlockPreviews(importedHtml, importedText, mapping, styleTemplate),
+    [importedHtml, importedText, mapping, styleTemplate]
+  );
+  const wechatArticleBlocks = useMemo(
+    () => buildWechatArticleBlocks(currentArticle.body, mapping),
+    [currentArticle.body, mapping]
   );
 
   const samplePreview = useMemo(() => {
@@ -197,10 +251,6 @@ export function WechatLayout() {
     if (importedText.trim()) return { mode: "text" as const, value: importedText };
     return null;
   }, [importedHtml, importedText]);
-  const articleMetaLine = useMemo(
-    () => buildArticleMetaLine(currentArticleMeta),
-    [currentArticleMeta]
-  );
   const coverGeneration = generationRecords.find((item) => item.purposeKey === "wx_cover");
   const inlineGeneration = generationRecords.find((item) => item.purposeKey === "wx_inline");
   const selectedCoverIndex = workbenchState.coverSelection?.selectedCoverIndex ?? 0;
@@ -214,6 +264,33 @@ export function WechatLayout() {
       ),
     [inlineGeneration]
   );
+  const previewArticleHtml = useMemo(
+    () =>
+      buildWechatArticleHtml(
+        styleTemplate,
+        currentArticle.title,
+        wechatArticleBlocks,
+        previewCover,
+        inlineImageMap
+      ),
+    [
+      activeTheme,
+      currentArticle.body,
+      currentArticle.title,
+      importedHtml,
+      inlineImageMap,
+      previewCover,
+      styleTemplate,
+      wechatArticleBlocks,
+    ]
+  );
+  const previewPaneHtml = useMemo(() => {
+    if (previewMode === "sample" && importedHtml) return sanitizePreviewHtml(importedHtml);
+    if (previewMode === "sample" && importedText.trim()) {
+      return plainTextToPreviewHtml(importedText);
+    }
+    return previewArticleHtml;
+  }, [importedHtml, importedText, previewArticleHtml, previewMode]);
 
   function receivePastedSample(html: string, text: string) {
     const nextText = (text || stripHtml(html)).trim();
@@ -223,6 +300,7 @@ export function WechatLayout() {
     }
     setImportedHtml(html);
     setImportedText(nextText);
+    setPreviewMode("sample");
     setStatusMessage(html ? "已接收富文本样本 · 待保存" : "已接收纯文本样本 · 待保存");
   }
 
@@ -239,7 +317,6 @@ export function WechatLayout() {
     const payload: SavedWechatBaseline = {
       id: activeThemeId || createThemeId(),
       name: themeName.trim() || "未命名排版",
-      mapping,
       rawHtml: importedHtml,
       plainText: importedText,
       savedAt: new Date().toISOString(),
@@ -263,7 +340,6 @@ export function WechatLayout() {
     if (!theme) return;
     setActiveThemeId(theme.id);
     setThemeName(theme.name);
-    setMapping(theme.mapping);
     setImportedHtml(theme.rawHtml);
     setImportedText(theme.plainText);
     const library: SavedWechatThemeLibrary = {
@@ -281,7 +357,6 @@ export function WechatLayout() {
     const payload: SavedWechatBaseline = {
       id: createThemeId(),
       name: `${(source?.name || themeName || "未命名排版").trim()} 副本`,
-      mapping,
       rawHtml: importedHtml,
       plainText: importedText,
       savedAt: new Date().toISOString(),
@@ -316,7 +391,7 @@ export function WechatLayout() {
       setThemeName("蓝雾静读版");
       setImportedHtml("");
       setImportedText("");
-      setMapping("h2h3");
+      setPreviewMode("article");
       setStatusMessage("主题已删除，当前主题库为空");
       return;
     }
@@ -325,27 +400,24 @@ export function WechatLayout() {
     setThemeName(nextActive.name);
     setImportedHtml(nextActive.rawHtml);
     setImportedText(nextActive.plainText);
-    setMapping(nextActive.mapping);
     setStatusMessage(`已删除主题，当前切换到 ${nextActive.name}`);
   }
 
   async function handleCopyWechatHtml() {
     setIsCopying(true);
     try {
-      const html = buildWechatArticleHtml(
-        activeTheme,
-        currentArticle.title,
-        articleMetaLine,
-        currentArticleBlocks,
-        inlineImageMap
-      );
-      const plainText = buildWechatArticleText(currentArticle.title, currentArticleBlocks);
+      const html = previewPaneHtml;
+      const plainText = htmlToPlainText(previewPaneHtml);
 
       if (!copyWechatArticleWithCopyEvent(html, plainText)) {
         await copyWechatArticleToClipboard(html, plainText);
       }
 
-      setStatusMessage("公众号正文已复制，可直接粘贴到公众号编辑器");
+      setStatusMessage(
+        previewMode === "sample" && samplePreview
+          ? "预览窗富文本已复制，可直接粘贴到公众号编辑器"
+          : "公众号正文已复制，可直接粘贴到公众号编辑器"
+      );
     } catch (error) {
       console.warn("[wechat-copy] failed", error);
       setStatusMessage("复制失败，请确认浏览器已允许访问剪贴板");
@@ -363,10 +435,10 @@ export function WechatLayout() {
         <div
           style={{ color: COLORS.textFaint, fontSize: 11, letterSpacing: "0.12em" }}
         >
-          MAPPING
+          ARTICLE MAPPING
         </div>
         <div className="mt-1 mb-3" style={{ color: COLORS.text }}>
-          标题映射规则
+          当前文章标题映射
         </div>
 
         <div className="space-y-2">
@@ -375,13 +447,13 @@ export function WechatLayout() {
               k: "h1h2",
               t: "# 作为一级标题",
               s: "## 作为二级标题",
-              note: "适用于完整文档",
+              note: "只影响当前 Markdown 文章，不影响已保存样式",
             },
             {
               k: "h2h3",
               t: "## 作为一级标题",
               s: "### 作为二级标题",
-              note: "适用于已经省略 H1 的稿件",
+              note: "样式资产照常使用，只改变当前文章层级",
             },
           ].map((o) => {
             const active = mapping === o.k;
@@ -562,7 +634,7 @@ export function WechatLayout() {
                             className="block truncate"
                             style={{ color: COLORS.textFaint, fontSize: 10.5, marginTop: 1 }}
                           >
-                            {formatSavedAt(theme.savedAt)} · {theme.mapping === "h1h2" ? "#/##" : "##/###"}
+                            {formatSavedAt(theme.savedAt)} · 样式资产
                           </span>
                         </span>
                         <span className="flex items-center gap-1.5 shrink-0">
@@ -599,7 +671,11 @@ export function WechatLayout() {
         <div className="mt-8 space-y-2">
           <Btn variant="primary" size="lg" block onClick={handleCopyWechatHtml}>
             <Copy size={15} strokeWidth={1.6} />
-            {isCopying ? "复制中..." : "复制公众号正文"}
+            {isCopying
+              ? "复制中..."
+              : previewMode === "article"
+                ? "复制当前文章排版"
+                : "复制预览富文本"}
           </Btn>
           <Btn variant="secondary" size="md" block onClick={handleSaveBaseline}>
             <Bookmark size={13} strokeWidth={1.6} />
@@ -634,17 +710,52 @@ export function WechatLayout() {
             "linear-gradient(180deg,#E9ECF0 0%,#E2E6EB 60%,#DDE2E8 100%)",
         }}
       >
-        <div
-          className="rounded-xl shadow-sm"
-          style={{
-            width: 420,
-            background: "#FFFFFF",
-            boxShadow:
-              "0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px rgba(60,72,90,0.10)",
-            border: `1px solid ${COLORS.border}`,
-            height: "fit-content",
-          }}
-        >
+        <div style={{ width: 420 }}>
+          <div
+            className="mb-3 rounded-md p-1 grid grid-cols-2"
+            style={{
+              background: COLORS.surface,
+              border: `1px solid ${COLORS.border}`,
+            }}
+          >
+            {[
+              { mode: "sample" as const, label: "预览样本" },
+              { mode: "article" as const, label: "排版当前文章" },
+            ].map((item) => {
+              const active = previewMode === item.mode;
+              const disabled = item.mode === "sample" && !samplePreview;
+              return (
+                <button
+                  key={item.mode}
+                  disabled={disabled}
+                  onClick={() => setPreviewMode(item.mode)}
+                  className="rounded px-3 py-2 transition-colors"
+                  style={{
+                    background: active ? COLORS.blueTint : "transparent",
+                    color: disabled
+                      ? COLORS.textFaint
+                      : active
+                        ? COLORS.blueDeep
+                        : COLORS.textMid,
+                    fontSize: 12.5,
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            className="rounded-xl shadow-sm"
+            style={{
+              background: "#FFFFFF",
+              boxShadow:
+                "0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px rgba(60,72,90,0.10)",
+              border: `1px solid ${COLORS.border}`,
+              height: "fit-content",
+            }}
+          >
           <div
             className="flex items-center justify-between px-5 pt-4"
             style={{ color: activeTheme.metaColor, fontSize: 11 }}
@@ -654,207 +765,9 @@ export function WechatLayout() {
             <span>●●●</span>
           </div>
 
-          <div className="px-7 pt-5 pb-8">
-            <div
-              style={{
-                color: activeTheme.titleColor,
-                fontSize: activeTheme.titleFontSize,
-                lineHeight: 1.45,
-                letterSpacing: 0,
-                fontWeight: 600,
-              }}
-            >
-              {currentArticle.title}
-            </div>
-            <div
-              className="mt-3 flex items-center gap-2"
-              style={{ color: activeTheme.metaColor, fontSize: 11 }}
-            >
-              <span
-                className="w-5 h-5 rounded-full"
-                style={{ background: "#D6DEE7" }}
-              />
-              <span>静读笔记</span>
-              <span>·</span>
-              <span>2026-06-09</span>
-              <span style={{ marginLeft: "auto" }}>
-                {articleMetaLine.split(" · ").at(-1)}
-              </span>
-            </div>
+            <div className="px-7 pt-5 pb-8">
+              <div dangerouslySetInnerHTML={{ __html: previewPaneHtml }} />
 
-            {previewCover ? (
-              <img
-                src={previewCover}
-                alt="公众号封面预览"
-                style={{
-                  aspectRatio: "16/9",
-                  marginTop: 16,
-                  borderRadius: 6,
-                  width: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            ) : (
-              <FoggyArt
-                hue={0}
-                variant="mountain"
-                style={{ aspectRatio: "16/9", marginTop: 16, borderRadius: 6 }}
-                label="蓝雾静读 · 封面"
-              />
-            )}
-
-            {currentArticleBlocks.map((block, i) => {
-              if (block.type === "eyebrow") {
-                return (
-                  <div
-                    key={`eyebrow-${i}`}
-                    className="mt-5"
-                    style={{
-                      color: activeTheme.accentColor,
-                      fontSize: 11.5,
-                      letterSpacing: "0.14em",
-                    }}
-                  >
-                    {renderInlineMarkdown(block.text)}
-                  </div>
-                );
-              }
-
-              if (block.type === "paragraph") {
-                return (
-                  <div
-                    key={`paragraph-${i}`}
-                    className="mt-5"
-                    style={{
-                      color: activeTheme.bodyColor,
-                      fontSize: activeTheme.bodyFontSize,
-                      lineHeight: activeTheme.bodyLineHeight,
-                      letterSpacing: 0,
-                      textAlign: "justify",
-                    }}
-                  >
-                    {renderInlineMarkdown(block.text)}
-                  </div>
-                );
-              }
-
-              if (block.type === "quote") {
-                return (
-                  <div
-                    key={`quote-${i}`}
-                    className="my-5"
-                    style={{
-                      borderLeft: `3px solid ${activeTheme.accentColor}`,
-                      paddingLeft: 14,
-                      color: activeTheme.accentColor,
-                      fontSize: activeTheme.quoteFontSize,
-                      lineHeight: activeTheme.bodyLineHeight,
-                      background: activeTheme.blockBg,
-                      padding: "10px 14px",
-                      borderRadius: "0 8px 8px 0",
-                    }}
-                  >
-                    {renderInlineMarkdown(block.text)}
-                  </div>
-                );
-              }
-
-              if (block.type === "note") {
-                return (
-                  <div
-                    key={`note-${i}`}
-                    className="mt-4 px-3 py-2.5 rounded-md"
-                    style={{
-                      background: "#FAF7F2",
-                      border: `1px solid ${COLORS.borderSoft}`,
-                      color: activeTheme.bodyColor,
-                      fontSize: activeTheme.bodyFontSize - 1,
-                      lineHeight: activeTheme.bodyLineHeight,
-                    }}
-                  >
-                    {block.text}
-                  </div>
-                );
-              }
-
-              if (block.type === "image") {
-                const inlineImageUrl = block.sectionKey
-                  ? inlineImageMap.get(block.sectionKey) ?? null
-                  : null;
-                return (
-                  <div key={`image-${i}`} className="mt-6">
-                    {inlineImageUrl ? (
-                      <img
-                        src={inlineImageUrl}
-                        alt={block.label}
-                        style={{
-                          aspectRatio: "16/9",
-                          borderRadius: 8,
-                          width: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    ) : (
-                      <FoggyArt
-                        hue={1}
-                        variant="wave"
-                        style={{ aspectRatio: "16/9", borderRadius: 6 }}
-                        label={block.label}
-                      />
-                    )}
-                    <div
-                      className="mt-2"
-                      style={{
-                        color: activeTheme.metaColor,
-                        fontSize: 10.5,
-                        textAlign: "center",
-                      }}
-                    >
-                      {block.label}
-                    </div>
-                  </div>
-                );
-              }
-
-              return (
-                <div key={`section-${i}`} className="mt-6">
-                  <h2
-                    style={{
-                      margin: 0,
-                      color: activeTheme.accentColor,
-                      fontSize: activeTheme.headingFontSize,
-                      lineHeight: 1.5,
-                      letterSpacing: 0,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {block.title}
-                  </h2>
-                  <div
-                    style={{
-                      color: activeTheme.bodyColor,
-                      fontSize: activeTheme.bodyFontSize,
-                      lineHeight: activeTheme.bodyLineHeight,
-                      marginTop: 15,
-                      textAlign: "justify",
-                    }}
-                  >
-                    {renderInlineMarkdown(block.body)}
-                  </div>
-                </div>
-              );
-            })}
-
-            <div
-              className="mt-8 pt-5 flex items-center justify-between"
-              style={{
-                borderTop: `1px solid ${COLORS.borderSoft}`,
-                color: activeTheme.metaColor,
-                fontSize: 11,
-              }}
-            >
-              <span>{ARTICLE_FOOTER}</span>
-              <span>分享 · 在看 · 点赞</span>
             </div>
           </div>
         </div>
@@ -1066,105 +979,55 @@ export function WechatLayout() {
             </button>
           </div>
           <div className="space-y-2">
-            <div
-              className="px-3 py-2 rounded text-xs"
-              style={{
-                background: COLORS.surfaceAlt,
-                border: `1px solid ${COLORS.borderSoft}`,
-                color: activeTheme.accentColor,
-                fontSize: activeTheme.headingFontSize,
-              }}
-            >
-              一、为什么注意力会碎片化
-            </div>
-            <div
-              className="px-3 py-2 rounded"
-              style={{
-                background: COLORS.surfaceAlt,
-                border: `1px solid ${COLORS.borderSoft}`,
-                color: activeTheme.bodyColor,
-                fontSize: activeTheme.bodyFontSize,
-                lineHeight: activeTheme.bodyLineHeight,
-              }}
-            >
-              真正的专注从来不是用力，而是放弃……
-            </div>
-            <div
-              className="px-3 py-2 rounded"
-              style={{
-                borderLeft: `3px solid ${activeTheme.accentColor}`,
-                background: activeTheme.blockBg,
-                color: activeTheme.accentColor,
-                fontSize: activeTheme.quoteFontSize,
-                lineHeight: 1.6,
-              }}
-            >
-              引用块 · 用于金句段
-            </div>
-            {showAllSampleBlocks && (
-              <>
+            {(showAllSampleBlocks ? sampleBlocks : sampleBlocks.slice(0, 4)).map(
+              (block) => (
                 <div
-                  className="px-3 py-2 rounded"
+                  key={block.id}
+                  className="rounded overflow-hidden"
                   style={{
-                    background: COLORS.surfaceAlt,
                     border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.titleColor,
-                    fontSize: activeTheme.titleFontSize,
-                    lineHeight: 1.45,
-                    fontWeight: 600,
+                    background: COLORS.surface,
                   }}
                 >
-                  AI提升了效率，为何难获轻松？
+                  <div
+                    className="px-3 py-1.5 flex items-center justify-between"
+                    style={{
+                      background: COLORS.surfaceAlt,
+                      borderBottom: `1px solid ${COLORS.borderSoft}`,
+                    }}
+                  >
+                    <span style={{ color: COLORS.blueDeep, fontSize: 11 }}>
+                      {block.label}
+                    </span>
+                    <span style={{ color: COLORS.textFaint, fontSize: 10.5 }}>
+                      来自富文本样本
+                    </span>
+                  </div>
+                  <div
+                    className="px-3 py-2"
+                    style={{
+                      ...sampleBlockStyleForRole(block.role, activeTheme),
+                      ...parseReactStyle(block.style),
+                    }}
+                  >
+                    {block.text}
+                  </div>
                 </div>
-                <div
-                  className="px-3 py-2 rounded"
-                  style={{
-                    background: COLORS.surfaceAlt,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.bodyColor,
-                    fontSize: activeTheme.bodyFontSize,
-                    lineHeight: activeTheme.bodyLineHeight,
-                  }}
-                >
-                  正文段落 · 用于普通叙述。这里检查字号、行高、段间距和整体阅读密度。
-                </div>
-                <div
-                  className="px-3 py-2 rounded"
-                  style={{
-                    background: COLORS.surfaceAlt,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.bodyColor,
-                    fontSize: activeTheme.bodyFontSize,
-                    lineHeight: activeTheme.bodyLineHeight,
-                  }}
-                >
-                  加粗正文 · <strong style={{ fontWeight: 700 }}>用于强调句，检查粗体在预览和复制后的稳定性。</strong>
-                </div>
-                <div
-                  className="px-3 py-2 rounded"
-                  style={{
-                    background: "#FAF7F2",
-                    border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.bodyColor,
-                    fontSize: Math.max(activeTheme.bodyFontSize - 1, 12),
-                    lineHeight: activeTheme.bodyLineHeight,
-                  }}
-                >
-                  提示块 · 用于补充说明、发布提醒或编辑备注。
-                </div>
-                <div
-                  className="px-3 py-2 rounded"
-                  style={{
-                    background: COLORS.surfaceAlt,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                    color: activeTheme.metaColor,
-                    fontSize: 11,
-                    lineHeight: 1.6,
-                  }}
-                >
-                  辅助信息 · 静读笔记 · 2026-06-09 · 8 分钟阅读
-                </div>
-              </>
+              )
+            )}
+            {sampleBlocks.length === 0 && (
+              <div
+                className="px-3 py-2 rounded"
+                style={{
+                  background: COLORS.surfaceAlt,
+                  border: `1px solid ${COLORS.borderSoft}`,
+                  color: COLORS.textFaint,
+                  fontSize: 12,
+                  lineHeight: 1.6,
+                }}
+              >
+                尚未识别到样本块。请先粘贴富文本样本。
+              </div>
             )}
           </div>
         </div>
@@ -1186,6 +1049,11 @@ function stripHtml(html: string) {
   return doc.body.textContent?.trim() ?? "";
 }
 
+function htmlToPlainText(html: string) {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent?.replace(/\n{3,}/g, "\n\n").trim() ?? "";
+}
+
 function escapeHtml(text: string) {
   return text
     .replaceAll("&", "&amp;")
@@ -1197,17 +1065,129 @@ function stripInlineMarkdown(text: string) {
   return text.replace(/\*\*([^*]+)\*\*/g, "$1");
 }
 
-function renderInlineMarkdown(text: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, index) => {
-    const match = part.match(/^\*\*([^*]+)\*\*$/);
-    if (!match) return part;
-    return (
-      <strong key={`${match[1]}-${index}`} style={{ fontWeight: 700 }}>
-        {match[1]}
-      </strong>
-    );
-  });
+function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArticleBlock[] {
+  const chunks = body
+    .split(/\n{2,}/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const blocks: WechatArticleBlock[] = [];
+  let lastSectionKey: string | undefined;
+
+  for (let index = 0; index < chunks.length; index += 1) {
+    const chunk = chunks[index];
+    const markdownHeading = chunk.match(/^(#{1,3})\s+(.+)$/);
+
+    if (/^>\s*/.test(chunk)) {
+      blocks.push({
+        type: "quote",
+        text: chunk
+          .split("\n")
+          .map((line) => line.replace(/^>\s*/, ""))
+          .join("\n"),
+      });
+      continue;
+    }
+
+    if (/^(图|图片)[:：]/.test(chunk)) {
+      blocks.push({
+        type: "image",
+        label: chunk.replace(/^(图|图片)[:：]\s*/, ""),
+        sectionKey: lastSectionKey,
+      });
+      continue;
+    }
+
+    if (markdownHeading) {
+      const hashLevel = markdownHeading[1].length;
+      const title = markdownHeading[2].trim();
+      const mappedLevel = mapMarkdownHeadingLevel(hashLevel, mapping);
+      lastSectionKey = toWechatSectionKey(title);
+      blocks.push({ type: "heading", level: mappedLevel, title });
+      continue;
+    }
+
+    const orderedList = parseMarkdownList(chunk, true);
+    if (orderedList) {
+      const items = [...orderedList];
+      while (index + 1 < chunks.length) {
+        const nextList = parseMarkdownList(chunks[index + 1], true);
+        if (!nextList) break;
+        items.push(...nextList);
+        index += 1;
+      }
+      blocks.push({ type: "list", ordered: true, items });
+      continue;
+    }
+
+    const unorderedList = parseMarkdownList(chunk, false);
+    if (unorderedList) {
+      const items = [...unorderedList];
+      while (index + 1 < chunks.length) {
+        const nextList = parseMarkdownList(chunks[index + 1], false);
+        if (!nextList) break;
+        items.push(...nextList);
+        index += 1;
+      }
+      blocks.push({ type: "list", ordered: false, items });
+      continue;
+    }
+
+    blocks.push({ type: "paragraph", text: chunk });
+  }
+
+  return blocks.length > 0 ? blocks : [{ type: "paragraph", text: body.trim() }];
+}
+
+function mapMarkdownHeadingLevel(hashLevel: number, mapping: MappingMode) {
+  if (mapping === "h1h2") {
+    return hashLevel <= 1 ? "primary" : "secondary";
+  }
+  return hashLevel <= 2 ? "primary" : "secondary";
+}
+
+function detectRichTextHeadingSelectorMap(root: HTMLElement) {
+  const hasSectionH1 = Array.from(root.querySelectorAll<HTMLElement>("h1")).some((node) =>
+    isSectionHeadingText(node.textContent || "")
+  );
+
+  return hasSectionH1
+    ? { primary: "h1", secondary: "h2" }
+    : { primary: "h2", secondary: "h3" };
+}
+
+function detectRichTextHeadingSelectors(root: HTMLElement) {
+  const headingMap = detectRichTextHeadingSelectorMap(root);
+  return [headingMap.primary, headingMap.secondary];
+}
+
+function parseMarkdownList(chunk: string, ordered: boolean) {
+  const lines = chunk
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (lines.length === 0) return null;
+
+  const items = lines.map((line) => parseMarkdownListItem(line, ordered));
+  if (items.some((item) => !item)) return null;
+  return items.filter((item): item is string => Boolean(item));
+}
+
+function parseMarkdownListItem(line: string, ordered: boolean) {
+  if (ordered) {
+    const boldNumbered = line.match(/^\*\*\d+[.、]\s*([^*]+)\*\*(.*)$/);
+    if (boldNumbered) return `**${boldNumbered[1].trim()}**${boldNumbered[2] || ""}`.trim();
+
+    return line.match(/^\d+[.、]\s*(.+)$/)?.[1]?.trim() ?? "";
+  }
+
+  const boldBulleted = line.match(/^\*\*[-*•]\s+([^*]+)\*\*(.*)$/);
+  if (boldBulleted) return `**${boldBulleted[1].trim()}**${boldBulleted[2] || ""}`.trim();
+
+  return line.match(/^[-*•]\s+(.+)$/)?.[1]?.trim() ?? "";
+}
+
+function toWechatSectionKey(value: string) {
+  return value.replace(/\s+/g, " ").trim().toLowerCase();
 }
 
 function inlineMarkdownToHtml(text: string) {
@@ -1221,10 +1201,585 @@ function inlineMarkdownToHtml(text: string) {
     .join("");
 }
 
+function extractWechatStyleTemplate(
+  importedHtml: string,
+  theme: WechatTheme
+): WechatStyleTemplate {
+  const fallback = buildFallbackStyleTemplate(theme);
+  if (!importedHtml) return fallback;
+
+  const doc = new DOMParser().parseFromString(importedHtml, "text/html");
+  doc.querySelectorAll("script,style").forEach((node) => node.remove());
+  const candidates = Array.from(
+    doc.body.querySelectorAll<HTMLElement>("section,p,div,blockquote,h1,h2,h3")
+  ).filter((node) => getTextDensity(node) > 0);
+
+  const headingSelectors = detectRichTextHeadingSelectors(doc.body);
+  const visualHeadingNodes = rankVisualHeadingNodes(candidates);
+  const titleNode =
+    findFirstStyledNode(doc.body, ["h1"]) ??
+    findLargestTextNode(candidates, { preferShort: true });
+  const primaryHeadingNode =
+    findFirstStyledNode(doc.body, [headingSelectors[0]]) ??
+    visualHeadingNodes[0] ??
+    titleNode;
+  const secondaryHeadingNode =
+    findFirstStyledNode(doc.body, [headingSelectors[1]]) ??
+    visualHeadingNodes.find((node) => node !== primaryHeadingNode) ??
+    primaryHeadingNode;
+  const paragraphNode =
+    findParagraphLikeNode(candidates, primaryHeadingNode, titleNode) ?? candidates[0];
+  const quoteNode = findQuoteLikeNode(candidates) ?? paragraphNode;
+  const metaNode = findMetaLikeNode(candidates, paragraphNode) ?? paragraphNode;
+  const firstElement = doc.body.firstElementChild;
+  const containerNode =
+    findFirstStyledNode(doc.body, ["section"]) ??
+    (firstElement instanceof HTMLElement ? firstElement : null);
+
+  return {
+    containerStyle: mergeStyleStrings(
+      fallback.containerStyle,
+      pickContainerStyle(containerNode)
+    ),
+    titleStyle: mergeStyleStrings(
+      fallback.titleStyle,
+      collectStyleChain(findSampleStyleNode(titleNode))
+    ),
+    metaStyle: mergeStyleStrings(
+      fallback.metaStyle,
+      collectStyleChain(findSampleStyleNode(metaNode))
+    ),
+    primaryHeadingStyle: normalizeHeadingStyle(
+      mergeStyleStrings(
+        fallback.primaryHeadingStyle,
+        collectStyleChain(findSampleStyleNode(primaryHeadingNode))
+      ),
+      "primary"
+    ),
+    secondaryHeadingStyle: normalizeHeadingStyle(
+      mergeStyleStrings(
+        fallback.secondaryHeadingStyle,
+        collectStyleChain(findSampleStyleNode(secondaryHeadingNode))
+      ),
+      "secondary"
+    ),
+    paragraphStyle: mergeStyleStrings(
+      fallback.paragraphStyle,
+      collectStyleChain(findSampleStyleNode(paragraphNode))
+    ),
+    quoteStyle: mergeStyleStrings(
+      fallback.quoteStyle,
+      collectStyleChain(findSampleStyleNode(quoteNode))
+    ),
+    noteStyle: mergeStyleStrings(
+      fallback.noteStyle,
+      collectStyleChain(findSampleStyleNode(quoteNode))
+    ),
+    eyebrowStyle: mergeStyleStrings(
+      fallback.eyebrowStyle,
+      collectStyleChain(findSampleStyleNode(metaNode))
+    ),
+    figcaptionStyle: mergeStyleStrings(
+      fallback.figcaptionStyle,
+      collectStyleChain(findSampleStyleNode(metaNode))
+    ),
+  };
+}
+
+function buildFallbackStyleTemplate(theme: WechatTheme): WechatStyleTemplate {
+  return {
+    containerStyle: `font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};color:${theme.bodyColor};background:#ffffff;padding:0 30px;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;`,
+    titleStyle: `margin:0 0 12px;color:${theme.titleColor};font-size:${theme.titleFontSize}px;line-height:1.45;font-weight:600;letter-spacing:0;`,
+    metaStyle: `margin:0 0 18px;color:${theme.metaColor};font-size:11px;line-height:1.6;`,
+    primaryHeadingStyle: `margin:0 0 15px;color:${theme.accentColor};font-size:${theme.headingFontSize}px;line-height:1.5;letter-spacing:0;font-weight:600;`,
+    secondaryHeadingStyle: `margin:0 0 12px;color:${theme.accentColor};font-size:${Math.max(
+      theme.headingFontSize - 2,
+      theme.bodyFontSize
+    )}px;line-height:1.55;letter-spacing:0;font-weight:600;`,
+    paragraphStyle: `margin:18px 0 0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;`,
+    quoteStyle: `margin:20px 0 12px;padding:10px 14px;border-left:3px solid ${theme.accentColor};background:${theme.blockBg};color:${theme.accentColor};font-size:${theme.quoteFontSize}px;line-height:${theme.bodyLineHeight};border-radius:0 8px 8px 0;`,
+    noteStyle: `margin:18px 0 0;padding:10px 12px;border:1px solid #ECEAE3;border-radius:8px;background:#FAF7F2;color:${theme.bodyColor};font-size:${Math.max(
+      theme.bodyFontSize - 1,
+      12
+    )}px;line-height:${theme.bodyLineHeight};`,
+    eyebrowStyle: `margin:18px 0 8px;color:${theme.accentColor};font-size:11.5px;letter-spacing:0.14em;`,
+    figcaptionStyle: `margin-top:8px;color:${theme.metaColor};font-size:10.5px;line-height:1.6;text-align:center;`,
+  };
+}
+
+function getTextDensity(node: HTMLElement) {
+  return (node.textContent || "").replace(/\s+/g, "").length;
+}
+
+function findFirstStyledNode(root: HTMLElement, selectors: string[]) {
+  for (const selector of selectors) {
+    const node = root.querySelector<HTMLElement>(selector);
+    if (node?.textContent?.trim()) return node;
+  }
+  return null;
+}
+
+function findLargestTextNode(nodes: HTMLElement[], options?: { preferShort?: boolean }) {
+  const filtered = nodes.filter((node) => node.textContent?.trim());
+  if (options?.preferShort) {
+    const shortNodes = filtered.filter((node) => getTextDensity(node) <= 36);
+    if (shortNodes.length) {
+      return shortNodes.sort((a, b) => scoreStyledNode(b) - scoreStyledNode(a))[0];
+    }
+  }
+  return filtered.sort((a, b) => getTextDensity(b) - getTextDensity(a))[0] ?? null;
+}
+
+function findHeadingLikeNode(nodes: HTMLElement[]) {
+  return (
+    nodes
+      .filter((node) => {
+        const textLength = getTextDensity(node);
+        const fontSize = parsePixel(getInlineCssValue(node, "font-size"), 0);
+        const weight = getInlineCssValue(node, "font-weight");
+        return (
+          textLength > 0 &&
+          textLength <= 40 &&
+          (fontSize >= 16 || /bold|[5-9]00/i.test(weight))
+        );
+      })
+      .sort((a, b) => scoreStyledNode(b) - scoreStyledNode(a))[0] ?? null
+  );
+}
+
+function rankVisualHeadingNodes(nodes: HTMLElement[]) {
+  const ranked = nodes
+    .filter((node) => {
+      const textLength = getTextDensity(node);
+      if (textLength === 0 || textLength > 48) return false;
+      const fontSize = parsePixel(getInlineCssValue(node, "font-size"), 0);
+      const weight = getInlineCssValue(node, "font-weight");
+      return fontSize >= 15 || /bold|[5-9]00/i.test(weight);
+    })
+    .sort((a, b) => {
+      const aFont = parsePixel(getInlineCssValue(a, "font-size"), 0);
+      const bFont = parsePixel(getInlineCssValue(b, "font-size"), 0);
+      if (bFont !== aFont) return bFont - aFont;
+      return scoreStyledNode(b) - scoreStyledNode(a);
+    });
+
+  return ranked.filter((node, index) => {
+    const text = node.textContent?.trim();
+    return text && ranked.findIndex((item) => item.textContent?.trim() === text) === index;
+  });
+}
+
+function findParagraphLikeNode(
+  nodes: HTMLElement[],
+  headingNode: HTMLElement | null,
+  titleNode: HTMLElement | null
+) {
+  return (
+    nodes
+      .filter((node) => {
+        const textLength = getTextDensity(node);
+        return (
+          node !== headingNode &&
+          node !== titleNode &&
+          textLength >= 28 &&
+          isPlainParagraphCandidate(node)
+        );
+      })
+      .sort((a, b) => {
+        const aTagScore = a.tagName.toLowerCase() === "p" ? 1 : 0;
+        const bTagScore = b.tagName.toLowerCase() === "p" ? 1 : 0;
+        if (bTagScore !== aTagScore) return bTagScore - aTagScore;
+        return getTextDensity(b) - getTextDensity(a);
+      })[0] ?? null
+  );
+}
+
+function isPlainParagraphCandidate(node: HTMLElement) {
+  const tag = node.tagName.toLowerCase();
+  const style = collectStyleChain(node);
+  const hasNestedBlocks = Boolean(
+    node.querySelector("p,section,blockquote,h1,h2,h3,ol,ul")
+  );
+  const background = getInlineCssValue(node, "background") ||
+    getInlineCssValue(node, "background-color");
+
+  if (tag === "blockquote") return false;
+  if (node.closest("blockquote")) return false;
+  if (hasNestedBlocks) return false;
+  if (/border-left|blockquote|quote/i.test(style)) return false;
+  if (background && !/^(transparent|rgba?\(0,\s*0,\s*0,\s*0\)|none)$/i.test(background)) {
+    return false;
+  }
+
+  return tag === "p" || tag === "span" || tag === "div" || tag === "section";
+}
+
+function findQuoteLikeNode(nodes: HTMLElement[]) {
+  return (
+    nodes.find((node) => node.tagName.toLowerCase() === "blockquote") ??
+    nodes.find((node) => {
+      const style = node.getAttribute("style") || "";
+      return /border-left|background|blockquote|quote/i.test(style);
+    }) ??
+    null
+  );
+}
+
+function findMetaLikeNode(nodes: HTMLElement[], paragraphNode: HTMLElement | null) {
+  return (
+    nodes
+      .filter((node) => node !== paragraphNode && getTextDensity(node) > 0)
+      .sort((a, b) => {
+        const aSize = parsePixel(getInlineCssValue(a, "font-size"), 99);
+        const bSize = parsePixel(getInlineCssValue(b, "font-size"), 99);
+        return aSize - bSize;
+      })[0] ?? null
+  );
+}
+
+function scoreStyledNode(node: HTMLElement) {
+  const style = node.getAttribute("style") || "";
+  const fontSize = parsePixel(getInlineCssValue(node, "font-size"), 0);
+  return style.length + fontSize * 3 + Math.min(getTextDensity(node), 80);
+}
+
+function collectStyleChain(node: HTMLElement | null) {
+  if (!node) return "";
+  const chain: string[] = [];
+  let current: HTMLElement | null = node;
+  while (current && current.tagName.toLowerCase() !== "body") {
+    const style = current.getAttribute("style");
+    if (style) chain.unshift(style);
+    current = current.parentElement;
+  }
+  return chain.join(";");
+}
+
+function pickContainerStyle(node: HTMLElement | null) {
+  if (!node) return "";
+  const style = parseStyleString(collectStyleChain(node));
+  return styleToString({
+    color: style.color,
+    background: style.background || style["background-color"] || "#ffffff",
+    "font-family": style["font-family"],
+    "font-size": style["font-size"],
+    "line-height": style["line-height"],
+    "letter-spacing": style["letter-spacing"],
+    padding: style.padding,
+  });
+}
+
+function mergeStyleStrings(base: string, override: string) {
+  return styleToString({
+    ...parseStyleString(base),
+    ...parseStyleString(override),
+  });
+}
+
+function normalizeHeadingStyle(style: string, level: "primary" | "secondary") {
+  const parsed = parseStyleString(style);
+  const baseSize = parsePixel(parsed["font-size"], level === "primary" ? 18 : 16);
+  if (level === "primary") {
+    return styleToString({
+      ...parsed,
+      "font-size": `${Math.max(baseSize, 17)}px`,
+      "font-weight": parsed["font-weight"] || "600",
+      "margin-bottom": parsed["margin-bottom"] || "15px",
+    });
+  }
+
+  return styleToString({
+    ...parsed,
+    "font-size": `${Math.max(baseSize - 2, 14)}px`,
+    "font-weight": parsed["font-weight"] || "500",
+    "margin-bottom": parsed["margin-bottom"] || "10px",
+    opacity: parsed.opacity || "0.92",
+  });
+}
+
+function parseStyleString(style: string) {
+  return style
+    .split(";")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .reduce<Record<string, string>>((acc, item) => {
+      const colonIndex = item.indexOf(":");
+      if (colonIndex === -1) return acc;
+      const property = item.slice(0, colonIndex).trim().toLowerCase();
+      const value = item.slice(colonIndex + 1).trim();
+      if (!property || !value) return acc;
+      if (/^(-webkit-|-moz-|-ms-)/.test(property)) return acc;
+      acc[property] = value;
+      return acc;
+    }, {});
+}
+
+function styleToString(style: Record<string, string | undefined>) {
+  return Object.entries(style)
+    .filter((entry): entry is [string, string] => Boolean(entry[1]))
+    .map(([property, value]) => `${property}:${value}`)
+    .join(";");
+}
+
 function sanitizePreviewHtml(html: string) {
   const doc = new DOMParser().parseFromString(html, "text/html");
-  doc.querySelectorAll("script,style").forEach((node) => node.remove());
-  return doc.body.innerHTML.slice(0, 1000);
+  doc
+    .querySelectorAll("script,style,iframe,object,embed,link,meta")
+    .forEach((node) => node.remove());
+  doc.body.querySelectorAll<HTMLElement>("*").forEach((node) => {
+    Array.from(node.attributes).forEach((attr) => {
+      const name = attr.name.toLowerCase();
+      const value = attr.value.trim().toLowerCase();
+      if (name.startsWith("on")) {
+        node.removeAttribute(attr.name);
+        return;
+      }
+      if ((name === "href" || name === "src") && value.startsWith("javascript:")) {
+        node.removeAttribute(attr.name);
+      }
+    });
+  });
+  return doc.body.innerHTML;
+}
+
+function plainTextToPreviewHtml(text: string) {
+  return text
+    .split(/\n{2,}/)
+    .map((chunk) => chunk.trim())
+    .filter(Boolean)
+    .map(
+      (chunk) =>
+        `<p style="margin:16px 0;color:#393D49;font-size:15px;line-height:1.8;text-align:justify;">${escapeHtml(
+          chunk
+        ).replace(/\n/g, "<br />")}</p>`
+    )
+    .join("");
+}
+
+function extractSampleBlockPreviews(
+  importedHtml: string,
+  importedText: string,
+  mapping: MappingMode,
+  template: WechatStyleTemplate
+): SampleBlockPreview[] {
+  if (!importedHtml) {
+    return importedText
+      .split(/\n{2,}/)
+      .map((chunk) => chunk.trim())
+      .filter(Boolean)
+      .slice(0, 12)
+      .map((text, index) => ({
+        id: `text-${index}`,
+        role: detectPlainTextSampleRole(text, mapping),
+        label: sampleRoleLabel(detectPlainTextSampleRole(text, mapping)),
+        text: stripInlineMarkdown(text).replace(/^#{1,6}\s+/, "").replace(/^>\s*/, ""),
+        style: template.paragraphStyle,
+      }));
+  }
+
+  const doc = new DOMParser().parseFromString(sanitizePreviewHtml(importedHtml), "text/html");
+  const headingSelectors = detectRichTextHeadingSelectorMap(doc.body);
+  const nodes = Array.from(
+    doc.body.querySelectorAll<HTMLElement>("h1,h2,h3,p,blockquote,li")
+  ).filter((node) => {
+    const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
+    return text.length >= 2 && !node.querySelector("h1,h2,h3,p,blockquote,li");
+  });
+  const boldNodes = Array.from(doc.body.querySelectorAll<HTMLElement>("strong,b,[style]"))
+    .filter((node) => {
+      const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
+      if (text.length < 4) return false;
+      if (node.closest("h1,h2,h3,blockquote")) return false;
+      return isBoldSampleNode(node);
+    });
+
+  const blocks: SampleBlockPreview[] = [];
+  const seen = new Set<string>();
+
+  nodes.forEach((node, index) => {
+    const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
+    const role = detectHtmlSampleRole(node, headingSelectors);
+    const styleNode = findSampleStyleNode(node);
+    const dedupeKey = `${role}:${text}`;
+    if (seen.has(dedupeKey)) return;
+    seen.add(dedupeKey);
+
+    blocks.push({
+      id: `html-${index}`,
+      role,
+      label: sampleRoleLabel(role),
+      text: text.length > 72 ? `${text.slice(0, 72)}...` : text,
+      style: collectStyleChain(styleNode),
+    });
+  });
+
+  boldNodes.forEach((node, index) => {
+    const text = node.textContent?.replace(/\s+/g, " ").trim() || "";
+    const dedupeKey = `bold:${text}`;
+    if (seen.has(dedupeKey)) return;
+    seen.add(dedupeKey);
+
+    blocks.push({
+      id: `bold-${index}`,
+      role: "bold",
+      label: sampleRoleLabel("bold"),
+      text: text.length > 72 ? `${text.slice(0, 72)}...` : text,
+      style: collectStyleChain(node),
+    });
+  });
+
+  return limitSampleBlocks(blocks, 18);
+}
+
+function detectPlainTextSampleRole(text: string, mapping: MappingMode): SampleBlockRole {
+  const heading = text.match(/^(#{1,3})\s+(.+)$/);
+  if (heading) {
+    return mapMarkdownHeadingLevel(heading[1].length, mapping) === "primary"
+      ? "primary"
+      : "secondary";
+  }
+  if (/^>\s*/.test(text)) return "quote";
+  if (/^\*\*[^*]+\*\*$/.test(text)) return "bold";
+  return "body";
+}
+
+function detectHtmlSampleRole(
+  node: HTMLElement,
+  headingSelectors: { primary: string; secondary: string }
+): SampleBlockRole {
+  const tag = node.tagName.toLowerCase();
+  const textLength = getTextDensity(node);
+
+  if (tag === "blockquote" || node.closest("blockquote")) return "quote";
+  if (tag === headingSelectors.primary) return "primary";
+  if (tag === headingSelectors.secondary) return "secondary";
+  if (tag === "h1" || tag === "h2" || tag === "h3") return "secondary";
+  if (tag === "p" && node.querySelector("strong,b") && textLength <= 120) return "bold";
+  return "body";
+}
+
+function isSectionHeadingText(text: string) {
+  return /^([一二三四五六七八九十]+、|\d+[.、])/.test(text.trim());
+}
+
+function isBoldSampleNode(node: HTMLElement) {
+  const tag = node.tagName.toLowerCase();
+  const style = node.getAttribute("style") || "";
+  const weight = getInlineCssValue(node, "font-weight");
+  return tag === "strong" || tag === "b" || /bold|[6-9]00/i.test(`${style};${weight}`);
+}
+
+function limitSampleBlocks(blocks: SampleBlockPreview[], limit: number) {
+  const requiredRoles: SampleBlockRole[] = ["primary", "secondary", "body", "quote", "bold"];
+  const selected: SampleBlockPreview[] = [];
+  const selectedIds = new Set<string>();
+
+  requiredRoles.forEach((role) => {
+    const block = blocks.find((item) => item.role === role);
+    if (!block || selectedIds.has(block.id)) return;
+    selected.push(block);
+    selectedIds.add(block.id);
+  });
+
+  blocks.forEach((block) => {
+    if (selected.length >= limit) return;
+    if (selectedIds.has(block.id)) return;
+    selected.push(block);
+    selectedIds.add(block.id);
+  });
+
+  return selected.sort((a, b) => {
+    const aIndex = blocks.findIndex((item) => item.id === a.id);
+    const bIndex = blocks.findIndex((item) => item.id === b.id);
+    return aIndex - bIndex;
+  });
+}
+
+function findSampleStyleNode(node: HTMLElement | null) {
+  if (!node) return null;
+  const nodeText = node.textContent?.replace(/\s+/g, " ").trim() || "";
+  const styledDescendants = Array.from(node.querySelectorAll<HTMLElement>("[style]"))
+    .filter((item) => {
+      const text = item.textContent?.replace(/\s+/g, " ").trim() || "";
+      return text && (text === nodeText || nodeText.includes(text));
+    })
+    .sort((a, b) => scoreStyledNode(b) - scoreStyledNode(a));
+
+  return styledDescendants[0] ?? node;
+}
+
+function sampleRoleLabel(role: SampleBlockRole) {
+  const labels: Record<SampleBlockRole, string> = {
+    primary: "一级标题",
+    secondary: "二级标题",
+    body: "正文段落",
+    bold: "加粗正文",
+    quote: "引用块",
+    meta: "辅助信息",
+  };
+  return labels[role];
+}
+
+function sampleBlockStyleForRole(role: SampleBlockRole, theme: WechatTheme) {
+  const base = {
+    color: theme.bodyColor,
+    fontSize: theme.bodyFontSize,
+    lineHeight: theme.bodyLineHeight,
+  };
+
+  if (role === "primary") {
+    return {
+      ...base,
+      color: theme.accentColor,
+      fontSize: theme.headingFontSize,
+      fontWeight: 600,
+    };
+  }
+  if (role === "secondary") {
+    return {
+      ...base,
+      color: theme.accentColor,
+      fontSize: Math.max(theme.headingFontSize - 2, theme.bodyFontSize),
+      fontWeight: 600,
+    };
+  }
+  if (role === "quote") {
+    return {
+      ...base,
+      color: theme.accentColor,
+      fontSize: theme.quoteFontSize,
+      background: theme.blockBg,
+      borderLeft: `3px solid ${theme.accentColor}`,
+      padding: "10px 12px",
+    };
+  }
+  if (role === "bold") {
+    return {
+      ...base,
+      fontWeight: 700,
+    };
+  }
+  if (role === "meta") {
+    return {
+      ...base,
+      color: theme.metaColor,
+      fontSize: 11,
+      lineHeight: 1.6,
+    };
+  }
+  return base;
+}
+
+function parseReactStyle(style: string): CSSProperties {
+  return Object.entries(parseStyleString(style)).reduce<CSSProperties>(
+    (acc, [property, value]) => {
+      const camelProperty = property.replace(/-([a-z])/g, (_, char: string) =>
+        char.toUpperCase()
+      );
+      return { ...acc, [camelProperty]: value };
+    },
+    {}
+  );
 }
 
 function getInlineCssValue(node: HTMLElement, property: string) {
@@ -1260,10 +1815,6 @@ function formatSavedAt(isoString: string) {
 }
 
 async function copyWechatArticleToClipboard(html: string, plainText: string) {
-  if (copyPlainTextWithSelection(plainText)) {
-    return;
-  }
-
   try {
     if (
       typeof ClipboardItem !== "undefined" &&
@@ -1300,10 +1851,10 @@ function copyWechatArticleWithCopyEvent(html: string, plainText: string) {
   };
 
   document.addEventListener("copy", handleCopy, { once: true });
-  const marker = document.createElement("textarea");
+  const marker = document.createElement("div");
   try {
-    marker.value = plainText || " ";
-    marker.setAttribute("readonly", "true");
+    marker.setAttribute("contenteditable", "true");
+    marker.innerHTML = html || escapeHtml(plainText || " ");
     marker.style.position = "fixed";
     marker.style.left = "-9999px";
     marker.style.top = "0";
@@ -1313,57 +1864,42 @@ function copyWechatArticleWithCopyEvent(html: string, plainText: string) {
     document.body.appendChild(marker);
 
     window.focus();
-    marker.focus();
-    marker.select();
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(marker);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
 
     const commandSucceeded = document.execCommand("copy");
     return copied && commandSucceeded;
   } finally {
     document.removeEventListener("copy", handleCopy);
+    window.getSelection()?.removeAllRanges();
     if (marker.parentNode) {
       document.body.removeChild(marker);
     }
   }
 }
 
-function copyPlainTextWithSelection(text: string) {
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.style.position = "fixed";
-  textarea.style.left = "-9999px";
-  textarea.style.top = "0";
-  document.body.appendChild(textarea);
-  textarea.focus();
-  textarea.select();
-
-  let copied = false;
-  try {
-    copied = document.execCommand("copy");
-  } finally {
-    document.body.removeChild(textarea);
-  }
-  return copied;
-}
-
 function buildWechatArticleHtml(
-  theme: WechatTheme,
+  template: WechatStyleTemplate,
   title: string,
-  meta: string,
-  blocks: ArticleBlock[],
-  inlineImageMap: Map<string, string>
+  blocks: WechatArticleBlock[],
+  coverImageUrl: string | null,
+  inlineImageMap: Map<string, string> | null
 ) {
+  const imageMap = inlineImageMap ?? new Map<string, string>();
+  const coverHtml = coverImageUrl
+    ? `
+      <figure style="margin:18px 0 22px;text-align:center;">
+        <img src="${escapeHtml(coverImageUrl)}" alt="公众号封面预览" style="display:block;width:100%;height:auto;margin:0 auto;border-radius:8px;object-fit:cover;background:#f0f3fa;" />
+      </figure>
+    `
+    : "";
   const blocksHtml = blocks.map((block) => {
-    if (block.type === "eyebrow") {
-      return `
-        <p style="margin:18px 0 8px;color:${theme.accentColor};font-size:11.5px;letter-spacing:0.14em;">
-          ${inlineMarkdownToHtml(block.text)}
-        </p>
-      `;
-    }
-
     if (block.type === "paragraph") {
       return `
-        <p style="margin:18px 0 0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;">
+        <p style="${template.paragraphStyle}">
           ${inlineMarkdownToHtml(block.text)}
         </p>
       `;
@@ -1371,26 +1907,33 @@ function buildWechatArticleHtml(
 
     if (block.type === "quote") {
       return `
-        <blockquote style="margin:20px 0 12px;padding:10px 14px;border-left:3px solid ${theme.accentColor};background:${theme.blockBg};color:${theme.accentColor};font-size:${theme.quoteFontSize}px;line-height:${theme.bodyLineHeight};border-radius:0 8px 8px 0;">
+        <blockquote style="${template.quoteStyle}">
           ${inlineMarkdownToHtml(block.text)}
         </blockquote>
       `;
     }
 
-    if (block.type === "note") {
+    if (block.type === "list") {
+      const tag = block.ordered ? "ol" : "ul";
+      const items = block.items
+        .map(
+          (item) => `
+            <li style="margin:0 0 8px;padding-left:2px;">
+              ${inlineMarkdownToHtml(item)}
+            </li>
+          `
+        )
+        .join("");
       return `
-        <div style="margin:18px 0 0;padding:10px 12px;border:1px solid #ECEAE3;border-radius:8px;background:#FAF7F2;color:${theme.bodyColor};font-size:${Math.max(
-          theme.bodyFontSize - 1,
-          12
-        )}px;line-height:${theme.bodyLineHeight};">
-          ${inlineMarkdownToHtml(block.text)}
-        </div>
+        <${tag} style="${template.paragraphStyle};padding-left:1.35em;">
+          ${items}
+        </${tag}>
       `;
     }
 
     if (block.type === "image") {
       const inlineImageUrl = block.sectionKey
-        ? inlineImageMap.get(block.sectionKey) ?? null
+        ? imageMap.get(block.sectionKey) ?? null
         : null;
       return `
         <figure style="margin:26px 0 12px;text-align:center;">
@@ -1399,67 +1942,46 @@ function buildWechatArticleHtml(
               ? `<img src="${escapeHtml(inlineImageUrl)}" alt="${escapeHtml(block.label)}" style="display:block;width:100%;max-width:720px;height:auto;margin:0 auto;border-radius:8px;object-fit:cover;background:#f0f3fa;" />`
               : `<div style="aspect-ratio:16/9;border-radius:8px;background:linear-gradient(160deg,#DCE5EE 0%,#B9C7D5 100%);"></div>`
           }
-          <figcaption style="margin-top:8px;color:${theme.metaColor};font-size:10.5px;line-height:1.6;text-align:center;">
+          <figcaption style="${template.figcaptionStyle}">
             ${escapeHtml(block.label)}
           </figcaption>
         </figure>
       `;
     }
 
-    return `
+    if (block.type === "heading") {
+      const headingStyle =
+        block.level === "primary"
+          ? template.primaryHeadingStyle
+          : template.secondaryHeadingStyle;
+      return `
       <section style="margin-top:34px;">
-        <h2 style="margin:0 0 15px;color:${theme.accentColor};font-size:${theme.headingFontSize}px;line-height:1.5;letter-spacing:0;font-weight:600;">
+        <h2 style="${headingStyle}">
           ${escapeHtml(block.title)}
         </h2>
-        <p style="margin:0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;">
-          ${inlineMarkdownToHtml(block.body)}
-        </p>
+        ${
+          block.body
+            ? `<p style="${template.paragraphStyle}">
+              ${inlineMarkdownToHtml(block.body)}
+            </p>`
+            : ""
+        }
       </section>
     `;
+    }
+
+    return "";
   }).join("");
 
   return `
-    <section data-tool="moyujing-wechat-article" style="font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};color:${theme.bodyColor};background:#ffffff;padding:0 30px;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;">
-      <h1 style="margin:0 0 12px;color:${theme.titleColor};font-size:${theme.titleFontSize}px;line-height:1.45;font-weight:600;letter-spacing:0;">
+    <section data-tool="moyujing-wechat-article" style="${template.containerStyle}">
+      <h1 style="${template.titleStyle}">
         ${escapeHtml(title)}
       </h1>
-      <p style="margin:0 0 18px;color:${theme.metaColor};font-size:11px;line-height:1.6;">
-        ${escapeHtml(meta)}
-      </p>
+      ${coverHtml}
       ${blocksHtml}
-      <p style="margin:32px 0 0;padding-top:16px;border-top:1px solid #ECEAE3;color:${theme.metaColor};font-size:11px;line-height:1.6;">
-        ${escapeHtml(ARTICLE_FOOTER)}
-      </p>
     </section>
   `.trim();
-}
-
-function buildWechatArticleText(title: string, blocks: ArticleBlock[]) {
-  return [
-    title,
-    "",
-    ...blocks.flatMap((block) => {
-      if (
-        block.type === "paragraph" ||
-        block.type === "quote" ||
-        block.type === "eyebrow" ||
-        block.type === "note"
-      ) {
-        return [stripInlineMarkdown(block.text), ""];
-      }
-      if (block.type === "image") {
-        return [`[图片] ${block.label}`, ""];
-      }
-      return [block.title, stripInlineMarkdown(block.body), ""];
-    }),
-    ARTICLE_FOOTER,
-  ].join("\n");
-}
-
-function buildArticleMetaLine(articleMeta: string) {
-  const charCount = Number(articleMeta.match(/(\d+)\s*字/u)?.[1] ?? 0);
-  const readingMinutes = Math.max(1, Math.ceil(charCount / 420));
-  return `静读笔记 · 2026-06-09 · ${readingMinutes} 分钟阅读`;
 }
 
 function deriveWechatTheme(
@@ -1469,8 +1991,7 @@ function deriveWechatTheme(
     primaryHeadingFontSize: string;
     secondaryHeadingFontSize: string;
     lineHeight: string;
-  },
-  mapping: MappingMode
+  }
 ): WechatTheme {
   if (!importedHtml) {
     return {
@@ -1487,10 +2008,7 @@ function deriveWechatTheme(
 
   const doc = new DOMParser().parseFromString(importedHtml, "text/html");
   const styledNodes = Array.from(doc.body.querySelectorAll<HTMLElement>("[style]"));
-  const headingSelectors =
-    mapping === "h1h2"
-      ? { primary: "h1", secondary: "h2" }
-      : { primary: "h2", secondary: "h3" };
+  const headingSelectors = detectRichTextHeadingSelectorMap(doc.body);
   const primaryHeadingNodes = Array.from(
     doc.body.querySelectorAll<HTMLElement>(headingSelectors.primary)
   );
