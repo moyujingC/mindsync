@@ -61,6 +61,8 @@
 - [实体店 AI 获客 Skill 案例参考](references/2026-07-07-实体店AI获客Skill案例参考.md)
 - [一人公司 AI 企业服务赛道参考](references/2026-07-07-一人公司AI企业服务赛道参考.md)
 - [一人公司 AI 企业服务赛道截图 OCR 原文](references/2026-07-07-一人公司AI企业服务赛道-OCR原文.md)
+- [AI 商单视频服务参考](references/2026-07-07-AI商单视频服务参考.md)
+- [AI 商单视频服务截图 OCR 原文](references/2026-07-07-AI商单视频服务-OCR原文.md)
 
 ## 5. 合规和表达边界
 
