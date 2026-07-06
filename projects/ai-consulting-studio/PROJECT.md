@@ -63,6 +63,8 @@
 - [一人公司 AI 企业服务赛道截图 OCR 原文](references/2026-07-07-一人公司AI企业服务赛道-OCR原文.md)
 - [AI 商单视频服务参考](references/2026-07-07-AI商单视频服务参考.md)
 - [AI 商单视频服务截图 OCR 原文](references/2026-07-07-AI商单视频服务-OCR原文.md)
+- [AI 时代销售能力参考](references/2026-07-07-AI时代销售能力参考.md)
+- [AI 时代销售能力截图 OCR 原文](references/2026-07-07-AI时代销售能力-OCR原文.md)
 
 ## 5. 合规和表达边界
 
