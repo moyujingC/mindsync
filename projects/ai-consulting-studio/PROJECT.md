@@ -57,8 +57,11 @@
 - [企业 AI 学习与服务市场参考转译](references/2026-07-04-企业AI学习与服务市场参考转译.md)
 - [企业 AI 学习与服务评论洞察](references/2026-07-04-企业AI学习与服务评论洞察.md)
 - [AI 工作流定制服务商文章与评论洞察](references/2026-07-07-AI工作流定制服务商文章与评论洞察.md)
+- [AI 工作流定制服务商文章与评论原文](references/2026-07-07-AI工作流定制服务商文章与评论-原文.md)
 - [企业 AI 培训生意路径参考](references/2026-07-07-企业AI培训生意路径参考.md)
+- [企业 AI 培训生意路径原文](references/2026-07-07-企业AI培训生意路径-原文.md)
 - [实体店 AI 获客 Skill 案例参考](references/2026-07-07-实体店AI获客Skill案例参考.md)
+- [实体店 AI 获客 Skill 案例原文](references/2026-07-07-实体店AI获客Skill案例-原文.md)
 - [一人公司 AI 企业服务赛道参考](references/2026-07-07-一人公司AI企业服务赛道参考.md)
 - [一人公司 AI 企业服务赛道截图 OCR 原文](references/2026-07-07-一人公司AI企业服务赛道-OCR原文.md)
 - [AI 商单视频服务参考](references/2026-07-07-AI商单视频服务参考.md)
@@ -66,6 +69,9 @@
 - [AI 时代销售能力参考](references/2026-07-07-AI时代销售能力参考.md)
 - [AI 时代销售能力截图 OCR 原文](references/2026-07-07-AI时代销售能力-OCR原文.md)
 - [个人专属 Skills 搭建方法参考](references/2026-07-07-个人专属Skills搭建方法参考.md)
+- [个人专属 Skills 搭建方法原文](references/2026-07-07-个人专属Skills搭建方法-原文.md)
+- [海外 AI 产品转型企业 AI 服务参考](references/2026-07-07-海外AI产品转型企业AI服务参考.md)
+- [海外 AI 产品转型企业 AI 服务原文](references/2026-07-07-海外AI产品转型企业AI服务-原文.md)
 
 ## 5. 合规和表达边界
 
