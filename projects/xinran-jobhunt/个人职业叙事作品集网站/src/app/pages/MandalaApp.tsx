@@ -21,10 +21,10 @@ export default function MandalaApp() {
         eyebrow="P R O J E C T &nbsp; 0 1"
         title="一镜一梳"
         subtitle="曼陀罗绘画 AI 解读与自我探索产品"
-        oneLiner="一个面向 To C 用户的曼陀罗绘画上传与 AI 解读 Web MVP，围绕画作上传、三圈识别、Lite / Pro 报告、付费升级和报告追问构建最小产品闭环。"
+        oneLiner="一个面向 To C 用户的曼陀罗绘画上传与 AI 解读 Web MVP，围绕画作上传、三圈识别、Lite / Pro 报告、付费升级、报告追问和质量验收构建最小产品闭环。"
         role="创始人 / AI 产品负责人 / 独立开发推进者"
         period="2025 — 至今"
-        tags={["AI 产品", "Web MVP", "多模态", "Prompt Pack", "质量门", "报告追问"]}
+        tags={["AI 产品", "Web MVP", "多模态", "Prompt Pack", "质量门", "验收口径"]}
         accent={ACCENT}
       />
 
@@ -44,7 +44,7 @@ export default function MandalaApp() {
             "设计 Lite / Pro 产品分层：Lite 面向首次体验用户，Pro 从 Lite 后升级，不提供独立购买入口。",
             "拆分报告生成链路：将视觉观察、领域知识、用户意图和输出规范分层处理，避免报告变成简单的「看图说话」。",
             "设计报告追问边界：追问只围绕本次画作和本次报告，不做长期陪伴，不做心理咨询，不替代医疗或人生决策。",
-            "将产品迁入 MindSync（知行工坊）Monorepo 正式工作区，持续完善项目入口、产品规范、知识层、报告契约和交付文档。",
+            "将产品迁入 MindSync（知行工坊）Monorepo 正式工作区，持续完善项目入口、产品规范、知识层、报告契约、质量验收和交付文档。",
           ]}
         />
       </Section>
@@ -171,7 +171,7 @@ export default function MandalaApp() {
           accent={ACCENT}
           modules={[
             { title: "产品结果", body: "To C MVP 主路径、Lite / Pro 分层、报告追问入口已形成完整闭环。" },
-            { title: "系统结果", body: "两段式报告生成链路、prompt pack、质量门已沉淀为可复用资产。" },
+            { title: "系统结果", body: "两段式报告生成链路、prompt pack、质量门和验收口径已沉淀为可复用资产。" },
             { title: "治理结果", body: "项目进入 MindSync（知行工坊）Monorepo，有项目入口、规范和后续迭代路径。" },
           ]}
         />
