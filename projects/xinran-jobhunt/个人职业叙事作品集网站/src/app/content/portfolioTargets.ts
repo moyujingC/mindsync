@@ -18,19 +18,19 @@ const roleTracks: RoleTrack[] = [
   {
     id: "role-ai-product-manager",
     title: "AI 产品经理",
-    summary: "从真实痛点出发，定义 AI 产品路径、MVP 范围、用户体验、质量门和迭代节奏。",
+    summary: "从真实痛点出发，定义 AI 产品路径、MVP 范围、用户体验、质量门、验收口径和迭代节奏。",
     proof: ["一镜一梳", "心理疗愈 AI 产品观察", "游戏开发技术履历"],
   },
   {
     id: "role-ai-transformation-consultant",
     title: "AI 转型咨询顾问",
-    summary: "进入复杂业务现场，诊断流程问题，把专家经验沉淀为 SOP、知识库和 AI 工作流。",
+    summary: "进入复杂业务现场，诊断流程问题，把专家经验沉淀为 SOP、知识库、RAG 思路和 AI 工作流。",
     proof: ["知行工坊", "房产咨询与经纪人孵化", "曼陀罗疗愈知识库"],
   },
   {
     id: "role-fde-ai-solution-engineer",
     title: "FDE / AI 解决方案工程师",
-    summary: "把客户场景拆成可验证 PoC、Agent 工作流、系统边界和可交付的 AI 应用原型。",
+    summary: "把客户场景拆成可验证 PoC、Agent 工作流、验收口径、系统边界和可交付的 AI 应用原型。",
     proof: ["知行工坊", "一镜一梳", "早期工程与独立交付经历"],
   },
 ];

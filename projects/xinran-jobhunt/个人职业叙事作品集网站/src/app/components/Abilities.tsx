@@ -14,7 +14,7 @@ const cells: Cell[] = [
       "AI 产品从 0 到 1 设计与定义",
       "MVP 范围控制与用户路径设计",
       "多模态报告链路与 Prompt Pack",
-      "质量门、安全边界与迭代判断",
+      "质量门、验收口径与迭代判断",
     ],
   },
   {
@@ -22,9 +22,9 @@ const cells: Cell[] = [
     title: "应用落地与工程协作",
     items: [
       "客户场景拆解与 PoC 路径设计",
-      "Agent 工作流与知识层接入",
+      "Agent 工作流、RAG 思路与知识层接入",
       "工程可行性判断与模块边界沟通",
-      "Monorepo、Git 与交付 artifact 管理",
+      "Monorepo、Git、日志意识与交付 artifact 管理",
     ],
   },
   {

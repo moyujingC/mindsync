@@ -20,10 +20,10 @@ export default function Monorepo() {
         eyebrow="P R O J E C T &nbsp; 0 2"
         title="知行工坊"
         subtitle="AI 一人公司 Monorepo / 公司工作空间"
-        oneLiner="一个自用中的 AI 一人公司工作系统原型：把公司治理、项目入口、角色定义、知识库、共享工具和阶段 artifact 收束到同一仓库，减少长期协作对聊天记录的依赖。"
+        oneLiner="一个自用中的 AI 一人公司工作系统原型：把公司治理、项目入口、角色定义、知识库、共享工具、质量记录和阶段 artifact 收束到同一仓库，减少长期协作对聊天记录的依赖。"
         role="系统设计者 / 一人公司工作空间搭建者 / Agent 协作机制推进者"
         period="2026 — 至今"
-        tags={["Monorepo", "Agent 协作", "Docs As System", "知识治理", "任务流转"]}
+        tags={["Monorepo", "Agent 协作", "Docs As System", "知识治理", "交付回写"]}
         accent={ACCENT}
       />
 
@@ -44,7 +44,7 @@ export default function Monorepo() {
             "建立项目注册表、公司蓝图、研发原则、任务状态流转规则和文档治理入口。",
             "将 AI 产品、研究、内容、求职材料等项目纳入统一工作区。",
             "基于 Paperclip、本地 Codex / Claude Code 和 artifact-based handoff，设计多角色 Agent 协作方式。",
-            "将 spec、task、QA、delivery 等阶段产物纳入项目推进闭环。",
+            "将 spec、task、QA、delivery 等阶段产物纳入项目推进闭环，保留质量检查、问题定位和交付回写记录。",
           ]}
         />
       </Section>
@@ -143,7 +143,7 @@ export default function Monorepo() {
           items={[
             { role: "AI 产品经理", fit: "体现信息架构、工作流产品思维、复杂系统拆解和工程协作理解。" },
             { role: "AI 转型咨询顾问", fit: "体现组织知识治理、AI 协作流程设计和从工具使用走向工作系统建设的能力。" },
-            { role: "FDE", fit: "体现我能为复杂客户场景搭建 Agent 协作、项目入口、交付 artifact 和可回写的工作系统。" },
+            { role: "FDE", fit: "体现我能为复杂客户场景搭建 Agent 协作、项目入口、质量记录、交付 artifact 和可回写的工作系统。" },
           ]}
         />
         <div className="mt-6">
