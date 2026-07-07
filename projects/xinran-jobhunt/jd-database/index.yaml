@@ -72,6 +72,7 @@ jobs:
       - "MVP"
       - "Agent交互"
       - "AI Native"
+      - "2026-07-07重复确认"
   - job_id: "2026-06-08-shanghai-mobai-ai-native-builder-001"
     captured_at: "2026-06-08"
     company: "上海瀚讯信息技术股份有限公司"
