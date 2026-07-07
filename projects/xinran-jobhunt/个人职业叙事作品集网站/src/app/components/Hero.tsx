@@ -58,7 +58,7 @@ export function Hero() {
             style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "1rem" }}
           >
             技术出身的复杂问题解决者：能从真实业务现场出发，
-            把高信任、非标准化场景拆成 AI 产品、工作流和可验证交付方案。
+            把高信任、非标准化场景拆成 AI 产品路径、Agent 工作流、生产化边界和可验证交付方案。
           </p>
         </Reveal>
 

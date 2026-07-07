@@ -15,7 +15,7 @@ const contacts = [
   { icon: ExternalLink, label: "小红书", value: "墨予镜", href: "https://xhslink.com/m/7VPwpjmF501" },
 ];
 
-const opportunityFocus = ["AI 产品从 0 到 1", "业务流程 AI 化 / Agent 工作流", "AI + 高信任服务场景解决方案"];
+const opportunityFocus = ["AI 产品从 0 到 1", "业务流程 AI 化 / Agent 工作流", "FDE / AI 解决方案落地"];
 
 export function Contact() {
   return (

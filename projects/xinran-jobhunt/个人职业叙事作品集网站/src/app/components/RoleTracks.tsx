@@ -22,7 +22,7 @@ export function RoleTracks({ target }: { target: PortfolioTarget }) {
               className="max-w-2xl mx-auto mt-5 text-[#2C3E50]/70 leading-[1.9]"
               style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "0.95rem" }}
             >
-              我关注的不是单一岗位标签，而是把真实业务问题转成 AI 产品、AI 工作流和可验证交付方案。
+              这套作品集用同一组能力证据，连接 AI 产品、AI 工作流、业务诊断和可验证交付方案。
             </p>
             <div className="w-12 h-px bg-[#8B5A2B] mx-auto mt-6" />
           </div>
