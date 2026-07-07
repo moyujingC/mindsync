@@ -3,6 +3,7 @@
 求职意向：AI 产品经理 | 上海
 18018683811 | alinecui@qq.com
 作品集：[https://xinran.jingshu.cc](https://xinran.jingshu.cc) 
+完整履历：[https://xinran.jingshu.cc/online-resume-full.pdf](https://xinran.jingshu.cc/online-resume-full.pdf)（如需查看更完整的工作经历、项目细节和平台版在线简历内容，可打开此链接）
 
 > 18 年跨技术研发、保险与房产咨询、AI 产品实践经验，具备从真实服务痛点出发，识别可被 AI 改造的流程，定义产品边界，拆解用户工作流，设计 Agent / Workflow 与 AI 报告生成链路，并推进 Web MVP 验证的能力。早期主机游戏研发经历形成复杂系统拆解和工程协作基础，保险与房产咨询经历沉淀高信任服务、用户洞察和商业验证能力，近期聚焦 AI 产品 0 到 1、知识层 / RAG 思路、输出契约、质量门、评估口径与安全边界。
 

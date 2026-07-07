@@ -2,6 +2,7 @@
 求职意向：FDE / AI 解决方案工程师 | 上海
 18018683811 | alinecui@qq.com
 作品集：[https://xinran.jingshu.cc](https://xinran.jingshu.cc) 
+完整履历：[https://xinran.jingshu.cc/online-resume-full.pdf](https://xinran.jingshu.cc/online-resume-full.pdf)（如需查看更完整的工作经历、项目细节和平台版在线简历内容，可打开此链接）
 
 > 18 年跨技术研发、复杂服务咨询、创业和 AI 应用实践经验，擅长进入真实业务现场，把模糊需求拆成场景、流程、数据、权限、风险、ROI 和验收口径，再收束为可验证的 PoC、AI 工作流、知识库 / RAG 思路、质量门和交付边界。早期主机游戏研发经历提供复杂系统与工程交付基础，房产咨询创业经历提供高信任客户现场、需求诊断和方案落地经验，近期独立推进 AI 产品、Agent 协作系统、知识治理、部署排障和交付文档沉淀。
 

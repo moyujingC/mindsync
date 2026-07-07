@@ -2,6 +2,7 @@
 求职意向：AI 转型咨询顾问 | 上海
 18018683811 | alinecui@qq.com
 作品集：[https://xinran.jingshu.cc](https://xinran.jingshu.cc) 
+完整履历：[https://xinran.jingshu.cc/online-resume-full.pdf](https://xinran.jingshu.cc/online-resume-full.pdf)（如需查看更完整的工作经历、项目细节和平台版在线简历内容，可打开此链接）
 
 > 18 年技术研发、保险与房产咨询、AI 实践经验，擅长从客户需求、业务流程和组织采用难点出发，识别可被 AI 改造的场景，拆成可诊断、可试点、可评估、可推广的 AI 工作流。曾以小团队验证高信任服务的标准化和复制路径，近期通过自研 AI 产品与一人公司工作系统，沉淀 AI 工具落地、知识治理、流程重构、质量门和团队赋能方法。
 
