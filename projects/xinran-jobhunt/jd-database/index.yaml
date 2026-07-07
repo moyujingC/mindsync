@@ -1,5 +1,5 @@
 version: 0.1.0
-last_updated: 2026-06-10
+last_updated: 2026-07-07
 description: >
   馨冉求职 JD 数据库总索引。每次新增岗位时，同时补一条索引记录。
 
@@ -820,3 +820,20 @@ jobs:
       - "多模态交互"
       - "大模型"
       - "车载OS"
+  - job_id: "2026-07-07-hello-puhui-builder-ai-product-001"
+    captured_at: "2026-07-07"
+    company: "哈啰普惠"
+    role_title: "builder（AI产品）"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "analyzed"
+    primary_track: "ai-pm"
+    match_score: 89
+    file: "jobs/2026-07-07-哈啰普惠-builder（AI产品）.md"
+    keywords:
+      - "AI First"
+      - "Builder"
+      - "AI Coding"
+      - "Agent Infra"
+      - "Demo"
+      - "快速迭代"
