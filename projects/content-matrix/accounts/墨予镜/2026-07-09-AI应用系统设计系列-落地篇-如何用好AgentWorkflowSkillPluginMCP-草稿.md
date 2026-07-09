@@ -1,6 +1,10 @@
-# 如何用好 Agent、Workflow、Skill、Plugin、MCP：从业务解构到 AI 系统设计
+# AI 应用系统设计系列：如何用好 Agent、Workflow、Skill、Plugin、MCP
 
-上一篇我们讲了 `Agent`、`Workflow`、`Skill`、`Plugin`、`MCP` 的本质区别：
+这是「AI 应用系统设计」系列的落地篇。
+
+背景篇讲这些概念为什么会出现，本质篇讲它们各自封装了什么复杂度。这一篇继续回答第三个问题：面对一个真实业务，应该怎样拆解，并选择合适的 AI 能力形态承接它？
+
+在本系列的本质篇里，我们把 `Agent`、`Workflow`、`Skill`、`Plugin`、`MCP` 的区别压缩成一句话：
 
 - `Agent` 是主体
 - `Workflow` 是流程
