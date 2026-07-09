@@ -3,7 +3,7 @@ job_id: "2026-07-09-large-internet-deepseek-agent-harness-pm-001"
 captured_at: "2026-07-09"
 source_platform: "BOSS直聘"
 source_type: "screenshot"
-status: "analyzed"
+status: "archived"
 
 company: "某大型互联网公司"
 role_title: "DeepSeek-Agent Harness 产品经理"
@@ -79,6 +79,11 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：FDE / AI Agent 工作流产品
 - 匹配分：93/100
+
+## 开放状态记录
+
+- 2026-07-09：用户确认该岗位已停止招聘。
+- 当前处理：不再作为可投递目标；保留为 `Agent Harness / 产品工程 / 开发者体验 / 开源社区` 的高价值市场样本。
 
 ## 文字版 JD
 
