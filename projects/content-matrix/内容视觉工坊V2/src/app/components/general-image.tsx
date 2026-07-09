@@ -20,6 +20,7 @@ import { postGenerateImages } from "../api";
 
 const STYLES = [
   { name: "蓝雾静读", hue: 0, variant: "mountain" },
+  { name: "手绘流程讲解板", hue: 3, variant: "grid" },
   { name: "留白水墨", hue: 5, variant: "leaf" },
   { name: "暖灰晨间", hue: 1, variant: "circle" },
   { name: "薄雾林间", hue: 2, variant: "wave" },

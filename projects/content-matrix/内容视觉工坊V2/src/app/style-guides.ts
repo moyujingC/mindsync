@@ -47,6 +47,54 @@ export const PAPER_INFO_BOARD_REFERENCE_IMAGES: StyleReferenceImage[] = [
   },
 ];
 
+export const HANDDRAWN_FLOW_EXPLAINER_REFERENCE_IMAGES: StyleReferenceImage[] = [
+  {
+    label: "手绘流程讲解板 01",
+    url: "file:///Users/xinran/Pictures/Photos%20Library.photoslibrary/resources/derivatives/E/EF88AEBF-2339-4539-9954-1F161E2AB7C1_1_105_c.jpeg",
+    note: "参考粗黑手写标题、分区讲解和温白纸面",
+  },
+  {
+    label: "手绘流程讲解板 02",
+    url: "file:///Users/xinran/Pictures/Photos%20Library.photoslibrary/resources/derivatives/8/8D74C2FB-1936-48D7-8EF8-ADB5C2089F61_1_105_c.jpeg",
+    note: "参考流程箭头、编号步骤和粉彩信息块",
+  },
+  {
+    label: "手绘流程讲解板 03",
+    url: "file:///Users/xinran/Pictures/Photos%20Library.photoslibrary/resources/derivatives/8/8F5B0473-B64F-4AD1-93B6-80025CCEEA77_1_105_c.jpeg",
+    note: "参考手绘案例拆解、气泡标签和小图标",
+  },
+  {
+    label: "手绘流程讲解板 04",
+    url: "file:///Users/xinran/Pictures/Photos%20Library.photoslibrary/resources/derivatives/A/ADA47AB7-B96C-4B9B-99E7-5A2C9578BBBC_1_105_c.jpeg",
+    note: "参考对比面板、路线图和说明性插画",
+  },
+  {
+    label: "手绘流程讲解板 05",
+    url: "file:///Users/xinran/Pictures/Photos%20Library.photoslibrary/resources/derivatives/4/4D202433-CC36-4706-B7AA-88C43F588BE5_1_105_c.jpeg",
+    note: "参考卡片分栏、强调下划线和手账式层次",
+  },
+  {
+    label: "手绘流程讲解板 06",
+    url: "file:///Users/xinran/Pictures/Photos%20Library.photoslibrary/resources/derivatives/8/86CCE264-3BCE-4A1F-8F9B-6EE32D976FBA_1_105_c.jpeg",
+    note: "参考可爱黑色小人、标注箭头和轻松讲解感",
+  },
+  {
+    label: "手绘流程讲解板 07",
+    url: "file:///Users/xinran/Pictures/Photos%20Library.photoslibrary/resources/derivatives/1/115DEBA2-003F-47D7-91D8-BD9D2CA00F7A_1_105_c.jpeg",
+    note: "参考漏斗、天平、路线等结构化视觉隐喻",
+  },
+  {
+    label: "手绘流程讲解板 08",
+    url: "file:///Users/xinran/Pictures/Photos%20Library.photoslibrary/resources/derivatives/2/253EF7D9-0FF0-4AE2-B248-13FA4A6A353C_1_105_c.jpeg",
+    note: "参考教程手册式布局和多模块信息承载",
+  },
+  {
+    label: "手绘流程讲解板 09",
+    url: "file:///Users/xinran/Pictures/Photos%20Library.photoslibrary/resources/derivatives/F/F38310CE-5F5C-4278-BD18-ED1CC71387D0_1_105_c.jpeg",
+    note: "参考粉彩蓝绿橙色块和黑色线稿装饰",
+  },
+];
+
 export const PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE = `视觉风格：极简纸本信息板 · 小红书知识卡
 
 整体风格：
@@ -69,6 +117,29 @@ export const PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE = `视觉风格：极简纸�
 
 限制：
 不要手绘涂鸦儿童感，不要卡通贴纸感，不要科技霓虹，不要厚重营销海报，不要复杂拼贴到失去留白，不要把信息压成普通金句卡。`;
+
+export const HANDDRAWN_FLOW_EXPLAINER_STYLE_GUIDE = `视觉风格：手绘流程讲解板
+
+整体风格：
+参考一组手绘中文知识讲解图。画面像老师在纸上整理出来的流程板、案例手册或提示词说明页：温白纸面、粗黑手写标题、低饱和粉彩色块、涂鸦箭头、气泡标签、简笔图标和少量可爱黑色小人。整体要清楚、有亲手画出来的温度，但仍然是成熟的信息图，不要变成儿童漫画。
+
+画面结构：
+适合竖版 3:4、小红书全屏图或单页知识卡。优先使用流程图、编号步骤、对比面板、漏斗、路线图、天平、左右分栏、上下分段等结构，把信息拆成 3-6 个清晰模块。每个模块之间要有箭头、连线或空间关系，读者一眼能看出阅读顺序。
+
+背景：
+温白、浅米白或带轻微纸纹的手账纸面。允许有铅笔阴影、水彩笔涂抹、轻微扫描感和手绘边框。不要纯数字界面背景，不要玻璃拟态，不要深色科技背景。
+
+配色：
+主色是黑色线稿和温白纸面，辅助色使用低饱和蓝、灰绿、浅黄、奶油橙、淡粉或浅棕。色块像马克笔、水彩笔或蜡笔轻涂，边缘可以略不规则。避免高饱和霓虹、强商业海报色和单一紫蓝渐变。
+
+文字：
+中文标题要大、黑、手写感强，类似粗马克笔标题。模块标题和标签可以用清晰手写体或打印体，但必须可读。可以用下划线、圈画、荧光笔和箭头强调。所有需要渲染的文字仍必须按提示词规则用反引号包裹，不要自造无关文字。
+
+素材元素：
+可以出现手绘箭头、对话气泡、便签框、编号圆点、勾选框、小旗子、放大镜、灯泡、天平、漏斗、道路、文档、小人、表情符号式简笔头像。元素必须服务信息解释，不要堆满装饰。
+
+限制：
+不要把正文改写成无关内容，不要塞满小字，不要生成真实照片感，不要 3D 渲染，不要厚重商业海报，不要二次元角色，不要过度可爱，不要把黑色小人画成主要人物肖像。`;
 
 export const PAPER_INFO_BOARD_INLINE_STYLE_GUIDE = `视觉风格：极简纸本信息板 · 公众号正文配图
 

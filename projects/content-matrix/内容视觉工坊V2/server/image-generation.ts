@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import type { GenerateImagesRequest } from "../src/app/api";
+import { HANDDRAWN_FLOW_EXPLAINER_STYLE_GUIDE } from "../src/app/style-guides";
 
 type OpenAICompatibleImageResponse = {
   data?: Array<{
@@ -27,11 +28,16 @@ function requireEnv(name: string) {
 }
 
 function buildPrompt(request: GenerateImagesRequest) {
+  const styleGuide =
+    request.styleName === "手绘流程讲解板"
+      ? HANDDRAWN_FLOW_EXPLAINER_STYLE_GUIDE
+      : "";
   const lines = [
     request.prompt.trim(),
     `用途：${request.purposeLabel}`,
     `目标规格：${request.presetLabel}，画面比例 ${request.width}:${request.height}`,
     `风格：${request.styleName}`,
+    styleGuide,
     `文章标题：${request.articleTitle}`,
   ];
 

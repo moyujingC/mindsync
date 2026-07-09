@@ -51,6 +51,14 @@ const IMAGE_STYLES = [
     isDefault: true,
   },
   {
+    name: "手绘流程讲解板",
+    desc: "温白纸面、粗黑手写标题、粉彩色块、涂鸦箭头与小人，适合流程说明和案例拆解。",
+    scope: ["知识卡片", "小红书全屏图", "案例拆解", "流程说明"],
+    palette: ["#2F2A24", "#F6ECDD", "#AFC5B7", "#9EB8C8", "#E0A36E"],
+    variant: "grid",
+    hue: 3,
+  },
+  {
     name: "留白水墨",
     desc: "近似水墨的笔触和压暗的留白，适合长文配图。",
     scope: ["正文配图"],
