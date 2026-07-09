@@ -1,6 +1,6 @@
-# AI 应用系统设计系列：为什么会出现 Agent、Workflow、Skill、Plugin、MCP？
+# AI 能力组织方式系列：为什么会出现 Agent、Workflow、Skill、Plugin、MCP？
 
-这是「AI 应用系统设计」系列的背景篇，建议放在本质篇之后阅读。
+这是「AI 能力组织方式」系列的背景篇，建议放在本质篇之后阅读。
 
 本质篇已经先用“办一场聚餐”的例子，把 `Agent`、`Workflow`、`Skill`、`Plugin`、`MCP` 的边界讲清楚。
 
