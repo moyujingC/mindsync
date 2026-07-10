@@ -57,6 +57,7 @@ type WechatStyleTemplate = {
   metaStyle: string;
   primaryHeadingStyle: string;
   secondaryHeadingStyle: string;
+  tertiaryHeadingStyle: string;
   paragraphStyle: string;
   quoteStyle: string;
   noteStyle: string;
@@ -67,7 +68,7 @@ type WechatStyleTemplate = {
 type WechatArticleBlock =
   | { type: "paragraph"; text: string }
   | { type: "quote"; text: string }
-  | { type: "heading"; level: "primary" | "secondary"; title: string; body?: string }
+  | { type: "heading"; level: "primary" | "secondary" | "tertiary"; title: string; body?: string }
   | { type: "list"; ordered: boolean; items: string[] }
   | { type: "image"; label: string; sectionKey?: string };
 
@@ -1058,7 +1059,9 @@ function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArt
 
 function mapMarkdownHeadingLevel(hashLevel: number, mapping: MappingMode) {
   if (mapping === "h1h2") {
-    return hashLevel <= 1 ? "primary" : "secondary";
+    if (hashLevel <= 1) return "primary";
+    if (hashLevel === 2) return "secondary";
+    return "tertiary";
   }
   return hashLevel <= 2 ? "primary" : "secondary";
 }
@@ -1181,6 +1184,7 @@ function extractWechatStyleTemplate(
       ),
       "secondary"
     ),
+    tertiaryHeadingStyle: normalizeTertiaryHeadingStyle(fallback.secondaryHeadingStyle),
     paragraphStyle: mergeStyleStrings(
       fallback.paragraphStyle,
       collectStyleChain(findSampleStyleNode(paragraphNode))
@@ -1214,6 +1218,10 @@ function buildFallbackStyleTemplate(theme: WechatTheme): WechatStyleTemplate {
       theme.headingFontSize - 2,
       theme.bodyFontSize
     )}px;line-height:1.55;letter-spacing:0;font-weight:600;`,
+    tertiaryHeadingStyle: `margin:0 0 10px;color:${theme.accentColor};font-size:${Math.max(
+      theme.headingFontSize - 4,
+      theme.bodyFontSize
+    )}px;line-height:1.6;letter-spacing:0;font-weight:500;opacity:0.88;`,
     paragraphStyle: `margin:18px 0 0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;`,
     quoteStyle: `margin:20px 0 12px;padding:10px 14px;border-left:3px solid ${theme.accentColor};background:${theme.blockBg};color:${theme.accentColor};font-size:${theme.quoteFontSize}px;line-height:${theme.bodyLineHeight};border-radius:0 8px 8px 0;`,
     noteStyle: `margin:18px 0 0;padding:10px 12px;border:1px solid #ECEAE3;border-radius:8px;background:#FAF7F2;color:${theme.bodyColor};font-size:${Math.max(
@@ -1412,6 +1420,18 @@ function normalizeHeadingStyle(style: string, level: "primary" | "secondary") {
     "font-weight": parsed["font-weight"] || "500",
     "margin-bottom": parsed["margin-bottom"] || "10px",
     opacity: parsed.opacity || "0.92",
+  });
+}
+
+function normalizeTertiaryHeadingStyle(style: string) {
+  const parsed = parseStyleString(style);
+  const baseSize = parsePixel(parsed["font-size"], 16);
+  return styleToString({
+    ...parsed,
+    "font-size": `${Math.max(baseSize - 4, 13)}px`,
+    "font-weight": parsed["font-weight"] || "500",
+    "margin-bottom": parsed["margin-bottom"] || "8px",
+    opacity: parsed.opacity || "0.84",
   });
 }
 
@@ -1871,12 +1891,14 @@ function buildWechatArticleHtml(
       const headingStyle =
         block.level === "primary"
           ? template.primaryHeadingStyle
-          : template.secondaryHeadingStyle;
+          : block.level === "secondary"
+            ? template.secondaryHeadingStyle
+            : template.tertiaryHeadingStyle;
       return `
       <section style="margin-top:34px;">
-        <h2 style="${headingStyle}">
+        <${block.level === "tertiary" ? "h4" : "h2"} style="${headingStyle}">
           ${escapeHtml(block.title)}
-        </h2>
+        </${block.level === "tertiary" ? "h4" : "h2"}>
         ${
           block.body
             ? `<p style="${template.paragraphStyle}">
