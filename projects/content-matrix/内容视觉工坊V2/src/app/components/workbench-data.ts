@@ -64,23 +64,30 @@ const KNOWLEDGE_CARD_PROMPT_RULES = `【文字渲染规则 - 严格遵守】
 
 const KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK = `## 整体风格说明（与本系列所有图保持一致）
 
-整体风格：极简纸本信息板，像一张整理好的纸本研究板，使用纸张拼贴、便签、小图框、胶带、色板和铅笔元素
+整体风格：手绘涂鸦笔记 (Sketchnote) 风格，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
 
 画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
 
-视觉风格：极简纸本信息板
+视觉风格：经典手账风 / 清新自然风，用温白纸面、低饱和粉彩色块、黑色手绘轮廓、箭头、气泡标签和简笔图标组织信息
 
-背景：温白、浅米白或浅灰白纸张底，轻微纸纹、扫描感和纸张阴影
+背景：温白、浅米色或浅绿米白纸张纹理，允许轻微纸纹、水彩笔涂抹、手绘边框和扫描感
 
-配色：米白、纸灰、浅雾蓝、灰蓝、浅卡其、暖灰、深墨黑，强调色保持低饱和
+配色：黑色线稿为主，低饱和黄、绿、红、蓝、奶油橙、淡粉作为分区强调色
 
-字体：中文标题清楚有质感，可用粗宋体/现代 serif 感或高质感黑体；信息点可像打印体或清晰手写注释`;
+字体：清晰可辨的中文手写体风格，标题可用粗马克笔感，模块文字必须清楚可读`;
 
 const KNOWLEDGE_CARD_PROMPT_CUSTOM_STYLE_BLOCK = `## 当前项目硬性约束
 
+- 每张图必须是独立完整的一张 3:4 竖版画布，不要把多张图拼在同一画布里
 - 版面优先服务信息阅读，不要把画面做成纯装饰海报
-- 保持纸本拼贴质感，但不要复杂到失去留白
-- 不要手绘涂鸦儿童感，不要卡通贴纸感，不要科技霓虹，不要营销海报感`;
+- 位置必须具体到容器，例如横幅、圆形框、便签卡片、流程节点、底部页脚
+- 插画必须和文字绑定描述，所有需要显示的文字必须用反引号包裹
+- 不要真实照片感、不要 3D 渲染、不要二次元角色、不要科技霓虹、不要强商业海报`;
+
+export const KNOWLEDGE_CARD_NEGATIVE_PROMPT =
+  "高饱和、霓虹、强商业海报、真实照片、3D渲染、二次元角色、复杂背景、低清文字、错别字、未用反引号的额外文字、多张图挤在同一画布";
+
+export const KNOWLEDGE_CARD_STYLE_NAME = "知识卡片提示词生成器 · Sketchnote 3:4";
 
 export function buildKnowledgeCardPrompt({
   articleTitle,
@@ -127,9 +134,12 @@ export function buildKnowledgeCardPrompt({
 
 ## 当前项目硬性约束
 
-- 严格遵守上方“整体风格说明”里的风格设定，不要自行切换成其他视觉风格
+- 这是一张独立完整的 3:4 竖版知识卡，占满单张画布，不要与其他图合并
+- 整体采用手绘涂鸦笔记 (Sketchnote) 风格，线条有手绘感，但信息必须清楚可读
 - 版面优先服务信息阅读，不要把画面做成纯装饰海报
-- 手绘感可以保留，但不要过度可爱，不要太像儿童贴纸`;
+- 所有需要显示的文字必须用反引号包裹并原样呈现
+- 每个元素必须说明它所在的容器；插画必须绑定到对应文字旁边
+- 不要真实照片感、不要 3D 渲染、不要二次元角色、不要科技霓虹、不要强商业海报`;
   }
 
   const textBlocks = (cardTextBlocks || []).filter(Boolean).slice(0, 4);
@@ -444,7 +454,7 @@ export function buildGenerationTasks({
               cardEndingLabel: card.endingLabel,
               bodyPreview,
             }),
-            negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
+            negativePrompt: KNOWLEDGE_CARD_NEGATIVE_PROMPT,
             width: preset.w,
             height: preset.h,
             count: 1,
@@ -452,7 +462,7 @@ export function buildGenerationTasks({
             purposeLabel: "小红书图文 / 知识卡片",
             presetKey: preset.k,
             presetLabel: preset.label,
-            styleName: "极简纸本信息板",
+            styleName: KNOWLEDGE_CARD_STYLE_NAME,
             cardLink: {
               index: card.index,
               title: card.title,

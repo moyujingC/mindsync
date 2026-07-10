@@ -5,9 +5,10 @@ import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
 import {
   PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
   PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
-  PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
   PAPER_INFO_BOARD_QUOTE_BACKGROUNDS,
   PAPER_INFO_BOARD_REFERENCE_IMAGES,
+  SKETCHNOTE_KNOWLEDGE_CARD_STYLE_GUIDE,
+  SKETCHNOTE_KNOWLEDGE_CARD_STYLE_NAME,
 } from "../style-guides";
 import type {
   GeneratedImageItem,
@@ -26,6 +27,8 @@ import {
   buildFallbackInlineImagePlan,
   buildKnowledgeCardPrompt,
   buildGenerationTasks,
+  KNOWLEDGE_CARD_NEGATIVE_PROMPT,
+  KNOWLEDGE_CARD_STYLE_NAME,
   mergeRecordImages,
   QUOTES,
   sortImagesByCardIndex,
@@ -554,7 +557,7 @@ export function useWorkbenchController({
           cardEndingLabel: resolvedCard.endingLabel,
           bodyPreview: currentArticle.body.replace(/\s+/g, " ").trim().slice(0, 140),
         }),
-        negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
+        negativePrompt: KNOWLEDGE_CARD_NEGATIVE_PROMPT,
         width: preset.w,
         height: preset.h,
         count: 1,
@@ -562,7 +565,7 @@ export function useWorkbenchController({
         purposeLabel: "小红书图文 / 知识卡片",
         presetKey: preset.k,
         presetLabel: preset.label,
-        styleName: "极简纸本信息板",
+        styleName: KNOWLEDGE_CARD_STYLE_NAME,
         cardLink: {
           index: resolvedCard.index,
           title: resolvedCard.title,
@@ -672,8 +675,8 @@ export function useWorkbenchController({
     const request: PlannerRequest = {
       articleTitle: article.title,
       rawText: article.body,
-      knowledgeCardStyleName: "极简纸本信息板",
-      knowledgeCardStyleGuide: PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
+      knowledgeCardStyleName: SKETCHNOTE_KNOWLEDGE_CARD_STYLE_NAME,
+      knowledgeCardStyleGuide: SKETCHNOTE_KNOWLEDGE_CARD_STYLE_GUIDE,
       knowledgeCardReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
       inlineImageStyleName: "极简纸本正文配图",
       inlineImageStyleGuide: PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
