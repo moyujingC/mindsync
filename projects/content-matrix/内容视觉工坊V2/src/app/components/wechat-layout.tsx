@@ -21,13 +21,11 @@ import { useWorkspace } from "../workspace";
 
 const STORAGE_KEY = "content-visual-studio.wechat-theme-library.v1";
 
-type MappingMode = "h1h2" | "h2h3";
 type PreviewMode = "sample" | "article";
 
 type SavedWechatBaseline = {
   id: string;
   name: string;
-  mapping?: MappingMode;
   rawHtml: string;
   plainText: string;
   savedAt: string;
@@ -57,7 +55,6 @@ type WechatStyleTemplate = {
   metaStyle: string;
   primaryHeadingStyle: string;
   secondaryHeadingStyle: string;
-  tertiaryHeadingStyle: string;
   paragraphStyle: string;
   quoteStyle: string;
   noteStyle: string;
@@ -65,10 +62,12 @@ type WechatStyleTemplate = {
   figcaptionStyle: string;
 };
 
+type WechatHeadingLevel = "primary" | "secondary";
+
 type WechatArticleBlock =
   | { type: "paragraph"; text: string }
   | { type: "quote"; text: string }
-  | { type: "heading"; level: "primary" | "secondary" | "tertiary"; title: string; body?: string }
+  | { type: "heading"; level: WechatHeadingLevel; title: string; body?: string }
   | { type: "list"; ordered: boolean; items: string[] }
   | { type: "image"; label: string; sectionKey?: string };
 
@@ -110,7 +109,6 @@ export function WechatLayout() {
     setWechatPreviewMode: setPreviewMode,
   } =
     useWorkspace();
-  const mapping: MappingMode = "h1h2";
   const [importedHtml, setImportedHtml] = useState("");
   const [importedText, setImportedText] = useState("");
   const [themeName, setThemeName] = useState("蓝雾静读版");
@@ -153,8 +151,8 @@ export function WechatLayout() {
         primaryHeadingCount: 2,
         secondaryHeadingCount: 1,
         bodyFontSize: "15 px",
-        primaryHeadingFontSize: mapping === "h1h2" ? "17 px" : "16 px",
-        secondaryHeadingFontSize: mapping === "h1h2" ? "16 px" : "15 px",
+        primaryHeadingFontSize: "17 px",
+        secondaryHeadingFontSize: "16 px",
         lineHeight: "1.85",
         letterSpacing: "0.01em",
       };
@@ -166,9 +164,7 @@ export function WechatLayout() {
       : null;
     const headingSelectors = doc
       ? detectRichTextHeadingSelectorMap(doc.body)
-      : mapping === "h1h2"
-        ? { primary: "h1", secondary: "h2" }
-        : { primary: "h2", secondary: "h3" };
+      : { primary: "h2", secondary: "h3" };
     const primaryHeadingNodes = doc
       ? Array.from(doc.querySelectorAll<HTMLElement>(headingSelectors.primary))
       : [];
@@ -179,8 +175,8 @@ export function WechatLayout() {
       .split("\n")
       .map((item) => item.trim())
       .filter(Boolean);
-    const primaryMarkdownHeading = mapping === "h1h2" ? /^#\s+/ : /^##\s+/;
-    const secondaryMarkdownHeading = mapping === "h1h2" ? /^##\s+/ : /^###\s+/;
+    const primaryMarkdownHeading = /^##\s+/;
+    const secondaryMarkdownHeading = /^###\s+/;
     const primaryHeadingCount = doc
       ? primaryHeadingNodes.length
       : markdownLines.filter((line) => primaryMarkdownHeading.test(line)).length;
@@ -217,11 +213,11 @@ export function WechatLayout() {
       ),
       primaryHeadingFontSize: formatCssValue(
         firstCssValue(primaryFontNodes, "font-size"),
-        mapping === "h1h2" ? "17 px" : "16 px"
+        "17 px"
       ),
       secondaryHeadingFontSize: formatCssValue(
         firstCssValue(secondaryFontNodes, "font-size"),
-        mapping === "h1h2" ? "16 px" : "15 px"
+        "16 px"
       ),
       lineHeight: formatCssValue(firstCssValue(styledBodyNodes, "line-height"), "1.85"),
       letterSpacing: formatCssValue(
@@ -229,7 +225,7 @@ export function WechatLayout() {
         "0.01em"
       ),
     };
-  }, [importedHtml, importedText, mapping]);
+  }, [importedHtml, importedText]);
 
   const activeTheme = useMemo(
     () => deriveWechatTheme(importedHtml, sampleSummary),
@@ -240,12 +236,12 @@ export function WechatLayout() {
     [activeTheme, importedHtml]
   );
   const sampleBlocks = useMemo(
-    () => extractSampleBlockPreviews(importedHtml, importedText, mapping, styleTemplate),
-    [importedHtml, importedText, mapping, styleTemplate]
+    () => extractSampleBlockPreviews(importedHtml, importedText, styleTemplate),
+    [importedHtml, importedText, styleTemplate]
   );
   const wechatArticleBlocks = useMemo(
-    () => buildWechatArticleBlocks(currentArticle.body, mapping),
-    [currentArticle.body, mapping]
+    () => buildWechatArticleBlocks(currentArticle.body),
+    [currentArticle.body]
   );
 
   const samplePreview = useMemo(() => {
@@ -984,7 +980,7 @@ function stripInlineMarkdown(text: string) {
   return text.replace(/\*\*([^*]+)\*\*/g, "$1");
 }
 
-function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArticleBlock[] {
+function buildWechatArticleBlocks(body: string): WechatArticleBlock[] {
   const chunks = body
     .split(/\n{2,}/)
     .map((item) => item.trim())
@@ -1019,7 +1015,8 @@ function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArt
     if (markdownHeading) {
       const hashLevel = markdownHeading[1].length;
       const title = markdownHeading[2].trim();
-      const mappedLevel = mapMarkdownHeadingLevel(hashLevel, mapping);
+      const mappedLevel = mapMarkdownHeadingLevel(hashLevel);
+      if (!mappedLevel) continue;
       lastSectionKey = toWechatSectionKey(title);
       blocks.push({ type: "heading", level: mappedLevel, title });
       continue;
@@ -1057,13 +1054,9 @@ function buildWechatArticleBlocks(body: string, mapping: MappingMode): WechatArt
   return blocks.length > 0 ? blocks : [{ type: "paragraph", text: body.trim() }];
 }
 
-function mapMarkdownHeadingLevel(hashLevel: number, mapping: MappingMode) {
-  if (mapping === "h1h2") {
-    if (hashLevel <= 1) return "primary";
-    if (hashLevel === 2) return "secondary";
-    return "tertiary";
-  }
-  return hashLevel <= 2 ? "primary" : "secondary";
+function mapMarkdownHeadingLevel(hashLevel: number): WechatHeadingLevel | null {
+  if (hashLevel <= 1) return null;
+  return hashLevel === 2 ? "primary" : "secondary";
 }
 
 function detectRichTextHeadingSelectorMap(root: HTMLElement) {
@@ -1184,7 +1177,6 @@ function extractWechatStyleTemplate(
       ),
       "secondary"
     ),
-    tertiaryHeadingStyle: normalizeTertiaryHeadingStyle(fallback.secondaryHeadingStyle),
     paragraphStyle: mergeStyleStrings(
       fallback.paragraphStyle,
       collectStyleChain(findSampleStyleNode(paragraphNode))
@@ -1218,10 +1210,6 @@ function buildFallbackStyleTemplate(theme: WechatTheme): WechatStyleTemplate {
       theme.headingFontSize - 2,
       theme.bodyFontSize
     )}px;line-height:1.55;letter-spacing:0;font-weight:600;`,
-    tertiaryHeadingStyle: `margin:0 0 10px;color:${theme.accentColor};font-size:${Math.max(
-      theme.headingFontSize - 4,
-      theme.bodyFontSize
-    )}px;line-height:1.6;letter-spacing:0;font-weight:500;opacity:0.88;`,
     paragraphStyle: `margin:18px 0 0;padding:8px 0;color:${theme.bodyColor};font-size:${theme.bodyFontSize}px;line-height:${theme.bodyLineHeight};text-align:justify;`,
     quoteStyle: `margin:20px 0 12px;padding:10px 14px;border-left:3px solid ${theme.accentColor};background:${theme.blockBg};color:${theme.accentColor};font-size:${theme.quoteFontSize}px;line-height:${theme.bodyLineHeight};border-radius:0 8px 8px 0;`,
     noteStyle: `margin:18px 0 0;padding:10px 12px;border:1px solid #ECEAE3;border-radius:8px;background:#FAF7F2;color:${theme.bodyColor};font-size:${Math.max(
@@ -1423,18 +1411,6 @@ function normalizeHeadingStyle(style: string, level: "primary" | "secondary") {
   });
 }
 
-function normalizeTertiaryHeadingStyle(style: string) {
-  const parsed = parseStyleString(style);
-  const baseSize = parsePixel(parsed["font-size"], 16);
-  return styleToString({
-    ...parsed,
-    "font-size": `${Math.max(baseSize - 4, 13)}px`,
-    "font-weight": parsed["font-weight"] || "500",
-    "margin-bottom": parsed["margin-bottom"] || "8px",
-    opacity: parsed.opacity || "0.84",
-  });
-}
-
 function parseStyleString(style: string) {
   return style
     .split(";")
@@ -1497,7 +1473,6 @@ function plainTextToPreviewHtml(text: string) {
 function extractSampleBlockPreviews(
   importedHtml: string,
   importedText: string,
-  mapping: MappingMode,
   template: WechatStyleTemplate
 ): SampleBlockPreview[] {
   if (!importedHtml) {
@@ -1508,8 +1483,8 @@ function extractSampleBlockPreviews(
       .slice(0, 12)
       .map((text, index) => ({
         id: `text-${index}`,
-        role: detectPlainTextSampleRole(text, mapping),
-        label: sampleRoleLabel(detectPlainTextSampleRole(text, mapping)),
+        role: detectPlainTextSampleRole(text),
+        label: sampleRoleLabel(detectPlainTextSampleRole(text)),
         text: stripInlineMarkdown(text).replace(/^#{1,6}\s+/, "").replace(/^>\s*/, ""),
         style: template.paragraphStyle,
       }));
@@ -1569,12 +1544,12 @@ function extractSampleBlockPreviews(
   return limitSampleBlocks(blocks, 18);
 }
 
-function detectPlainTextSampleRole(text: string, mapping: MappingMode): SampleBlockRole {
+function detectPlainTextSampleRole(text: string): SampleBlockRole {
   const heading = text.match(/^(#{1,3})\s+(.+)$/);
   if (heading) {
-    return mapMarkdownHeadingLevel(heading[1].length, mapping) === "primary"
-      ? "primary"
-      : "secondary";
+    const level = mapMarkdownHeadingLevel(heading[1].length);
+    if (!level) return "meta";
+    return level === "primary" ? "primary" : "secondary";
   }
   if (/^>\s*/.test(text)) return "quote";
   if (/^\*\*[^*]+\*\*$/.test(text)) return "bold";
@@ -1891,14 +1866,12 @@ function buildWechatArticleHtml(
       const headingStyle =
         block.level === "primary"
           ? template.primaryHeadingStyle
-          : block.level === "secondary"
-            ? template.secondaryHeadingStyle
-            : template.tertiaryHeadingStyle;
+          : template.secondaryHeadingStyle;
       return `
       <section style="margin-top:34px;">
-        <${block.level === "tertiary" ? "h4" : "h2"} style="${headingStyle}">
+        <h2 style="${headingStyle}">
           ${escapeHtml(block.title)}
-        </${block.level === "tertiary" ? "h4" : "h2"}>
+        </h2>
         ${
           block.body
             ? `<p style="${template.paragraphStyle}">
