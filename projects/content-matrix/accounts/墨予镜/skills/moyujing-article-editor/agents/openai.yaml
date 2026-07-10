@@ -1,0 +1,4 @@
+interface:
+  display_name: "墨予镜成稿编辑"
+  short_description: "把现有文章草稿稳定推进到可发布成品的公众号编辑技能"
+  default_prompt: "Use $moyujing-article-editor to review a draft and turn it into a publishable 墨予镜 article."
