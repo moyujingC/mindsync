@@ -68,6 +68,7 @@ Avoid:
 - abstract words stacked for momentum
 - repetitive explanation
 - mechanical `不是 X，而是 Y`
+- defensive framing like `不在于 A，也不在于 B，而在于 C` unless it is correcting a real reader misunderstanding
 
 ## Route by Article Type
 
@@ -136,4 +137,3 @@ When time is short, do only:
 1. structure review
 2. expression de-noising
 3. pre-publish check
-
