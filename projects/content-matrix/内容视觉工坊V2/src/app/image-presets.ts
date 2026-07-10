@@ -13,32 +13,32 @@ export type ImagePurpose = {
   presets: ImagePreset[];
 };
 
-// 用途 -> 预设。小红书非全屏图默认走 3:4；公众号正文图遵循 1080 宽基准。
+// 用途 -> 预设。公众号主链路使用 1080 宽横版图；小红书预设保留给通用生图入口。
 export const IMAGE_PURPOSES: ImagePurpose[] = [
   {
     k: "xhs_card",
-    label: "小红书图文 / 知识卡片",
-    hint: "小红书非全屏图默认使用 3:4，适合知识卡片、图文首图和普通配图。",
+    label: "公众号横版图 / 知识卡或氛围图",
+    hint: "用于公众号正文插图，系统会按文章内容判断生成横版知识卡或横版氛围图。",
     presets: [
+      {
+        k: "wx-visual-1080-608",
+        label: "公众号横版图 · 1080×608",
+        w: 1080,
+        h: 608,
+        aspect: "16:9",
+      },
+      {
+        k: "wx-visual-1080-720",
+        label: "公众号横版图宽松 · 1080×720",
+        w: 1080,
+        h: 720,
+        aspect: "3:2",
+      },
       {
         k: "xhs-1280",
         label: "小红书图文 3:4 高清 · 1280×1706",
         w: 1280,
         h: 1706,
-        aspect: "3:4",
-      },
-      {
-        k: "xhs-1080",
-        label: "小红书图文 3:4 · 1080×1440",
-        w: 1080,
-        h: 1440,
-        aspect: "3:4",
-      },
-      {
-        k: "xhs-1242",
-        label: "小红书图文 3:4 · 1242×1660",
-        w: 1242,
-        h: 1660,
         aspect: "3:4",
       },
     ],
@@ -142,7 +142,7 @@ export const IMAGE_PURPOSES: ImagePurpose[] = [
 ];
 
 export const DEFAULT_PRESET_KEYS = {
-  knowledgeCard: "xhs-1280",
+  knowledgeCard: "wx-visual-1080-608",
   quoteCard: "q-h-608",
   wechatCover: "wx-cover",
   wechatInline: "wx-inline-608",

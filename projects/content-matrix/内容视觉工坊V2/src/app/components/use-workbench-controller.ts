@@ -446,8 +446,8 @@ export function useWorkbenchController({
           : `manual-${Date.now().toString(36)}-${cardIndex}`,
       imageUrl,
       prompt,
-      width: knowledgePreset?.w || 1280,
-      height: knowledgePreset?.h || 1706,
+      width: knowledgePreset?.w || 1080,
+      height: knowledgePreset?.h || 608,
       cardLink: {
         index: card.index,
         title: card.title,
@@ -466,8 +466,8 @@ export function useWorkbenchController({
       source: "general-image",
       title: currentArticle.title,
       purposeKey: "xhs_card",
-      purposeLabel: "小红书图文 / 知识卡片",
-      presetLabel: knowledgePreset?.label || "小红书图文 3:4 高清 · 1280×1706",
+      purposeLabel: "公众号横版图 / 知识卡或氛围图",
+      presetLabel: knowledgePreset?.label || "公众号横版图 · 1080×608",
       styleName: existingRecord?.styleName || "蓝雾静读",
       images: sortImagesByCardIndex(nextImages),
       createdAt: new Date().toISOString(),
@@ -545,6 +545,8 @@ export function useWorkbenchController({
           cardIndex: resolvedCard.index,
           cardTotal: plannedCards.length,
           promptText: resolvedCard.promptText,
+          visualType: resolvedCard.visualType,
+          visualRationale: resolvedCard.visualRationale,
           cardTitle: resolvedCard.title,
           cardSummary: resolvedCard.summary,
           cardTheme: resolvedCard.theme,
@@ -562,7 +564,7 @@ export function useWorkbenchController({
         height: preset.h,
         count: 1,
         purposeKey: "xhs_card",
-        purposeLabel: "小红书图文 / 知识卡片",
+        purposeLabel: "公众号横版图 / 知识卡或氛围图",
         presetKey: preset.k,
         presetLabel: preset.label,
         styleName: KNOWLEDGE_CARD_STYLE_NAME,
@@ -684,9 +686,9 @@ export function useWorkbenchController({
       coverStyleName: "极简纸本公众号封面",
       coverStyleGuide: PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
       coverReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
-      cardRatio: knowledgePreset?.aspect || "3:4",
-      cardWidth: knowledgePreset?.w || 1280,
-      cardHeight: knowledgePreset?.h || 1706,
+      cardRatio: knowledgePreset?.aspect || "16:9",
+      cardWidth: knowledgePreset?.w || 1080,
+      cardHeight: knowledgePreset?.h || 608,
       splitStrategy,
       minCards,
       maxCards,
@@ -1515,10 +1517,10 @@ function buildReplanSummaryText(summary: ReplanSummary) {
     parts.push(`清理 ${summary.clearedQuoteCount} 条失效金句`);
   }
   if (summary.preservedKnowledgeCount > 0) {
-    parts.push(`保留 ${summary.preservedKnowledgeCount} 张知识卡结果`);
+    parts.push(`保留 ${summary.preservedKnowledgeCount} 张公众号横版图结果`);
   }
   if (summary.staleKnowledgeCount > 0) {
-    parts.push(`${summary.staleKnowledgeCount} 张知识卡需重生成`);
+    parts.push(`${summary.staleKnowledgeCount} 张公众号横版图需重生成`);
   }
   return parts.join("，");
 }

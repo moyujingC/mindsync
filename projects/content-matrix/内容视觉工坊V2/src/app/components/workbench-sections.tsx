@@ -221,7 +221,7 @@ export function WorkbenchLeftSidebar({
             style={{ marginTop: 2 }}
           />
           <div>
-            <div style={{ color: COLORS.text, fontSize: 13 }}>本轮只生成知识卡片</div>
+            <div style={{ color: COLORS.text, fontSize: 13 }}>本轮生成公众号横版图</div>
             <div style={{ marginTop: 2 }}>
               导入文章后，先确认 3-5 张知识卡计划，再生成、重生成和导出。
             </div>
@@ -328,7 +328,7 @@ export function WorkbenchLeftSidebar({
           disabled={isGenerating}
         >
           <Sparkles size={14} strokeWidth={1.6} />
-          {isGenerating ? "生成中..." : "开始生成知识卡"}
+          {isGenerating ? "生成中..." : "开始生成公众号横版图"}
         </Btn>
         <Btn variant="ghost" size="lg" onClick={() => void handleReplan()} disabled={isGenerating}>
           <RefreshCw size={12} strokeWidth={1.6} />
@@ -520,7 +520,7 @@ export function WorkbenchCenterSection({
             <div className="flex items-center gap-3" style={{ color: COLORS.textFaint, fontSize: 12 }}>
               <span className="flex items-center gap-1.5" style={{ color: COLORS.textMid }}>
                 <Wand2 size={11} strokeWidth={1.6} color={COLORS.blue} />
-                本次生成 {plannedCards.length} 张知识卡 · 根据文章结构自动拆分
+                本次生成 {plannedCards.length} 张公众号横版图 · 自动判断知识卡或氛围图
               </span>
               <button
                 onClick={() => void handleReplan()}
@@ -559,6 +559,10 @@ export function WorkbenchCenterSection({
                     <div style={{ color: COLORS.textMuted, fontSize: 12, marginTop: 2 }}>
                       {card.summary}
                     </div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 4 }}>
+                      {card.visualType === "atmosphere" ? "横版氛围图" : "横版知识卡"}
+                      {card.visualRationale ? ` · ${card.visualRationale}` : ""}
+                    </div>
                     <button
                       onClick={() => setInspectionCardIndex(card.index)}
                       className="mt-2 flex items-center gap-1"
@@ -584,7 +588,7 @@ export function WorkbenchCenterSection({
             <DialogHeader>
               <DialogTitle>
                 {inspectionCard
-                  ? `知识卡 ${String(inspectionCard.index).padStart(2, "0")} · 完整拆解`
+                  ? `公众号横版图 ${String(inspectionCard.index).padStart(2, "0")} · 完整拆解`
                   : "完整拆解"}
               </DialogTitle>
               <DialogDescription>
@@ -596,6 +600,15 @@ export function WorkbenchCenterSection({
                 <div>
                   <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>标题</div>
                   <div style={{ color: COLORS.text, fontSize: 15 }}>{inspectionCard.title}</div>
+                </div>
+                <div>
+                  <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>
+                    推荐图型
+                  </div>
+                  <div style={{ color: COLORS.textMid, fontSize: 13.5, lineHeight: 1.7 }}>
+                    {inspectionCard.visualType === "atmosphere" ? "横版氛围图" : "横版知识卡"}
+                    {inspectionCard.visualRationale ? ` · ${inspectionCard.visualRationale}` : ""}
+                  </div>
                 </div>
                 <div>
                   <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>摘要</div>
@@ -845,8 +858,8 @@ function WorkbenchResultsPanel({
     ...exportKnowledgeImages.map((item: any) => ({
       kind: item.kind,
       imageUrl: item.imageUrl,
-      filename: `release-knowledge-card-${String(item.cardIndex).padStart(2, "0")}.png`,
-      label: `知识卡 ${String(item.cardIndex).padStart(2, "0")} · ${item.title}`,
+      filename: `release-wechat-visual-${String(item.cardIndex).padStart(2, "0")}.png`,
+      label: `公众号横版图 ${String(item.cardIndex).padStart(2, "0")} · ${item.title}`,
     })),
   ].filter(Boolean) as Array<{
     kind: "cover" | "knowledge" | "quote" | "inline";
@@ -944,12 +957,12 @@ function WorkbenchResultsPanel({
       const manifestLines = [
         `文章标题：${currentArticle.title}`,
         `导出时间：${new Date().toLocaleString("zh-CN", { hour12: false })}`,
-        `知识卡：${
+        `公众号横版图：${
           finalizedKnowledgeImages.length > 0
             ? `定稿 ${finalizedKnowledgeImages.length} 张`
             : `未定稿，改为导出当前结果 ${exportKnowledgeImages.length} 张`
         }`,
-        "本轮范围：仅导出知识卡。金句卡、封面、正文配图、公众号排版暂缓。",
+        "本轮范围：导出公众号横版图包。金句卡、封面、公众号排版暂缓。",
         "",
         "素材清单：",
         ...releaseAssets.map((item, index) => `${index + 1}. ${item.label} -> ${item.filename}`),
@@ -992,7 +1005,7 @@ function WorkbenchResultsPanel({
             02 / RESULTS
           </div>
           <div className="mt-0.5" style={{ color: COLORS.text, fontSize: 16, letterSpacing: "0.02em" }}>
-            知识卡结果与导出
+            公众号横版图结果与导出
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -1002,7 +1015,7 @@ function WorkbenchResultsPanel({
             onClick={() => void handleExportReleasePack()}
             disabled={releaseAssets.length === 0 || isExportingReleasePack}
           >
-            {isExportingReleasePack ? "导出中" : "导出知识卡包"}
+            {isExportingReleasePack ? "导出中" : "导出公众号图包"}
           </Btn>
           <button
             className="flex items-center gap-1"
@@ -1023,10 +1036,10 @@ function WorkbenchResultsPanel({
         }}
       >
         <div style={{ color: COLORS.textFaint, fontSize: 11.5 }}>
-          导出会优先带出已定稿知识卡；如果还没定稿，会导出当前可用知识卡，并附一份素材清单。
+          导出会优先带出已定稿公众号横版图；如果还没定稿，会导出当前可用图，并附一份素材清单。
         </div>
         <div className="flex items-center gap-2 text-right" style={{ color: COLORS.textMid, fontSize: 11.5 }}>
-          <span>知识卡 {exportKnowledgeImages.length}</span>
+          <span>公众号横版图 {exportKnowledgeImages.length}</span>
         </div>
       </div>
 
@@ -1091,10 +1104,10 @@ function WorkbenchResultsPanel({
         knowledgeSizeLabel={
           knowledgePreset
             ? `${knowledgePreset.aspect} 高清 · ${knowledgePreset.w}×${knowledgePreset.h}`
-            : "3:4 高清 · 1280×1706"
+            : "16:9 横版 · 1080×608"
         }
         knowledgeAspectRatio={
-          knowledgePreset ? `${knowledgePreset.w} / ${knowledgePreset.h}` : "1280 / 1706"
+          knowledgePreset ? `${knowledgePreset.w} / ${knowledgePreset.h}` : "1080 / 608"
         }
         knowledgeImagesByCard={knowledgeImagesByCard}
         lockedKnowledgeCardIndexes={lockedKnowledgeCardIndexes}

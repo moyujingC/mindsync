@@ -66,7 +66,7 @@ const KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK = `## 整体风格说明（与本系列�
 
 整体风格：手绘涂鸦笔记 (Sketchnote) 风格，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
 
-画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
+画幅比例：公众号正文横版图，默认 1080×608 或等比例 16:9
 
 视觉风格：经典手账风 / 清新自然风，用温白纸面、低饱和粉彩色块、黑色手绘轮廓、箭头、气泡标签和简笔图标组织信息
 
@@ -78,22 +78,24 @@ const KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK = `## 整体风格说明（与本系列�
 
 const KNOWLEDGE_CARD_PROMPT_CUSTOM_STYLE_BLOCK = `## 当前项目硬性约束
 
-- 每张图必须是独立完整的一张 3:4 竖版画布，不要把多张图拼在同一画布里
+- 每张图必须是独立完整的一张公众号横版画布，不要把多张图拼在同一画布里
 - 版面优先服务信息阅读，不要把画面做成纯装饰海报
 - 位置必须具体到容器，例如横幅、圆形框、便签卡片、流程节点、底部页脚
 - 插画必须和文字绑定描述，所有需要显示的文字必须用反引号包裹
 - 不要真实照片感、不要 3D 渲染、不要二次元角色、不要科技霓虹、不要强商业海报`;
 
 export const KNOWLEDGE_CARD_NEGATIVE_PROMPT =
-  "高饱和、霓虹、强商业海报、真实照片、3D渲染、二次元角色、复杂背景、低清文字、错别字、未用反引号的额外文字、多张图挤在同一画布";
+  "高饱和、霓虹、强商业海报、真实照片、3D渲染、二次元角色、复杂背景、低清文字、错别字、未用反引号的额外文字、多张图挤在同一画布、小红书竖版卡片";
 
-export const KNOWLEDGE_CARD_STYLE_NAME = "知识卡片提示词生成器 · Sketchnote 3:4";
+export const KNOWLEDGE_CARD_STYLE_NAME = "公众号横版视觉图 · Sketchnote";
 
 export function buildKnowledgeCardPrompt({
   articleTitle,
   cardIndex,
   cardTotal,
   promptText,
+  visualType,
+  visualRationale,
   cardTitle,
   cardSummary,
   cardTheme,
@@ -110,6 +112,8 @@ export function buildKnowledgeCardPrompt({
   cardIndex: number;
   cardTotal: number;
   promptText?: string;
+  visualType?: "knowledge_card" | "atmosphere";
+  visualRationale?: string;
   cardTitle: string;
   cardSummary: string;
   cardTheme?: string;
@@ -129,12 +133,20 @@ export function buildKnowledgeCardPrompt({
   cardEndingLabel?: string;
   bodyPreview: string;
 }) {
+  const visualTypeLabel = visualType === "atmosphere" ? "横版氛围图" : "横版知识卡";
+  const visualTypeRule =
+    visualType === "atmosphere"
+      ? "- 本图是横版氛围图：只表达一个情绪、场景或视觉隐喻，文字只保留标题和 0-1 句短标注，不要做多模块知识卡。"
+      : "- 本图是横版知识卡：可以承载 2-4 个结构化信息区，用分区、箭头、图标帮助读者理解。";
+
   if (promptText?.trim()) {
     return `${promptText.trim()}
 
 ## 当前项目硬性约束
 
-- 这是一张独立完整的 3:4 竖版知识卡，占满单张画布，不要与其他图合并
+- 这是一张独立完整的公众号横版图，占满单张画布，不要与其他图合并
+- 推荐类型：${visualTypeLabel}${visualRationale ? `；选择理由：${visualRationale}` : ""}
+${visualTypeRule}
 - 整体采用手绘涂鸦笔记 (Sketchnote) 风格，线条有手绘感，但信息必须清楚可读
 - 版面优先服务信息阅读，不要把画面做成纯装饰海报
 - 所有需要显示的文字必须用反引号包裹并原样呈现
@@ -181,7 +193,7 @@ ${lowerRendered}` : ""}`;
 
 ---
 
-【第${cardIndex}张图 - 独立完整的一张图，单独占据一个完整的3:4竖版画布，请勿与其他图合并】
+【第${cardIndex}张图 - 独立完整的一张公众号横版图，单独占据一个完整的横版画布，请勿与其他图合并】
 
 ${KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK}
 
@@ -195,9 +207,12 @@ ${KNOWLEDGE_CARD_PROMPT_CUSTOM_STYLE_BLOCK}
 
 主题：${cardTheme || cardSummary}
 
+推荐类型：${visualTypeLabel}${visualRationale ? `（${visualRationale}）` : ""}
+${visualTypeRule}
+
 构图：${cardLayoutHint || "竖向递进卡片型"}
 
-标题区（画面顶部15-20%）：
+标题区（画面左侧或上方 20-30% 安全区）：
 - 标题文字：\`${cardTitle}\`
 - 视觉设计：${cardTitleVisualHint || `放在醒目的浅绿色圆角横幅内，旁边画一个与“${cardTitle}”相关的简笔画插图`}
 - 序号标识：右上角标注"${indexLabel}/${totalLabel}"
@@ -442,6 +457,8 @@ export function buildGenerationTasks({
               cardIndex: card.index,
               cardTotal: planning.cardPlan.length,
               promptText: card.promptText,
+              visualType: card.visualType,
+              visualRationale: card.visualRationale,
               cardTitle: card.title,
               cardSummary: card.summary,
               cardTheme: card.theme,
@@ -459,7 +476,7 @@ export function buildGenerationTasks({
             height: preset.h,
             count: 1,
             purposeKey: "xhs_card",
-            purposeLabel: "小红书图文 / 知识卡片",
+            purposeLabel: "公众号横版图 / 知识卡或氛围图",
             presetKey: preset.k,
             presetLabel: preset.label,
             styleName: KNOWLEDGE_CARD_STYLE_NAME,
