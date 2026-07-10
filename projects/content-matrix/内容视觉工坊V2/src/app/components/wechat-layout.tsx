@@ -107,7 +107,7 @@ export function WechatLayout() {
     workbenchState,
   } =
     useWorkspace();
-  const [mapping, setMapping] = useState<MappingMode>("h2h3");
+  const mapping: MappingMode = "h1h2";
   const [importedHtml, setImportedHtml] = useState("");
   const [importedText, setImportedText] = useState("");
   const [themeName, setThemeName] = useState("蓝雾静读版");
@@ -432,90 +432,7 @@ export function WechatLayout() {
         className="overflow-y-auto px-6 py-6 border-r"
         style={{ borderColor: COLORS.border, background: COLORS.pageBg }}
       >
-        <div
-          style={{ color: COLORS.textFaint, fontSize: 11, letterSpacing: "0.12em" }}
-        >
-          ARTICLE MAPPING
-        </div>
-        <div className="mt-1 mb-3" style={{ color: COLORS.text }}>
-          当前文章标题映射
-        </div>
-
-        <div className="space-y-2">
-          {[
-            {
-              k: "h1h2",
-              t: "# 作为一级标题",
-              s: "## 作为二级标题",
-              note: "只影响当前 Markdown 文章，不影响已保存样式",
-            },
-            {
-              k: "h2h3",
-              t: "## 作为一级标题",
-              s: "### 作为二级标题",
-              note: "样式资产照常使用，只改变当前文章层级",
-            },
-          ].map((o) => {
-            const active = mapping === o.k;
-            return (
-              <button
-                key={o.k}
-                onClick={() => setMapping(o.k as MappingMode)}
-                className="w-full text-left rounded-md p-3.5 flex items-start gap-3 transition-colors"
-                style={{
-                  background: active ? COLORS.blueTint : COLORS.surface,
-                  border: `1px solid ${active ? "transparent" : COLORS.border}`,
-                }}
-              >
-                <span
-                  className="mt-0.5 w-3.5 h-3.5 rounded-full flex items-center justify-center"
-                  style={{
-                    border: `1.5px solid ${active ? COLORS.blueDeep : COLORS.textFaint}`,
-                  }}
-                >
-                  {active && (
-                    <span
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{ background: COLORS.blueDeep }}
-                    />
-                  )}
-                </span>
-                <div className="flex-1">
-                  <div
-                    style={{
-                      color: active ? COLORS.blueDeep : COLORS.text,
-                      fontSize: 13,
-                    }}
-                  >
-                    {o.t}
-                  </div>
-                  <div
-                    style={{
-                      color: active ? COLORS.blueDeep : COLORS.textMid,
-                      fontSize: 12,
-                      marginTop: 2,
-                      opacity: active ? 0.85 : 1,
-                    }}
-                  >
-                    {o.s}
-                  </div>
-                  <div
-                    style={{
-                      color: active ? COLORS.blueDeep : COLORS.textFaint,
-                      fontSize: 11,
-                      marginTop: 6,
-                      opacity: active ? 0.7 : 1,
-                    }}
-                  >
-                    {o.note}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-8">
+        <div>
           <div
             style={{ color: COLORS.textFaint, fontSize: 11, letterSpacing: "0.12em" }}
           >
