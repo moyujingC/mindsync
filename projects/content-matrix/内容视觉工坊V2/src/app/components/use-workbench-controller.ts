@@ -140,7 +140,7 @@ export function useWorkbenchController({
   const estimatedCredits =
     (outputs.knowledge ? unlockedPlannedCards.length : 0) +
     (outputs.quote ? selectedQuotes.length : 0) +
-    (outputs.cover ? 3 : 0) +
+    (outputs.cover ? 1 : 0) +
     (outputs.inline ? plannedInlineImages.length : 0);
 
   const latestGenerationTime = latestGeneration
@@ -186,7 +186,7 @@ export function useWorkbenchController({
       generatedCount:
         coverGeneration?.images.filter((image) => (image.coverLink?.variant || "large") === "large")
           .length ?? 0,
-      plannedCount: 3,
+      plannedCount: outputs.cover ? 1 : 0,
       generatedText:
         coverGeneration?.images.length && coverGeneration.images.length > 0
           ? `${
@@ -195,7 +195,7 @@ export function useWorkbenchController({
               ).length
             } 张大封面`
           : null,
-      pendingText: "3 张待生成",
+      pendingText: "1 张待生成",
       modeText: coverThumbMode === "crop" ? "小图裁切" : "小图单独",
     }),
     inline: buildOutputSummary({

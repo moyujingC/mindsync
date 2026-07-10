@@ -236,8 +236,8 @@ export function WorkbenchLeftSidebar({
         {[
           { k: "knowledge" as const, l: "知识卡片", n: "自动", auto: true },
           { k: "quote" as const, l: "金句底图", n: "按勾选" },
-          { k: "cover" as const, l: "公众号封面", n: "3 组" },
-          { k: "inline" as const, l: "正文配图", n: "3" },
+          { k: "cover" as const, l: "公众号封面", n: "1 张" },
+          { k: "inline" as const, l: "正文配图", n: "自动" },
         ].map((item, index, arr) => (
           <CompactToggle
             key={item.k}
@@ -405,7 +405,7 @@ export function WorkbenchLeftSidebar({
         </Btn>
       </div>
       <div className="mt-2 text-center" style={{ color: COLORS.textFaint, fontSize: 11 }}>
-        预计 ≈ {Math.max(24, estimatedCredits * 8)}s · 消耗 {estimatedCredits} 张额度
+        预计 ≈ {Math.max(30, estimatedCredits * 25)}s · 约 {estimatedCredits} 个生成任务
       </div>
       {statusState ? (
         <div

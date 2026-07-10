@@ -105,6 +105,8 @@ export function WechatLayout() {
     currentArticle,
     generationRecords,
     workbenchState,
+    wechatPreviewMode: previewMode,
+    setWechatPreviewMode: setPreviewMode,
   } =
     useWorkspace();
   const mapping: MappingMode = "h1h2";
@@ -116,7 +118,6 @@ export function WechatLayout() {
   const [statusMessage, setStatusMessage] = useState("尚未保存新的样式基准");
   const [isCopying, setIsCopying] = useState(false);
   const [showAllSampleBlocks, setShowAllSampleBlocks] = useState(false);
-  const [previewMode, setPreviewMode] = useState<PreviewMode>("sample");
   const pasteAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

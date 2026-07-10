@@ -23,6 +23,7 @@ export function Workbench() {
     clearPlanningState,
     workbenchState,
     setWorkbenchState,
+    setWechatPreviewMode,
   } = useWorkspace();
 
   const [inputMode, setInputMode] = useState<"upload" | "paste">("paste");
@@ -125,7 +126,10 @@ export function Workbench() {
         outputSummaries={controller.controlTowerOutputs}
         latestGenerationTime={controller.latestGenerationTime}
         latestLogText={controller.latestLogText}
-        onOpenWechat={() => setActiveTab("wechat")}
+        onOpenWechat={() => {
+          setWechatPreviewMode("article");
+          setActiveTab("wechat");
+        }}
       />
 
       <WorkbenchEditorDialog

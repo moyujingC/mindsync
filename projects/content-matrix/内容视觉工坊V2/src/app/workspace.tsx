@@ -116,6 +116,7 @@ export type GenerationRecord = {
 };
 
 export type WorkspaceTab = "workbench" | "wechat" | "assets" | "image" | "sync";
+export type WechatPreviewMode = "sample" | "article";
 
 export type PlanningState = {
   provider: PlannerResponse["provider"];
@@ -163,6 +164,8 @@ export type WorkbenchState = {
 type WorkspaceContextValue = {
   activeTab: WorkspaceTab;
   setActiveTab: (tab: WorkspaceTab) => void;
+  wechatPreviewMode: WechatPreviewMode;
+  setWechatPreviewMode: (mode: WechatPreviewMode) => void;
   currentArticle: WorkspaceArticle;
   setCurrentArticle: (next: WorkspaceArticle) => void;
   currentArticleBlocks: ArticleBlock[];
@@ -206,6 +209,7 @@ const DEFAULT_ARTICLE: WorkspaceArticle = {
 const STORAGE_KEYS = {
   article: "content-visual-studio.current-article.v1",
   activeTab: "content-visual-studio.active-tab.v1",
+  wechatPreviewMode: "content-visual-studio.wechat-preview-mode.v1",
   generationRecords: "content-visual-studio.generation-records.v1",
   planningState: "content-visual-studio.planning-state.v1",
   workbenchState: "content-visual-studio.workbench-state.v1",
@@ -235,6 +239,9 @@ const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>(() =>
     normalizeWorkspaceTab(readStoredJson(STORAGE_KEYS.activeTab, "workbench"))
+  );
+  const [wechatPreviewMode, setWechatPreviewMode] = useState<WechatPreviewMode>(() =>
+    normalizeWechatPreviewMode(readStoredJson(STORAGE_KEYS.wechatPreviewMode, "article"))
   );
   const [currentArticle, setCurrentArticle] = useState<WorkspaceArticle>(() =>
     readStoredJson(STORAGE_KEYS.article, DEFAULT_ARTICLE)
@@ -287,6 +294,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     () => ({
       activeTab,
       setActiveTab,
+      wechatPreviewMode,
+      setWechatPreviewMode,
       currentArticle,
       setCurrentArticle,
       currentArticleBlocks,
@@ -303,6 +312,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }),
     [
       activeTab,
+      wechatPreviewMode,
       currentArticle,
       currentArticleBlocks,
       currentArticleMeta,
@@ -317,6 +327,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEYS.activeTab, JSON.stringify(activeTab));
   }, [activeTab]);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.wechatPreviewMode, JSON.stringify(wechatPreviewMode));
+  }, [wechatPreviewMode]);
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEYS.article, JSON.stringify(currentArticle));
@@ -415,6 +429,10 @@ function normalizeWorkspaceTab(value: unknown): WorkspaceTab {
     return value;
   }
   return "workbench";
+}
+
+function normalizeWechatPreviewMode(value: unknown): WechatPreviewMode {
+  return value === "sample" || value === "article" ? value : "article";
 }
 
 function buildArticleMeta(body: string) {
