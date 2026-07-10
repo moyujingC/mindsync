@@ -180,7 +180,6 @@ export function ControlTowerSidebar({
   outputSummaries,
   latestGenerationTime,
   latestLogText,
-  onOpenWechat,
 }: {
   currentArticleTitle: string;
   taskState: WorkbenchTaskState;
@@ -193,7 +192,6 @@ export function ControlTowerSidebar({
   };
   latestGenerationTime: string;
   latestLogText: string;
-  onOpenWechat: () => void;
 }) {
   return (
     <aside
@@ -289,7 +287,7 @@ export function ControlTowerSidebar({
       </div>
 
       <div className="mt-5">
-        <SmallLabel>本次输出</SmallLabel>
+        <SmallLabel>V2.8 主链路</SmallLabel>
         <div
           className="mt-2 rounded-md"
           style={{
@@ -300,12 +298,7 @@ export function ControlTowerSidebar({
             lineHeight: 1.95,
           }}
         >
-          {[
-            outputSummaries.knowledge,
-            outputSummaries.quote,
-            outputSummaries.cover,
-            outputSummaries.inline,
-          ].map((item) => (
+          {[outputSummaries.knowledge].map((item) => (
             <div key={item.label} className="flex items-center justify-between gap-3">
               <span
                 className="flex items-baseline gap-1.5"
@@ -321,6 +314,17 @@ export function ControlTowerSidebar({
               </span>
             </div>
           ))}
+          <div
+            className="mt-2 pt-2"
+            style={{
+              borderTop: `1px solid ${COLORS.borderSoft}`,
+              color: COLORS.textFaint,
+              fontSize: 11,
+              lineHeight: 1.7,
+            }}
+          >
+            金句卡、封面、正文配图、公众号排版本轮冻结。
+          </div>
         </div>
       </div>
 
@@ -355,9 +359,9 @@ export function ControlTowerSidebar({
       </div>
 
       <div className="mt-5">
-        <Btn variant="primary" size="lg" block onClick={onOpenWechat}>
+        <Btn variant="primary" size="lg" block disabled>
           <ClipboardCopy size={13} strokeWidth={1.6} />
-          复制到公众号
+          导出入口在结果区
         </Btn>
       </div>
 
