@@ -1146,6 +1146,8 @@ export function useWorkbenchController({
           imageGenerationSource: {
             contentKind: "full-article-text",
             strategy: planningState.strategySummary,
+            visualType: planningState.cardPlan[0]?.visualType,
+            visualRationale: planningState.cardPlan[0]?.visualRationale,
           },
           cardOutlineTitles: planningState.cardPlan.map((card) => card.title),
           keyQuotes: planningState.candidateQuotes,

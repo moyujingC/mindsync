@@ -122,14 +122,34 @@ ${appendix}`;
 }
 
 function attachExternalStyleGuide(response: Omit<PlannerResponse, "provider">, request: PlannerRequest) {
+  const fallbackVisualDecision = classifyArticleWechatVisualType(request.articleTitle, request.rawText);
+  const responseVisualType = response.analysis?.imageGenerationSource?.visualType;
+  const unifiedVisualType =
+    responseVisualType === "knowledge_card" || responseVisualType === "atmosphere"
+      ? responseVisualType
+      : response.cardPlan.find(
+          (card) => card.visualType === "knowledge_card" || card.visualType === "atmosphere"
+        )?.visualType || fallbackVisualDecision.visualType;
+  const unifiedVisualRationale =
+    response.analysis?.imageGenerationSource?.visualRationale?.trim() ||
+    response.cardPlan.find((card) => card.visualRationale?.trim())?.visualRationale ||
+    fallbackVisualDecision.visualRationale;
+
   return {
     ...response,
     analysis: {
       ...response.analysis,
+      imageGenerationSource: {
+        ...response.analysis.imageGenerationSource,
+        visualType: unifiedVisualType,
+        visualRationale: unifiedVisualRationale,
+      },
       coverTheme: attachCoverStyleGuideToCoverTheme(response.analysis.coverTheme, request),
     },
     cardPlan: response.cardPlan.map((card) => ({
       ...card,
+      visualType: unifiedVisualType,
+      visualRationale: unifiedVisualRationale,
       promptText: attachExternalStyleGuideToPromptText(card.promptText, request),
     })),
     inlineImagePlan: response.inlineImagePlan.map((item, index) => ({
@@ -281,31 +301,37 @@ function buildCardLayoutHint(index: number, total: number) {
   return "原因拆解型 / 分区信息卡";
 }
 
-function classifyWechatVisualType(section: { heading: string; body: string[] }) {
-  const text = cleanText(`${section.heading} ${section.body.join(" ")}`);
-  const knowledgeSignals = /方法|步骤|模型|结构|机制|原因|判断|原则|清单|流程|对比|策略|框架|路径|行动|建议|实验|拆解/.test(text);
-  const atmosphereSignals = /感受|情绪|疲惫|焦虑|安静|孤独|夜晚|清晨|关系|记忆|故事|场景|隐喻|生活|身体|内心|停顿/.test(text);
+function classifyArticleWechatVisualType(articleTitle: string, rawText: string) {
+  const text = cleanText(`${articleTitle} ${rawText}`);
+  const knowledgeMatches =
+    text.match(/方法|步骤|模型|结构|机制|原因|判断|原则|清单|流程|对比|策略|框架|路径|行动|建议|实验|拆解/g) ?? [];
+  const atmosphereMatches =
+    text.match(/感受|情绪|疲惫|焦虑|安静|孤独|夜晚|清晨|关系|记忆|故事|场景|隐喻|生活|身体|内心|停顿/g) ?? [];
 
-  if (knowledgeSignals && !atmosphereSignals) {
+  if (knowledgeMatches.length >= atmosphereMatches.length + 2) {
     return {
       visualType: "knowledge_card" as const,
-      visualRationale: "这一节有明确方法、结构或判断，适合做横版知识卡。",
+      visualRationale: "整篇文章以方法、结构、机制或行动建议为主，适合统一做横版知识卡。",
     };
   }
 
-  if (atmosphereSignals && !knowledgeSignals) {
+  if (atmosphereMatches.length >= knowledgeMatches.length + 2) {
     return {
       visualType: "atmosphere" as const,
-      visualRationale: "这一节更偏叙事、情绪或场景，适合做横版氛围图。",
+      visualRationale: "整篇文章以叙事、情绪、场景或隐喻为主，适合统一做横版氛围图。",
     };
   }
 
+  const sectionCount = extractSections(rawText).length;
+  const sentenceCount = splitSentences(rawText).length;
+  const hasDenseStructure = sectionCount >= 3 || sentenceCount >= 12 || rawText.length > 900;
+
   return {
-    visualType: section.body.join(" ").length > 160 ? ("knowledge_card" as const) : ("atmosphere" as const),
+    visualType: hasDenseStructure ? ("knowledge_card" as const) : ("atmosphere" as const),
     visualRationale:
-      section.body.join(" ").length > 160
-        ? "这一节信息密度较高，优先做横版知识卡帮助读者理解。"
-        : "这一节信息较轻，优先做横版氛围图给公众号长文换气。",
+      hasDenseStructure
+        ? "整篇文章结构和信息密度较高，统一做横版知识卡更利于理解。"
+        : "整篇文章信息较轻或更偏阅读感，统一做横版氛围图更适合公众号阅读节奏。",
   };
 }
 
@@ -824,6 +850,7 @@ export function planKnowledgeCardsFromArticle(
     sections.length > 0
       ? sections.slice(0, targetCount)
       : [{ heading: request.articleTitle || "文章主线", body: [request.rawText] }];
+  const articleVisualDecision = classifyArticleWechatVisualType(request.articleTitle, request.rawText);
 
   const cardPlan = normalizedSections.map((section, index) => {
     const summarySource = cleanText(section.body.join(" ") || section.heading);
@@ -837,14 +864,13 @@ export function planKnowledgeCardsFromArticle(
     const theme = summary || title;
     const decorationHint = "使用分区框、箭头、便签和轻手绘装饰组织信息，避免堆成一段";
     const endingLabel = index === normalizedSections.length - 1 ? "完结" : undefined;
-    const visualDecision = classifyWechatVisualType(section);
 
     return {
       index: index + 1,
       title,
       summary: summary || "等待文章内容补充后再生成摘要。",
-      visualType: visualDecision.visualType,
-      visualRationale: visualDecision.visualRationale,
+      visualType: articleVisualDecision.visualType,
+      visualRationale: articleVisualDecision.visualRationale,
       promptText: buildKnowledgeCardPromptText({
         styleGuide,
         referenceImages,
@@ -857,8 +883,8 @@ export function planKnowledgeCardsFromArticle(
         contentSections,
         decorationHint,
         endingLabel,
-        visualType: visualDecision.visualType,
-        visualRationale: visualDecision.visualRationale,
+        visualType: articleVisualDecision.visualType,
+        visualRationale: articleVisualDecision.visualRationale,
       }),
       theme,
       layoutHint,
@@ -922,7 +948,9 @@ export function planKnowledgeCardsFromArticle(
     analysis: {
       imageGenerationSource: {
         contentKind: "full-article-text",
-        strategy: `当前由模型策略“${splitStrategyLabel[request.splitStrategy]}”在 ${request.minCards}-${request.maxCards} 张范围内自动拆解，本次得到 ${cardPlan.length} 张知识卡。`,
+        strategy: `当前由模型策略“${splitStrategyLabel[request.splitStrategy]}”在 ${request.minCards}-${request.maxCards} 张范围内自动拆解，本次得到 ${cardPlan.length} 张公众号横版图；整篇文章统一采用${articleVisualDecision.visualType === "atmosphere" ? "横版氛围图" : "横版知识卡"}。`,
+        visualType: articleVisualDecision.visualType,
+        visualRationale: articleVisualDecision.visualRationale,
       },
       cardOutlineTitles: cardPlan.map((card) => card.title),
       keyQuotes,
@@ -1099,7 +1127,9 @@ ${buildInjectedCoverBase(request)}
 - 拆卡策略偏好：${request.splitStrategy}。
 - 每张卡的 promptText 是主产物，必须是完整绘图提示词，可以直接投喂绘图模型。
 - 每张卡必须是独立完整的一张公众号横版图，不允许把多张卡合并到一张图。
-- 每张图必须按文章内容判断 visualType：信息密度高、方法/结构/机制/步骤/对比明显时选 "knowledge_card"；叙事、情绪、场景、隐喻、过渡段明显时选 "atmosphere"。
+- 必须先按整篇文章判断一次 visualType，整篇文章只能二选一：信息密度高、方法/结构/机制/步骤/对比明显时选 "knowledge_card"；叙事、情绪、场景、隐喻、过渡段明显时选 "atmosphere"。
+- 同一篇文章内所有 cardPlan[].visualType 必须完全一致，不能有的图是知识卡、有的图是氛围图。
+- analysis.imageGenerationSource.visualType 必须写入整篇文章的统一选择，analysis.imageGenerationSource.visualRationale 必须说明为什么整篇文章选这个图型。
 - visualType = "knowledge_card" 时，每张图保留 2-4 个信息点，信息点要尽量来自原文，不要压缩成空泛金句。
 - visualType = "atmosphere" 时，只表达一个情绪、场景或视觉隐喻，文字只保留标题和 0-1 句短标注，不要做多模块知识卡。
 - 每条需要上图的文字都必须放在反引号里。
@@ -1126,7 +1156,9 @@ ${request.rawText}
   "analysis": {
     "imageGenerationSource": {
       "contentKind": "full-article-text",
-      "strategy": "一句话说明这次拆图逻辑"
+      "strategy": "一句话说明这次拆图逻辑",
+      "visualType": "knowledge_card",
+      "visualRationale": "为什么整篇文章统一选择横版知识卡或横版氛围图"
     },
     "cardOutlineTitles": ["标题1", "标题2"],
     "keyQuotes": ["重点句1", "重点句2"],

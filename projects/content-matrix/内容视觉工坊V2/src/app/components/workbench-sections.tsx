@@ -491,6 +491,8 @@ export function WorkbenchCenterSection({
     inspectionCardIndex == null
       ? null
       : plannedCards.find((card) => card.index === inspectionCardIndex) || null;
+  const articleVisualType = plannedCards[0]?.visualType === "atmosphere" ? "横版氛围图" : "横版知识卡";
+  const articleVisualRationale = plannedCards[0]?.visualRationale;
 
   return (
     <section className="overflow-y-auto px-9 py-6">
@@ -520,7 +522,7 @@ export function WorkbenchCenterSection({
             <div className="flex items-center gap-3" style={{ color: COLORS.textFaint, fontSize: 12 }}>
               <span className="flex items-center gap-1.5" style={{ color: COLORS.textMid }}>
                 <Wand2 size={11} strokeWidth={1.6} color={COLORS.blue} />
-                本次生成 {plannedCards.length} 张公众号横版图 · 自动判断知识卡或氛围图
+                本次生成 {plannedCards.length} 张公众号横版图 · 本篇图型二选一
               </span>
               <button
                 onClick={() => void handleReplan()}
@@ -533,6 +535,19 @@ export function WorkbenchCenterSection({
           </div>
 
           <div className="px-5 pb-5">
+            <div
+              className="mb-3 rounded-md px-3.5 py-2.5"
+              style={{
+                background: COLORS.blueTint,
+                border: `1px solid ${COLORS.borderSoft}`,
+                color: COLORS.textMid,
+                fontSize: 12,
+                lineHeight: 1.6,
+              }}
+            >
+              <span style={{ color: COLORS.blueDeep }}>本篇统一图型：{articleVisualType}</span>
+              {articleVisualRationale ? ` · ${articleVisualRationale}` : ""}
+            </div>
             <div className="space-y-2">
               {plannedCards.map((card) => (
                 <div
@@ -560,8 +575,7 @@ export function WorkbenchCenterSection({
                       {card.summary}
                     </div>
                     <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 4 }}>
-                      {card.visualType === "atmosphere" ? "横版氛围图" : "横版知识卡"}
-                      {card.visualRationale ? ` · ${card.visualRationale}` : ""}
+                      跟随本篇统一图型：{articleVisualType}
                     </div>
                     <button
                       onClick={() => setInspectionCardIndex(card.index)}

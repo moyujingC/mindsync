@@ -81,6 +81,8 @@ export type PlannerResponse = {
     imageGenerationSource: {
       contentKind: "full-article-text";
       strategy: string;
+      visualType?: WechatVisualType;
+      visualRationale?: string;
     };
     cardOutlineTitles: string[];
     keyQuotes: string[];
