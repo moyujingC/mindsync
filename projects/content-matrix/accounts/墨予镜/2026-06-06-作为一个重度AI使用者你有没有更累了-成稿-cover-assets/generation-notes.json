@@ -1,0 +1,24 @@
+{
+  "model": "gpt-image-2",
+  "baseUrl": "https://aitechflux.com/v1",
+  "variants": [
+    {
+      "file": "wx-cover-01.png",
+      "note": "中心标题 + 柔和水彩背景",
+      "elements": "打开的笔记本、AI 对话气泡、待办便签、轻微疲惫但清醒的人物剪影、柔和水彩云朵。标题在中央大纸片上。",
+      "rawFile": "/Users/xinran/Downloads/dev/mindsync-worktrees/content-matrix-dev/projects/content-matrix/accounts/墨予镜/2026-06-06-作为一个重度AI使用者你有没有更累了-成稿-cover-assets/wx-cover-01-raw.png"
+    },
+    {
+      "file": "wx-cover-02.png",
+      "note": "白板地图 + 企业 AI 图标环绕",
+      "elements": "中心白板标题、四周是流程箭头、数据库、文档、齿轮、AI 机器人和任务节点，表达可推进之事突然增多。",
+      "rawFile": "/Users/xinran/Downloads/dev/mindsync-worktrees/content-matrix-dev/projects/content-matrix/accounts/墨予镜/2026-06-06-作为一个重度AI使用者你有没有更累了-成稿-cover-assets/wx-cover-02-raw.png"
+    },
+    {
+      "file": "wx-cover-03.png",
+      "note": "纸面便签 + 判断收口隐喻",
+      "elements": "中央大标题纸片、周围散落便签和分叉路径，其中一条路径被圈出，表达选择、收口和足够好。",
+      "rawFile": "/Users/xinran/Downloads/dev/mindsync-worktrees/content-matrix-dev/projects/content-matrix/accounts/墨予镜/2026-06-06-作为一个重度AI使用者你有没有更累了-成稿-cover-assets/wx-cover-03-raw.png"
+    }
+  ]
+}
