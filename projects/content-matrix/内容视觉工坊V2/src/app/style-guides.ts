@@ -95,6 +95,57 @@ export const HANDDRAWN_FLOW_EXPLAINER_REFERENCE_IMAGES: StyleReferenceImage[] = 
   },
 ];
 
+const ENTERPRISE_AI_WHITEBOARD_REFERENCE_FILES = [
+  "Fj60QpKo9C3n8OXM2ccOra1at9Az.jpeg",
+  "FnzeKFxKgxiEBtE-ZpK8YxsCicpQ.jpeg",
+  "FiwcR-wQx_8JFM7OYRecsCfKUKh_.jpeg",
+  "FhwNO60X8aRcZKA0c5oLkky2ZYd-.jpeg",
+  "Fouvwu39-VjSFZ1bMda8IGUXAghZ.jpeg",
+  "FuxJe9tBYeX3n7K0PchzMYj4tIrG.jpeg",
+  "FhpDw16su-K6VVutl_fZdEwoBXGL.jpeg",
+  "FtCgeyr6XBywhlmjr8BBKhTiZ5iY.jpeg",
+  "FsNXen8uhLGGKQSWGgMNBYEJ6tEg.jpeg",
+  "Fukmya2cwtAAPzj8eO8ye76Xs1I_.jpeg",
+  "FsvPzcgFmkhmg41as0QwFeo1CFm8.jpeg",
+  "FkKYo_cI_Zz6VPPvCOHyxLJr0T-J.jpeg",
+  "FkM82IBKR4b6Qn867r7KBpLUpK31.jpeg",
+  "FjLzkJrCN8HSUxmP6G0lXB_fcMuS.jpeg",
+  "FvozxtqG6M8IVgkP4ET8hIepbKDX.jpeg",
+  "FtFMA9DfZ_QAE0KJsN5iyz5_fRND.jpeg",
+  "FozpnI1SYL31-_gBJkfsBDEV764R.jpeg",
+  "FsHojAZ-GM7TeKpbv6TJ-nVcazbu.jpeg",
+  "FpaVKAbj1jJPcFZR5qhjGfDPr3HP.jpeg",
+  "FuQjD7M1HIsiyDEZrl1HQHodiNOt.jpeg",
+  "FmFyBq07T9eFjYVm26vZ3tcOTOso.jpeg",
+  "FhHWlJAvZF72MKnfb8MZpGwLS10j.jpeg",
+  "FsRr2kDxatDWpic6GKpz7CcfIl1f.jpeg",
+  "FlTm4rCzU-JqKjgjJOM1mWzp2rWr.jpeg",
+  "FqD5kyoH3qSy17VWSXkLXuTeEc5I.jpeg",
+  "FtgN3BpIIojLi7-hTj1vT8_dTKv_.jpeg",
+  "Fndwve6wCR2Agh_tauENykIT5IZE.jpeg",
+  "FtmVhzf82D7eNjGTYA8KYcwrqTrK.jpeg",
+  "FlgVl9TNMOJzaBoLLQJ01808Occ_.jpeg",
+  "FgMNKpRppE45egOQ4UCOtQ4Mg9B7.jpeg",
+  "FhfcXIcIORuC-WrW7UZIsa_wbsgS.jpeg",
+  "FiWkO84NcSZ-HRasfcY4z0IhIlzm.jpeg",
+  "FnzZVHhk0i2A5yPrChzGCtbjVthi.jpeg",
+  "FgQTW2eHqjRxsyj2VzCpRnUzPnOj.jpeg",
+  "FkXqj87W4JKPbY3jJDCiP7dgtG-9.jpeg",
+  "FrsVcJNvjDedUpthNYZ4550G58mZ.jpeg",
+  "Fl3OkMWyfKg1WKfPLs5-jYFrNCLa.jpeg",
+  "Fhis8EgcaDwoqb2zr1vrkhvreZEF.jpeg",
+  "Fjy_VQ6b0JbxglC_0hi2H9d9E0DZ.jpeg",
+  "FutLtg6pVaizOR8nqkzO9VSqRVNe.jpeg",
+  "Fq14QSeURYz0pawNRVDaMR7w-5Uc.jpeg",
+];
+
+export const ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES: StyleReferenceImage[] =
+  ENTERPRISE_AI_WHITEBOARD_REFERENCE_FILES.map((filename, index) => ({
+    label: `企业AI手绘白板 ${String(index + 1).padStart(2, "0")}`,
+    url: `file:///Users/xinran/Downloads/风格/${filename}`,
+    note: "参考横版手绘白板、业务场景人物、AI工具图标、流程箭头、虚线框和低饱和水彩分区",
+  }));
+
 export const PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE = `视觉风格：极简纸本信息板 · 小红书知识卡
 
 整体风格：
@@ -141,6 +192,34 @@ export const SKETCHNOTE_KNOWLEDGE_CARD_STYLE_GUIDE = `提示词资产来源：pr
 
 拆解要求：
 每张图有明确主题、适合的构图、醒目标题区。横版知识卡可以有 2-4 个内容区域；横版氛围图只表达一个情绪、场景或视觉隐喻，文字只保留标题和 0-1 句短标注。优先保留文章原意，不新增与原文无关的观点。输出给生成器的 promptText 应该是一张图可独立复制使用的绘画指令。`;
+
+export const ENTERPRISE_AI_WHITEBOARD_STYLE_NAME = "企业AI手绘白板";
+
+export const ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE = `视觉风格：企业AI手绘白板 · 公众号横版图
+
+目标：
+把文章拆成 3-5 张独立公众号横版图，每张图都是完整的 1080×608 或等比例 16:9 横版画布。整体像一张成熟的商业手绘白板，用手绘图解把企业 AI、组织流程、工具落地、ROI、权限、数据、协作等抽象问题讲清楚。
+
+整体风格：
+温白纸面或浅米色纸张纹理，轻微水彩晕染和铅笔扫描感。黑色手写中文标题要大而清楚，常用蓝灰色或暖橙色水彩横线做标题下划线。画面有手绘温度，但不是儿童卡通；是企业培训、咨询汇报、公众号长文配图能接受的专业手绘信息图。
+
+画面结构：
+优先使用横版白板、三栏对比、左右对照、中心发散、流程箭头、阶梯路线、漏斗、冰山/墙壁/桥梁/杠杆/地图等业务隐喻。可以出现大白板、会议桌、电脑屏幕、知识库、机器人、流程图、权限钥匙、数据表、仪表盘、云、服务器、文件夹、便签、警示牌、增长曲线。
+
+配色：
+低饱和水彩色块为主：浅蓝灰、灰绿、浅黄、奶油橙、淡粉、米白。黑色或深灰铅笔线稿做主体轮廓。色块像淡淡刷出来的便签或分区底，不要高饱和霓虹，不要厚重商业海报，不要纯科技蓝紫渐变。
+
+文字：
+所有需要渲染的文字必须用反引号包裹并原样呈现。标题可以大字手写，模块标题放在水彩标签、便签、虚线框或白板里。正文文字要少而准，横版知识卡每张 2-4 个模块，氛围图只保留标题和 0-1 句短标注。不要生成无关英文、乱码、水印或额外小字。
+
+插画和符号：
+人物以企业场景为主：会议、客户现场、项目经理、培训交付、员工使用 AI、顾问讲解、开发/运维桌面。AI 形象可以是小机器人、AI芯片、AI云、AI助手界面，但不要变成二次元角色。每个插画必须服务对应文字或结构关系。
+
+公众号图型规则：
+按整篇文章只选择一种图型。方法、结构、机制、步骤、对比明显时，全篇统一做横版知识卡；叙事、情绪、场景、隐喻、过渡段明显时，全篇统一做横版氛围图。无论哪种图型，都保持同一套企业AI手绘白板视觉语言。
+
+限制：
+不要真实照片感，不要 3D 渲染，不要科幻霓虹，不要低龄可爱贴纸，不要营销海报，不要把多张图拼在同一画布，不要把文本堆满整张图。`;
 
 export const HANDDRAWN_FLOW_EXPLAINER_STYLE_GUIDE = `视觉风格：手绘流程讲解板
 

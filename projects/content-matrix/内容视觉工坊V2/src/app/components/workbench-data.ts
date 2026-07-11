@@ -64,11 +64,11 @@ const KNOWLEDGE_CARD_PROMPT_RULES = `【文字渲染规则 - 严格遵守】
 
 const KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK = `## 整体风格说明（与本系列所有图保持一致）
 
-整体风格：手绘涂鸦笔记 (Sketchnote) 风格，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
+整体风格：企业AI手绘白板，像一张成熟的商业手绘讲解图，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
 
 画幅比例：公众号正文横版图，默认 1080×608 或等比例 16:9
 
-视觉风格：经典手账风 / 清新自然风，用温白纸面、低饱和粉彩色块、黑色手绘轮廓、箭头、气泡标签和简笔图标组织信息
+视觉风格：温白纸面、低饱和水彩色块、黑色手写标题、虚线框、流程箭头、白板、便签、电脑、AI机器人和业务场景人物
 
 背景：温白、浅米色或浅绿米白纸张纹理，允许轻微纸纹、水彩笔涂抹、手绘边框和扫描感
 
@@ -87,7 +87,7 @@ const KNOWLEDGE_CARD_PROMPT_CUSTOM_STYLE_BLOCK = `## 当前项目硬性约束
 export const KNOWLEDGE_CARD_NEGATIVE_PROMPT =
   "高饱和、霓虹、强商业海报、真实照片、3D渲染、二次元角色、复杂背景、低清文字、错别字、未用反引号的额外文字、多张图挤在同一画布、小红书竖版卡片";
 
-export const KNOWLEDGE_CARD_STYLE_NAME = "公众号横版视觉图 · Sketchnote";
+export const KNOWLEDGE_CARD_STYLE_NAME = "企业AI手绘白板";
 
 export function buildKnowledgeCardPrompt({
   articleTitle,
@@ -147,7 +147,7 @@ export function buildKnowledgeCardPrompt({
 - 这是一张独立完整的公众号横版图，占满单张画布，不要与其他图合并
 - 推荐类型：${visualTypeLabel}${visualRationale ? `；选择理由：${visualRationale}` : ""}
 ${visualTypeRule}
-- 整体采用手绘涂鸦笔记 (Sketchnote) 风格，线条有手绘感，但信息必须清楚可读
+- 整体采用企业AI手绘白板风格，线条有手绘感，但信息必须清楚可读
 - 版面优先服务信息阅读，不要把画面做成纯装饰海报
 - 所有需要显示的文字必须用反引号包裹并原样呈现
 - 每个元素必须说明它所在的容器；插画必须绑定到对应文字旁边
@@ -499,7 +499,7 @@ export function buildGenerationTasks({
     const preset = findPreset(DEFAULT_PRESET_KEYS.wechatCover)?.preset;
     if (preset) {
       const coverTheme = planning.analysis.coverTheme;
-      const fallbackCoverPrompt = `为公众号文章《${articleTitle}》生成 1 张封面图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。封面只做入口图，不做知识卡，不放正文段落。保留清晰标题区，使用极简纸本信息板风格：温白纸面、纸张拼贴、便签、胶带、低饱和雾蓝与暖灰。文章摘要：${bodyPreview}。`;
+      const fallbackCoverPrompt = `为公众号文章《${articleTitle}》生成 1 张封面图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。封面只做入口图，不做知识卡，不放正文段落。保留清晰标题区，使用企业AI手绘白板风格：温白纸面、低饱和水彩色块、黑色手写标题、虚线框、流程箭头、白板、便签、AI机器人和业务场景人物。文章摘要：${bodyPreview}。`;
       tasks.push({
         articleTitle,
         prompt: coverTheme.promptText?.trim() || fallbackCoverPrompt,
@@ -511,7 +511,7 @@ export function buildGenerationTasks({
         purposeLabel: "公众号封面",
         presetKey: preset.k,
         presetLabel: preset.label,
-        styleName: "极简纸本公众号封面",
+        styleName: "企业AI手绘白板公众号封面",
         coverLink: {
           index: 1,
           title: "公众号封面",

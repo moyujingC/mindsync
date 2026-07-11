@@ -3,12 +3,12 @@ import { postGenerateImages, postPlanCards, postPlanCover } from "../api";
 import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
 import {
-  PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
+  ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
+  ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE,
+  ENTERPRISE_AI_WHITEBOARD_STYLE_NAME,
   PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
   PAPER_INFO_BOARD_QUOTE_BACKGROUNDS,
   PAPER_INFO_BOARD_REFERENCE_IMAGES,
-  SKETCHNOTE_KNOWLEDGE_CARD_STYLE_GUIDE,
-  SKETCHNOTE_KNOWLEDGE_CARD_STYLE_NAME,
 } from "../style-guides";
 import type {
   GeneratedImageItem,
@@ -677,15 +677,15 @@ export function useWorkbenchController({
     const request: PlannerRequest = {
       articleTitle: article.title,
       rawText: article.body,
-      knowledgeCardStyleName: SKETCHNOTE_KNOWLEDGE_CARD_STYLE_NAME,
-      knowledgeCardStyleGuide: SKETCHNOTE_KNOWLEDGE_CARD_STYLE_GUIDE,
-      knowledgeCardReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
+      knowledgeCardStyleName: ENTERPRISE_AI_WHITEBOARD_STYLE_NAME,
+      knowledgeCardStyleGuide: ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE,
+      knowledgeCardReferenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
       inlineImageStyleName: "极简纸本正文配图",
       inlineImageStyleGuide: PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
       inlineImageReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
-      coverStyleName: "极简纸本公众号封面",
-      coverStyleGuide: PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
-      coverReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
+      coverStyleName: "企业AI手绘白板公众号封面",
+      coverStyleGuide: ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE,
+      coverReferenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
       cardRatio: knowledgePreset?.aspect || "16:9",
       cardWidth: knowledgePreset?.w || 1080,
       cardHeight: knowledgePreset?.h || 608,
@@ -989,9 +989,9 @@ export function useWorkbenchController({
       coverPlan = await postPlanCover({
         articleTitle: currentArticle.title,
         rawText: currentArticle.body,
-        coverStyleName: "极简纸本公众号封面",
-        coverStyleGuide: PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
-        coverReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
+        coverStyleName: "企业AI手绘白板公众号封面",
+        coverStyleGuide: ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE,
+        coverReferenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
       });
     } catch (error) {
       pushStatus(
@@ -1027,7 +1027,7 @@ export function useWorkbenchController({
         purposeLabel: "公众号封面大图",
         presetKey: largePreset.k,
         presetLabel: largePreset.label,
-        styleName: "极简纸本公众号封面",
+        styleName: "企业AI手绘白板公众号封面",
         coverLink: {
           index: candidate.index,
           title: candidate.title,
