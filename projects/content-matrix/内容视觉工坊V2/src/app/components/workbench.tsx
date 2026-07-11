@@ -86,6 +86,7 @@ export function Workbench() {
         handleRegenerateKnowledgeCard={controller.handleRegenerateKnowledgeCard}
         handleReplaceKnowledgeCardClick={controller.handleReplaceKnowledgeCardClick}
         handleRollbackKnowledgeCard={controller.handleRollbackKnowledgeCard}
+        handleInsertKnowledgeCardIntoArticle={controller.handleInsertKnowledgeCardIntoArticle}
       />
 
       <ControlTowerSidebar
@@ -104,6 +105,8 @@ export function Workbench() {
         setEditingCardTitle={controller.setEditingCardTitle}
         editingCardSummary={controller.editingCardSummary}
         setEditingCardSummary={controller.setEditingCardSummary}
+        editingCardPrompt={controller.editingCardPrompt}
+        setEditingCardPrompt={controller.setEditingCardPrompt}
         saveKnowledgeCardDraft={controller.saveKnowledgeCardDraft}
         handleEditAndRegenerateKnowledgeCard={controller.handleEditAndRegenerateKnowledgeCard}
       />

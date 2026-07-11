@@ -70,6 +70,46 @@ function buildArticleSignature(article: WorkspaceArticle) {
   return `${article.title.trim()}::${article.body.replace(/\s+/g, " ").trim()}`;
 }
 
+function escapeMarkdownAlt(value: string) {
+  return value.replace(/[\[\]\n\r]/g, " ").replace(/\s+/g, " ").trim() || "公众号横图";
+}
+
+function insertImageMarkdownAfterLikelyAnchor(
+  body: string,
+  card: { title: string; summary: string },
+  marker: string
+) {
+  const imageBlock = `\n\n${marker}\n`;
+  const lines = body.split("\n");
+  const anchors = [card.title, card.summary]
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+
+  for (const anchor of anchors) {
+    const index = lines.findIndex((line) => line.includes(anchor));
+    if (index >= 0) {
+      const insertAt = findParagraphEnd(lines, index);
+      const next = [...lines];
+      next.splice(insertAt + 1, 0, imageBlock.trim());
+      return next.join("\n").replace(/\n{4,}/g, "\n\n\n");
+    }
+  }
+
+  const fallbackIndex = Math.max(0, Math.floor(lines.length / 3));
+  const insertAt = findParagraphEnd(lines, fallbackIndex);
+  const next = [...lines];
+  next.splice(insertAt + 1, 0, imageBlock.trim());
+  return next.join("\n").replace(/\n{4,}/g, "\n\n\n");
+}
+
+function findParagraphEnd(lines: string[], startIndex: number) {
+  for (let index = startIndex + 1; index < lines.length; index += 1) {
+    if (!lines[index].trim()) return index - 1;
+  }
+  return lines.length - 1;
+}
+
 export function useWorkbenchController({
   currentArticle,
   setCurrentArticle,
@@ -106,6 +146,7 @@ export function useWorkbenchController({
   const [editingCardIndex, setEditingCardIndex] = useState<number | null>(null);
   const [editingCardTitle, setEditingCardTitle] = useState("");
   const [editingCardSummary, setEditingCardSummary] = useState("");
+  const [editingCardPrompt, setEditingCardPrompt] = useState("");
 
   const plannedCards = planningState?.cardPlan ?? buildFallbackCardPlan();
   const plannedQuotes = planningState?.candidateQuotes?.length
@@ -387,7 +428,12 @@ export function useWorkbenchController({
     }));
   }
 
-  function updateKnowledgeCardDraft(cardIndex: number, nextTitle: string, nextSummary: string) {
+  function updateKnowledgeCardDraft(
+    cardIndex: number,
+    nextTitle: string,
+    nextSummary: string,
+    nextPromptText?: string
+  ) {
     if (!planningState) return;
     const nextCardPlan = planningState.cardPlan.map((card) =>
       card.index === cardIndex
@@ -395,6 +441,8 @@ export function useWorkbenchController({
             ...card,
             title: nextTitle.trim() || card.title,
             summary: nextSummary.trim() || card.summary,
+            promptText:
+              nextPromptText === undefined ? card.promptText : nextPromptText.trim() || undefined,
           }
         : card
     );
@@ -411,12 +459,34 @@ export function useWorkbenchController({
     setEditingCardIndex(cardIndex);
     setEditingCardTitle(card.title);
     setEditingCardSummary(card.summary);
+    setEditingCardPrompt(
+      buildKnowledgeCardPrompt({
+        articleTitle: currentArticle.title,
+        cardIndex: card.index,
+        cardTotal: plannedCards.length,
+        promptText: card.promptText,
+        visualType: card.visualType,
+        visualRationale: card.visualRationale,
+        cardTitle: card.title,
+        cardSummary: card.summary,
+        cardTheme: card.theme,
+        cardLayoutHint: card.layoutHint,
+        cardTextBlocks: card.textBlocks,
+        cardIllustrationHints: card.illustrationHints,
+        cardTitleVisualHint: card.titleVisualHint,
+        cardContentSections: card.contentSections,
+        cardDecorationHint: card.decorationHint,
+        cardEndingLabel: card.endingLabel,
+        bodyPreview: currentArticle.body.replace(/\s+/g, " ").trim().slice(0, 140),
+      })
+    );
   }
 
   function closeKnowledgeCardEditor() {
     setEditingCardIndex(null);
     setEditingCardTitle("");
     setEditingCardSummary("");
+    setEditingCardPrompt("");
   }
 
   function replaceKnowledgeCardImage(cardIndex: number, imageUrl: string, prompt: string) {
@@ -476,7 +546,12 @@ export function useWorkbenchController({
 
   function saveKnowledgeCardDraft() {
     if (editingCardIndex == null) return;
-    updateKnowledgeCardDraft(editingCardIndex, editingCardTitle, editingCardSummary);
+    updateKnowledgeCardDraft(
+      editingCardIndex,
+      editingCardTitle,
+      editingCardSummary,
+      editingCardPrompt
+    );
     updateKnowledgeCardStatus(editingCardIndex, { edited: true });
     closeKnowledgeCardEditor();
     pushStatus(
@@ -518,7 +593,7 @@ export function useWorkbenchController({
 
   async function handleRegenerateKnowledgeCard(
     cardIndex: number,
-    nextDraft?: { title: string; summary: string }
+    nextDraft?: { title: string; summary: string; promptText?: string }
   ) {
     const preset = knowledgePreset;
     const card = plannedCards.find((item) => item.index === cardIndex);
@@ -527,6 +602,7 @@ export function useWorkbenchController({
     const resolvedCard = nextDraft
       ? { ...card, title: nextDraft.title, summary: nextDraft.summary }
       : card;
+    const resolvedPromptText = nextDraft?.promptText ?? resolvedCard.promptText;
 
     setRegeneratingCardIndex(cardIndex);
     clearTaskError();
@@ -544,7 +620,7 @@ export function useWorkbenchController({
           articleTitle: currentArticle.title,
           cardIndex: resolvedCard.index,
           cardTotal: plannedCards.length,
-          promptText: resolvedCard.promptText,
+          promptText: resolvedPromptText,
           visualType: resolvedCard.visualType,
           visualRationale: resolvedCard.visualRationale,
           cardTitle: resolvedCard.title,
@@ -655,7 +731,8 @@ export function useWorkbenchController({
     if (editingCardIndex == null) return;
     const nextTitle = editingCardTitle.trim();
     const nextSummary = editingCardSummary.trim();
-    updateKnowledgeCardDraft(editingCardIndex, nextTitle, nextSummary);
+    const nextPromptText = editingCardPrompt.trim();
+    updateKnowledgeCardDraft(editingCardIndex, nextTitle, nextSummary, nextPromptText);
     updateKnowledgeCardStatus(editingCardIndex, { edited: true });
     await handleRegenerateKnowledgeCard(editingCardIndex, {
       title:
@@ -666,8 +743,36 @@ export function useWorkbenchController({
         nextSummary ||
         plannedCards.find((item) => item.index === editingCardIndex)?.summary ||
         "",
+      promptText: nextPromptText,
     });
     closeKnowledgeCardEditor();
+  }
+
+  function handleInsertKnowledgeCardIntoArticle(cardIndex: number) {
+    const image = knowledgeImagesByCard.get(cardIndex);
+    const card = plannedCards.find((item) => item.index === cardIndex);
+    if (!image || !card) return;
+
+    const marker = `![${escapeMarkdownAlt(card.title)}](${image.imageUrl})`;
+    if (currentArticle.body.includes(marker)) {
+      pushStatus(
+        `knowledge-card-${cardIndex}`,
+        "info",
+        `知识卡 ${String(cardIndex).padStart(2, "0")} 已在成稿中`
+      );
+      return;
+    }
+
+    const nextBody = insertImageMarkdownAfterLikelyAnchor(currentArticle.body, card, marker);
+    setCurrentArticle({
+      ...currentArticle,
+      body: nextBody,
+    });
+    pushStatus(
+      `knowledge-card-${cardIndex}`,
+      "success",
+      `知识卡 ${String(cardIndex).padStart(2, "0")} 已插入当前成稿`
+    );
   }
 
   async function runPlanning() {
@@ -1461,6 +1566,8 @@ export function useWorkbenchController({
     setEditingCardTitle,
     editingCardSummary,
     setEditingCardSummary,
+    editingCardPrompt,
+    setEditingCardPrompt,
     openKnowledgeCardEditor,
     closeKnowledgeCardEditor,
     saveKnowledgeCardDraft,
@@ -1471,6 +1578,7 @@ export function useWorkbenchController({
     handleReplaceKnowledgeCardClick,
     handleKnowledgeCardFileChange,
     handleEditAndRegenerateKnowledgeCard,
+    handleInsertKnowledgeCardIntoArticle,
     handleStartGeneration,
     handleGenerateQuoteCard,
     handleSelectCover,

@@ -4,6 +4,7 @@ import {
   ClipboardCopy,
   History,
   Image as ImageIcon,
+  ImagePlus,
   Lock,
   Pencil,
   Replace,
@@ -83,6 +84,7 @@ export function KnowledgeCardResults({
   onRegenerate,
   onReplace,
   onRollback,
+  onInsertIntoArticle,
   onPreview,
 }: {
   plannedCards: CardPlan[];
@@ -101,6 +103,7 @@ export function KnowledgeCardResults({
   onRegenerate: (cardIndex: number) => void;
   onReplace: (cardIndex: number) => void;
   onRollback: (cardIndex: number) => void;
+  onInsertIntoArticle: (cardIndex: number) => void;
   onPreview: (imageUrl: string, alt: string) => void;
 }) {
   return (
@@ -144,6 +147,7 @@ export function KnowledgeCardResults({
                 onRegenerate={onRegenerate}
                 onReplace={onReplace}
                 onRollback={onRollback}
+                onInsertIntoArticle={onInsertIntoArticle}
                 onPreview={onPreview}
               />
             );
@@ -426,6 +430,7 @@ function KnowledgeCardImageTile({
   onRegenerate,
   onReplace,
   onRollback,
+  onInsertIntoArticle,
   onPreview,
 }: {
   image: GeneratedImageItem;
@@ -441,6 +446,7 @@ function KnowledgeCardImageTile({
   onRegenerate: (cardIndex: number) => void;
   onReplace: (cardIndex: number) => void;
   onRollback: (cardIndex: number) => void;
+  onInsertIntoArticle: (cardIndex: number) => void;
   onPreview: (imageUrl: string, alt: string) => void;
 }) {
   return (
@@ -480,6 +486,12 @@ function KnowledgeCardImageTile({
               icon={<ClipboardCopy size={12} strokeWidth={1.6} />}
               color={COLORS.success}
               onClick={() => onFinalize(cardIndex)}
+            />
+            <IconActionButton
+              title="插入当前成稿"
+              icon={<ImagePlus size={12} strokeWidth={1.6} />}
+              color={COLORS.blueDeep}
+              onClick={() => onInsertIntoArticle(cardIndex)}
             />
             <IconActionButton
               title="单张重生成"

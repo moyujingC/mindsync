@@ -20,7 +20,7 @@ export type ArticleBlock =
   | { type: "quote"; text: string }
   | { type: "section"; title: string; body: string }
   | { type: "note"; text: string }
-  | { type: "image"; label: string; sectionKey?: string };
+  | { type: "image"; label: string; sectionKey?: string; imageUrl?: string };
 
 export type WorkspaceArticle = {
   title: string;
@@ -475,6 +475,17 @@ function buildArticleBlocks(body: string): ArticleBlock[] {
       blocks.push({
         type: "image",
         label: chunk.replace(/^(图|图片)[:：]\s*/, ""),
+        sectionKey: lastSectionKey,
+      });
+      continue;
+    }
+
+    const markdownImage = chunk.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (markdownImage) {
+      blocks.push({
+        type: "image",
+        label: markdownImage[1].trim() || "公众号横图",
+        imageUrl: markdownImage[2].trim(),
         sectionKey: lastSectionKey,
       });
       continue;

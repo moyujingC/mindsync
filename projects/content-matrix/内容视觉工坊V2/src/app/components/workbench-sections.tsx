@@ -460,6 +460,7 @@ export function WorkbenchCenterSection({
   handleRegenerateKnowledgeCard,
   handleReplaceKnowledgeCardClick,
   handleRollbackKnowledgeCard,
+  handleInsertKnowledgeCardIntoArticle,
 }: {
   currentArticle: { title: string };
   currentArticleMeta: string;
@@ -485,6 +486,7 @@ export function WorkbenchCenterSection({
   handleRegenerateKnowledgeCard: (cardIndex: number) => Promise<void>;
   handleReplaceKnowledgeCardClick: (cardIndex: number) => void;
   handleRollbackKnowledgeCard: (cardIndex: number) => void;
+  handleInsertKnowledgeCardIntoArticle: (cardIndex: number) => void;
 }) {
   const [inspectionCardIndex, setInspectionCardIndex] = useState<number | null>(null);
   const inspectionCard =
@@ -726,6 +728,7 @@ export function WorkbenchCenterSection({
           handleRegenerateKnowledgeCard={handleRegenerateKnowledgeCard}
           handleReplaceKnowledgeCardClick={handleReplaceKnowledgeCardClick}
           handleRollbackKnowledgeCard={handleRollbackKnowledgeCard}
+          handleInsertKnowledgeCardIntoArticle={handleInsertKnowledgeCardIntoArticle}
         />
       </div>
     </section>
@@ -739,6 +742,8 @@ export function WorkbenchEditorDialog({
   setEditingCardTitle,
   editingCardSummary,
   setEditingCardSummary,
+  editingCardPrompt,
+  setEditingCardPrompt,
   saveKnowledgeCardDraft,
   handleEditAndRegenerateKnowledgeCard,
 }: {
@@ -748,6 +753,8 @@ export function WorkbenchEditorDialog({
   setEditingCardTitle: React.Dispatch<React.SetStateAction<string>>;
   editingCardSummary: string;
   setEditingCardSummary: React.Dispatch<React.SetStateAction<string>>;
+  editingCardPrompt: string;
+  setEditingCardPrompt: React.Dispatch<React.SetStateAction<string>>;
   saveKnowledgeCardDraft: () => void;
   handleEditAndRegenerateKnowledgeCard: () => Promise<void>;
 }) {
@@ -760,9 +767,9 @@ export function WorkbenchEditorDialog({
     >
       <DialogContent className="max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>编辑知识卡文案</DialogTitle>
+          <DialogTitle>编辑知识卡提示词</DialogTitle>
           <DialogDescription>
-            修改标题和摘要后，可以直接保存或保存并重生成当前卡片。
+            可以改标题、摘要和完整绘图提示词；保存并重生成只影响当前单张卡片。
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
@@ -794,6 +801,26 @@ export function WorkbenchEditorDialog({
                 color: COLORS.text,
                 fontSize: 13,
                 lineHeight: 1.7,
+              }}
+            />
+          </div>
+          <div>
+            <div style={{ color: COLORS.textMid, fontSize: 12, marginBottom: 6 }}>
+              卡片提示词
+            </div>
+            <textarea
+              value={editingCardPrompt}
+              onChange={(event) => setEditingCardPrompt(event.target.value)}
+              className="w-full px-3 py-2 rounded-md outline-none resize-none"
+              style={{
+                height: 220,
+                background: COLORS.pageBg,
+                border: `1px solid ${COLORS.border}`,
+                color: COLORS.text,
+                fontSize: 12,
+                lineHeight: 1.65,
+                fontFamily:
+                  'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace',
               }}
             />
           </div>
@@ -832,6 +859,7 @@ function WorkbenchResultsPanel({
   handleRegenerateKnowledgeCard,
   handleReplaceKnowledgeCardClick,
   handleRollbackKnowledgeCard,
+  handleInsertKnowledgeCardIntoArticle,
 }: any) {
   const [previewImage, setPreviewImage] = useState<{
     imageUrl: string;
@@ -1138,6 +1166,7 @@ function WorkbenchResultsPanel({
         }}
         onReplace={handleReplaceKnowledgeCardClick}
         onRollback={handleRollbackKnowledgeCard}
+        onInsertIntoArticle={handleInsertKnowledgeCardIntoArticle}
         onPreview={handlePreviewImage}
       />
 

@@ -69,7 +69,7 @@ type WechatArticleBlock =
   | { type: "quote"; text: string }
   | { type: "heading"; level: WechatHeadingLevel; title: string; body?: string }
   | { type: "list"; ordered: boolean; items: string[] }
-  | { type: "image"; label: string; sectionKey?: string };
+  | { type: "image"; label: string; sectionKey?: string; imageUrl?: string };
 
 type SampleBlockRole =
   | "primary"
@@ -1012,6 +1012,17 @@ function buildWechatArticleBlocks(body: string): WechatArticleBlock[] {
       continue;
     }
 
+    const markdownImage = chunk.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (markdownImage) {
+      blocks.push({
+        type: "image",
+        label: markdownImage[1].trim() || "公众号横图",
+        imageUrl: markdownImage[2].trim(),
+        sectionKey: lastSectionKey,
+      });
+      continue;
+    }
+
     if (markdownHeading) {
       const hashLevel = markdownHeading[1].length;
       const title = markdownHeading[2].trim();
@@ -1845,9 +1856,9 @@ function buildWechatArticleHtml(
     }
 
     if (block.type === "image") {
-      const inlineImageUrl = block.sectionKey
+      const inlineImageUrl = block.imageUrl || (block.sectionKey
         ? imageMap.get(block.sectionKey) ?? null
-        : null;
+        : null);
       return `
         <figure style="margin:26px 0 12px;text-align:center;">
           ${
