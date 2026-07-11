@@ -568,6 +568,7 @@ export function useWorkbenchController({
         presetKey: preset.k,
         presetLabel: preset.label,
         styleName: KNOWLEDGE_CARD_STYLE_NAME,
+        referenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
         cardLink: {
           index: resolvedCard.index,
           title: resolvedCard.title,
@@ -1028,6 +1029,7 @@ export function useWorkbenchController({
         presetKey: largePreset.k,
         presetLabel: largePreset.label,
         styleName: "企业AI手绘白板公众号封面",
+        referenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
         coverLink: {
           index: candidate.index,
           title: candidate.title,

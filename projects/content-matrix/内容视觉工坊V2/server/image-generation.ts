@@ -32,12 +32,14 @@ function buildPrompt(request: GenerateImagesRequest) {
     request.styleName === "手绘流程讲解板"
       ? HANDDRAWN_FLOW_EXPLAINER_STYLE_GUIDE
       : "";
+  const referenceImages = renderReferenceImages(request.referenceImages);
   const lines = [
     request.prompt.trim(),
     `用途：${request.purposeLabel}`,
     `目标规格：${request.presetLabel}，画面比例 ${request.width}:${request.height}`,
     `风格：${request.styleName}`,
     styleGuide,
+    referenceImages,
     `文章标题：${request.articleTitle}`,
   ];
 
@@ -46,6 +48,18 @@ function buildPrompt(request: GenerateImagesRequest) {
   }
 
   return lines.filter(Boolean).join("\n");
+}
+
+function renderReferenceImages(referenceImages: GenerateImagesRequest["referenceImages"]) {
+  if (!referenceImages?.length) return "";
+  const rendered = referenceImages
+    .slice(0, 12)
+    .map((image, index) => {
+      const note = image.note ? `；参考要点：${image.note}` : "";
+      return `${index + 1}. ${image.label}：${image.url}${note}`;
+    })
+    .join("\n");
+  return `默认参考图（用于统一公众号封面和知识卡片的视觉风格，不要照抄构图或文字）：\n${rendered}`;
 }
 
 function resolveModelSize(width: number, height: number) {

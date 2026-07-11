@@ -1,4 +1,5 @@
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
+import { ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES } from "../style-guides";
 import type {
   CardPlan,
   InlineImagePlan,
@@ -480,6 +481,7 @@ export function buildGenerationTasks({
             presetKey: preset.k,
             presetLabel: preset.label,
             styleName: KNOWLEDGE_CARD_STYLE_NAME,
+            referenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
             cardLink: {
               index: card.index,
               title: card.title,
@@ -512,6 +514,7 @@ export function buildGenerationTasks({
         presetKey: preset.k,
         presetLabel: preset.label,
         styleName: "企业AI手绘白板公众号封面",
+        referenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
         coverLink: {
           index: 1,
           title: "公众号封面",
