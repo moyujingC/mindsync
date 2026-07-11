@@ -1,0 +1,33 @@
+{
+  "model": "gpt-image-2",
+  "baseUrl": "https://aitechflux.com/v1",
+  "size": "900x383",
+  "directCanvas": true,
+  "variants": [
+    {
+      "file": "wx-cover-01.png",
+      "note": "中心标题 + 柔和水彩背景",
+      "size": "900x383",
+      "directCanvas": true,
+      "status": "ok"
+    },
+    {
+      "file": "wx-cover-02.png",
+      "note": "白板地图 + 企业 AI 图标环绕",
+      "size": "900x383",
+      "directCanvas": true,
+      "status": "ok"
+    },
+    {
+      "file": "wx-cover-03.png",
+      "note": "纸面便签 + 判断收口隐喻",
+      "size": "900x383",
+      "directCanvas": true,
+      "status": "ok"
+    }
+  ],
+  "requestedSize": "900x383",
+  "returnedSize": "1922x818",
+  "finalSize": "900x383",
+  "postprocess": "downscale-only; no crop; direct cover aspect preserved"
+}

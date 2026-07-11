@@ -1,5 +1,5 @@
 import { useRef, useState, type ChangeEvent } from "react";
-import { postGenerateImages, postPlanCards, postPlanCover } from "../api";
+import { downloadGeneratedImage, postGenerateImages, postPlanCards, postPlanCover } from "../api";
 import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
 import {
@@ -25,6 +25,7 @@ import type {
   WorkspaceArticle,
   WorkspaceTab,
 } from "../workspace";
+import { blobToDataUrl } from "../wechat-image-utils";
 import {
   buildFallbackCardPlan,
   buildFallbackInlineImagePlan,
@@ -751,12 +752,19 @@ export function useWorkbenchController({
     closeKnowledgeCardEditor();
   }
 
-  function handleInsertKnowledgeCardIntoArticle(cardIndex: number) {
+  async function handleInsertKnowledgeCardIntoArticle(cardIndex: number) {
     const image = knowledgeImagesByCard.get(cardIndex);
     const card = plannedCards.find((item) => item.index === cardIndex);
     if (!image || !card) return;
 
-    const marker = `![${escapeMarkdownAlt(card.title)}](${image.imageUrl})`;
+    let imageUrl = image.imageUrl;
+    try {
+      imageUrl = await blobToDataUrl(await downloadGeneratedImage(image.imageUrl));
+    } catch {
+      imageUrl = image.imageUrl;
+    }
+
+    const marker = `![${escapeMarkdownAlt(card.title)}](${imageUrl})`;
     if (currentArticle.body.includes(marker)) {
       pushStatus(
         `knowledge-card-${cardIndex}`,
