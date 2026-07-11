@@ -50,6 +50,8 @@ export function Workbench() {
         currentArticle={currentArticle}
         setCurrentArticle={setCurrentArticle}
         currentArticleMeta={currentArticleMeta}
+        outputs={controller.outputs}
+        toggleOutput={controller.toggleOutput}
         splitStrategy={controller.splitStrategy}
         setSplitStrategy={controller.setSplitStrategy}
         minCards={controller.minCards}
@@ -72,6 +74,8 @@ export function Workbench() {
         plannedCards={controller.plannedCards}
         handleReplan={controller.handleReplan}
         latestGeneration={latestGeneration}
+        coverGeneration={controller.coverGeneration}
+        coverSelection={controller.coverSelection}
         knowledgePreset={controller.knowledgePreset}
         knowledgeImagesByCard={controller.knowledgeImagesByCard}
         lockedKnowledgeCardIndexes={controller.lockedKnowledgeCardIndexes}
@@ -87,6 +91,8 @@ export function Workbench() {
         handleReplaceKnowledgeCardClick={controller.handleReplaceKnowledgeCardClick}
         handleRollbackKnowledgeCard={controller.handleRollbackKnowledgeCard}
         handleInsertKnowledgeCardIntoArticle={controller.handleInsertKnowledgeCardIntoArticle}
+        handleSelectCover={controller.handleSelectCover}
+        handleFinalizeCover={controller.handleFinalizeCover}
       />
 
       <ControlTowerSidebar

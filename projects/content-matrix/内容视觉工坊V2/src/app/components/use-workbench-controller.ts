@@ -6,6 +6,9 @@ import {
   ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
   ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE,
   ENTERPRISE_AI_WHITEBOARD_STYLE_NAME,
+  ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
+  ENTERPRISE_AI_WECHAT_COVER_STYLE_GUIDE,
+  ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
   PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
   PAPER_INFO_BOARD_QUOTE_BACKGROUNDS,
   PAPER_INFO_BOARD_REFERENCE_IMAGES,
@@ -789,9 +792,9 @@ export function useWorkbenchController({
       inlineImageStyleName: "极简纸本正文配图",
       inlineImageStyleGuide: PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
       inlineImageReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
-      coverStyleName: "企业AI手绘白板公众号封面",
-      coverStyleGuide: ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE,
-      coverReferenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
+      coverStyleName: ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+      coverStyleGuide: ENTERPRISE_AI_WECHAT_COVER_STYLE_GUIDE,
+      coverReferenceImages: ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
       cardRatio: knowledgePreset?.aspect || "16:9",
       cardWidth: knowledgePreset?.w || 1080,
       cardHeight: knowledgePreset?.h || 608,
@@ -1095,9 +1098,9 @@ export function useWorkbenchController({
       coverPlan = await postPlanCover({
         articleTitle: currentArticle.title,
         rawText: currentArticle.body,
-        coverStyleName: "企业AI手绘白板公众号封面",
-        coverStyleGuide: ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE,
-        coverReferenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
+        coverStyleName: ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+        coverStyleGuide: ENTERPRISE_AI_WECHAT_COVER_STYLE_GUIDE,
+        coverReferenceImages: ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
       });
     } catch (error) {
       pushStatus(
@@ -1133,8 +1136,8 @@ export function useWorkbenchController({
         purposeLabel: "公众号封面大图",
         presetKey: largePreset.k,
         presetLabel: largePreset.label,
-        styleName: "企业AI手绘白板公众号封面",
-        referenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
+        styleName: ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+        referenceImages: ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
         coverLink: {
           index: candidate.index,
           title: candidate.title,

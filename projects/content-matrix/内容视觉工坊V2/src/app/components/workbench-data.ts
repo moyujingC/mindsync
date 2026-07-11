@@ -1,5 +1,9 @@
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
-import { ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES } from "../style-guides";
+import {
+  ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
+  ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+  ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
+} from "../style-guides";
 import type {
   CardPlan,
   InlineImagePlan,
@@ -501,7 +505,7 @@ export function buildGenerationTasks({
     const preset = findPreset(DEFAULT_PRESET_KEYS.wechatCover)?.preset;
     if (preset) {
       const coverTheme = planning.analysis.coverTheme;
-      const fallbackCoverPrompt = `为公众号文章《${articleTitle}》生成 1 张封面图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。封面只做入口图，不做知识卡，不放正文段落。保留清晰标题区，使用企业AI手绘白板风格：温白纸面、低饱和水彩色块、黑色手写标题、虚线框、流程箭头、白板、便签、AI机器人和业务场景人物。文章摘要：${bodyPreview}。`;
+      const fallbackCoverPrompt = `为公众号文章《${articleTitle}》生成 1 张封面图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。画幅 900×383，2.35:1 横版。封面只做入口图，不做知识卡，不放正文段落。标题必须使用文章原标题 \`${articleTitle}\`，放在中心安全区，中心 383×383 裁切后仍完整可读。使用企业AI手绘白板公众号封面风格：温白纸面、淡蓝和浅黄水彩底、黑色手写大标题、虚线路径、城市楼宇、数据库、流程图、组织结构、电脑报表、AI机器人、齿轮和文件夹等企业 AI 图标环绕。文章摘要：${bodyPreview}。`;
       tasks.push({
         articleTitle,
         prompt: coverTheme.promptText?.trim() || fallbackCoverPrompt,
@@ -513,8 +517,8 @@ export function buildGenerationTasks({
         purposeLabel: "公众号封面",
         presetKey: preset.k,
         presetLabel: preset.label,
-        styleName: "企业AI手绘白板公众号封面",
-        referenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
+        styleName: ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+        referenceImages: ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
         coverLink: {
           index: 1,
           title: "公众号封面",

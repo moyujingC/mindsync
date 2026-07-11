@@ -146,6 +146,15 @@ export const ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES: StyleReferenceImage[] =
     note: "参考横版手绘白板、业务场景人物、AI工具图标、流程箭头、虚线框和低饱和水彩分区",
   }));
 
+export const ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES: StyleReferenceImage[] = [
+  {
+    label: "企业AI公众号封面 01",
+    url: "file:///Users/xinran/Downloads/风格/FriwTRQGCYhsdXHMIHhu5e5TX-ab.jpeg",
+    note: "参考 2.35:1 横幅封面、中心超大黑色手写标题、蓝黄水彩底、虚线路径和企业 AI 图标环绕",
+  },
+  ...ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES.slice(0, 8),
+];
+
 export const PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE = `视觉风格：极简纸本信息板 · 小红书知识卡
 
 整体风格：
@@ -220,6 +229,31 @@ export const ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE = `视觉风格：企业AI手�
 
 限制：
 不要真实照片感，不要 3D 渲染，不要科幻霓虹，不要低龄可爱贴纸，不要营销海报，不要把多张图拼在同一画布，不要把文本堆满整张图。`;
+
+export const ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME = "企业AI手绘白板公众号封面";
+
+export const ENTERPRISE_AI_WECHAT_COVER_STYLE_GUIDE = `视觉风格：企业AI手绘白板 · 公众号封面
+
+目标：
+生成公众号头条封面大图，画幅 900×383，比例 2.35:1。封面只负责文章入口和主题气质，不做知识拆解，不放正文段落，不生成多张拼图。
+
+核心构图：
+参考“企业AI落地全景地图”这类横幅封面。标题必须使用文章原标题，用大号黑色手写毛笔字或粗马克笔手写字放在画面中心安全区；中心 383×383 裁切后仍能看到完整标题和主要视觉。标题下方可以有一条蓝灰色手绘弧线或横向笔刷，增强承托感。
+
+视觉语言：
+温白纸面、浅米色纸张纹理、淡蓝和浅黄水彩云朵作为标题底。画面四周用细黑铅笔线稿画企业 AI 场景元素：城市楼宇、数据库、流程图、组织结构、仪表盘、电脑报表、齿轮、文件夹、AI机器人、灯泡、权限盾牌。元素之间用虚线路径和小箭头连接，形成“企业 AI 落地地图”的感觉。
+
+文字规则：
+封面只渲染文章原标题，必须用反引号包裹并原样呈现。不要添加副标题、日期、作者、品牌口号、英文装饰字、水印或额外小字。
+
+配色：
+温白纸、浅米色、低饱和蓝灰、淡黄、灰绿、奶油橙。黑色或深灰线稿做主体。整体安静、专业、有手绘温度，不要科技蓝紫渐变，不要高饱和营销海报。
+
+小封面适配：
+所有重要内容集中在中间安全区。公众号小封面默认从大封面中心裁切，不单独设计小封面。
+
+限制：
+不要真实照片感，不要3D渲染，不要二次元，不要复杂信息图，不要多段正文，不要把标题放到边缘，不要让标题被图标遮挡。`;
 
 export const HANDDRAWN_FLOW_EXPLAINER_STYLE_GUIDE = `视觉风格：手绘流程讲解板
 

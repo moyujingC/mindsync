@@ -40,6 +40,8 @@ export function WorkbenchLeftSidebar({
   currentArticle,
   setCurrentArticle,
   currentArticleMeta,
+  outputs,
+  toggleOutput,
   splitStrategy,
   setSplitStrategy,
   minCards,
@@ -60,6 +62,8 @@ export function WorkbenchLeftSidebar({
   currentArticle: { title: string; body: string };
   setCurrentArticle: (article: { title: string; body: string }) => void;
   currentArticleMeta: string;
+  outputs: { knowledge: boolean; cover: boolean };
+  toggleOutput: (key: "knowledge" | "cover") => void;
   splitStrategy: "auto" | "less" | "more";
   setSplitStrategy: (strategy: "auto" | "less" | "more") => void;
   minCards: number;
@@ -305,18 +309,27 @@ export function WorkbenchLeftSidebar({
           </div>
       </div>
 
-      <SectionLabel className="mt-3">本轮冻结能力</SectionLabel>
+      <SectionLabel className="mt-3">本轮输出</SectionLabel>
       <div
         className="rounded-md px-3.5 py-3"
         style={{
           background: COLORS.surface,
           border: `1px solid ${COLORS.borderSoft}`,
-          color: COLORS.textFaint,
-          fontSize: 11.5,
-          lineHeight: 1.8,
         }}
       >
-        金句卡、封面、正文配图、公众号排版先保留历史入口，本轮不参与主按钮生成。
+        <OutputToggle
+          checked={outputs.knowledge}
+          title="公众号横版图"
+          desc="文章内插图：知识卡或氛围图"
+          onClick={() => toggleOutput("knowledge")}
+        />
+        <div style={{ height: 8 }} />
+        <OutputToggle
+          checked={outputs.cover}
+          title="公众号封面"
+          desc="900×383 头条封面；只勾封面时生成 3 个候选"
+          onClick={() => toggleOutput("cover")}
+        />
       </div>
 
       <div className="mt-5 flex items-center gap-2">
@@ -328,7 +341,7 @@ export function WorkbenchLeftSidebar({
           disabled={isGenerating}
         >
           <Sparkles size={14} strokeWidth={1.6} />
-          {isGenerating ? "生成中..." : "开始生成公众号横版图"}
+          {isGenerating ? "生成中..." : "开始生成"}
         </Btn>
         <Btn variant="ghost" size="lg" onClick={() => void handleReplan()} disabled={isGenerating}>
           <RefreshCw size={12} strokeWidth={1.6} />
@@ -394,7 +407,7 @@ export function WorkbenchLeftSidebar({
         {[
           ["知识卡片", "蓝雾静读"],
           ["正文配图", "留白水墨"],
-          ["公众号封面", "蓝雾静读 · 主图偏左"],
+          ["公众号封面", "企业AI手绘白板 · 地图式横幅"],
         ].map(([key, value], index, arr) => (
           <div
             key={key}
@@ -440,12 +453,55 @@ function formatStatusScope(scope: string) {
   return "当前任务";
 }
 
+function OutputToggle({
+  checked,
+  title,
+  desc,
+  onClick,
+}: {
+  checked: boolean;
+  title: string;
+  desc: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full rounded-md px-3 py-2 flex items-center gap-3 text-left"
+      style={{
+        background: checked ? COLORS.blueTint : COLORS.pageBg,
+        border: `1px solid ${checked ? COLORS.blueMid : COLORS.borderSoft}`,
+      }}
+    >
+      <span
+        className="w-4 h-4 rounded flex items-center justify-center shrink-0"
+        style={{
+          background: checked ? COLORS.blueDeep : COLORS.surface,
+          border: `1px solid ${checked ? COLORS.blueDeep : COLORS.border}`,
+          color: COLORS.surface,
+        }}
+      >
+        {checked ? <CheckCircle2 size={12} strokeWidth={2} /> : null}
+      </span>
+      <span className="flex-1 min-w-0">
+        <span style={{ display: "block", color: COLORS.text, fontSize: 12.5 }}>{title}</span>
+        <span style={{ display: "block", color: COLORS.textFaint, fontSize: 11, marginTop: 1 }}>
+          {desc}
+        </span>
+      </span>
+    </button>
+  );
+}
+
 export function WorkbenchCenterSection({
   currentArticle,
   currentArticleMeta,
   plannedCards,
   handleReplan,
   latestGeneration,
+  coverGeneration,
+  coverSelection,
   knowledgePreset,
   knowledgeImagesByCard,
   lockedKnowledgeCardIndexes,
@@ -461,6 +517,8 @@ export function WorkbenchCenterSection({
   handleReplaceKnowledgeCardClick,
   handleRollbackKnowledgeCard,
   handleInsertKnowledgeCardIntoArticle,
+  handleSelectCover,
+  handleFinalizeCover,
 }: {
   currentArticle: { title: string };
   currentArticleMeta: string;
@@ -472,6 +530,10 @@ export function WorkbenchCenterSection({
     styleName: string;
     images: Array<{ id: string; imageUrl: string }>;
   } | null;
+  coverGeneration: {
+    images: GeneratedImageItem[];
+  } | null;
+  coverSelection: { selectedCoverIndex: number; finalizedCoverIndex?: number | null } | null;
   knowledgePreset?: { aspect: string; w: number; h: number };
   knowledgeImagesByCard: Map<number, any>;
   lockedKnowledgeCardIndexes: number[];
@@ -487,6 +549,8 @@ export function WorkbenchCenterSection({
   handleReplaceKnowledgeCardClick: (cardIndex: number) => void;
   handleRollbackKnowledgeCard: (cardIndex: number) => void;
   handleInsertKnowledgeCardIntoArticle: (cardIndex: number) => void;
+  handleSelectCover: (index: number) => void;
+  handleFinalizeCover: (index: number) => void;
 }) {
   const [inspectionCardIndex, setInspectionCardIndex] = useState<number | null>(null);
   const inspectionCard =
@@ -713,6 +777,8 @@ export function WorkbenchCenterSection({
         <WorkbenchResultsPanel
           currentArticle={currentArticle}
           latestGeneration={latestGeneration}
+          coverGeneration={coverGeneration}
+          coverSelection={coverSelection}
           plannedCards={plannedCards}
           knowledgePreset={knowledgePreset}
           knowledgeImagesByCard={knowledgeImagesByCard}
@@ -729,6 +795,8 @@ export function WorkbenchCenterSection({
           handleReplaceKnowledgeCardClick={handleReplaceKnowledgeCardClick}
           handleRollbackKnowledgeCard={handleRollbackKnowledgeCard}
           handleInsertKnowledgeCardIntoArticle={handleInsertKnowledgeCardIntoArticle}
+          handleSelectCover={handleSelectCover}
+          handleFinalizeCover={handleFinalizeCover}
         />
       </div>
     </section>
@@ -844,6 +912,8 @@ export function WorkbenchEditorDialog({
 function WorkbenchResultsPanel({
   currentArticle,
   latestGeneration,
+  coverGeneration,
+  coverSelection,
   plannedCards,
   knowledgePreset,
   knowledgeImagesByCard,
@@ -860,6 +930,8 @@ function WorkbenchResultsPanel({
   handleReplaceKnowledgeCardClick,
   handleRollbackKnowledgeCard,
   handleInsertKnowledgeCardIntoArticle,
+  handleSelectCover,
+  handleFinalizeCover,
 }: any) {
   const [previewImage, setPreviewImage] = useState<{
     imageUrl: string;
@@ -869,6 +941,12 @@ function WorkbenchResultsPanel({
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [isExportingReleasePack, setIsExportingReleasePack] = useState(false);
   const [exportFeedback, setExportFeedback] = useState<string>("");
+  const coverLargeImages = (coverGeneration?.images || []).filter(
+    (image: GeneratedImageItem) => (image.coverLink?.variant || "large") === "large"
+  );
+  const selectedCoverIndex = coverSelection?.selectedCoverIndex ?? 0;
+  const finalizedCoverIndex = coverSelection?.finalizedCoverIndex ?? null;
+  const selectedCoverImage = coverLargeImages[selectedCoverIndex] ?? coverLargeImages[0] ?? null;
   const finalizedKnowledgeImages = plannedCards
     .map((card) => {
       const status = knowledgeCardStatuses[String(card.index)];
@@ -897,6 +975,15 @@ function WorkbenchResultsPanel({
   const exportKnowledgeImages =
     finalizedKnowledgeImages.length > 0 ? finalizedKnowledgeImages : fallbackKnowledgeImages;
   const releaseAssets = [
+    selectedCoverImage
+      ? {
+          kind: "cover" as const,
+          imageUrl: selectedCoverImage.imageUrl,
+          sourceImage: selectedCoverImage,
+          filename: "release-wechat-cover.png",
+          label: `公众号封面 · ${selectedCoverImage.coverLink?.title || currentArticle.title}`,
+        }
+      : null,
     ...exportKnowledgeImages.map((item: any) => ({
       kind: item.kind,
       imageUrl: item.imageUrl,
@@ -911,6 +998,7 @@ function WorkbenchResultsPanel({
     label: string;
   }>;
   const downloadableImages = [
+    ...(coverLargeImages as Array<{ imageUrl: string }>),
     ...(Array.from(knowledgeImagesByCard.values()) as Array<{ imageUrl: string }>),
   ];
 
@@ -999,12 +1087,13 @@ function WorkbenchResultsPanel({
       const manifestLines = [
         `文章标题：${currentArticle.title}`,
         `导出时间：${new Date().toLocaleString("zh-CN", { hour12: false })}`,
+        `公众号封面：${selectedCoverImage ? "已选 1 张" : "未生成"}`,
         `公众号横版图：${
           finalizedKnowledgeImages.length > 0
             ? `定稿 ${finalizedKnowledgeImages.length} 张`
             : `未定稿，改为导出当前结果 ${exportKnowledgeImages.length} 张`
         }`,
-        "本轮范围：导出公众号横版图包。金句卡、封面、公众号排版暂缓。",
+        "本轮范围：导出公众号封面和公众号横版图包。金句卡、公众号排版暂缓。",
         "",
         "素材清单：",
         ...releaseAssets.map((item, index) => `${index + 1}. ${item.label} -> ${item.filename}`),
@@ -1047,7 +1136,7 @@ function WorkbenchResultsPanel({
             02 / RESULTS
           </div>
           <div className="mt-0.5" style={{ color: COLORS.text, fontSize: 16, letterSpacing: "0.02em" }}>
-            公众号横版图结果与导出
+            公众号视觉结果与导出
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -1078,9 +1167,10 @@ function WorkbenchResultsPanel({
         }}
       >
         <div style={{ color: COLORS.textFaint, fontSize: 11.5 }}>
-          导出会优先带出已定稿公众号横版图；如果还没定稿，会导出当前可用图，并附一份素材清单。
+          导出会带出当前选中的公众号封面，并优先带出已定稿公众号横版图。
         </div>
         <div className="flex items-center gap-2 text-right" style={{ color: COLORS.textMid, fontSize: 11.5 }}>
+          <span>封面 {selectedCoverImage ? 1 : 0}</span>
           <span>公众号横版图 {exportKnowledgeImages.length}</span>
         </div>
       </div>
@@ -1140,6 +1230,15 @@ function WorkbenchResultsPanel({
           </div>
         </div>
       ) : null}
+
+      <CoverResults
+        coverImages={coverLargeImages}
+        selectedCoverIndex={selectedCoverIndex}
+        finalizedCoverIndex={finalizedCoverIndex}
+        onSelect={handleSelectCover}
+        onFinalize={handleFinalizeCover}
+        onPreview={handlePreviewImage}
+      />
 
       <KnowledgeCardResults
         plannedCards={plannedCards}
@@ -1217,6 +1316,91 @@ function WorkbenchResultsPanel({
         </DialogContent>
       </Dialog>
     </Panel>
+  );
+}
+
+function CoverResults({
+  coverImages,
+  selectedCoverIndex,
+  finalizedCoverIndex,
+  onSelect,
+  onFinalize,
+  onPreview,
+}: {
+  coverImages: GeneratedImageItem[];
+  selectedCoverIndex: number;
+  finalizedCoverIndex: number | null;
+  onSelect: (index: number) => void;
+  onFinalize: (index: number) => void;
+  onPreview: (imageUrl: string, alt: string, sourceImage?: GeneratedImageItem) => void;
+}) {
+  if (coverImages.length === 0) return null;
+
+  return (
+    <div className="mb-5">
+      <ResultRow label="公众号封面" size="2.35:1 · 900×383" count={coverImages.length} />
+      <div className="grid grid-cols-3 gap-3 mt-2.5">
+        {coverImages.map((image, index) => {
+          const selected = selectedCoverIndex === index;
+          const finalized = finalizedCoverIndex === index;
+          return (
+            <div
+              key={image.id}
+              className="rounded-md overflow-hidden"
+              style={{
+                border: `1px solid ${selected ? COLORS.blueMid : COLORS.borderSoft}`,
+                background: COLORS.surface,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  onPreview(
+                    image.imageUrl,
+                    `公众号封面 ${index + 1}`,
+                    image
+                  )
+                }
+                className="block w-full"
+                style={{ cursor: "zoom-in" }}
+              >
+                <img
+                  src={image.imageUrl}
+                  alt={`公众号封面 ${index + 1}`}
+                  style={{
+                    width: "100%",
+                    aspectRatio: "900 / 383",
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+              </button>
+              <div className="px-2.5 py-2 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <Tag tone={finalized ? "success" : selected ? "blue" : "warm"}>
+                    {finalized ? "已定稿" : selected ? "已选中" : `候选 ${index + 1}`}
+                  </Tag>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => onSelect(index)}
+                    style={{ color: COLORS.textMuted, fontSize: 10.5 }}
+                  >
+                    选择
+                  </button>
+                  <button
+                    onClick={() => onFinalize(index)}
+                    style={{ color: COLORS.success, fontSize: 10.5 }}
+                  >
+                    定稿
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
