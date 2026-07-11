@@ -26,9 +26,6 @@ export function Workbench() {
   } = useWorkspace();
 
   const [inputMode, setInputMode] = useState<"upload" | "paste">("paste");
-  const [openCovers, setOpenCovers] = useState(false);
-  const [openIllus, setOpenIllus] = useState(false);
-  const [openQuotes, setOpenQuotes] = useState(false);
 
   const controller = useWorkbenchController({
     currentArticle,
@@ -55,8 +52,6 @@ export function Workbench() {
         currentArticleMeta={currentArticleMeta}
         outputs={controller.outputs}
         toggleOutput={controller.toggleOutput}
-        coverThumbMode={controller.coverThumbMode}
-        setCoverThumbMode={controller.setCoverThumbMode}
         splitStrategy={controller.splitStrategy}
         setSplitStrategy={controller.setSplitStrategy}
         minCards={controller.minCards}
@@ -77,17 +72,10 @@ export function Workbench() {
         currentArticle={currentArticle}
         currentArticleMeta={currentArticleMeta}
         plannedCards={controller.plannedCards}
-        plannedQuotes={controller.plannedQuotes}
-        selectedQuotes={controller.selectedQuotes}
-        toggleQuote={controller.toggleQuote}
-        openQuotes={openQuotes}
-        setOpenQuotes={setOpenQuotes}
-        openCovers={openCovers}
-        setOpenCovers={setOpenCovers}
-        openIllus={openIllus}
-        setOpenIllus={setOpenIllus}
         handleReplan={controller.handleReplan}
         latestGeneration={latestGeneration}
+        coverGeneration={controller.coverGeneration}
+        coverSelection={controller.coverSelection}
         knowledgePreset={controller.knowledgePreset}
         knowledgeImagesByCard={controller.knowledgeImagesByCard}
         lockedKnowledgeCardIndexes={controller.lockedKnowledgeCardIndexes}
@@ -102,20 +90,9 @@ export function Workbench() {
         handleRegenerateKnowledgeCard={controller.handleRegenerateKnowledgeCard}
         handleReplaceKnowledgeCardClick={controller.handleReplaceKnowledgeCardClick}
         handleRollbackKnowledgeCard={controller.handleRollbackKnowledgeCard}
-        quotePreset={controller.quotePreset}
-        quoteGeneration={controller.quoteGeneration}
-        quoteGenerationSelection={controller.quoteGenerationSelection}
-        replanRevision={controller.replanRevision}
-        handleGenerateQuoteCard={controller.handleGenerateQuoteCard}
-        coverPreset={controller.coverPreset}
-        coverGeneration={controller.coverGeneration}
-        coverSelection={controller.coverSelection}
-        coverThumbMode={controller.coverThumbMode}
+        handleInsertKnowledgeCardIntoArticle={controller.handleInsertKnowledgeCardIntoArticle}
         handleSelectCover={controller.handleSelectCover}
         handleFinalizeCover={controller.handleFinalizeCover}
-        inlinePreset={controller.inlinePreset}
-        plannedInlineImages={controller.plannedInlineImages}
-        inlineGeneration={controller.inlineGeneration}
       />
 
       <ControlTowerSidebar
@@ -125,7 +102,6 @@ export function Workbench() {
         outputSummaries={controller.controlTowerOutputs}
         latestGenerationTime={controller.latestGenerationTime}
         latestLogText={controller.latestLogText}
-        onOpenWechat={() => setActiveTab("wechat")}
       />
 
       <WorkbenchEditorDialog
@@ -135,6 +111,8 @@ export function Workbench() {
         setEditingCardTitle={controller.setEditingCardTitle}
         editingCardSummary={controller.editingCardSummary}
         setEditingCardSummary={controller.setEditingCardSummary}
+        editingCardPrompt={controller.editingCardPrompt}
+        setEditingCardPrompt={controller.setEditingCardPrompt}
         saveKnowledgeCardDraft={controller.saveKnowledgeCardDraft}
         handleEditAndRegenerateKnowledgeCard={controller.handleEditAndRegenerateKnowledgeCard}
       />

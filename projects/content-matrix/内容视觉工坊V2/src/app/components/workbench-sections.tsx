@@ -3,18 +3,13 @@ import JSZip from "jszip";
 import {
   ArrowUpRight,
   CheckCircle2,
-  ChevronDown,
   ChevronRight,
   ClipboardPaste,
-  Download,
   ExternalLink,
   FileText,
   Image as ImageIcon,
-  Layout,
   Minus,
-  Pencil,
   Plus,
-  Quote,
   RefreshCw,
   Sparkles,
   Upload,
@@ -29,12 +24,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { COVER_DRAFTS, ILLUSTRATIONS } from "./workbench-data";
 import { KnowledgeCardResults, ResultRow } from "./workbench-panels";
 import type { CardPlan } from "../content-planning";
 import type {
   GeneratedImageItem,
-  WorkbenchCoverThumbMode,
   WorkbenchImportedMarkdownMeta,
   WorkbenchStatusMessage,
 } from "../workspace";
@@ -49,8 +42,6 @@ export function WorkbenchLeftSidebar({
   currentArticleMeta,
   outputs,
   toggleOutput,
-  coverThumbMode,
-  setCoverThumbMode,
   splitStrategy,
   setSplitStrategy,
   minCards,
@@ -71,18 +62,8 @@ export function WorkbenchLeftSidebar({
   currentArticle: { title: string; body: string };
   setCurrentArticle: (article: { title: string; body: string }) => void;
   currentArticleMeta: string;
-  outputs: {
-    knowledge: boolean;
-    quote: boolean;
-    cover: boolean;
-    inline: boolean;
-    layout: boolean;
-  };
-  toggleOutput: (
-    key: "knowledge" | "quote" | "cover" | "inline" | "layout"
-  ) => void;
-  coverThumbMode: WorkbenchCoverThumbMode;
-  setCoverThumbMode: (mode: WorkbenchCoverThumbMode) => void;
+  outputs: { knowledge: boolean; cover: boolean };
+  toggleOutput: (key: "knowledge" | "cover") => void;
   splitStrategy: "auto" | "less" | "more";
   setSplitStrategy: (strategy: "auto" | "less" | "more") => void;
   minCards: number;
@@ -222,113 +203,54 @@ export function WorkbenchLeftSidebar({
       </div>
 
       <div className="mt-6">
-        <Step kicker="02" title="本次输出类型" />
+        <Step kicker="02" title="知识卡拆解" />
       </div>
 
-      <SectionLabel>本次生成内容</SectionLabel>
+      <SectionLabel>V2.8 主链路</SectionLabel>
       <div
-        className="rounded-md overflow-hidden"
+        className="rounded-md px-3.5 py-3"
         style={{
           background: COLORS.surface,
           border: `1px solid ${COLORS.border}`,
+          color: COLORS.textMid,
+          fontSize: 12,
+          lineHeight: 1.65,
         }}
       >
-        {[
-          { k: "knowledge" as const, l: "知识卡片", n: "自动", auto: true },
-          { k: "quote" as const, l: "金句底图", n: "按勾选" },
-          { k: "cover" as const, l: "公众号封面", n: "3 组" },
-          { k: "inline" as const, l: "正文配图", n: "3" },
-        ].map((item, index, arr) => (
-          <CompactToggle
-            key={item.k}
-            label={item.l}
-            count={item.n}
-            auto={item.auto}
-            checked={outputs[item.k]}
-            onChange={() => toggleOutput(item.k)}
-            last={index === arr.length - 1}
+        <div className="flex items-start gap-2">
+          <CheckCircle2
+            size={14}
+            strokeWidth={1.7}
+            color={COLORS.success}
+            style={{ marginTop: 2 }}
           />
-        ))}
-      </div>
-
-      {outputs.cover ? (
-        <div
-          className="mt-2 rounded-md px-3.5 py-3"
-          style={{
-            background: COLORS.surface,
-            border: `1px solid ${COLORS.borderSoft}`,
-          }}
-        >
-          <div className="mb-2" style={{ color: COLORS.textFaint, fontSize: 11 }}>
-            公众号小封面
-          </div>
-          <div className="flex p-0.5 rounded" style={{ background: COLORS.borderSoft }}>
-            {[
-              { k: "crop" as const, l: "从大封面裁切" },
-              { k: "separate" as const, l: "单独生成小图" },
-            ].map((item) => {
-              const active = coverThumbMode === item.k;
-              return (
-                <button
-                  key={item.k}
-                  onClick={() => setCoverThumbMode(item.k)}
-                  className="flex-1 h-6 rounded text-center"
-                  style={{
-                    background: active ? COLORS.surface : "transparent",
-                    color: active ? COLORS.text : COLORS.textMuted,
-                    fontSize: 11.5,
-                    boxShadow: active ? "0 1px 1.5px rgba(43,55,72,0.05)" : "none",
-                  }}
-                >
-                  {item.l}
-                </button>
-              );
-            })}
-          </div>
-          <div className="mt-2" style={{ color: COLORS.textFaint, fontSize: 10.5, lineHeight: 1.5 }}>
-            {coverThumbMode === "crop"
-              ? "默认使用大封面中心 1:1 裁切，要求标题位于中心安全区。"
-              : "沿用程序生成的小封面方案，适合以后单独打磨。"}
+          <div>
+            <div style={{ color: COLORS.text, fontSize: 13 }}>本轮生成公众号横版图</div>
+            <div style={{ marginTop: 2 }}>
+              导入文章后，先确认 3-5 张知识卡计划，再生成、重生成和导出。
+            </div>
           </div>
         </div>
-      ) : null}
+      </div>
 
-      <SectionLabel className="mt-3">后续处理</SectionLabel>
       <div
-        className="rounded-md overflow-hidden"
+        className="mt-2 rounded-md px-3.5 py-3"
         style={{
           background: COLORS.surface,
           border: `1px solid ${COLORS.borderSoft}`,
         }}
       >
-        <CompactToggle
-          label="公众号排版"
-          count="—"
-          checked={outputs.layout}
-          onChange={() => toggleOutput("layout")}
-          last
-        />
-      </div>
-
-      {outputs.knowledge ? (
-        <div
-          className="mt-2 rounded-md px-3.5 py-3"
-          style={{
-            background: COLORS.surface,
-            border: `1px solid ${COLORS.borderSoft}`,
-          }}
-        >
-          <div className="flex items-start gap-1.5">
-            <Wand2
-              size={11}
-              strokeWidth={1.6}
-              color={COLORS.blue}
-              style={{ marginTop: 3 }}
-            />
-            <span style={{ color: COLORS.textMid, fontSize: 11.5, lineHeight: 1.55 }}>
-              由模型自动判断拆分张数，下面两项用于约束模型，而非手工指定。
-            </span>
-          </div>
+        <div className="flex items-start gap-1.5">
+          <Wand2
+            size={11}
+            strokeWidth={1.6}
+            color={COLORS.blue}
+            style={{ marginTop: 3 }}
+          />
+          <span style={{ color: COLORS.textMid, fontSize: 11.5, lineHeight: 1.55 }}>
+            由模型自动判断拆分张数，下面两项用于约束模型，而非手工指定。
+          </span>
+        </div>
 
           <div className="mt-3">
             <div className="mb-1.5" style={{ color: COLORS.textFaint, fontSize: 11 }}>
@@ -371,22 +293,44 @@ export function WorkbenchLeftSidebar({
               <RangeField
                 label="最少"
                 value={minCards}
-                onMinus={() => setMinCards(Math.max(1, minCards - 1))}
+                onMinus={() => setMinCards(Math.max(3, minCards - 1))}
                 onPlus={() => setMinCards(Math.min(maxCards - 1, minCards + 1))}
               />
               <RangeField
                 label="最多"
                 value={maxCards}
                 onMinus={() => setMaxCards(Math.max(minCards + 1, maxCards - 1))}
-                onPlus={() => setMaxCards(Math.min(8, maxCards + 1))}
+                onPlus={() => setMaxCards(Math.min(5, maxCards + 1))}
               />
             </div>
             <div className="mt-1.5" style={{ color: COLORS.textFaint, fontSize: 10.5 }}>
               系统将把最终张数控制在 {minCards} – {maxCards} 张之间
             </div>
           </div>
-        </div>
-      ) : null}
+      </div>
+
+      <SectionLabel className="mt-3">本轮输出</SectionLabel>
+      <div
+        className="rounded-md px-3.5 py-3"
+        style={{
+          background: COLORS.surface,
+          border: `1px solid ${COLORS.borderSoft}`,
+        }}
+      >
+        <OutputToggle
+          checked={outputs.knowledge}
+          title="公众号横版图"
+          desc="文章内插图：知识卡或氛围图"
+          onClick={() => toggleOutput("knowledge")}
+        />
+        <div style={{ height: 8 }} />
+        <OutputToggle
+          checked={outputs.cover}
+          title="公众号封面"
+          desc="900×383 头条封面；只勾封面时生成 3 个候选"
+          onClick={() => toggleOutput("cover")}
+        />
+      </div>
 
       <div className="mt-5 flex items-center gap-2">
         <Btn
@@ -405,7 +349,7 @@ export function WorkbenchLeftSidebar({
         </Btn>
       </div>
       <div className="mt-2 text-center" style={{ color: COLORS.textFaint, fontSize: 11 }}>
-        预计 ≈ {Math.max(24, estimatedCredits * 8)}s · 消耗 {estimatedCredits} 张额度
+        预计 ≈ {Math.max(30, estimatedCredits * 25)}s · 约 {estimatedCredits} 个生成任务
       </div>
       {statusState ? (
         <div
@@ -463,7 +407,7 @@ export function WorkbenchLeftSidebar({
         {[
           ["知识卡片", "蓝雾静读"],
           ["正文配图", "留白水墨"],
-          ["公众号封面", "蓝雾静读 · 主图偏左"],
+          ["公众号封面", "企业AI手绘白板 · 地图式横幅"],
         ].map(([key, value], index, arr) => (
           <div
             key={key}
@@ -509,21 +453,55 @@ function formatStatusScope(scope: string) {
   return "当前任务";
 }
 
+function OutputToggle({
+  checked,
+  title,
+  desc,
+  onClick,
+}: {
+  checked: boolean;
+  title: string;
+  desc: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full rounded-md px-3 py-2 flex items-center gap-3 text-left"
+      style={{
+        background: checked ? COLORS.blueTint : COLORS.pageBg,
+        border: `1px solid ${checked ? COLORS.blueMid : COLORS.borderSoft}`,
+      }}
+    >
+      <span
+        className="w-4 h-4 rounded flex items-center justify-center shrink-0"
+        style={{
+          background: checked ? COLORS.blueDeep : COLORS.surface,
+          border: `1px solid ${checked ? COLORS.blueDeep : COLORS.border}`,
+          color: COLORS.surface,
+        }}
+      >
+        {checked ? <CheckCircle2 size={12} strokeWidth={2} /> : null}
+      </span>
+      <span className="flex-1 min-w-0">
+        <span style={{ display: "block", color: COLORS.text, fontSize: 12.5 }}>{title}</span>
+        <span style={{ display: "block", color: COLORS.textFaint, fontSize: 11, marginTop: 1 }}>
+          {desc}
+        </span>
+      </span>
+    </button>
+  );
+}
+
 export function WorkbenchCenterSection({
   currentArticle,
   currentArticleMeta,
   plannedCards,
-  plannedQuotes,
-  selectedQuotes,
-  toggleQuote,
-  openQuotes,
-  setOpenQuotes,
-  openCovers,
-  setOpenCovers,
-  openIllus,
-  setOpenIllus,
   handleReplan,
   latestGeneration,
+  coverGeneration,
+  coverSelection,
   knowledgePreset,
   knowledgeImagesByCard,
   lockedKnowledgeCardIndexes,
@@ -538,33 +516,13 @@ export function WorkbenchCenterSection({
   handleRegenerateKnowledgeCard,
   handleReplaceKnowledgeCardClick,
   handleRollbackKnowledgeCard,
-  quotePreset,
-  quoteGeneration,
-  quoteGenerationSelection,
-  replanRevision,
-  handleGenerateQuoteCard,
-  coverPreset,
-  coverGeneration,
-  coverSelection,
-  coverThumbMode,
+  handleInsertKnowledgeCardIntoArticle,
   handleSelectCover,
   handleFinalizeCover,
-  inlinePreset,
-  plannedInlineImages,
-  inlineGeneration,
 }: {
   currentArticle: { title: string };
   currentArticleMeta: string;
   plannedCards: CardPlan[];
-  plannedQuotes: string[];
-  selectedQuotes: number[];
-  toggleQuote: (index: number) => void;
-  openQuotes: boolean;
-  setOpenQuotes: React.Dispatch<React.SetStateAction<boolean>>;
-  openCovers: boolean;
-  setOpenCovers: React.Dispatch<React.SetStateAction<boolean>>;
-  openIllus: boolean;
-  setOpenIllus: React.Dispatch<React.SetStateAction<boolean>>;
   handleReplan: () => Promise<unknown>;
   latestGeneration: {
     title: string;
@@ -572,6 +530,10 @@ export function WorkbenchCenterSection({
     styleName: string;
     images: Array<{ id: string; imageUrl: string }>;
   } | null;
+  coverGeneration: {
+    images: GeneratedImageItem[];
+  } | null;
+  coverSelection: { selectedCoverIndex: number; finalizedCoverIndex?: number | null } | null;
   knowledgePreset?: { aspect: string; w: number; h: number };
   knowledgeImagesByCard: Map<number, any>;
   lockedKnowledgeCardIndexes: number[];
@@ -586,34 +548,17 @@ export function WorkbenchCenterSection({
   handleRegenerateKnowledgeCard: (cardIndex: number) => Promise<void>;
   handleReplaceKnowledgeCardClick: (cardIndex: number) => void;
   handleRollbackKnowledgeCard: (cardIndex: number) => void;
-  quotePreset?: { w: number; h: number };
-  quoteGeneration?: { images: Array<{ imageUrl: string }> };
-  quoteGenerationSelection?: {
-    selectedQuoteIndexes: number[];
-    selectedQuoteTexts: string[];
-    generatedAtPlanningRevision: number;
-  } | null;
-  replanRevision: number;
-  handleGenerateQuoteCard: () => Promise<void>;
-  coverPreset?: { w: number; h: number };
-  coverGeneration?: { images: Array<{ imageUrl: string }> };
-  coverSelection?: {
-    selectedCoverIndex: number;
-    finalizedCoverIndex?: number | null;
-    updatedAt: string;
-  } | null;
-  coverThumbMode: WorkbenchCoverThumbMode;
+  handleInsertKnowledgeCardIntoArticle: (cardIndex: number) => void;
   handleSelectCover: (index: number) => void;
   handleFinalizeCover: (index: number) => void;
-  inlinePreset?: { w: number; h: number };
-  plannedInlineImages: Array<any>;
-  inlineGeneration?: { images: Array<{ imageUrl: string }> };
 }) {
   const [inspectionCardIndex, setInspectionCardIndex] = useState<number | null>(null);
   const inspectionCard =
     inspectionCardIndex == null
       ? null
       : plannedCards.find((card) => card.index === inspectionCardIndex) || null;
+  const articleVisualType = plannedCards[0]?.visualType === "atmosphere" ? "横版氛围图" : "横版知识卡";
+  const articleVisualRationale = plannedCards[0]?.visualRationale;
 
   return (
     <section className="overflow-y-auto px-9 py-6">
@@ -643,7 +588,7 @@ export function WorkbenchCenterSection({
             <div className="flex items-center gap-3" style={{ color: COLORS.textFaint, fontSize: 12 }}>
               <span className="flex items-center gap-1.5" style={{ color: COLORS.textMid }}>
                 <Wand2 size={11} strokeWidth={1.6} color={COLORS.blue} />
-                本次生成 {plannedCards.length} 张知识卡 · 根据文章结构自动拆分
+                本次生成 {plannedCards.length} 张公众号横版图 · 本篇图型二选一
               </span>
               <button
                 onClick={() => void handleReplan()}
@@ -656,6 +601,19 @@ export function WorkbenchCenterSection({
           </div>
 
           <div className="px-5 pb-5">
+            <div
+              className="mb-3 rounded-md px-3.5 py-2.5"
+              style={{
+                background: COLORS.blueTint,
+                border: `1px solid ${COLORS.borderSoft}`,
+                color: COLORS.textMid,
+                fontSize: 12,
+                lineHeight: 1.6,
+              }}
+            >
+              <span style={{ color: COLORS.blueDeep }}>本篇统一图型：{articleVisualType}</span>
+              {articleVisualRationale ? ` · ${articleVisualRationale}` : ""}
+            </div>
             <div className="space-y-2">
               {plannedCards.map((card) => (
                 <div
@@ -682,6 +640,9 @@ export function WorkbenchCenterSection({
                     <div style={{ color: COLORS.textMuted, fontSize: 12, marginTop: 2 }}>
                       {card.summary}
                     </div>
+                    <div style={{ color: COLORS.textFaint, fontSize: 11, marginTop: 4 }}>
+                      跟随本篇统一图型：{articleVisualType}
+                    </div>
                     <button
                       onClick={() => setInspectionCardIndex(card.index)}
                       className="mt-2 flex items-center gap-1"
@@ -707,7 +668,7 @@ export function WorkbenchCenterSection({
             <DialogHeader>
               <DialogTitle>
                 {inspectionCard
-                  ? `知识卡 ${String(inspectionCard.index).padStart(2, "0")} · 完整拆解`
+                  ? `公众号横版图 ${String(inspectionCard.index).padStart(2, "0")} · 完整拆解`
                   : "完整拆解"}
               </DialogTitle>
               <DialogDescription>
@@ -719,6 +680,15 @@ export function WorkbenchCenterSection({
                 <div>
                   <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>标题</div>
                   <div style={{ color: COLORS.text, fontSize: 15 }}>{inspectionCard.title}</div>
+                </div>
+                <div>
+                  <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>
+                    推荐图型
+                  </div>
+                  <div style={{ color: COLORS.textMid, fontSize: 13.5, lineHeight: 1.7 }}>
+                    {inspectionCard.visualType === "atmosphere" ? "横版氛围图" : "横版知识卡"}
+                    {inspectionCard.visualRationale ? ` · ${inspectionCard.visualRationale}` : ""}
+                  </div>
                 </div>
                 <div>
                   <div style={{ color: COLORS.textFaint, fontSize: 11, marginBottom: 6 }}>摘要</div>
@@ -804,75 +774,11 @@ export function WorkbenchCenterSection({
           </DialogContent>
         </Dialog>
 
-        <QuoteSummaryCard
-          plannedQuotes={plannedQuotes}
-          selectedQuotes={selectedQuotes}
-          toggleQuote={toggleQuote}
-          openQuotes={openQuotes}
-          setOpenQuotes={setOpenQuotes}
-          handleGenerateQuoteCard={handleGenerateQuoteCard}
-        />
-
-        <div className="space-y-2 mb-3">
-          <SecondaryRow
-            icon={<ImageIcon size={13} strokeWidth={1.6} color={COLORS.textMuted} />}
-            label="封面主题草案"
-            count={3}
-            open={openCovers}
-            onToggle={() => setOpenCovers(!openCovers)}
-          >
-            <div className="grid grid-cols-3 gap-2 mt-3">
-              {COVER_DRAFTS.map((item, index) => (
-                <div
-                  key={index}
-                  className="rounded-md overflow-hidden flex items-center gap-2.5 pr-2"
-                  style={{
-                    background: COLORS.surfaceAlt,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                  }}
-                >
-                  <FoggyArt hue={index} variant={item.variant} style={{ width: 56, height: 44 }} />
-                  <div className="flex-1 min-w-0 py-1">
-                    <div style={{ color: COLORS.text, fontSize: 12 }} className="truncate">
-                      {item.title}
-                    </div>
-                    <div style={{ color: COLORS.textFaint, fontSize: 10.5 }} className="truncate">
-                      {item.note}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </SecondaryRow>
-
-          <SecondaryRow
-            icon={<Layout size={13} strokeWidth={1.6} color={COLORS.textMuted} />}
-            label="正文配图建议"
-            count={3}
-            open={openIllus}
-            onToggle={() => setOpenIllus(!openIllus)}
-          >
-            <div className="space-y-1.5 mt-3">
-              {ILLUSTRATIONS.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 px-3 py-2 rounded-md"
-                  style={{
-                    background: COLORS.surfaceAlt,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                  }}
-                >
-                  <FoggyArt hue={index + 2} variant={item.variant} style={{ width: 36, height: 28 }} />
-                  <span style={{ color: COLORS.text, fontSize: 12.5 }}>{item.title}</span>
-                </div>
-              ))}
-            </div>
-          </SecondaryRow>
-        </div>
-
         <WorkbenchResultsPanel
           currentArticle={currentArticle}
           latestGeneration={latestGeneration}
+          coverGeneration={coverGeneration}
+          coverSelection={coverSelection}
           plannedCards={plannedCards}
           knowledgePreset={knowledgePreset}
           knowledgeImagesByCard={knowledgeImagesByCard}
@@ -888,22 +794,9 @@ export function WorkbenchCenterSection({
           handleRegenerateKnowledgeCard={handleRegenerateKnowledgeCard}
           handleReplaceKnowledgeCardClick={handleReplaceKnowledgeCardClick}
           handleRollbackKnowledgeCard={handleRollbackKnowledgeCard}
-          quotePreset={quotePreset}
-          quoteGeneration={quoteGeneration}
-          quoteGenerationSelection={quoteGenerationSelection}
-          replanRevision={replanRevision}
-          plannedQuotes={plannedQuotes}
-          selectedQuotes={selectedQuotes}
-          handleGenerateQuoteCard={handleGenerateQuoteCard}
-          coverPreset={coverPreset}
-          coverGeneration={coverGeneration}
-          coverSelection={coverSelection}
-          coverThumbMode={coverThumbMode}
+          handleInsertKnowledgeCardIntoArticle={handleInsertKnowledgeCardIntoArticle}
           handleSelectCover={handleSelectCover}
           handleFinalizeCover={handleFinalizeCover}
-          inlinePreset={inlinePreset}
-          plannedInlineImages={plannedInlineImages}
-          inlineGeneration={inlineGeneration}
         />
       </div>
     </section>
@@ -917,6 +810,8 @@ export function WorkbenchEditorDialog({
   setEditingCardTitle,
   editingCardSummary,
   setEditingCardSummary,
+  editingCardPrompt,
+  setEditingCardPrompt,
   saveKnowledgeCardDraft,
   handleEditAndRegenerateKnowledgeCard,
 }: {
@@ -926,6 +821,8 @@ export function WorkbenchEditorDialog({
   setEditingCardTitle: React.Dispatch<React.SetStateAction<string>>;
   editingCardSummary: string;
   setEditingCardSummary: React.Dispatch<React.SetStateAction<string>>;
+  editingCardPrompt: string;
+  setEditingCardPrompt: React.Dispatch<React.SetStateAction<string>>;
   saveKnowledgeCardDraft: () => void;
   handleEditAndRegenerateKnowledgeCard: () => Promise<void>;
 }) {
@@ -938,9 +835,9 @@ export function WorkbenchEditorDialog({
     >
       <DialogContent className="max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>编辑知识卡文案</DialogTitle>
+          <DialogTitle>编辑知识卡提示词</DialogTitle>
           <DialogDescription>
-            修改标题和摘要后，可以直接保存或保存并重生成当前卡片。
+            可以改标题、摘要和完整绘图提示词；保存并重生成只影响当前单张卡片。
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
@@ -975,6 +872,26 @@ export function WorkbenchEditorDialog({
               }}
             />
           </div>
+          <div>
+            <div style={{ color: COLORS.textMid, fontSize: 12, marginBottom: 6 }}>
+              卡片提示词
+            </div>
+            <textarea
+              value={editingCardPrompt}
+              onChange={(event) => setEditingCardPrompt(event.target.value)}
+              className="w-full px-3 py-2 rounded-md outline-none resize-none"
+              style={{
+                height: 220,
+                background: COLORS.pageBg,
+                border: `1px solid ${COLORS.border}`,
+                color: COLORS.text,
+                fontSize: 12,
+                lineHeight: 1.65,
+                fontFamily:
+                  'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace',
+              }}
+            />
+          </div>
         </div>
         <DialogFooter>
           <Btn variant="ghost" size="md" onClick={closeKnowledgeCardEditor}>
@@ -995,6 +912,8 @@ export function WorkbenchEditorDialog({
 function WorkbenchResultsPanel({
   currentArticle,
   latestGeneration,
+  coverGeneration,
+  coverSelection,
   plannedCards,
   knowledgePreset,
   knowledgeImagesByCard,
@@ -1010,22 +929,9 @@ function WorkbenchResultsPanel({
   handleRegenerateKnowledgeCard,
   handleReplaceKnowledgeCardClick,
   handleRollbackKnowledgeCard,
-  quotePreset,
-  quoteGeneration,
-  quoteGenerationSelection,
-  replanRevision,
-  plannedQuotes,
-  selectedQuotes,
-  handleGenerateQuoteCard,
-  coverPreset,
-  coverGeneration,
-  coverSelection,
-  coverThumbMode,
+  handleInsertKnowledgeCardIntoArticle,
   handleSelectCover,
   handleFinalizeCover,
-  inlinePreset,
-  plannedInlineImages,
-  inlineGeneration,
 }: any) {
   const [previewImage, setPreviewImage] = useState<{
     imageUrl: string;
@@ -1035,26 +941,12 @@ function WorkbenchResultsPanel({
   const [isDownloadingAll, setIsDownloadingAll] = useState(false);
   const [isExportingReleasePack, setIsExportingReleasePack] = useState(false);
   const [exportFeedback, setExportFeedback] = useState<string>("");
-  const currentQuoteTexts = selectedQuotes
-    .map((index: number) => plannedQuotes[index])
-    .filter(Boolean);
-  const generatedQuoteTexts = quoteGenerationSelection?.selectedQuoteTexts?.length
-    ? quoteGenerationSelection.selectedQuoteTexts
-    : [];
-  const hasGeneratedQuote = Boolean(quoteGeneration?.images?.[0]);
-  const quoteBindingIsStale =
-    hasGeneratedQuote &&
-    ((quoteGenerationSelection?.generatedAtPlanningRevision ?? replanRevision) !==
-      replanRevision ||
-      JSON.stringify(generatedQuoteTexts) !== JSON.stringify(currentQuoteTexts));
+  const coverLargeImages = (coverGeneration?.images || []).filter(
+    (image: GeneratedImageItem) => (image.coverLink?.variant || "large") === "large"
+  );
   const selectedCoverIndex = coverSelection?.selectedCoverIndex ?? 0;
   const finalizedCoverIndex = coverSelection?.finalizedCoverIndex ?? null;
-  const getCoverImage = (index: number, variant: "large" | "thumb") =>
-    coverGeneration?.images.find(
-      (image) =>
-        image.coverLink?.index === index + 1 &&
-        (image.coverLink.variant || "large") === variant
-    );
+  const selectedCoverImage = coverLargeImages[selectedCoverIndex] ?? coverLargeImages[0] ?? null;
   const finalizedKnowledgeImages = plannedCards
     .map((card) => {
       const status = knowledgeCardStatuses[String(card.index)];
@@ -1082,80 +974,21 @@ function WorkbenchResultsPanel({
     .filter(Boolean);
   const exportKnowledgeImages =
     finalizedKnowledgeImages.length > 0 ? finalizedKnowledgeImages : fallbackKnowledgeImages;
-  const releaseCoverIndex =
-    finalizedCoverIndex != null
-      ? finalizedCoverIndex
-      : getCoverImage(selectedCoverIndex, "large") || getCoverImage(selectedCoverIndex, "thumb")
-        ? selectedCoverIndex
-        : null;
-  const releaseCoverLarge =
-    releaseCoverIndex != null ? getCoverImage(releaseCoverIndex, "large") ?? null : null;
-  const releaseCoverThumb =
-    releaseCoverIndex != null ? getCoverImage(releaseCoverIndex, "thumb") ?? null : null;
-  const releaseInlineImages = plannedInlineImages
-    .map((item: any, index: number) => {
-      const image = inlineGeneration?.images[index];
-      if (!image) return null;
-      return {
-        kind: "inline" as const,
-        index,
-        sectionHeading: item.sectionHeading,
-        imageUrl: image.imageUrl,
-      };
-    })
-    .filter(Boolean);
   const releaseAssets = [
-    releaseCoverLarge
+    selectedCoverImage
       ? {
           kind: "cover" as const,
-          imageUrl: releaseCoverLarge.imageUrl,
-          sourceImage: releaseCoverLarge,
-          filename:
-            releaseCoverIndex === finalizedCoverIndex
-              ? "release-cover-large-final.png"
-              : "release-cover-large-selected.png",
-          label:
-            releaseCoverIndex === finalizedCoverIndex
-              ? "公众号大封面（已定稿）"
-              : "公众号大封面（当前已选）",
-        }
-      : null,
-    releaseCoverThumb
-      ? {
-          kind: "cover" as const,
-          imageUrl: releaseCoverThumb.imageUrl,
-          sourceImage: releaseCoverThumb,
-          filename:
-            releaseCoverIndex === finalizedCoverIndex
-              ? "release-cover-thumb-final.png"
-              : "release-cover-thumb-selected.png",
-          label:
-            releaseCoverIndex === finalizedCoverIndex
-              ? "公众号小封面（已定稿）"
-              : "公众号小封面（当前已选）",
+          imageUrl: selectedCoverImage.imageUrl,
+          sourceImage: selectedCoverImage,
+          filename: "release-wechat-cover.png",
+          label: `公众号封面 · ${selectedCoverImage.coverLink?.title || currentArticle.title}`,
         }
       : null,
     ...exportKnowledgeImages.map((item: any) => ({
       kind: item.kind,
       imageUrl: item.imageUrl,
-      filename: `release-knowledge-card-${String(item.cardIndex).padStart(2, "0")}.png`,
-      label: `知识卡 ${String(item.cardIndex).padStart(2, "0")} · ${item.title}`,
-    })),
-    quoteGeneration?.images[0]
-      ? {
-          kind: "quote" as const,
-          imageUrl: quoteGeneration.images[0].imageUrl,
-          filename: "release-quote-background.png",
-          label: generatedQuoteTexts[0]
-            ? `金句底图 · ${generatedQuoteTexts[0]}`
-            : "金句底图",
-        }
-      : null,
-    ...releaseInlineImages.map((item: any) => ({
-      kind: item.kind,
-      imageUrl: item.imageUrl,
-      filename: `release-inline-${String(item.index + 1).padStart(2, "0")}.png`,
-      label: `正文配图 ${item.index + 1} · ${item.sectionHeading}`,
+      filename: `release-wechat-visual-${String(item.cardIndex).padStart(2, "0")}.png`,
+      label: `公众号横版图 ${String(item.cardIndex).padStart(2, "0")} · ${item.title}`,
     })),
   ].filter(Boolean) as Array<{
     kind: "cover" | "knowledge" | "quote" | "inline";
@@ -1165,10 +998,8 @@ function WorkbenchResultsPanel({
     label: string;
   }>;
   const downloadableImages = [
+    ...(coverLargeImages as Array<{ imageUrl: string }>),
     ...(Array.from(knowledgeImagesByCard.values()) as Array<{ imageUrl: string }>),
-    ...(quoteGeneration?.images ?? []),
-    ...(coverGeneration?.images ?? []),
-    ...(inlineGeneration?.images ?? []),
   ];
 
   function handlePreviewImage(imageUrl: string, alt: string, sourceImage?: GeneratedImageItem) {
@@ -1193,55 +1024,8 @@ function WorkbenchResultsPanel({
     }
   }
 
-  async function downloadImageAsset(image: GeneratedImageItem, filename: string) {
-    try {
-      const blob = await buildDownloadBlob(image);
-      downloadBlob(blob, filename);
-      setExportFeedback(`已开始下载：${filename}`);
-    } catch {
-      await downloadImage(image.imageUrl, filename);
-    }
-  }
-
   async function buildDownloadBlob(image: GeneratedImageItem) {
-    const blob = await downloadGeneratedImage(image.imageUrl);
-    if (!isCroppedCoverThumb(image)) {
-      return blob;
-    }
-    return await cropBlobToSquarePng(blob, image.width || 383);
-  }
-
-  function isCroppedCoverThumb(image: GeneratedImageItem) {
-    return (
-      image.coverLink?.variant === "thumb" &&
-      !image.imageUrl.startsWith("data:image/svg")
-    );
-  }
-
-  async function cropBlobToSquarePng(blob: Blob, size: number) {
-    const bitmap = await createImageBitmap(blob);
-    const side = Math.min(bitmap.width, bitmap.height);
-    const sourceX = Math.max(0, (bitmap.width - side) / 2);
-    const sourceY = Math.max(0, (bitmap.height - side) / 2);
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const context = canvas.getContext("2d");
-    if (!context) {
-      bitmap.close();
-      throw new Error("无法创建图片裁切画布");
-    }
-    context.drawImage(bitmap, sourceX, sourceY, side, side, 0, 0, size, size);
-    bitmap.close();
-    return await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((nextBlob) => {
-        if (nextBlob) {
-          resolve(nextBlob);
-        } else {
-          reject(new Error("封面小图裁切失败"));
-        }
-      }, "image/png");
-    });
+    return await downloadGeneratedImage(image.imageUrl);
   }
 
   function downloadBlob(blob: Blob, filename: string) {
@@ -1253,11 +1037,6 @@ function WorkbenchResultsPanel({
     link.click();
     document.body.removeChild(link);
     window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-  }
-
-  function downloadTextFile(content: string, filename: string) {
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    downloadBlob(blob, filename);
   }
 
   async function buildZipBlob(files: Array<{ filename: string; blob: Blob }>) {
@@ -1308,20 +1087,13 @@ function WorkbenchResultsPanel({
       const manifestLines = [
         `文章标题：${currentArticle.title}`,
         `导出时间：${new Date().toLocaleString("zh-CN", { hour12: false })}`,
-        `封面：${
-          releaseCoverIndex == null
-            ? "无"
-            : releaseCoverIndex === finalizedCoverIndex
-              ? `已定稿 #${releaseCoverIndex + 1}`
-              : `当前已选 #${releaseCoverIndex + 1}`
-        }`,
-        `知识卡：${
+        `公众号封面：${selectedCoverImage ? "已选 1 张" : "未生成"}`,
+        `公众号横版图：${
           finalizedKnowledgeImages.length > 0
             ? `定稿 ${finalizedKnowledgeImages.length} 张`
             : `未定稿，改为导出当前结果 ${exportKnowledgeImages.length} 张`
         }`,
-        `金句底图：${quoteGeneration?.images[0] ? "已包含" : "无"}`,
-        `正文配图：${releaseInlineImages.length} 张`,
+        "本轮范围：导出公众号封面和公众号横版图包。金句卡、公众号排版暂缓。",
         "",
         "素材清单：",
         ...releaseAssets.map((item, index) => `${index + 1}. ${item.label} -> ${item.filename}`),
@@ -1364,7 +1136,7 @@ function WorkbenchResultsPanel({
             02 / RESULTS
           </div>
           <div className="mt-0.5" style={{ color: COLORS.text, fontSize: 16, letterSpacing: "0.02em" }}>
-            生成结果总览
+            公众号视觉结果与导出
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -1374,7 +1146,7 @@ function WorkbenchResultsPanel({
             onClick={() => void handleExportReleasePack()}
             disabled={releaseAssets.length === 0 || isExportingReleasePack}
           >
-            {isExportingReleasePack ? "导出中" : "导出定稿"}
+            {isExportingReleasePack ? "导出中" : "导出公众号图包"}
           </Btn>
           <button
             className="flex items-center gap-1"
@@ -1395,13 +1167,11 @@ function WorkbenchResultsPanel({
         }}
       >
         <div style={{ color: COLORS.textFaint, fontSize: 11.5 }}>
-          定稿导出会优先带出封面定稿、知识卡定稿；如果还没定稿，会退回当前可用结果，并附一份发布素材清单。
+          导出会带出当前选中的公众号封面，并优先带出已定稿公众号横版图。
         </div>
         <div className="flex items-center gap-2 text-right" style={{ color: COLORS.textMid, fontSize: 11.5 }}>
-          <span>封面 {[releaseCoverLarge, releaseCoverThumb].filter(Boolean).length}</span>
-          <span>知识卡 {exportKnowledgeImages.length}</span>
-          <span>金句 {quoteGeneration?.images[0] ? 1 : 0}</span>
-          <span>配图 {releaseInlineImages.length}</span>
+          <span>封面 {selectedCoverImage ? 1 : 0}</span>
+          <span>公众号横版图 {exportKnowledgeImages.length}</span>
         </div>
       </div>
 
@@ -1461,15 +1231,24 @@ function WorkbenchResultsPanel({
         </div>
       ) : null}
 
+      <CoverResults
+        coverImages={coverLargeImages}
+        selectedCoverIndex={selectedCoverIndex}
+        finalizedCoverIndex={finalizedCoverIndex}
+        onSelect={handleSelectCover}
+        onFinalize={handleFinalizeCover}
+        onPreview={handlePreviewImage}
+      />
+
       <KnowledgeCardResults
         plannedCards={plannedCards}
         knowledgeSizeLabel={
           knowledgePreset
             ? `${knowledgePreset.aspect} 高清 · ${knowledgePreset.w}×${knowledgePreset.h}`
-            : "3:4 高清 · 1280×1706"
+            : "16:9 横版 · 1080×608"
         }
         knowledgeAspectRatio={
-          knowledgePreset ? `${knowledgePreset.w} / ${knowledgePreset.h}` : "1280 / 1706"
+          knowledgePreset ? `${knowledgePreset.w} / ${knowledgePreset.h}` : "1080 / 608"
         }
         knowledgeImagesByCard={knowledgeImagesByCard}
         lockedKnowledgeCardIndexes={lockedKnowledgeCardIndexes}
@@ -1486,296 +1265,9 @@ function WorkbenchResultsPanel({
         }}
         onReplace={handleReplaceKnowledgeCardClick}
         onRollback={handleRollbackKnowledgeCard}
+        onInsertIntoArticle={handleInsertKnowledgeCardIntoArticle}
         onPreview={handlePreviewImage}
       />
-
-      <div className="grid grid-cols-2 gap-5 mt-5">
-        <div>
-          <ResultRow
-            label="金句底图（公众号横版）"
-            size={quotePreset ? `公众号正文 · ${quotePreset.w}×${quotePreset.h}` : "公众号正文 · 1080×608"}
-            count={quoteGeneration?.images.length ?? 0}
-          />
-          <div className="mt-2" style={{ color: COLORS.textFaint, fontSize: 11, lineHeight: 1.6 }}>
-            <div>
-              对应金句：
-              <span style={{ color: COLORS.textMid }}>
-                {generatedQuoteTexts[0] ? `「${generatedQuoteTexts[0]}」` : "暂无已绑定结果"}
-              </span>
-            </div>
-            {!hasGeneratedQuote && currentQuoteTexts[0] ? (
-              <div style={{ marginTop: 2 }}>
-                当前勾选：<span style={{ color: COLORS.textMid }}>「{currentQuoteTexts[0]}」</span>
-              </div>
-            ) : null}
-            {quoteBindingIsStale ? (
-              <div style={{ color: "#8A5A46", marginTop: 2 }}>
-                当前展示的是上一轮所选金句结果，再次点击“生成金句底图”才会更新。
-              </div>
-            ) : null}
-          </div>
-          <div
-            className="mt-2.5 rounded-md p-5 flex flex-col justify-between"
-            style={{
-              aspectRatio: quotePreset ? `${quotePreset.w} / ${quotePreset.h}` : "1080 / 608",
-              background: "linear-gradient(160deg,#E2E8EE 0%,#A8B7C8 100%)",
-              border: `1px solid ${COLORS.borderSoft}`,
-            }}
-          >
-            {quoteGeneration?.images[0] ? (
-              <img
-                src={quoteGeneration.images[0].imageUrl}
-                alt="最新金句卡"
-                onClick={() => handlePreviewImage(quoteGeneration.images[0].imageUrl, "金句底图")}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: 6,
-                  cursor: "zoom-in",
-                }}
-              />
-            ) : (
-              <>
-                <Quote size={20} strokeWidth={1.4} color="#3F4E62" />
-                <div style={{ color: "#2B3645", fontSize: 17, lineHeight: 1.55, letterSpacing: "0.02em" }}>
-                {((selectedQuotes.length > 0 ? plannedQuotes[selectedQuotes[0]] : null) ??
-                    "尚未生成金句底图")
-                    .split("，")
-                    .map((line: string, index: number, list: string[]) => (
-                      <span key={`${line}-${index}`}>
-                        {line}
-                        {index < list.length - 1 ? "，" : ""}
-                        {index < list.length - 1 ? <br /> : null}
-                      </span>
-                    ))}
-                </div>
-                <div style={{ color: "#3F4E62", fontSize: 10.5 }}>—— 论专注 v3</div>
-              </>
-            )}
-          </div>
-          <div className="mt-2 flex justify-end">
-            <Btn
-              size="sm"
-              onClick={() => void handleGenerateQuoteCard()}
-              disabled={selectedQuotes.length === 0}
-              style={{
-                background: "#8B6F44",
-                color: "#FBFAF7",
-                border: "1px solid #8B6F44",
-              }}
-            >
-              重新生成金句底图
-            </Btn>
-          </div>
-        </div>
-        <div>
-          <ResultRow
-            label="公众号封面组合"
-            size={coverThumbMode === "crop" ? "大图 AI · 小图中心裁切" : "大图 AI · 小图单独生成"}
-            count={3}
-          />
-          <div className="space-y-2 mt-2.5">
-            {COVER_DRAFTS.map((item, index) => (
-              <div
-                key={index}
-                className="w-full rounded-md overflow-hidden"
-                style={{
-                  border: `1px solid ${index === selectedCoverIndex ? COLORS.blueDeep : COLORS.borderSoft}`,
-                  background: index === selectedCoverIndex ? COLORS.blueTint : COLORS.surfaceAlt,
-                }}
-              >
-                <button
-                  onClick={() => handleSelectCover(index)}
-                  className="w-full flex items-center overflow-hidden text-left"
-                  style={{ minHeight: 82 }}
-                >
-                  <div
-                    className="flex items-center gap-1.5 shrink-0 p-2"
-                    style={{ width: 178, height: 82, background: COLORS.surface }}
-                  >
-                    {getCoverImage(index, "large") ? (
-                      <img
-                        src={getCoverImage(index, "large")?.imageUrl}
-                        alt={`封面大图 ${index + 1}`}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          const image = getCoverImage(index, "large");
-                          if (image) handlePreviewImage(image.imageUrl, `封面大图 ${index + 1}`, image);
-                        }}
-                        style={{
-                          width: 116,
-                          height: 50,
-                          objectFit: "cover",
-                          borderRadius: 4,
-                          cursor: "zoom-in",
-                          border: `1px solid ${COLORS.borderSoft}`,
-                        }}
-                      />
-                    ) : (
-                      <FoggyArt
-                        hue={index}
-                        variant={item.variant}
-                        style={{
-                          width: 116,
-                          height: 50,
-                          borderRadius: 4,
-                          border: `1px solid ${COLORS.borderSoft}`,
-                        }}
-                      />
-                    )}
-                    {getCoverImage(index, "thumb") ? (
-                      <img
-                        src={getCoverImage(index, "thumb")?.imageUrl}
-                        alt={`封面小图 ${index + 1}`}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          const image = getCoverImage(index, "thumb");
-                          if (image) handlePreviewImage(image.imageUrl, `封面小图 ${index + 1}`, image);
-                        }}
-                        style={{
-                          width: 50,
-                          height: 50,
-                          objectFit: "cover",
-                          borderRadius: 4,
-                          cursor: "zoom-in",
-                          border: `1px solid ${COLORS.borderSoft}`,
-                        }}
-                      />
-                    ) : (
-                      <FoggyArt
-                        hue={index + 1}
-                        variant={item.variant}
-                        style={{
-                          width: 50,
-                          height: 50,
-                          borderRadius: 4,
-                          border: `1px solid ${COLORS.borderSoft}`,
-                        }}
-                      />
-                    )}
-                  </div>
-                  <div className="flex-1 px-3 min-w-0">
-                    <div style={{ color: COLORS.text, fontSize: 12.5 }} className="truncate">
-                      {item.title}
-                    </div>
-                    <div style={{ color: COLORS.textFaint, fontSize: 11 }} className="truncate">
-                      {item.note} · 大图 + 小封面标签
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    {index === selectedCoverIndex ? <Tag tone="blue">已选</Tag> : null}
-                    {index === finalizedCoverIndex ? <Tag tone="success">已定稿</Tag> : null}
-                  </div>
-                  <div className="w-3" />
-                </button>
-                <div
-                  className="px-3 py-2 flex items-center justify-between gap-2"
-                  style={{
-                    borderTop: `1px solid ${COLORS.borderSoft}`,
-                    background: COLORS.surface,
-                  }}
-                >
-                  <div className="flex items-center gap-1.5">
-                    {getCoverImage(index, "large") ? (
-                      <Btn
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          const image = getCoverImage(index, "large");
-                          if (image) {
-                            void downloadImageAsset(
-                              image,
-                              `wechat-cover-large-${String(index + 1).padStart(2, "0")}.png`
-                            );
-                          }
-                        }}
-                      >
-                        <Download size={12} strokeWidth={1.6} />
-                        大图
-                      </Btn>
-                    ) : null}
-                    {getCoverImage(index, "thumb") ? (
-                      <Btn
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          const image = getCoverImage(index, "thumb");
-                          if (image) {
-                            void downloadImageAsset(
-                              image,
-                              `wechat-cover-thumb-${String(index + 1).padStart(2, "0")}.png`
-                            );
-                          }
-                        }}
-                      >
-                        <Download size={12} strokeWidth={1.6} />
-                        小图
-                      </Btn>
-                    ) : null}
-                  </div>
-                  <Btn
-                    variant={index === finalizedCoverIndex ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={() => handleFinalizeCover(index)}
-                  >
-                    {index === finalizedCoverIndex ? "当前定稿" : "设为定稿"}
-                  </Btn>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-5">
-        <ResultRow
-          label="公众号正文配图"
-          size={inlinePreset ? `横版默认 · ${inlinePreset.w}×${inlinePreset.h}` : "横版默认 · 1080×608"}
-          count={plannedInlineImages.length}
-        />
-        <div className="grid grid-cols-3 gap-3 mt-2.5">
-          {plannedInlineImages.map((item: any, index: number) => (
-            <div
-              key={`${item.sectionHeading}-${index}`}
-              className="rounded-md overflow-hidden"
-              style={{ border: `1px solid ${COLORS.borderSoft}` }}
-            >
-              {inlineGeneration?.images[index] ? (
-                <img
-                  src={inlineGeneration.images[index].imageUrl}
-                  alt={`正文配图 ${index + 1}`}
-                  onClick={() =>
-                    handlePreviewImage(inlineGeneration.images[index].imageUrl, `正文配图 ${index + 1}`)
-                  }
-                  style={{
-                    width: "100%",
-                    aspectRatio: inlinePreset ? `${inlinePreset.w} / ${inlinePreset.h}` : "1080 / 608",
-                    objectFit: "cover",
-                    cursor: "zoom-in",
-                  }}
-                />
-              ) : (
-                <FoggyArt
-                  hue={index + 1}
-                  variant={
-                    "variant" in item && item.variant
-                      ? item.variant
-                      : index % 3 === 0
-                        ? "wave"
-                        : index % 3 === 1
-                          ? "mountain"
-                          : "leaf"
-                  }
-                  style={{
-                    aspectRatio: inlinePreset ? `${inlinePreset.w} / ${inlinePreset.h}` : "1080 / 608",
-                  }}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
 
       <Dialog
         open={previewImage != null}
@@ -1790,40 +1282,17 @@ function WorkbenchResultsPanel({
           </DialogHeader>
           {previewImage ? (
             <div className="max-h-[75vh] overflow-auto">
-              {previewImage.sourceImage && isCroppedCoverThumb(previewImage.sourceImage) ? (
-                <div
-                  style={{
-                    width: "min(75vh, 520px)",
-                    aspectRatio: "1 / 1",
-                    margin: "0 auto",
-                    overflow: "hidden",
-                    borderRadius: 8,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                  }}
-                >
-                  <img
-                    src={previewImage.imageUrl}
-                    alt={previewImage.alt}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                </div>
-              ) : (
-                <img
-                  src={previewImage.imageUrl}
-                  alt={previewImage.alt}
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    objectFit: "contain",
-                    borderRadius: 8,
-                    border: `1px solid ${COLORS.borderSoft}`,
-                  }}
-                />
-              )}
+              <img
+                src={previewImage.imageUrl}
+                alt={previewImage.alt}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  borderRadius: 8,
+                  border: `1px solid ${COLORS.borderSoft}`,
+                }}
+              />
             </div>
           ) : null}
           {previewImage ? (
@@ -1833,10 +1302,7 @@ function WorkbenchResultsPanel({
                 size="md"
                 onClick={() =>
                   void (previewImage.sourceImage
-                    ? downloadImageAsset(
-                        previewImage.sourceImage,
-                        `${(previewImage.alt || "preview").replace(/\s+/g, "-")}.png`
-                      )
+                    ? downloadImage(previewImage.sourceImage.imageUrl, `${(previewImage.alt || "preview").replace(/\s+/g, "-")}.png`)
                     : downloadImage(
                         previewImage.imageUrl,
                         `${(previewImage.alt || "preview").replace(/\s+/g, "-")}.png`
@@ -1853,125 +1319,87 @@ function WorkbenchResultsPanel({
   );
 }
 
-function QuoteSummaryCard({
-  plannedQuotes,
-  selectedQuotes,
-  toggleQuote,
-  openQuotes,
-  setOpenQuotes,
-  handleGenerateQuoteCard,
+function CoverResults({
+  coverImages,
+  selectedCoverIndex,
+  finalizedCoverIndex,
+  onSelect,
+  onFinalize,
+  onPreview,
 }: {
-  plannedQuotes: string[];
-  selectedQuotes: number[];
-  toggleQuote: (index: number) => void;
-  openQuotes: boolean;
-  setOpenQuotes: React.Dispatch<React.SetStateAction<boolean>>;
-  handleGenerateQuoteCard: () => Promise<void>;
+  coverImages: GeneratedImageItem[];
+  selectedCoverIndex: number;
+  finalizedCoverIndex: number | null;
+  onSelect: (index: number) => void;
+  onFinalize: (index: number) => void;
+  onPreview: (imageUrl: string, alt: string, sourceImage?: GeneratedImageItem) => void;
 }) {
+  if (coverImages.length === 0) return null;
+
   return (
-    <div
-      className="rounded-lg mb-3 overflow-hidden"
-      style={{
-        background: "#F1ECE3",
-        border: `1px solid #E1D7C2`,
-      }}
-    >
-      <div className="px-5 py-3.5 flex items-center gap-4">
-        <div
-          className="w-8 h-8 rounded-md flex items-center justify-center shrink-0"
-          style={{
-            background: "rgba(139,111,68,0.12)",
-            color: "#8B6F44",
-          }}
-        >
-          <Quote size={15} strokeWidth={1.6} />
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-2.5">
-            <span style={{ color: "#3D3328", fontSize: 13.5 }}>候选金句</span>
-            <span style={{ color: "#8B6F44", fontSize: 12 }}>
-              {plannedQuotes.length} 条 · 已选 {selectedQuotes.length} / {plannedQuotes.length}
-            </span>
-          </div>
-        <div className="mt-1 truncate" style={{ color: "#7A6244", fontSize: 11.5 }}>
-            {selectedQuotes.length > 0
-              ? `「${plannedQuotes[selectedQuotes[0]] ?? "当前选择已失效"}」`
-              : "尚未选择候选金句"}
-        </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            onClick={() => setOpenQuotes(!openQuotes)}
-            className="flex items-center gap-1 px-2.5 h-7 rounded"
-            style={{
-              color: "#8B6F44",
-              fontSize: 12,
-            }}
-          >
-            {openQuotes ? "收起候选" : "查看候选"}
-            {openQuotes ? (
-              <ChevronDown size={11} strokeWidth={1.6} />
-            ) : (
-              <ChevronRight size={11} strokeWidth={1.6} />
-            )}
-          </button>
-          <Btn
-            size="sm"
-            onClick={() => void handleGenerateQuoteCard()}
-            disabled={selectedQuotes.length === 0}
-            style={{
-              background: "#8B6F44",
-              color: "#FBFAF7",
-              border: "1px solid #8B6F44",
-            }}
-          >
-            生成金句底图 · {selectedQuotes.length}
-          </Btn>
-        </div>
-      </div>
-
-      {openQuotes ? (
-        <div
-          className="px-5 pb-4 pt-1 space-y-2"
-          style={{
-            borderTop: `1px solid rgba(225,215,194,0.7)`,
-          }}
-        >
-          {plannedQuotes.map((quote, index) => {
-            const checked = selectedQuotes.includes(index);
-            return (
+    <div className="mb-5">
+      <ResultRow label="公众号封面" size="2.35:1 · 900×383" count={coverImages.length} />
+      <div className="grid grid-cols-3 gap-3 mt-2.5">
+        {coverImages.map((image, index) => {
+          const selected = selectedCoverIndex === index;
+          const finalized = finalizedCoverIndex === index;
+          return (
+            <div
+              key={image.id}
+              className="rounded-md overflow-hidden"
+              style={{
+                border: `1px solid ${selected ? COLORS.blueMid : COLORS.borderSoft}`,
+                background: COLORS.surface,
+              }}
+            >
               <button
-                key={index}
-                onClick={() => toggleQuote(index)}
-                className="w-full flex items-start gap-3 px-3.5 py-2.5 rounded-md text-left transition-colors mt-2"
-                style={{
-                  background: checked ? "#FBFAF7" : "rgba(255,255,255,0.45)",
-                  border: `1px solid ${checked ? "#C9A86A" : "rgba(225,215,194,0.7)"}`,
-                }}
+                type="button"
+                onClick={() =>
+                  onPreview(
+                    image.imageUrl,
+                    `公众号封面 ${index + 1}`,
+                    image
+                  )
+                }
+                className="block w-full"
+                style={{ cursor: "zoom-in" }}
               >
-                <span
-                  className="mt-0.5 w-3.5 h-3.5 rounded-sm flex items-center justify-center shrink-0"
+                <img
+                  src={image.imageUrl}
+                  alt={`公众号封面 ${index + 1}`}
                   style={{
-                    background: checked ? "#8B6F44" : "transparent",
-                    border: `1.4px solid ${checked ? "#8B6F44" : "#B5A992"}`,
+                    width: "100%",
+                    aspectRatio: "900 / 383",
+                    objectFit: "cover",
+                    display: "block",
                   }}
-                >
-                  {checked ? <CheckCircle2 size={9} strokeWidth={2.5} color="#FBFAF7" /> : null}
-                </span>
-                <span style={{ color: "#3D3328", fontSize: 13, lineHeight: 1.7 }}>{quote}</span>
+                />
               </button>
-            );
-          })}
-          <div className="flex items-center justify-end mt-1">
-            <button className="flex items-center gap-1" style={{ color: "#8B6F44", fontSize: 11.5 }}>
-              <Pencil size={11} strokeWidth={1.6} />
-              编辑文案
-            </button>
-          </div>
-        </div>
-      ) : null}
+              <div className="px-2.5 py-2 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <Tag tone={finalized ? "success" : selected ? "blue" : "warm"}>
+                    {finalized ? "已定稿" : selected ? "已选中" : `候选 ${index + 1}`}
+                  </Tag>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => onSelect(index)}
+                    style={{ color: COLORS.textMuted, fontSize: 10.5 }}
+                  >
+                    选择
+                  </button>
+                  <button
+                    onClick={() => onFinalize(index)}
+                    style={{ color: COLORS.success, fontSize: 10.5 }}
+                  >
+                    定稿
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -2013,50 +1441,6 @@ function Step({ kicker, title }: { kicker: string; title: string }) {
       </span>
       <span style={{ color: COLORS.text, fontSize: 13.5 }}>{title}</span>
     </div>
-  );
-}
-
-function CompactToggle({
-  label,
-  count,
-  auto,
-  checked,
-  onChange,
-  last,
-}: {
-  label: string;
-  count: string;
-  auto?: boolean;
-  checked: boolean;
-  onChange: () => void;
-  last?: boolean;
-}) {
-  return (
-    <button
-      onClick={onChange}
-      className="w-full flex items-center justify-between px-3.5"
-      style={{
-        height: 36,
-        borderBottom: last ? "none" : `1px solid ${COLORS.borderSoft}`,
-      }}
-    >
-      <span className="flex items-center gap-2.5" style={{ color: COLORS.text, fontSize: 13 }}>
-        <span
-          className="w-3.5 h-3.5 rounded-sm flex items-center justify-center"
-          style={{
-            background: checked ? COLORS.blueDeep : "transparent",
-            border: `1.3px solid ${checked ? COLORS.blueDeep : COLORS.textFaint}`,
-          }}
-        >
-          {checked ? <CheckCircle2 size={9} strokeWidth={2.5} color="#FBFAF7" /> : null}
-        </span>
-        {label}
-      </span>
-      <span className="flex items-center gap-1.5" style={{ color: COLORS.textFaint, fontSize: 11 }}>
-        {auto ? <Wand2 size={10} strokeWidth={1.6} color={COLORS.blue} /> : null}
-        <span style={{ color: auto ? COLORS.blueDeep : COLORS.textFaint }}>{count}</span>
-      </span>
-    </button>
   );
 }
 

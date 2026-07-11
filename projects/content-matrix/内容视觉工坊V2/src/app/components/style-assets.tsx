@@ -42,13 +42,29 @@ type LayoutStyleAsset = {
 
 const IMAGE_STYLES = [
   {
+    name: "企业AI手绘白板",
+    desc: "温白纸面、水彩色块、黑色手写标题、虚线框和业务场景插画，适合公众号横版知识卡与氛围图。",
+    scope: ["公众号横版图", "横版知识卡", "横版氛围图", "企业AI"],
+    palette: ["#2F2A24", "#EAF0EA", "#D8E3EE", "#F3E2B8", "#E7B18E"],
+    variant: "grid",
+    hue: 3,
+    isDefault: true,
+  },
+  {
     name: "极简纸本信息板",
     desc: "纸张拼贴、便签、胶带、色板与铅笔元素，适合知识卡和金句底图。",
     scope: ["知识卡片", "正文配图", "金句底图"],
     palette: ["#35312B", "#8EA0AA", "#D7CDBA", "#F4F1EA"],
     variant: "grid",
     hue: 1,
-    isDefault: true,
+  },
+  {
+    name: "手绘流程讲解板",
+    desc: "温白纸面、粗黑手写标题、粉彩色块、涂鸦箭头与小人，适合流程说明和案例拆解。",
+    scope: ["知识卡片", "小红书全屏图", "案例拆解", "流程说明"],
+    palette: ["#2F2A24", "#F6ECDD", "#AFC5B7", "#9EB8C8", "#E0A36E"],
+    variant: "grid",
+    hue: 3,
   },
   {
     name: "留白水墨",

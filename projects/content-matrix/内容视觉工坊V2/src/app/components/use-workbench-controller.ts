@@ -3,9 +3,13 @@ import { postGenerateImages, postPlanCards, postPlanCover } from "../api";
 import type { PlannerRequest, PlannerResponse, SplitStrategy } from "../content-planning";
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
 import {
-  PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
+  ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
+  ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE,
+  ENTERPRISE_AI_WHITEBOARD_STYLE_NAME,
+  ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
+  ENTERPRISE_AI_WECHAT_COVER_STYLE_GUIDE,
+  ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
   PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
-  PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
   PAPER_INFO_BOARD_QUOTE_BACKGROUNDS,
   PAPER_INFO_BOARD_REFERENCE_IMAGES,
 } from "../style-guides";
@@ -26,6 +30,8 @@ import {
   buildFallbackInlineImagePlan,
   buildKnowledgeCardPrompt,
   buildGenerationTasks,
+  KNOWLEDGE_CARD_NEGATIVE_PROMPT,
+  KNOWLEDGE_CARD_STYLE_NAME,
   mergeRecordImages,
   QUOTES,
   sortImagesByCardIndex,
@@ -67,6 +73,46 @@ function buildArticleSignature(article: WorkspaceArticle) {
   return `${article.title.trim()}::${article.body.replace(/\s+/g, " ").trim()}`;
 }
 
+function escapeMarkdownAlt(value: string) {
+  return value.replace(/[\[\]\n\r]/g, " ").replace(/\s+/g, " ").trim() || "公众号横图";
+}
+
+function insertImageMarkdownAfterLikelyAnchor(
+  body: string,
+  card: { title: string; summary: string },
+  marker: string
+) {
+  const imageBlock = `\n\n${marker}\n`;
+  const lines = body.split("\n");
+  const anchors = [card.title, card.summary]
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+
+  for (const anchor of anchors) {
+    const index = lines.findIndex((line) => line.includes(anchor));
+    if (index >= 0) {
+      const insertAt = findParagraphEnd(lines, index);
+      const next = [...lines];
+      next.splice(insertAt + 1, 0, imageBlock.trim());
+      return next.join("\n").replace(/\n{4,}/g, "\n\n\n");
+    }
+  }
+
+  const fallbackIndex = Math.max(0, Math.floor(lines.length / 3));
+  const insertAt = findParagraphEnd(lines, fallbackIndex);
+  const next = [...lines];
+  next.splice(insertAt + 1, 0, imageBlock.trim());
+  return next.join("\n").replace(/\n{4,}/g, "\n\n\n");
+}
+
+function findParagraphEnd(lines: string[], startIndex: number) {
+  for (let index = startIndex + 1; index < lines.length; index += 1) {
+    if (!lines[index].trim()) return index - 1;
+  }
+  return lines.length - 1;
+}
+
 export function useWorkbenchController({
   currentArticle,
   setCurrentArticle,
@@ -88,14 +134,14 @@ export function useWorkbenchController({
 
   const [outputs, setOutputs] = useState<WorkbenchOutputs>({
     knowledge: true,
-    quote: true,
-    cover: true,
-    inline: true,
+    quote: false,
+    cover: false,
+    inline: false,
     layout: false,
   });
   const [splitStrategy, setSplitStrategy] = useState<SplitStrategy>("auto");
-  const [minCards, setMinCards] = useState(2);
-  const [maxCards, setMaxCards] = useState(6);
+  const [minCards, setMinCards] = useState(3);
+  const [maxCards, setMaxCards] = useState(5);
   const [selectedQuotes, setSelectedQuotes] = useState<number[]>([]);
   const [regeneratingCardIndex, setRegeneratingCardIndex] = useState<number | null>(null);
   const replaceCardInputRef = useRef<HTMLInputElement | null>(null);
@@ -103,6 +149,7 @@ export function useWorkbenchController({
   const [editingCardIndex, setEditingCardIndex] = useState<number | null>(null);
   const [editingCardTitle, setEditingCardTitle] = useState("");
   const [editingCardSummary, setEditingCardSummary] = useState("");
+  const [editingCardPrompt, setEditingCardPrompt] = useState("");
 
   const plannedCards = planningState?.cardPlan ?? buildFallbackCardPlan();
   const plannedQuotes = planningState?.candidateQuotes?.length
@@ -140,7 +187,7 @@ export function useWorkbenchController({
   const estimatedCredits =
     (outputs.knowledge ? unlockedPlannedCards.length : 0) +
     (outputs.quote ? selectedQuotes.length : 0) +
-    (outputs.cover ? 3 : 0) +
+    (outputs.cover ? 1 : 0) +
     (outputs.inline ? plannedInlineImages.length : 0);
 
   const latestGenerationTime = latestGeneration
@@ -186,7 +233,7 @@ export function useWorkbenchController({
       generatedCount:
         coverGeneration?.images.filter((image) => (image.coverLink?.variant || "large") === "large")
           .length ?? 0,
-      plannedCount: 3,
+      plannedCount: outputs.cover ? 1 : 0,
       generatedText:
         coverGeneration?.images.length && coverGeneration.images.length > 0
           ? `${
@@ -195,7 +242,7 @@ export function useWorkbenchController({
               ).length
             } 张大封面`
           : null,
-      pendingText: "3 张待生成",
+      pendingText: "1 张待生成",
       modeText: coverThumbMode === "crop" ? "小图裁切" : "小图单独",
     }),
     inline: buildOutputSummary({
@@ -384,7 +431,12 @@ export function useWorkbenchController({
     }));
   }
 
-  function updateKnowledgeCardDraft(cardIndex: number, nextTitle: string, nextSummary: string) {
+  function updateKnowledgeCardDraft(
+    cardIndex: number,
+    nextTitle: string,
+    nextSummary: string,
+    nextPromptText?: string
+  ) {
     if (!planningState) return;
     const nextCardPlan = planningState.cardPlan.map((card) =>
       card.index === cardIndex
@@ -392,6 +444,8 @@ export function useWorkbenchController({
             ...card,
             title: nextTitle.trim() || card.title,
             summary: nextSummary.trim() || card.summary,
+            promptText:
+              nextPromptText === undefined ? card.promptText : nextPromptText.trim() || undefined,
           }
         : card
     );
@@ -408,12 +462,34 @@ export function useWorkbenchController({
     setEditingCardIndex(cardIndex);
     setEditingCardTitle(card.title);
     setEditingCardSummary(card.summary);
+    setEditingCardPrompt(
+      buildKnowledgeCardPrompt({
+        articleTitle: currentArticle.title,
+        cardIndex: card.index,
+        cardTotal: plannedCards.length,
+        promptText: card.promptText,
+        visualType: card.visualType,
+        visualRationale: card.visualRationale,
+        cardTitle: card.title,
+        cardSummary: card.summary,
+        cardTheme: card.theme,
+        cardLayoutHint: card.layoutHint,
+        cardTextBlocks: card.textBlocks,
+        cardIllustrationHints: card.illustrationHints,
+        cardTitleVisualHint: card.titleVisualHint,
+        cardContentSections: card.contentSections,
+        cardDecorationHint: card.decorationHint,
+        cardEndingLabel: card.endingLabel,
+        bodyPreview: currentArticle.body.replace(/\s+/g, " ").trim().slice(0, 140),
+      })
+    );
   }
 
   function closeKnowledgeCardEditor() {
     setEditingCardIndex(null);
     setEditingCardTitle("");
     setEditingCardSummary("");
+    setEditingCardPrompt("");
   }
 
   function replaceKnowledgeCardImage(cardIndex: number, imageUrl: string, prompt: string) {
@@ -443,8 +519,8 @@ export function useWorkbenchController({
           : `manual-${Date.now().toString(36)}-${cardIndex}`,
       imageUrl,
       prompt,
-      width: knowledgePreset?.w || 1280,
-      height: knowledgePreset?.h || 1706,
+      width: knowledgePreset?.w || 1080,
+      height: knowledgePreset?.h || 608,
       cardLink: {
         index: card.index,
         title: card.title,
@@ -463,8 +539,8 @@ export function useWorkbenchController({
       source: "general-image",
       title: currentArticle.title,
       purposeKey: "xhs_card",
-      purposeLabel: "小红书图文 / 知识卡片",
-      presetLabel: knowledgePreset?.label || "小红书图文 3:4 高清 · 1280×1706",
+      purposeLabel: "公众号横版图 / 知识卡或氛围图",
+      presetLabel: knowledgePreset?.label || "公众号横版图 · 1080×608",
       styleName: existingRecord?.styleName || "蓝雾静读",
       images: sortImagesByCardIndex(nextImages),
       createdAt: new Date().toISOString(),
@@ -473,7 +549,12 @@ export function useWorkbenchController({
 
   function saveKnowledgeCardDraft() {
     if (editingCardIndex == null) return;
-    updateKnowledgeCardDraft(editingCardIndex, editingCardTitle, editingCardSummary);
+    updateKnowledgeCardDraft(
+      editingCardIndex,
+      editingCardTitle,
+      editingCardSummary,
+      editingCardPrompt
+    );
     updateKnowledgeCardStatus(editingCardIndex, { edited: true });
     closeKnowledgeCardEditor();
     pushStatus(
@@ -515,7 +596,7 @@ export function useWorkbenchController({
 
   async function handleRegenerateKnowledgeCard(
     cardIndex: number,
-    nextDraft?: { title: string; summary: string }
+    nextDraft?: { title: string; summary: string; promptText?: string }
   ) {
     const preset = knowledgePreset;
     const card = plannedCards.find((item) => item.index === cardIndex);
@@ -524,6 +605,7 @@ export function useWorkbenchController({
     const resolvedCard = nextDraft
       ? { ...card, title: nextDraft.title, summary: nextDraft.summary }
       : card;
+    const resolvedPromptText = nextDraft?.promptText ?? resolvedCard.promptText;
 
     setRegeneratingCardIndex(cardIndex);
     clearTaskError();
@@ -541,7 +623,9 @@ export function useWorkbenchController({
           articleTitle: currentArticle.title,
           cardIndex: resolvedCard.index,
           cardTotal: plannedCards.length,
-          promptText: resolvedCard.promptText,
+          promptText: resolvedPromptText,
+          visualType: resolvedCard.visualType,
+          visualRationale: resolvedCard.visualRationale,
           cardTitle: resolvedCard.title,
           cardSummary: resolvedCard.summary,
           cardTheme: resolvedCard.theme,
@@ -554,15 +638,16 @@ export function useWorkbenchController({
           cardEndingLabel: resolvedCard.endingLabel,
           bodyPreview: currentArticle.body.replace(/\s+/g, " ").trim().slice(0, 140),
         }),
-        negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
+        negativePrompt: KNOWLEDGE_CARD_NEGATIVE_PROMPT,
         width: preset.w,
         height: preset.h,
         count: 1,
         purposeKey: "xhs_card",
-        purposeLabel: "小红书图文 / 知识卡片",
+        purposeLabel: "公众号横版图 / 知识卡或氛围图",
         presetKey: preset.k,
         presetLabel: preset.label,
-        styleName: "极简纸本信息板",
+        styleName: KNOWLEDGE_CARD_STYLE_NAME,
+        referenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
         cardLink: {
           index: resolvedCard.index,
           title: resolvedCard.title,
@@ -649,7 +734,8 @@ export function useWorkbenchController({
     if (editingCardIndex == null) return;
     const nextTitle = editingCardTitle.trim();
     const nextSummary = editingCardSummary.trim();
-    updateKnowledgeCardDraft(editingCardIndex, nextTitle, nextSummary);
+    const nextPromptText = editingCardPrompt.trim();
+    updateKnowledgeCardDraft(editingCardIndex, nextTitle, nextSummary, nextPromptText);
     updateKnowledgeCardStatus(editingCardIndex, { edited: true });
     await handleRegenerateKnowledgeCard(editingCardIndex, {
       title:
@@ -660,8 +746,36 @@ export function useWorkbenchController({
         nextSummary ||
         plannedCards.find((item) => item.index === editingCardIndex)?.summary ||
         "",
+      promptText: nextPromptText,
     });
     closeKnowledgeCardEditor();
+  }
+
+  function handleInsertKnowledgeCardIntoArticle(cardIndex: number) {
+    const image = knowledgeImagesByCard.get(cardIndex);
+    const card = plannedCards.find((item) => item.index === cardIndex);
+    if (!image || !card) return;
+
+    const marker = `![${escapeMarkdownAlt(card.title)}](${image.imageUrl})`;
+    if (currentArticle.body.includes(marker)) {
+      pushStatus(
+        `knowledge-card-${cardIndex}`,
+        "info",
+        `知识卡 ${String(cardIndex).padStart(2, "0")} 已在成稿中`
+      );
+      return;
+    }
+
+    const nextBody = insertImageMarkdownAfterLikelyAnchor(currentArticle.body, card, marker);
+    setCurrentArticle({
+      ...currentArticle,
+      body: nextBody,
+    });
+    pushStatus(
+      `knowledge-card-${cardIndex}`,
+      "success",
+      `知识卡 ${String(cardIndex).padStart(2, "0")} 已插入当前成稿`
+    );
   }
 
   async function runPlanning() {
@@ -672,18 +786,18 @@ export function useWorkbenchController({
     const request: PlannerRequest = {
       articleTitle: article.title,
       rawText: article.body,
-      knowledgeCardStyleName: "极简纸本信息板",
-      knowledgeCardStyleGuide: PAPER_INFO_BOARD_KNOWLEDGE_STYLE_GUIDE,
-      knowledgeCardReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
+      knowledgeCardStyleName: ENTERPRISE_AI_WHITEBOARD_STYLE_NAME,
+      knowledgeCardStyleGuide: ENTERPRISE_AI_WHITEBOARD_STYLE_GUIDE,
+      knowledgeCardReferenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
       inlineImageStyleName: "极简纸本正文配图",
       inlineImageStyleGuide: PAPER_INFO_BOARD_INLINE_STYLE_GUIDE,
       inlineImageReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
-      coverStyleName: "极简纸本公众号封面",
-      coverStyleGuide: PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
-      coverReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
-      cardRatio: knowledgePreset?.aspect || "3:4",
-      cardWidth: knowledgePreset?.w || 1280,
-      cardHeight: knowledgePreset?.h || 1706,
+      coverStyleName: ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+      coverStyleGuide: ENTERPRISE_AI_WECHAT_COVER_STYLE_GUIDE,
+      coverReferenceImages: ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
+      cardRatio: knowledgePreset?.aspect || "16:9",
+      cardWidth: knowledgePreset?.w || 1080,
+      cardHeight: knowledgePreset?.h || 608,
       splitStrategy,
       minCards,
       maxCards,
@@ -984,9 +1098,9 @@ export function useWorkbenchController({
       coverPlan = await postPlanCover({
         articleTitle: currentArticle.title,
         rawText: currentArticle.body,
-        coverStyleName: "极简纸本公众号封面",
-        coverStyleGuide: PAPER_INFO_BOARD_COVER_STYLE_GUIDE,
-        coverReferenceImages: PAPER_INFO_BOARD_REFERENCE_IMAGES,
+        coverStyleName: ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+        coverStyleGuide: ENTERPRISE_AI_WECHAT_COVER_STYLE_GUIDE,
+        coverReferenceImages: ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
       });
     } catch (error) {
       pushStatus(
@@ -1022,7 +1136,8 @@ export function useWorkbenchController({
         purposeLabel: "公众号封面大图",
         presetKey: largePreset.k,
         presetLabel: largePreset.label,
-        styleName: "极简纸本公众号封面",
+        styleName: ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+        referenceImages: ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
         coverLink: {
           index: candidate.index,
           title: candidate.title,
@@ -1141,6 +1256,8 @@ export function useWorkbenchController({
           imageGenerationSource: {
             contentKind: "full-article-text",
             strategy: planningState.strategySummary,
+            visualType: planningState.cardPlan[0]?.visualType,
+            visualRationale: planningState.cardPlan[0]?.visualRationale,
           },
           cardOutlineTitles: planningState.cardPlan.map((card) => card.title),
           keyQuotes: planningState.candidateQuotes,
@@ -1452,6 +1569,8 @@ export function useWorkbenchController({
     setEditingCardTitle,
     editingCardSummary,
     setEditingCardSummary,
+    editingCardPrompt,
+    setEditingCardPrompt,
     openKnowledgeCardEditor,
     closeKnowledgeCardEditor,
     saveKnowledgeCardDraft,
@@ -1462,6 +1581,7 @@ export function useWorkbenchController({
     handleReplaceKnowledgeCardClick,
     handleKnowledgeCardFileChange,
     handleEditAndRegenerateKnowledgeCard,
+    handleInsertKnowledgeCardIntoArticle,
     handleStartGeneration,
     handleGenerateQuoteCard,
     handleSelectCover,
@@ -1512,10 +1632,10 @@ function buildReplanSummaryText(summary: ReplanSummary) {
     parts.push(`清理 ${summary.clearedQuoteCount} 条失效金句`);
   }
   if (summary.preservedKnowledgeCount > 0) {
-    parts.push(`保留 ${summary.preservedKnowledgeCount} 张知识卡结果`);
+    parts.push(`保留 ${summary.preservedKnowledgeCount} 张公众号横版图结果`);
   }
   if (summary.staleKnowledgeCount > 0) {
-    parts.push(`${summary.staleKnowledgeCount} 张知识卡需重生成`);
+    parts.push(`${summary.staleKnowledgeCount} 张公众号横版图需重生成`);
   }
   return parts.join("，");
 }

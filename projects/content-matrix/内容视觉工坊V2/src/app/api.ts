@@ -10,6 +10,11 @@ export type GenerateImagesRequest = {
   articleTitle: string;
   prompt: string;
   negativePrompt?: string;
+  referenceImages?: Array<{
+    label: string;
+    url: string;
+    note?: string;
+  }>;
   width: number;
   height: number;
   count: number;

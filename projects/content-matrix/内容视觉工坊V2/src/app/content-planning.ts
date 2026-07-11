@@ -2,10 +2,14 @@ export type SplitStrategy = "auto" | "less" | "more";
 
 export type WechatInlineSectionType = "concept" | "quote" | "method" | "transition";
 
+export type WechatVisualType = "knowledge_card" | "atmosphere";
+
 export type CardPlan = {
   index: number;
   title: string;
   summary: string;
+  visualType?: WechatVisualType;
+  visualRationale?: string;
   promptText?: string;
   theme?: string;
   layoutHint?: string;
@@ -77,6 +81,8 @@ export type PlannerResponse = {
     imageGenerationSource: {
       contentKind: "full-article-text";
       strategy: string;
+      visualType?: WechatVisualType;
+      visualRationale?: string;
     };
     cardOutlineTitles: string[];
     keyQuotes: string[];

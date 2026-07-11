@@ -122,14 +122,34 @@ ${appendix}`;
 }
 
 function attachExternalStyleGuide(response: Omit<PlannerResponse, "provider">, request: PlannerRequest) {
+  const fallbackVisualDecision = classifyArticleWechatVisualType(request.articleTitle, request.rawText);
+  const responseVisualType = response.analysis?.imageGenerationSource?.visualType;
+  const unifiedVisualType =
+    responseVisualType === "knowledge_card" || responseVisualType === "atmosphere"
+      ? responseVisualType
+      : response.cardPlan.find(
+          (card) => card.visualType === "knowledge_card" || card.visualType === "atmosphere"
+        )?.visualType || fallbackVisualDecision.visualType;
+  const unifiedVisualRationale =
+    response.analysis?.imageGenerationSource?.visualRationale?.trim() ||
+    response.cardPlan.find((card) => card.visualRationale?.trim())?.visualRationale ||
+    fallbackVisualDecision.visualRationale;
+
   return {
     ...response,
     analysis: {
       ...response.analysis,
+      imageGenerationSource: {
+        ...response.analysis.imageGenerationSource,
+        visualType: unifiedVisualType,
+        visualRationale: unifiedVisualRationale,
+      },
       coverTheme: attachCoverStyleGuideToCoverTheme(response.analysis.coverTheme, request),
     },
     cardPlan: response.cardPlan.map((card) => ({
       ...card,
+      visualType: unifiedVisualType,
+      visualRationale: unifiedVisualRationale,
       promptText: attachExternalStyleGuideToPromptText(card.promptText, request),
     })),
     inlineImagePlan: response.inlineImagePlan.map((item, index) => ({
@@ -281,6 +301,40 @@ function buildCardLayoutHint(index: number, total: number) {
   return "原因拆解型 / 分区信息卡";
 }
 
+function classifyArticleWechatVisualType(articleTitle: string, rawText: string) {
+  const text = cleanText(`${articleTitle} ${rawText}`);
+  const knowledgeMatches =
+    text.match(/方法|步骤|模型|结构|机制|原因|判断|原则|清单|流程|对比|策略|框架|路径|行动|建议|实验|拆解/g) ?? [];
+  const atmosphereMatches =
+    text.match(/感受|情绪|疲惫|焦虑|安静|孤独|夜晚|清晨|关系|记忆|故事|场景|隐喻|生活|身体|内心|停顿/g) ?? [];
+
+  if (knowledgeMatches.length >= atmosphereMatches.length + 2) {
+    return {
+      visualType: "knowledge_card" as const,
+      visualRationale: "整篇文章以方法、结构、机制或行动建议为主，适合统一做横版知识卡。",
+    };
+  }
+
+  if (atmosphereMatches.length >= knowledgeMatches.length + 2) {
+    return {
+      visualType: "atmosphere" as const,
+      visualRationale: "整篇文章以叙事、情绪、场景或隐喻为主，适合统一做横版氛围图。",
+    };
+  }
+
+  const sectionCount = extractSections(rawText).length;
+  const sentenceCount = splitSentences(rawText).length;
+  const hasDenseStructure = sectionCount >= 3 || sentenceCount >= 12 || rawText.length > 900;
+
+  return {
+    visualType: hasDenseStructure ? ("knowledge_card" as const) : ("atmosphere" as const),
+    visualRationale:
+      hasDenseStructure
+        ? "整篇文章结构和信息密度较高，统一做横版知识卡更利于理解。"
+        : "整篇文章信息较轻或更偏阅读感，统一做横版氛围图更适合公众号阅读节奏。",
+  };
+}
+
 function buildTitleVisualHint(title: string) {
   return `放在醒目的浅绿色圆角横幅内，旁边画一个与“${title}”相关的简笔画插图`;
 }
@@ -315,6 +369,8 @@ function buildKnowledgeCardPromptText({
   contentSections,
   decorationHint,
   endingLabel,
+  visualType,
+  visualRationale,
 }: {
   styleGuide: string;
   referenceImages: string;
@@ -331,9 +387,16 @@ function buildKnowledgeCardPromptText({
   }>;
   decorationHint: string;
   endingLabel?: string;
+  visualType?: "knowledge_card" | "atmosphere";
+  visualRationale?: string;
 }) {
   const indexLabel = String(cardIndex).padStart(2, "0");
   const totalLabel = String(cardTotal).padStart(2, "0");
+  const visualTypeLabel = visualType === "atmosphere" ? "横版氛围图" : "横版知识卡";
+  const visualTypeRule =
+    visualType === "atmosphere"
+      ? "本图是横版氛围图：只表达一个情绪、场景或视觉隐喻，文字只保留标题和 0-1 句短标注，不要做多模块知识卡。"
+      : "本图是横版知识卡：可以承载 2-4 个结构化信息区，用分区、箭头、图标帮助读者理解。";
 
   return `【文字渲染规则 - 严格遵守】
 （以下规则适用于豆包/即梦等国内绘画AI模型，使用Google/nano banana pro等工具可忽略）
@@ -343,13 +406,13 @@ function buildKnowledgeCardPromptText({
 
 ---
 
-【第${cardIndex}张图 - 独立完整的一张图，单独占据一个完整的3:4竖版画布，请勿与其他图合并】
+【第${cardIndex}张图 - 独立完整的一张公众号横版图，单独占据一个完整的横版画布，请勿与其他图合并】
 
 ## 整体风格说明（与本系列所有图保持一致）
 
 整体风格：手绘涂鸦笔记 (Sketchnote) 风格，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
 
-画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
+画幅比例：公众号正文横版图，默认 1080×608 或等比例 16:9
 
 ${styleGuide}
 
@@ -365,9 +428,12 @@ ${referenceImages}
 
 主题：${cardTheme}
 
+推荐类型：${visualTypeLabel}${visualRationale ? `（${visualRationale}）` : ""}
+类型规则：${visualTypeRule}
+
 构图：${cardLayoutHint}
 
-标题区（画面顶部15-20%）：
+标题区（画面左侧或上方 20-30% 安全区）：
 - 标题文字：\`${cardTitle}\`
 - 视觉设计：${titleVisualHint}
 - 序号标识：右上角标注"${indexLabel}/${totalLabel}"
@@ -784,6 +850,7 @@ export function planKnowledgeCardsFromArticle(
     sections.length > 0
       ? sections.slice(0, targetCount)
       : [{ heading: request.articleTitle || "文章主线", body: [request.rawText] }];
+  const articleVisualDecision = classifyArticleWechatVisualType(request.articleTitle, request.rawText);
 
   const cardPlan = normalizedSections.map((section, index) => {
     const summarySource = cleanText(section.body.join(" ") || section.heading);
@@ -802,6 +869,8 @@ export function planKnowledgeCardsFromArticle(
       index: index + 1,
       title,
       summary: summary || "等待文章内容补充后再生成摘要。",
+      visualType: articleVisualDecision.visualType,
+      visualRationale: articleVisualDecision.visualRationale,
       promptText: buildKnowledgeCardPromptText({
         styleGuide,
         referenceImages,
@@ -814,6 +883,8 @@ export function planKnowledgeCardsFromArticle(
         contentSections,
         decorationHint,
         endingLabel,
+        visualType: articleVisualDecision.visualType,
+        visualRationale: articleVisualDecision.visualRationale,
       }),
       theme,
       layoutHint,
@@ -877,7 +948,9 @@ export function planKnowledgeCardsFromArticle(
     analysis: {
       imageGenerationSource: {
         contentKind: "full-article-text",
-        strategy: `当前由模型策略“${splitStrategyLabel[request.splitStrategy]}”在 ${request.minCards}-${request.maxCards} 张范围内自动拆解，本次得到 ${cardPlan.length} 张知识卡。`,
+        strategy: `当前由模型策略“${splitStrategyLabel[request.splitStrategy]}”在 ${request.minCards}-${request.maxCards} 张范围内自动拆解，本次得到 ${cardPlan.length} 张公众号横版图；整篇文章统一采用${articleVisualDecision.visualType === "atmosphere" ? "横版氛围图" : "横版知识卡"}。`,
+        visualType: articleVisualDecision.visualType,
+        visualRationale: articleVisualDecision.visualRationale,
       },
       cardOutlineTitles: cardPlan.map((card) => card.title),
       keyQuotes,
@@ -1030,13 +1103,13 @@ export async function planWechatCoverWithLLM(
 function buildPrompt(request: PlannerRequest) {
   return `
 下面有三套并列的运行版基座：
-1. 小红书知识卡片提示词生成器：用于拆知识卡和生成知识卡 promptText。
+1. 公众号横版视觉图提示词生成器：用于拆公众号横版图，并按文章内容判断横版知识卡或横版氛围图。
 2. 公众号正文配图提示词生成器：用于先生成正文配图文案 / 绘图指令，再交给文生图。
 3. 公众号封面提示词生成器：用于生成 analysis.coverTheme.promptText。
 
-三者不能混用。正文配图不是知识卡片，公众号封面也不是知识卡片。
+三者不能混用。当前主链路面向公众号正文，不默认生成小红书 3:4 竖版图。
 
-【小红书知识卡片提示词生成器】
+【公众号横版视觉图提示词生成器】
 
 ${buildInjectedGeneratorBase(request)}
 
@@ -1053,8 +1126,12 @@ ${buildInjectedCoverBase(request)}
 - 卡片数量控制在 ${request.minCards}-${request.maxCards} 张。
 - 拆卡策略偏好：${request.splitStrategy}。
 - 每张卡的 promptText 是主产物，必须是完整绘图提示词，可以直接投喂绘图模型。
-- 每张卡必须是独立完整的一张 3:4 竖版图，不允许把多张卡合并到一张图。
-- 每张卡保留 3-4 个信息点，信息点要尽量来自原文，不要压缩成空泛金句。
+- 每张卡必须是独立完整的一张公众号横版图，不允许把多张卡合并到一张图。
+- 必须先按整篇文章判断一次 visualType，整篇文章只能二选一：信息密度高、方法/结构/机制/步骤/对比明显时选 "knowledge_card"；叙事、情绪、场景、隐喻、过渡段明显时选 "atmosphere"。
+- 同一篇文章内所有 cardPlan[].visualType 必须完全一致，不能有的图是知识卡、有的图是氛围图。
+- analysis.imageGenerationSource.visualType 必须写入整篇文章的统一选择，analysis.imageGenerationSource.visualRationale 必须说明为什么整篇文章选这个图型。
+- visualType = "knowledge_card" 时，每张图保留 2-4 个信息点，信息点要尽量来自原文，不要压缩成空泛金句。
+- visualType = "atmosphere" 时，只表达一个情绪、场景或视觉隐喻，文字只保留标题和 0-1 句短标注，不要做多模块知识卡。
 - 每条需要上图的文字都必须放在反引号里。
 - 每条文字都要绑定具体插画描述。
 - promptText 中的“整体风格说明”必须使用注入的视觉风格设定；如果有参考图，只作为风格、配色、构图参考，不要复制参考图里的文字。
@@ -1068,8 +1145,8 @@ ${buildInjectedCoverBase(request)}
 知识卡风格名称：${request.knowledgeCardStyleName}
 正文配图风格名称：${request.inlineImageStyleName}
 公众号封面风格名称：${request.coverStyleName || "极简纸本公众号封面"}
-卡片比例：${request.cardRatio}
-卡片尺寸：${request.cardWidth}x${request.cardHeight}
+公众号横版图比例：${request.cardRatio}
+公众号横版图尺寸：${request.cardWidth}x${request.cardHeight}
 
 文章全文：
 ${request.rawText}
@@ -1079,7 +1156,9 @@ ${request.rawText}
   "analysis": {
     "imageGenerationSource": {
       "contentKind": "full-article-text",
-      "strategy": "一句话说明这次拆图逻辑"
+      "strategy": "一句话说明这次拆图逻辑",
+      "visualType": "knowledge_card",
+      "visualRationale": "为什么整篇文章统一选择横版知识卡或横版氛围图"
     },
     "cardOutlineTitles": ["标题1", "标题2"],
     "keyQuotes": ["重点句1", "重点句2"],
@@ -1096,6 +1175,8 @@ ${request.rawText}
       "index": 1,
       "title": "卡片标题",
       "summary": "卡片摘要",
+      "visualType": "knowledge_card",
+      "visualRationale": "为什么这一张应该做横版知识卡或横版氛围图",
       "promptText": "完整绘图提示词",
       "theme": "本张图主题",
       "layoutHint": "上下对比型",
@@ -1172,7 +1253,7 @@ export async function planCardsWithLLM(request: PlannerRequest): Promise<Planner
         {
           role: "system",
           content:
-            "你是一个严格返回 JSON 的中文知识卡片提示词生成器。promptText 是最重要字段，必须像可直接投喂绘图模型的成熟提示词。sectionType 只能是 concept、quote、method、transition。",
+            "你是一个严格返回 JSON 的中文公众号横版视觉图提示词生成器。promptText 是最重要字段，必须像可直接投喂绘图模型的成熟提示词。visualType 只能是 knowledge_card 或 atmosphere；sectionType 只能是 concept、quote、method、transition。",
         },
         {
           role: "user",

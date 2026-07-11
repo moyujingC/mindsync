@@ -1,4 +1,9 @@
 import { DEFAULT_PRESET_KEYS, findPreset } from "../image-presets";
+import {
+  ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
+  ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+  ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
+} from "../style-guides";
 import type {
   CardPlan,
   InlineImagePlan,
@@ -64,29 +69,38 @@ const KNOWLEDGE_CARD_PROMPT_RULES = `【文字渲染规则 - 严格遵守】
 
 const KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK = `## 整体风格说明（与本系列所有图保持一致）
 
-整体风格：极简纸本信息板，像一张整理好的纸本研究板，使用纸张拼贴、便签、小图框、胶带、色板和铅笔元素
+整体风格：企业AI手绘白板，像一张成熟的商业手绘讲解图，所有线条和图形带有轻微手绘感，不要过于僵硬和完美
 
-画幅比例：独立的3:4竖版（宽750px × 高1000px 或等比例）
+画幅比例：公众号正文横版图，默认 1080×608 或等比例 16:9
 
-视觉风格：极简纸本信息板
+视觉风格：温白纸面、低饱和水彩色块、黑色手写标题、虚线框、流程箭头、白板、便签、电脑、AI机器人和业务场景人物
 
-背景：温白、浅米白或浅灰白纸张底，轻微纸纹、扫描感和纸张阴影
+背景：温白、浅米色或浅绿米白纸张纹理，允许轻微纸纹、水彩笔涂抹、手绘边框和扫描感
 
-配色：米白、纸灰、浅雾蓝、灰蓝、浅卡其、暖灰、深墨黑，强调色保持低饱和
+配色：黑色线稿为主，低饱和黄、绿、红、蓝、奶油橙、淡粉作为分区强调色
 
-字体：中文标题清楚有质感，可用粗宋体/现代 serif 感或高质感黑体；信息点可像打印体或清晰手写注释`;
+字体：清晰可辨的中文手写体风格，标题可用粗马克笔感，模块文字必须清楚可读`;
 
 const KNOWLEDGE_CARD_PROMPT_CUSTOM_STYLE_BLOCK = `## 当前项目硬性约束
 
+- 每张图必须是独立完整的一张公众号横版画布，不要把多张图拼在同一画布里
 - 版面优先服务信息阅读，不要把画面做成纯装饰海报
-- 保持纸本拼贴质感，但不要复杂到失去留白
-- 不要手绘涂鸦儿童感，不要卡通贴纸感，不要科技霓虹，不要营销海报感`;
+- 位置必须具体到容器，例如横幅、圆形框、便签卡片、流程节点、底部页脚
+- 插画必须和文字绑定描述，所有需要显示的文字必须用反引号包裹
+- 不要真实照片感、不要 3D 渲染、不要二次元角色、不要科技霓虹、不要强商业海报`;
+
+export const KNOWLEDGE_CARD_NEGATIVE_PROMPT =
+  "高饱和、霓虹、强商业海报、真实照片、3D渲染、二次元角色、复杂背景、低清文字、错别字、未用反引号的额外文字、多张图挤在同一画布、小红书竖版卡片";
+
+export const KNOWLEDGE_CARD_STYLE_NAME = "企业AI手绘白板";
 
 export function buildKnowledgeCardPrompt({
   articleTitle,
   cardIndex,
   cardTotal,
   promptText,
+  visualType,
+  visualRationale,
   cardTitle,
   cardSummary,
   cardTheme,
@@ -103,6 +117,8 @@ export function buildKnowledgeCardPrompt({
   cardIndex: number;
   cardTotal: number;
   promptText?: string;
+  visualType?: "knowledge_card" | "atmosphere";
+  visualRationale?: string;
   cardTitle: string;
   cardSummary: string;
   cardTheme?: string;
@@ -122,14 +138,25 @@ export function buildKnowledgeCardPrompt({
   cardEndingLabel?: string;
   bodyPreview: string;
 }) {
+  const visualTypeLabel = visualType === "atmosphere" ? "横版氛围图" : "横版知识卡";
+  const visualTypeRule =
+    visualType === "atmosphere"
+      ? "- 本图是横版氛围图：只表达一个情绪、场景或视觉隐喻，文字只保留标题和 0-1 句短标注，不要做多模块知识卡。"
+      : "- 本图是横版知识卡：可以承载 2-4 个结构化信息区，用分区、箭头、图标帮助读者理解。";
+
   if (promptText?.trim()) {
     return `${promptText.trim()}
 
 ## 当前项目硬性约束
 
-- 严格遵守上方“整体风格说明”里的风格设定，不要自行切换成其他视觉风格
+- 这是一张独立完整的公众号横版图，占满单张画布，不要与其他图合并
+- 推荐类型：${visualTypeLabel}${visualRationale ? `；选择理由：${visualRationale}` : ""}
+${visualTypeRule}
+- 整体采用企业AI手绘白板风格，线条有手绘感，但信息必须清楚可读
 - 版面优先服务信息阅读，不要把画面做成纯装饰海报
-- 手绘感可以保留，但不要过度可爱，不要太像儿童贴纸`;
+- 所有需要显示的文字必须用反引号包裹并原样呈现
+- 每个元素必须说明它所在的容器；插画必须绑定到对应文字旁边
+- 不要真实照片感、不要 3D 渲染、不要二次元角色、不要科技霓虹、不要强商业海报`;
   }
 
   const textBlocks = (cardTextBlocks || []).filter(Boolean).slice(0, 4);
@@ -171,7 +198,7 @@ ${lowerRendered}` : ""}`;
 
 ---
 
-【第${cardIndex}张图 - 独立完整的一张图，单独占据一个完整的3:4竖版画布，请勿与其他图合并】
+【第${cardIndex}张图 - 独立完整的一张公众号横版图，单独占据一个完整的横版画布，请勿与其他图合并】
 
 ${KNOWLEDGE_CARD_PROMPT_STYLE_BLOCK}
 
@@ -185,9 +212,12 @@ ${KNOWLEDGE_CARD_PROMPT_CUSTOM_STYLE_BLOCK}
 
 主题：${cardTheme || cardSummary}
 
+推荐类型：${visualTypeLabel}${visualRationale ? `（${visualRationale}）` : ""}
+${visualTypeRule}
+
 构图：${cardLayoutHint || "竖向递进卡片型"}
 
-标题区（画面顶部15-20%）：
+标题区（画面左侧或上方 20-30% 安全区）：
 - 标题文字：\`${cardTitle}\`
 - 视觉设计：${cardTitleVisualHint || `放在醒目的浅绿色圆角横幅内，旁边画一个与“${cardTitle}”相关的简笔画插图`}
 - 序号标识：右上角标注"${indexLabel}/${totalLabel}"
@@ -432,6 +462,8 @@ export function buildGenerationTasks({
               cardIndex: card.index,
               cardTotal: planning.cardPlan.length,
               promptText: card.promptText,
+              visualType: card.visualType,
+              visualRationale: card.visualRationale,
               cardTitle: card.title,
               cardSummary: card.summary,
               cardTheme: card.theme,
@@ -444,15 +476,16 @@ export function buildGenerationTasks({
               cardEndingLabel: card.endingLabel,
               bodyPreview,
             }),
-            negativePrompt: "高饱和、霓虹、强对比、卡通、复杂装饰、营销感排版",
+            negativePrompt: KNOWLEDGE_CARD_NEGATIVE_PROMPT,
             width: preset.w,
             height: preset.h,
             count: 1,
             purposeKey: "xhs_card",
-            purposeLabel: "小红书图文 / 知识卡片",
+            purposeLabel: "公众号横版图 / 知识卡或氛围图",
             presetKey: preset.k,
             presetLabel: preset.label,
-            styleName: "极简纸本信息板",
+            styleName: KNOWLEDGE_CARD_STYLE_NAME,
+            referenceImages: ENTERPRISE_AI_WHITEBOARD_REFERENCE_IMAGES,
             cardLink: {
               index: card.index,
               title: card.title,
@@ -472,7 +505,7 @@ export function buildGenerationTasks({
     const preset = findPreset(DEFAULT_PRESET_KEYS.wechatCover)?.preset;
     if (preset) {
       const coverTheme = planning.analysis.coverTheme;
-      const fallbackCoverPrompt = `为公众号文章《${articleTitle}》生成 1 张封面图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。封面只做入口图，不做知识卡，不放正文段落。保留清晰标题区，使用极简纸本信息板风格：温白纸面、纸张拼贴、便签、胶带、低饱和雾蓝与暖灰。文章摘要：${bodyPreview}。`;
+      const fallbackCoverPrompt = `为公众号文章《${articleTitle}》生成 1 张封面图。封面主题是“${coverTheme.title}”，关键词：${coverTheme.keywords}。画幅 900×383，2.35:1 横版。封面只做入口图，不做知识卡，不放正文段落。标题必须使用文章原标题 \`${articleTitle}\`，放在中心安全区，中心 383×383 裁切后仍完整可读。使用企业AI手绘白板公众号封面风格：温白纸面、淡蓝和浅黄水彩底、黑色手写大标题、虚线路径、城市楼宇、数据库、流程图、组织结构、电脑报表、AI机器人、齿轮和文件夹等企业 AI 图标环绕。文章摘要：${bodyPreview}。`;
       tasks.push({
         articleTitle,
         prompt: coverTheme.promptText?.trim() || fallbackCoverPrompt,
@@ -484,7 +517,8 @@ export function buildGenerationTasks({
         purposeLabel: "公众号封面",
         presetKey: preset.k,
         presetLabel: preset.label,
-        styleName: "极简纸本公众号封面",
+        styleName: ENTERPRISE_AI_WECHAT_COVER_STYLE_NAME,
+        referenceImages: ENTERPRISE_AI_WECHAT_COVER_REFERENCE_IMAGES,
         coverLink: {
           index: 1,
           title: "公众号封面",
