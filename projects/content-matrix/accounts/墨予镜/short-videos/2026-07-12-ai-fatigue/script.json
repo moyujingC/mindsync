@@ -1,0 +1,31 @@
+{
+  "title": "重度使用 AI 后，为什么反而更累？",
+  "subtitle": "墨予镜 | AI 工作系统笔记",
+  "avatarImage": "projects/content-matrix/accounts/墨予镜/assets/logo/moyujing-logo-current.png",
+  "outputName": "douyin-xhs-ai-fatigue-demo.mp4",
+  "titleSize": 64,
+  "bodySize": 54,
+  "cta": "如果你也有这种疲惫感，可以先从收口机制开始。",
+  "scenes": [
+    {
+      "duration": 4,
+      "text": "我原本以为，AI 会让我更轻松。"
+    },
+    {
+      "duration": 4,
+      "text": "真正重度使用后才发现，最累的不是执行。"
+    },
+    {
+      "duration": 5,
+      "text": "AI 把很多事变得可行，也把待判断的事情变多了。"
+    },
+    {
+      "duration": 5,
+      "text": "每一次输出，都要人来判断：能不能用，要不要改，什么时候停。"
+    },
+    {
+      "duration": 5,
+      "text": "所以疲惫的根源，不是工具不会用，而是缺少收口机制。"
+    }
+  ]
+}
