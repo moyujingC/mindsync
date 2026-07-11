@@ -62,7 +62,14 @@ function renderReferenceImages(referenceImages: GenerateImagesRequest["reference
   return `默认参考图（用于统一公众号封面和知识卡片的视觉风格，不要照抄构图或文字）：\n${rendered}`;
 }
 
-function resolveModelSize(width: number, height: number) {
+function resolveModelSize(request: GenerateImagesRequest) {
+  if (request.purposeKey === "wx_cover") {
+    // WeChat covers depend on the exact 900x383 composition; cropping a generic
+    // landscape generation breaks the title safe area.
+    return `${request.width}x${request.height}`;
+  }
+
+  const { width, height } = request;
   if (width === height) return "1024x1024";
   return width > height ? "1536x1024" : "1024x1536";
 }
@@ -194,7 +201,7 @@ export async function generateImagesWithModel(request: GenerateImagesRequest) {
   const body = JSON.stringify({
     model,
     prompt: buildPrompt(request),
-    size: resolveModelSize(request.width, request.height),
+    size: resolveModelSize(request),
     quality: "high",
     n: request.count,
   });
