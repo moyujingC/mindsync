@@ -4,7 +4,8 @@ import type {
   PlannerRequest,
   PlannerResponse,
 } from "./content-planning";
-import type { GenerationRecord } from "./workspace";
+import type { GeneratedImageItem, GenerationRecord } from "./workspace";
+import { blobToDataUrl, ensureWechatImageMaxWidthBlob } from "./wechat-image-utils";
 
 export type GenerateImagesRequest = {
   articleTitle: string;
@@ -108,7 +109,7 @@ export async function postGenerateImages(request: GenerateImagesRequest) {
     throw new Error(readApiErrorMessage(payload, `${request.purposeLabel} 生成失败`));
   }
 
-  return payload as GenerationRecord;
+  return await normalizeWechatGeneratedRecord(payload as GenerationRecord);
 }
 
 export async function downloadGeneratedImage(url: string) {
@@ -117,7 +118,7 @@ export async function downloadGeneratedImage(url: string) {
     if (!response.ok) {
       throw new Error("读取内嵌图片失败");
     }
-    return await response.blob();
+    return await ensureWechatImageMaxWidthBlob(await response.blob());
   }
 
   const response = await fetch(`/api/download-image?url=${encodeURIComponent(url)}`);
@@ -126,5 +127,27 @@ export async function downloadGeneratedImage(url: string) {
     throw new Error(readApiErrorMessage(payload || {}, "下载图片失败"));
   }
 
-  return await response.blob();
+  return await ensureWechatImageMaxWidthBlob(await response.blob());
+}
+
+async function normalizeWechatGeneratedRecord(record: GenerationRecord) {
+  const images = await Promise.all(
+    record.images.map(async (image) => ({
+      ...image,
+      imageUrl: await normalizeWechatGeneratedImageUrl(image),
+    }))
+  );
+
+  return {
+    ...record,
+    images,
+  };
+}
+
+async function normalizeWechatGeneratedImageUrl(image: GeneratedImageItem) {
+  try {
+    return await blobToDataUrl(await downloadGeneratedImage(image.imageUrl));
+  } catch {
+    return image.imageUrl;
+  }
 }

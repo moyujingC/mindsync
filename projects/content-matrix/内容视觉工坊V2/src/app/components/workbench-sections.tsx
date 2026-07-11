@@ -32,6 +32,7 @@ import type {
   WorkbenchStatusMessage,
 } from "../workspace";
 import { downloadGeneratedImage } from "../api";
+import { WECHAT_IMAGE_MAX_WIDTH } from "../wechat-image-utils";
 import { formatScopeLabel } from "./use-workbench-controller";
 
 export function WorkbenchLeftSidebar({
@@ -1010,7 +1011,7 @@ function WorkbenchResultsPanel({
     try {
       const blob = await downloadGeneratedImage(url);
       downloadBlob(blob, filename);
-      setExportFeedback(`已开始下载：${filename}`);
+      setExportFeedback(`已开始下载：${filename}，已限制宽度不超过 ${WECHAT_IMAGE_MAX_WIDTH}px`);
     } catch {
       const link = document.createElement("a");
       link.href = url;
@@ -1071,7 +1072,7 @@ function WorkbenchResultsPanel({
         zipBlob,
         `${slugifyFilename(currentArticle.title || "content-visual")}-all-assets.zip`
       );
-      setExportFeedback(`已打包 ${files.length} 个文件，开始下载 zip 压缩包`);
+      setExportFeedback(`已打包 ${files.length} 个文件，开始下载 zip 压缩包，图片宽度不超过 ${WECHAT_IMAGE_MAX_WIDTH}px`);
     } catch (error) {
       setExportFeedback(error instanceof Error ? `全部下载失败：${error.message}` : "全部下载失败");
     } finally {
@@ -1118,7 +1119,7 @@ function WorkbenchResultsPanel({
         zipBlob,
         `${slugifyFilename(currentArticle.title || "content-visual")}-release-assets.zip`
       );
-      setExportFeedback(`已打包 ${files.length} 个定稿文件，开始下载 zip 压缩包`);
+      setExportFeedback(`已打包 ${files.length} 个定稿文件，开始下载 zip 压缩包，图片宽度不超过 ${WECHAT_IMAGE_MAX_WIDTH}px`);
     } catch (error) {
       setExportFeedback(
         error instanceof Error ? `导出定稿失败：${error.message}` : "导出定稿失败"
