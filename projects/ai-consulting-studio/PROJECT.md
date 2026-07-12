@@ -72,6 +72,7 @@
 - [个人专属 Skills 搭建方法原文](references/2026-07-07-个人专属Skills搭建方法-原文.md)
 - [YouMind 内容生产与 Skill 变现案例参考](references/2026-07-11-YouMind内容生产与Skill变现案例参考.md)
 - [YouMind 内容生产与 Skill 变现案例原文](references/2026-07-11-YouMind内容生产与Skill变现案例-原文.md)
+- [Paperclip 原生成熟度评估](references/2026-07-12-Paperclip原生成熟度评估.md)
 - [海外 AI 产品转型企业 AI 服务参考](references/2026-07-07-海外AI产品转型企业AI服务参考.md)
 - [海外 AI 产品转型企业 AI 服务原文](references/2026-07-07-海外AI产品转型企业AI服务-原文.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
