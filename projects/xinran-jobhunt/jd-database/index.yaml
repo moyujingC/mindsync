@@ -1,5 +1,5 @@
 version: 0.1.0
-last_updated: 2026-07-08
+last_updated: 2026-07-12
 description: >
   馨冉求职 JD 数据库总索引。每次新增岗位时，同时补一条索引记录。
 
@@ -147,7 +147,8 @@ jobs:
     role_title: "AI产品经理"
     city: "上海"
     source_platform: "BOSS直聘"
-    status: "analyzed"
+    status: "applied"
+    applied_at: "2026-07-12"
     primary_track: "ai-consulting"
     match_score: 88
     file: "jobs/2026-06-08-英湃（成都）科技有限公司-AI产品经理.md"
@@ -901,7 +902,8 @@ jobs:
     role_title: "AI应用产品经理"
     city: "上海"
     source_platform: "BOSS直聘"
-    status: "analyzed"
+    status: "applied"
+    applied_at: "2026-07-12"
     primary_track: "ai-pm"
     match_score: 88
     file: "jobs/2026-07-09-蛮啾网络-AI应用产品经理.md"
@@ -918,3 +920,99 @@ jobs:
       - "AI应用推广"
       - "培训"
       - "方法论建设"
+  - job_id: "2026-07-09-jie-luo-xuan-ai-product-manager-001"
+    captured_at: "2026-07-09"
+    company: "解螺旋（上海）医药科技"
+    role_title: "AI产品经理"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "applied"
+    applied_at: "2026-07-12"
+    primary_track: "ai-pm"
+    match_score: 82
+    file: "jobs/2026-07-09-解螺旋（上海）医药科技-AI产品经理.md"
+    keywords: ["AI Agent", "0到1", "Python", "JavaScript", "Vibe Coding", "快速验证"]
+  - job_id: "2026-07-09-anonymous-famous-internet-ai-pm-shanghai-001"
+    captured_at: "2026-07-09"
+    company: "某知名互联网公司"
+    role_title: "AI产品经理-上海"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "applied"
+    applied_at: "2026-07-12"
+    primary_track: "ai-pm"
+    match_score: 78
+    file: "jobs/2026-07-09-某知名互联网公司-AI产品经理上海.md"
+    keywords: ["AI驱动产品", "用户研究", "A/B测试", "Cursor", "Agent", "Vibe Coding"]
+  - job_id: "2026-07-09-shanghai-code-line-senior-ai-pm-001"
+    captured_at: "2026-07-09"
+    company: "上海代码一行科技"
+    role_title: "高级AI产品经理"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "applied"
+    applied_at: "2026-07-12"
+    primary_track: "ai-pm"
+    match_score: 76
+    file: "jobs/2026-07-09-上海代码一行科技-高级AI产品经理.md"
+    keywords: ["AI产品规划", "需求分析", "用户增长", "用户体验", "竞品分析"]
+  - job_id: "2026-07-09-sword-ai-experience-product-lead-001"
+    captured_at: "2026-07-09"
+    company: "斯沃德股份"
+    role_title: "AI体验产品负责人"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "applied"
+    applied_at: "2026-07-12"
+    primary_track: "ai-pm"
+    match_score: 83
+    file: "jobs/2026-07-09-斯沃德股份-AI体验产品负责人.md"
+    keywords: ["儿童成长", "AI Agent", "Prompt", "Memory", "RAG", "用户留存"]
+  - job_id: "2026-07-09-yizhi-technology-ai-product-manager-001"
+    captured_at: "2026-07-09"
+    company: "壹智科技"
+    role_title: "ai产品经理"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "applied"
+    applied_at: "2026-07-12"
+    primary_track: "ai-pm"
+    match_score: 85
+    file: "jobs/2026-07-09-壹智科技-ai产品经理.md"
+    keywords: ["toAI Agent", "PRD", "LLM", "NLP", "机器学习", "AIGC"]
+  - job_id: "2026-07-09-jiangsu-zhuoyi-ai-agent-platform-pm-001"
+    captured_at: "2026-07-09"
+    company: "江苏卓易信息科技"
+    role_title: "AI Agent产品经理（平台 / 基础设施方向）"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "applied"
+    applied_at: "2026-07-12"
+    primary_track: "fde"
+    match_score: 90
+    file: "jobs/2026-07-09-江苏卓易信息科技-AI-Agent产品经理平台基础设施方向.md"
+    keywords: ["Agent Infra", "Coding Agent", "Context", "eval", "DevTools", "MCP"]
+  - job_id: "2026-07-09-shenwang-senior-toc-ai-agent-pm-001"
+    captured_at: "2026-07-09"
+    company: "深望科技"
+    role_title: "AI高级产品经理—ToC（AI Agent）"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "applied"
+    applied_at: "2026-07-12"
+    primary_track: "ai-pm"
+    match_score: 79
+    file: "jobs/2026-07-09-深望科技-AI高级产品经理ToC-AI-Agent.md"
+    keywords: ["ToC", "AI Agent", "用户体验", "RAG", "医疗合规", "数据驱动"]
+  - job_id: "2026-07-10-shanghai-nengliang-finance-product-gm-j02470-001"
+    captured_at: "2026-07-10"
+    company: "上海能良"
+    role_title: "产品总经理（业财方向）（J02470）"
+    city: "上海"
+    source_platform: "BOSS直聘"
+    status: "applied"
+    applied_at: "2026-07-12"
+    primary_track: "ai-pm"
+    match_score: 61
+    file: "jobs/2026-07-10-上海能良-产品总经理业财方向-J02470.md"
+    keywords: ["业财一体化", "ERP", "经营分析", "智能对账", "复杂B端", "AI技术应用"]

@@ -78,6 +78,7 @@ YYYY-MM-DD-公司-岗位.md
 - `new`：刚录入，未分析完成
 - `parsed`：文字版 JD 已整理
 - `analyzed`：已完成岗位分析
+- `applied`：已完成岗位分析，且用户已确认投递
 - `archived`：已过期或不再跟进
 
 ## 轨道字段约定
