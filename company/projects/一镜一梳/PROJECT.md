@@ -64,6 +64,7 @@
 - [content/一镜一梳-首批选题清单.md](../../../company/projects/一镜一梳/content/一镜一梳-首批选题清单.md)
 - [content/一镜一梳-启号首发内容大纲.md](../../../company/projects/一镜一梳/content/一镜一梳-启号首发内容大纲.md)
 - [content/2026-06-09-一镜一梳-运营计划与营收预期.md](../../../company/projects/一镜一梳/content/2026-06-09-一镜一梳-运营计划与营收预期.md)
+- [content/2026-07-13-一镜一梳-单节疗愈体验课销售包.md](../../../company/projects/一镜一梳/content/2026-07-13-一镜一梳-单节疗愈体验课销售包.md)
 
 如果任务明确是发布到 `墨予镜` 个人号的一镜一梳相关内容，再继续进入：
 
