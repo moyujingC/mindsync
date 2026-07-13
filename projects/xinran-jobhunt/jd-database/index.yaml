@@ -1240,3 +1240,21 @@ jobs:
   - 智能Agent
   - 技术协同
   - 产品增长
+- job_id: 2026-07-13-shanghai-ai-innovation-center-ai-product-manager-001
+  captured_at: '2026-07-13'
+  company: 上海人工智能创新中心
+  role_title: ai产品经理
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-pm
+  match_score: 83
+  file: jobs/2026-07-13-上海人工智能创新中心-ai产品经理.md
+  keywords:
+  - AI产品经理
+  - 解决方案对接
+  - 客户需求
+  - PRD
+  - 项目推进
+  - 上线监控
