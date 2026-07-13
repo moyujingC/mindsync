@@ -4,6 +4,8 @@ captured_at: '2026-06-08'
 source_platform: BOSS直聘
 source_type: screenshot
 status: applied
+application_status: applied
+recruitment_status: open
 applied_at: '2026-07-13'
 company: 上海瀚讯信息技术股份有限公司
 role_title: AI native产品原型 / Builder
@@ -58,6 +60,7 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：FDE
 - 匹配分：82/100
+- 招聘状态：招聘中
 - 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD

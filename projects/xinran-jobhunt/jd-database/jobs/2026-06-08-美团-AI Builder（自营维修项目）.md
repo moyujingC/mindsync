@@ -4,6 +4,8 @@ captured_at: '2026-06-08'
 source_platform: BOSS直聘
 source_type: screenshot
 status: applied
+application_status: applied
+recruitment_status: open
 applied_at: '2026-07-13'
 company: 美团
 role_title: AI Builder（自营维修项目）
@@ -55,6 +57,7 @@ risks:
 - 主轨道：FDE
 - 次轨道：AI 产品经理
 - 匹配分：78/100
+- 招聘状态：招聘中
 - 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD

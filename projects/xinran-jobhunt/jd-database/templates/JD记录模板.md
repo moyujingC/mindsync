@@ -4,6 +4,8 @@ captured_at: ""
 source_platform: ""
 source_type: "screenshot"
 status: "applied"
+application_status: "applied"
+recruitment_status: "open"
 applied_at: "2026-07-13"
 
 company: ""
@@ -34,6 +36,7 @@ risks: []
 - 薪资：
 - 主轨道：
 - 匹配分：
+- 招聘状态：招聘中
 - 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD

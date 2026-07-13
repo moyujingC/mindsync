@@ -1150,3 +1150,57 @@ jobs:
   - 原型
   - PPT
   - Agent
+- job_id: 2026-07-13-excelfore-ai-product-manager-rd-001
+  captured_at: '2026-07-13'
+  company: Excelfore
+  role_title: AI产品经理（懂研发）
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: fde
+  match_score: 89
+  file: jobs/2026-07-13-Excelfore-AI产品经理（懂研发）.md
+  keywords:
+  - AI应用产品
+  - roadmap
+  - PRD
+  - LangChain
+  - RAG
+  - Python
+- job_id: 2026-07-13-dongnian-emergence-ai-native-builder-001
+  captured_at: '2026-07-13'
+  company: 动念涌现
+  role_title: AI Native Builder
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-pm
+  match_score: 84
+  file: jobs/2026-07-13-动念涌现-AI Native Builder.md
+  keywords:
+  - AI Native
+  - Builder
+  - Cursor
+  - Claude
+  - Demo
+  - C端娱乐
+- job_id: 2026-07-13-anonymous-ecommerce-ai-pm-smart-cs-001
+  captured_at: '2026-07-13'
+  company: 上海某大型电子商务公司
+  role_title: AI产品经理-智能客服方向
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-pm
+  match_score: 86
+  file: jobs/2026-07-13-上海某大型电子商务公司-AI产品经理-智能客服方向.md
+  keywords:
+  - 智能客服
+  - Agent
+  - 对话引擎
+  - 知识识别
+  - 知识库
+  - 质检

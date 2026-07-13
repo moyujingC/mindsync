@@ -4,6 +4,8 @@ captured_at: '2026-06-09'
 source_platform: LinkedIn公开职位页
 source_type: public_job_page
 status: applied
+application_status: applied
+recruitment_status: open
 applied_at: '2026-07-13'
 company: 字节跳动
 role_title: 豆包AI大模型FDE（Forward Deployed Engineer）-火山方舟MaaS
@@ -57,6 +59,7 @@ risks:
 - 主轨道：FDE
 - 次轨道：AI 转型咨询顾问
 - 匹配分：94/100
+- 招聘状态：招聘中
 - 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD

@@ -4,6 +4,8 @@ captured_at: '2026-07-09'
 source_platform: BOSS直聘
 source_type: screenshot
 status: applied
+application_status: applied
+recruitment_status: open
 applied_at: '2026-07-13'
 company: Inspire Group
 role_title: ai产品经理
@@ -59,6 +61,7 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：AI 转型咨询顾问
 - 匹配分：72/100
+- 招聘状态：招聘中
 - 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD

@@ -4,6 +4,8 @@ captured_at: '2026-06-09'
 source_platform: LinkedIn公开职位页
 source_type: public_job_page
 status: applied
+application_status: applied
+recruitment_status: open
 applied_at: '2026-07-13'
 company: 药明生物
 role_title: Agent AI Product Manager
@@ -56,6 +58,7 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：FDE
 - 匹配分：90/100
+- 招聘状态：招聘中
 - 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD

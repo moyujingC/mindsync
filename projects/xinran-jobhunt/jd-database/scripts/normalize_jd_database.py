@@ -27,6 +27,8 @@ ORDERED_FRONTMATTER = [
     ("source_platform", ""),
     ("source_type", "screenshot"),
     ("status", "applied"),
+    ("application_status", "applied"),
+    ("recruitment_status", "open"),
     ("applied_at", TODAY),
     ("company", ""),
     ("role_title", ""),
@@ -105,6 +107,12 @@ def normalize_frontmatter(frontmatter: dict, body: str) -> OrderedDict:
             value = has_boss
         elif key == "status":
             value = "applied"
+        elif key == "application_status":
+            existing = frontmatter.get(key)
+            value = str(existing) if existing else "applied"
+        elif key == "recruitment_status":
+            existing = frontmatter.get(key)
+            value = str(existing) if existing else "open"
         elif key == "applied_at":
             existing = frontmatter.get(key)
             value = str(existing) if existing else TODAY
@@ -124,6 +132,11 @@ def track_label(track: str) -> str:
 
 
 def summary_block(frontmatter: OrderedDict) -> str:
+    recruitment_label_map = {
+        "open": "招聘中",
+        "paused": "暂停招聘",
+        "closed": "停止招聘",
+    }
     lines = [
         "# 岗位摘要",
         "",
@@ -137,6 +150,8 @@ def summary_block(frontmatter: OrderedDict) -> str:
     if secondary:
         lines.append(f"- 次轨道：{track_label(secondary)}")
     lines.append(f'- 匹配分：{frontmatter["match_score"]}/100')
+    recruitment_status = str(frontmatter["recruitment_status"]).strip()
+    lines.append(f'- 招聘状态：{recruitment_label_map.get(recruitment_status, recruitment_status or "招聘中")}')
     lines.append(f'- 投递状态：已投递（{frontmatter["applied_at"]}）')
     return "\n".join(lines) + "\n"
 

@@ -4,6 +4,8 @@ captured_at: '2026-06-09'
 source_platform: BOSS直聘
 source_type: shared_image
 status: applied
+application_status: applied
+recruitment_status: open
 applied_at: '2026-07-13'
 company: 上海某大型保险上市公司
 role_title: AI产品经理（金融）（国Qi）大模型/Agent
@@ -55,6 +57,7 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：AI 转型咨询顾问
 - 匹配分：72/100
+- 招聘状态：招聘中
 - 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD

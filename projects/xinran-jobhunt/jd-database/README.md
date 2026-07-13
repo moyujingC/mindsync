@@ -80,6 +80,8 @@ YYYY-MM-DD-公司-岗位.md
 ## 状态字段约定
 
 - 当前这套录入工作流统一使用 `applied`
+- `application_status` 表示投递状态，当前默认写 `applied`
+- `recruitment_status` 表示招聘状态，默认写 `open`；如果后续确认停招，可手动改成 `closed`
 - `applied_at` 默认写录入当天；如果用户明确给出真实投递日期，再按真实日期覆盖
 - 历史文档中出现过 `new / parsed / analyzed / archived`，现已统一收敛到 `applied`
 

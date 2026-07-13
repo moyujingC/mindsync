@@ -15,6 +15,8 @@ REQUIRED_FRONTMATTER = {
     "source_platform",
     "source_type",
     "status",
+    "application_status",
+    "recruitment_status",
     "applied_at",
     "company",
     "role_title",
@@ -89,6 +91,8 @@ def main() -> int:
             return fail(f"{rel_file} 的 job_id 与 index.yaml 不一致")
         if frontmatter.get("status") != "applied":
             return fail(f"{rel_file} 状态不是 applied")
+        if frontmatter.get("application_status") != "applied":
+            return fail(f"{rel_file} 的 application_status 不是 applied")
         if not frontmatter.get("applied_at"):
             return fail(f"{rel_file} 缺少 applied_at")
 
