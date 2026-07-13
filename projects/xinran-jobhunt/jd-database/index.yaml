@@ -1276,3 +1276,21 @@ jobs:
   - AI伦理
   - 数字人INFRA
   - LLM
+- job_id: 2026-07-13-knowledge-lab-ai-product-manager-001
+  captured_at: '2026-07-13'
+  company: 知识实验室
+  role_title: ai产品经理
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-pm
+  match_score: 86
+  file: jobs/2026-07-13-知识实验室-ai产品经理.md
+  keywords:
+  - AIGC
+  - 大模型
+  - DeepSeek
+  - RAG
+  - Coze
+  - 商业闭环
