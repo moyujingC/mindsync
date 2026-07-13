@@ -170,6 +170,21 @@ def append_if_missing(body: str, heading: str, content: str) -> str:
     return body.rstrip() + "\n\n" + content.strip() + "\n"
 
 
+def insert_before_first_existing_heading(body: str, heading: str, content: str, before_headings: list[str]) -> str:
+    if heading in body:
+        return body
+
+    insertion = content.strip() + "\n\n"
+    positions = [body.find(item) for item in before_headings if body.find(item) != -1]
+    if not positions:
+        return body.rstrip() + "\n\n" + content.strip() + "\n"
+
+    index = min(positions)
+    prefix = body[:index].rstrip()
+    suffix = body[index:].lstrip("\n")
+    return f"{prefix}\n\n{insertion}{suffix}"
+
+
 def bullet_section(title: str, items: list[str]) -> str:
     lines = [title, ""]
     if items:
@@ -226,6 +241,92 @@ def build_match_section(frontmatter: OrderedDict, has_boss: bool) -> str:
     return "\n".join(lines)
 
 
+def top_keywords(frontmatter: OrderedDict, limit: int = 4) -> str:
+    keywords = [str(item) for item in frontmatter["keywords"] if str(item).strip()]
+    return "、".join(keywords[:limit]) if keywords else "AI 产品落地、业务场景拆解、跨团队协作"
+
+
+def build_application_message_section(frontmatter: OrderedDict) -> str:
+    role = str(frontmatter["role_title"]).strip() or "这个岗位"
+    company = str(frontmatter["company"]).strip() or "贵公司"
+    keyword_text = top_keywords(frontmatter, 3)
+    primary_track = track_label(str(frontmatter["primary_track"])) or "AI 产品 / 方案落地方向"
+    return "\n".join(
+        [
+            "## 投递消息建议",
+            "",
+            "把投递时发给平台 / HR / 招聘方的首条消息写在这里，默认控制在 80-150 字，可直接复制发送。",
+            "",
+            "### 可直接发送版本",
+            "",
+            f"- 你好，我关注到 `{role}` 这条岗位。我过往经历覆盖 {primary_track}、AI 工作流和业务问题拆解，对 {keyword_text} 这类要求有持续实践。如果你们希望找一位能把 AI 能力转成具体产品 / 方案并推进落地的人，我希望进一步沟通。",
+            "",
+            "### 可替换变量",
+            "",
+            f"- 你的岗位理解：{role} / {keyword_text}",
+            "- 你最该强调的相关经验：AI 工作流、Agent / 知识库、业务流程拆解、跨团队推进",
+            f"- 如果对方是 HR / 直属负责人，语气要怎么调整：对 HR 强调方向匹配和可沟通；对负责人强调你能围绕 {company} 的业务场景拆需求、做方案并推动落地",
+        ]
+    )
+
+
+def build_gap_section(frontmatter: OrderedDict) -> str:
+    must_haves = frontmatter["must_have"][:3]
+    risks = frontmatter["risks"][:2]
+    required_abilities = must_haves or ["把岗位要求转成可交付方案的能力", "围绕业务场景验证 AI 产品价值的能力", "跨业务、产品、技术多方推进的能力"]
+    required_evidence = risks or ["更具体的项目证据和量化结果", "能说明从需求、方案到落地闭环的案例"]
+    return "\n".join(
+        [
+            "## 提高匹配度需要补足的能力",
+            "",
+            "如果要认真应聘这个岗位，并把匹配度继续往上拉，需要补哪些能力、证据或表达，按轻重缓急写清楚。",
+            "",
+            "### 需要补足的能力",
+            "",
+            *[f"- {item}" for item in required_abilities],
+            "",
+            "### 需要补足的证据",
+            "",
+            *[f"- {item}" for item in required_evidence],
+            "",
+            "### 建议补足方式",
+            "",
+            "- 面试前把现有 AI 项目整理成一条“业务问题 → 方案设计 → 工具 / 模型选择 → 落地结果”的闭环案例",
+            "- 针对岗位关键词补一页速记，重点准备业务场景、指标、边界和协作对象",
+            "- 暂不为了单条 JD 发明新经历，只补真实项目中已经发生过、但简历表达不足的证据",
+        ]
+    )
+
+
+def build_resume_advice_section(frontmatter: OrderedDict) -> str:
+    keyword_text = top_keywords(frontmatter)
+    return "\n".join(
+        [
+            "## 简历优化建议",
+            "",
+            "只写针对这个岗位最值得改的简历点，区分“立刻可改的表达”和“需要真实补证据后再改的内容”。",
+            "",
+            "### 立刻可优化的表达",
+            "",
+            f"- 在相关项目里显式补出 `{keyword_text}` 等岗位关键词",
+            "- 把个人 AI 工具使用表达升级为“业务场景拆解 + 工作流 / 产品方案 + 落地推进”的描述",
+            "- 强调跨团队沟通、需求拆解、原型验证和持续迭代，减少泛泛的兴趣或学习表述",
+            "",
+            "### 需要新增证据后再写进简历的内容",
+            "",
+            "- 只有真实做过或能现场讲清的技术 / 行业模块，才写进简历",
+            "- 若岗位强调特定行业、平台或模型能力，需要先补对应案例、指标或作品集证据",
+            "- 若岗位要求强工程 / 强算法 / 强行业经验，先准备解释边界，不直接包装成已有硬经验",
+            "",
+            "### 不建议为了这条岗位硬改的内容",
+            "",
+            "- 不要因为单条 JD 改动在线简历母版主定位",
+            "- 不要把未实际承担过的研发、算法、行业专家职责写成既有经验",
+            "- 不要牺牲当前 AI 产品 / AI 咨询 / FDE 三条主线的一致性",
+        ]
+    )
+
+
 def build_market_signal_section() -> str:
     return "\n".join(
         [
@@ -257,6 +358,24 @@ def normalize_body(frontmatter: OrderedDict, body: str) -> str:
     updated = append_if_missing(updated, "## 任职要求拆解", bullet_section("## 任职要求拆解", frontmatter["nice_to_have"]))
     updated = append_if_missing(updated, "## 关键词提炼", build_keywords_section(frontmatter))
     updated = append_if_missing(updated, "## 匹配判断", build_match_section(frontmatter, has_boss))
+    updated = insert_before_first_existing_heading(
+        updated,
+        "## 投递消息建议",
+        build_application_message_section(frontmatter),
+        ["## 市场信号", "## 暂不执行的动作"],
+    )
+    updated = insert_before_first_existing_heading(
+        updated,
+        "## 提高匹配度需要补足的能力",
+        build_gap_section(frontmatter),
+        ["## 简历优化建议", "## 市场信号", "## 暂不执行的动作"],
+    )
+    updated = insert_before_first_existing_heading(
+        updated,
+        "## 简历优化建议",
+        build_resume_advice_section(frontmatter),
+        ["## 市场信号", "## 暂不执行的动作"],
+    )
     updated = append_if_missing(updated, "## 市场信号", build_market_signal_section())
     updated = append_if_missing(updated, "## 暂不执行的动作", build_no_action_section())
     return updated.rstrip() + "\n"
