@@ -1132,3 +1132,21 @@ jobs:
   - 运营后台
   - PRD
   - AI工具提效
+- job_id: 2026-07-09-inspire-group-ai-product-manager-assistant-001
+  captured_at: '2026-07-09'
+  company: Inspire Group
+  role_title: ai产品经理
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-pm
+  match_score: 72
+  file: jobs/2026-07-09-Inspire Group-ai产品经理.md
+  keywords:
+  - 行业调研
+  - 用户访谈
+  - PRD
+  - 原型
+  - PPT
+  - Agent
