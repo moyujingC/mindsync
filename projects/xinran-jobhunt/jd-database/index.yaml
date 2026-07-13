@@ -1312,3 +1312,57 @@ jobs:
   - 解决方案设计
   - 售前演示
   - 投标支持
+- job_id: 2026-07-13-anonymous-social-platform-ai-native-travel-pm-p6p7-001
+  captured_at: '2026-07-13'
+  company: 北京某大型互联网社交平台上市公司
+  role_title: AI Native产品经理（旅行方向）-P6P7-上海
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-pm
+  match_score: 78
+  file: jobs/2026-07-13-北京某大型互联网社交平台上市公司-AI Native产品经理旅行方向-P6P7.md
+  keywords:
+  - AI Native
+  - 旅行产品
+  - 0到1产品
+  - 用户洞察
+  - 数据反馈
+  - AI工具提效
+- job_id: 2026-07-13-stepfun-ai-coding-product-manager-model-001
+  captured_at: '2026-07-13'
+  company: 上海阶跃星辰智能科技
+  role_title: AI Coding 产品经理（模型方向）
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-pm
+  match_score: 92
+  file: jobs/2026-07-13-上海阶跃星辰智能科技-AI Coding产品经理模型方向.md
+  keywords:
+  - AI Coding
+  - 模型能力产品化
+  - 编程场景评测
+  - evals
+  - API
+  - Claude Code
+- job_id: 2026-07-13-aac-technologies-ai-product-manager-001
+  captured_at: '2026-07-13'
+  company: 瑞声科技
+  role_title: AI产品经理
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-consulting
+  match_score: 90
+  file: jobs/2026-07-13-瑞声科技-AI产品经理.md
+  keywords:
+  - 制造业AI
+  - B端产品
+  - 多模态大模型
+  - 知识库
+  - AI Agent
+  - RAG
