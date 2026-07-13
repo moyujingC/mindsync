@@ -1,29 +1,48 @@
 ---
-job_id: "2026-07-09-shenwang-senior-toc-ai-agent-pm-001"
-captured_at: "2026-07-09"
-source_platform: "BOSS直聘"
-source_type: "screenshot"
-status: "applied"
-applied_at: "2026-07-12"
-company: "深望科技"
-role_title: "AI高级产品经理—ToC（AI Agent）"
-city: "上海"
-salary_range: "40-70K·13薪"
-experience_requirement: "经验不限"
-education_requirement: "本科"
-primary_track: "ai-pm"
+job_id: 2026-07-09-shenwang-senior-toc-ai-agent-pm-001
+captured_at: '2026-07-09'
+source_platform: BOSS直聘
+source_type: screenshot
+status: applied
+applied_at: '2026-07-12'
+company: 深望科技
+role_title: AI高级产品经理—ToC（AI Agent）
+department: ''
+city: 上海
+work_mode: ''
+salary_range: 40-70K·13薪
+experience_requirement: 经验不限
+education_requirement: 本科
+primary_track: ai-pm
+secondary_track: ''
 match_score: 79
-keywords: ["ToC", "AI Agent", "用户体验", "LLM", "RAG", "Prompt Engineering", "医疗合规", "数据驱动"]
-risks: ["要求六年以上互联网产品经验", "医疗健康与AI合规门槛高", "完整C端从0到1与增长经验是重点"]
+boss_competitiveness_available: false
+keywords:
+- ToC
+- AI Agent
+- 用户体验
+- LLM
+- RAG
+- Prompt Engineering
+- 医疗合规
+- 数据驱动
+must_have: []
+nice_to_have: []
+risks:
+- 要求六年以上互联网产品经验
+- 医疗健康与AI合规门槛高
+- 完整C端从0到1与增长经验是重点
 ---
 
 # 岗位摘要
 
 - 公司：深望科技
 - 岗位：AI高级产品经理—ToC（AI Agent）
+- 城市：上海
 - 薪资：40-70K·13薪
-- 投递状态：已投递（2026-07-12）
+- 主轨道：AI 产品经理
 - 匹配分：79/100
+- 投递状态：已投递（2026-07-12）
 
 ## 文字版 JD
 
@@ -36,3 +55,30 @@ risks: ["要求六年以上互联网产品经验", "医疗健康与AI合规门�
 - 匹配点：AI Agent、心理/疗愈邻近场景、工作流、知识库和多角色协作。
 - 缺口：医疗合规、医学协同及成熟 C 端增长经历较弱。
 - 市场信号：医疗 Agent 岗把体验、长期留存、临床安全和模型评测放在同一产品责任内。
+
+## 职责拆解
+
+-
+
+## 任职要求拆解
+
+-
+
+## 关键词提炼
+
+- 业务关键词：ToC、AI Agent、用户体验、LLM、RAG、Prompt Engineering、医疗合规、数据驱动
+- AI 关键词：
+- 工具关键词：
+- 行业关键词：
+
+## 市场信号
+
+- 这个岗位反映出的岗位趋势：
+- 这个岗位对候选人的主要筛选逻辑：
+- 这条样本后续应归入哪类观察桶：
+
+## 暂不执行的动作
+
+- 当前阶段不直接改简历
+- 当前阶段不为单个岗位单独定制投递版本
+- 当前阶段已按你的要求标记为已投递并收入口径统一的 JD 数据库

@@ -1,49 +1,44 @@
 ---
-job_id: "2026-06-09-shanghai-hanxun-ai-native-builder-contrast-001"
-captured_at: "2026-06-09"
-source_platform: "BOSS直聘"
-source_type: "shared_image"
-status: "analyzed"
-
-company: "上海瀚讯"
-role_title: "AI native产品原型 / Builder"
-department: ""
-city: "上海"
-work_mode: ""
-salary_range: "30-60K·14薪"
-experience_requirement: "5-10年"
-education_requirement: "硕士"
-
-primary_track: "ai-pm"
-secondary_track: "fde"
+job_id: 2026-06-09-shanghai-hanxun-ai-native-builder-contrast-001
+captured_at: '2026-06-09'
+source_platform: BOSS直聘
+source_type: shared_image
+status: applied
+applied_at: '2026-07-13'
+company: 上海瀚讯
+role_title: AI native产品原型 / Builder
+department: ''
+city: 上海
+work_mode: ''
+salary_range: 30-60K·14薪
+experience_requirement: 5-10年
+education_requirement: 硕士
+primary_track: ai-pm
+secondary_track: fde
 match_score: 82
 boss_competitiveness_available: false
-
 keywords:
-  - "AI Native"
-  - "产品原型"
-  - "Builder"
-  - "AI编程"
-  - "Demo"
-  - "Mock数据"
-  - "演示脚本"
-  - "对照样本"
-
+- AI Native
+- 产品原型
+- Builder
+- AI编程
+- Demo
+- Mock数据
+- 演示脚本
+- 对照样本
 must_have:
-  - "快速搭建 AI 指挥平台内部软件原型"
-  - "将产品方案、演示脚本、场景数据转化为可交互页面"
-  - "使用 AI 工具完成需求梳理、原型设计、轻量开发、Mock 数据和演示材料"
-  - "支撑内部软件闭环和展示界面"
-  - "快速理解复杂业务并转成可交互原型"
-
+- 快速搭建 AI 指挥平台内部软件原型
+- 将产品方案、演示脚本、场景数据转化为可交互页面
+- 使用 AI 工具完成需求梳理、原型设计、轻量开发、Mock 数据和演示材料
+- 支撑内部软件闭环和展示界面
+- 快速理解复杂业务并转成可交互原型
 nice_to_have:
-  - "能把想法转化为 Demo、原型、代码、文档或可展示成果"
-  - "有可验证的个人作品、项目成果、开源仓库或案例材料"
-
+- 能把想法转化为 Demo、原型、代码、文档或可展示成果
+- 有可验证的个人作品、项目成果、开源仓库或案例材料
 risks:
-  - "和 2026-06-08 已录入样本属于同公司同类型岗位，疑似重复流转或二次看到"
-  - "这次截图内容与已存样本高度一致，因此保留为对照样本而非新增类型"
-  - "后续如果再出现，应优先判断是否同一招聘持续挂出"
+- 和 2026-06-08 已录入样本属于同公司同类型岗位，疑似重复流转或二次看到
+- 这次截图内容与已存样本高度一致，因此保留为对照样本而非新增类型
+- 后续如果再出现，应优先判断是否同一招聘持续挂出
 ---
 
 # 岗位摘要
@@ -55,6 +50,7 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：FDE
 - 匹配分：82/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

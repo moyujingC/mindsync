@@ -1,56 +1,52 @@
 ---
-job_id: "2026-06-08-shanghai-mobai-ai-native-builder-001"
-captured_at: "2026-06-08"
-source_platform: "BOSS直聘"
-source_type: "screenshot"
-status: "analyzed"
-
-company: "上海瀚讯信息技术股份有限公司"
-role_title: "AI native产品原型 / Builder"
-department: ""
-city: "上海"
-work_mode: "线下"
-salary_range: "30-60K·14薪"
-experience_requirement: "5-10年"
-education_requirement: "硕士"
-
-primary_track: "ai-pm"
-secondary_track: "fde"
+job_id: 2026-06-08-shanghai-mobai-ai-native-builder-001
+captured_at: '2026-06-08'
+source_platform: BOSS直聘
+source_type: screenshot
+status: applied
+applied_at: '2026-07-13'
+company: 上海瀚讯信息技术股份有限公司
+role_title: AI native产品原型 / Builder
+department: ''
+city: 上海
+work_mode: 线下
+salary_range: 30-60K·14薪
+experience_requirement: 5-10年
+education_requirement: 硕士
+primary_track: ai-pm
+secondary_track: fde
 match_score: 82
-
+boss_competitiveness_available: false
 keywords:
-  - "AI Native"
-  - "产品原型"
-  - "Builder"
-  - "AI编程"
-  - "Vibe Coding"
-  - "Demo"
-  - "演示脚本"
-  - "Mock数据"
-  - "页面流"
-  - "产品方案"
-  - "交互页面"
-  - "展示材料"
-
+- AI Native
+- 产品原型
+- Builder
+- AI编程
+- Vibe Coding
+- Demo
+- 演示脚本
+- Mock数据
+- 页面流
+- 产品方案
+- 交互页面
+- 展示材料
 must_have:
-  - "快速搭建 AI 指挥平台内部软件原型"
-  - "将产品方案、演示脚本、场景数据转化为可交互页面"
-  - "使用 AI 工具完成需求梳理、原型设计、轻量开发、Mock 数据和演示材料"
-  - "支撑 6 月内部软件闭环和 9 月展示界面"
-  - "协助整理任务流、页面流、Demo 数据和展示脚本"
-  - "熟练使用 AI 编程或 AI 办公工具，具备用 AI 工具完成调研、设计、开发、测试、文档或演示材料的实际经验"
-  - "能快速理解复杂业务并转成可交互原型"
-
+- 快速搭建 AI 指挥平台内部软件原型
+- 将产品方案、演示脚本、场景数据转化为可交互页面
+- 使用 AI 工具完成需求梳理、原型设计、轻量开发、Mock 数据和演示材料
+- 支撑 6 月内部软件闭环和 9 月展示界面
+- 协助整理任务流、页面流、Demo 数据和展示脚本
+- 熟练使用 AI 编程或 AI 办公工具，具备用 AI 工具完成调研、设计、开发、测试、文档或演示材料的实际经验
+- 能快速理解复杂业务并转成可交互原型
 nice_to_have:
-  - "对产品体验、页面表达和演示效果敏感"
-  - "能在产品、开发、材料和数据之间快速切换"
-  - "有较强自驱力和创作欲望，能把想法转成 Demo、原型、代码、文档或可展示成果"
-  - "有可验证的个人作品、项目成果、开源仓库、原型 Demo、技术文章或案例材料"
-
+- 对产品体验、页面表达和演示效果敏感
+- 能在产品、开发、材料和数据之间快速切换
+- 有较强自驱力和创作欲望，能把想法转成 Demo、原型、代码、文档或可展示成果
+- 有可验证的个人作品、项目成果、开源仓库、原型 Demo、技术文章或案例材料
 risks:
-  - "岗位要求 5-10 年经验和硕士，门槛较高"
-  - "这条 JD 的时间节点很明确，偏短周期交付和展示驱动"
-  - "它强调的是原型、展示和快速转换能力，不一定等同于长期产品 ownership"
+- 岗位要求 5-10 年经验和硕士，门槛较高
+- 这条 JD 的时间节点很明确，偏短周期交付和展示驱动
+- 它强调的是原型、展示和快速转换能力，不一定等同于长期产品 ownership
 ---
 
 # 岗位摘要
@@ -62,6 +58,7 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：FDE
 - 匹配分：82/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

@@ -1,54 +1,50 @@
 ---
-job_id: "2026-07-07-hello-puhui-builder-ai-product-001"
-captured_at: "2026-07-07"
-source_platform: "BOSS直聘"
-source_type: "shared_image"
-status: "analyzed"
-
-company: "哈啰普惠"
-role_title: "builder（AI产品）"
-department: ""
-city: "上海"
-work_mode: ""
-salary_range: "30-60K·15薪"
-experience_requirement: "5-10年"
-education_requirement: "本科"
-
-primary_track: "ai-pm"
-secondary_track: "fde"
+job_id: 2026-07-07-hello-puhui-builder-ai-product-001
+captured_at: '2026-07-07'
+source_platform: BOSS直聘
+source_type: shared_image
+status: applied
+applied_at: '2026-07-13'
+company: 哈啰普惠
+role_title: builder（AI产品）
+department: ''
+city: 上海
+work_mode: ''
+salary_range: 30-60K·15薪
+experience_requirement: 5-10年
+education_requirement: 本科
+primary_track: ai-pm
+secondary_track: fde
 match_score: 89
-
+boss_competitiveness_available: false
 keywords:
-  - "AI First"
-  - "Builder"
-  - "AI产品"
-  - "AI Coding"
-  - "Align-Build-Demo"
-  - "Demo"
-  - "业务场景"
-  - "快速迭代"
-  - "Agent Infra"
-  - "Skills"
-
+- AI First
+- Builder
+- AI产品
+- AI Coding
+- Align-Build-Demo
+- Demo
+- 业务场景
+- 快速迭代
+- Agent Infra
+- Skills
 must_have:
-  - "围绕真实业务场景完成从沟通、构建、演示、发布到验证的闭环"
-  - "与业务方高频沟通，把模糊问题拆成可构建需求，并借助 AI Coding 快速做出可运行版本"
-  - "持续 Demo 原型、收集反馈、调整方向，在数小时到数天的周期内推进产品从想法走向可用"
-  - "参与探索 AI First 产品研发范式，沉淀可复用的 Skills、Agent Infra、构建方法和团队协作模式"
-  - "熟练使用 Cursor、Claude Code、Codex、Kiro 等 AI Coding 工具，并真正做出过可运行、有价值的产品"
-  - "具备产品思维和业务 Sense，能理解需求背后的真实场景、用户痛点和商业价值"
-  - "能接受不确定性，在真实版本和真实反馈中快速判断和推进"
-
+- 围绕真实业务场景完成从沟通、构建、演示、发布到验证的闭环
+- 与业务方高频沟通，把模糊问题拆成可构建需求，并借助 AI Coding 快速做出可运行版本
+- 持续 Demo 原型、收集反馈、调整方向，在数小时到数天的周期内推进产品从想法走向可用
+- 参与探索 AI First 产品研发范式，沉淀可复用的 Skills、Agent Infra、构建方法和团队协作模式
+- 熟练使用 Cursor、Claude Code、Codex、Kiro 等 AI Coding 工具，并真正做出过可运行、有价值的产品
+- 具备产品思维和业务 Sense，能理解需求背后的真实场景、用户痛点和商业价值
+- 能接受不确定性，在真实版本和真实反馈中快速判断和推进
 nice_to_have:
-  - "移动互联网时代有较强的互联网产品从 0-1 经验"
-  - "有工程背景，能在 AI Coding 过程中明显提高效率"
-  - "有个人项目的用户规模、GitHub Stars 或其他公开成果"
-
+- 移动互联网时代有较强的互联网产品从 0-1 经验
+- 有工程背景，能在 AI Coding 过程中明显提高效率
+- 有个人项目的用户规模、GitHub Stars 或其他公开成果
 risks:
-  - "岗位边界刻意模糊，不按传统产品经理、设计师、工程师分工招人，实际会看综合产出"
-  - "对真实动手能力要求高，不接受只会写文档或只会讲概念的候选人"
-  - "节奏明显偏高频迭代和版本说话，需要持续 Demo 与反馈闭环能力"
-  - "虽然标题带 AI 产品，但职责重心同时覆盖原型构建、演示推进和协作方法沉淀"
+- 岗位边界刻意模糊，不按传统产品经理、设计师、工程师分工招人，实际会看综合产出
+- 对真实动手能力要求高，不接受只会写文档或只会讲概念的候选人
+- 节奏明显偏高频迭代和版本说话，需要持续 Demo 与反馈闭环能力
+- 虽然标题带 AI 产品，但职责重心同时覆盖原型构建、演示推进和协作方法沉淀
 ---
 
 # 岗位摘要
@@ -60,6 +56,7 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：FDE
 - 匹配分：89/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

@@ -1,53 +1,49 @@
 ---
-job_id: "2026-06-08-meituan-ai-builder-self-operated-maintenance-001"
-captured_at: "2026-06-08"
-source_platform: "BOSS直聘"
-source_type: "screenshot"
-status: "analyzed"
-
-company: "美团"
-role_title: "AI Builder（自营维修项目）"
-department: "自营维修项目"
-city: "上海"
-work_mode: "线下"
-salary_range: "25-45K·13薪"
-experience_requirement: "1-3年"
-education_requirement: "本科"
-
-primary_track: "fde"
-secondary_track: "ai-pm"
+job_id: 2026-06-08-meituan-ai-builder-self-operated-maintenance-001
+captured_at: '2026-06-08'
+source_platform: BOSS直聘
+source_type: screenshot
+status: applied
+applied_at: '2026-07-13'
+company: 美团
+role_title: AI Builder（自营维修项目）
+department: 自营维修项目
+city: 上海
+work_mode: 线下
+salary_range: 25-45K·13薪
+experience_requirement: 1-3年
+education_requirement: 本科
+primary_track: fde
+secondary_track: ai-pm
 match_score: 78
-
+boss_competitiveness_available: false
 keywords:
-  - "AI Builder"
-  - "AI Coding"
-  - "Agent"
-  - "Prompt"
-  - "Workflow"
-  - "Vibe Coding"
-  - "Prompt Engineering"
-  - "RAG"
-  - "服务零售"
-  - "业务原型"
-
+- AI Builder
+- AI Coding
+- Agent
+- Prompt
+- Workflow
+- Vibe Coding
+- Prompt Engineering
+- RAG
+- 服务零售
+- 业务原型
 must_have:
-  - "对 AI 技术有真实热情与动手实践经验，熟悉主流 AI 工具"
-  - "有独立搭建 Agent、Bot 或自动化工作流的经历"
-  - "具备较强的产品感与业务理解力，能从用户和商家视角定义问题"
-  - "有较强的自驱力与学习能力，能在模糊环境中独立推进"
-  - "具备 Vibe Coding 或 AI Coding 能力"
-  - "良好的沟通与协作能力，能把复杂技术方案转成清晰业务语言"
-
+- 对 AI 技术有真实热情与动手实践经验，熟悉主流 AI 工具
+- 有独立搭建 Agent、Bot 或自动化工作流的经历
+- 具备较强的产品感与业务理解力，能从用户和商家视角定义问题
+- 有较强的自驱力与学习能力，能在模糊环境中独立推进
+- 具备 Vibe Coding 或 AI Coding 能力
+- 良好的沟通与协作能力，能把复杂技术方案转成清晰业务语言
 nice_to_have:
-  - "有互联网公司 0-1 构建产品或工具的实际经验"
-  - "有 Prompt Engineering、RAG、多模态应用等方向的深度实践"
-  - "有本地生活、服务零售、电商行业背景"
-  - "有个人项目、开源贡献或公开 AI 应用作品"
-
+- 有互联网公司 0-1 构建产品或工具的实际经验
+- 有 Prompt Engineering、RAG、多模态应用等方向的深度实践
+- 有本地生活、服务零售、电商行业背景
+- 有个人项目、开源贡献或公开 AI 应用作品
 risks:
-  - "岗位要求 1-3 年经验，默认会看真实落地成果，不只是学习经历"
-  - "要求比较偏 Builder 型执行者，需要强动手和强业务理解并存"
-  - "行业场景集中在服务零售和商家运营，若缺少场景理解会减分"
+- 岗位要求 1-3 年经验，默认会看真实落地成果，不只是学习经历
+- 要求比较偏 Builder 型执行者，需要强动手和强业务理解并存
+- 行业场景集中在服务零售和商家运营，若缺少场景理解会减分
 ---
 
 # 岗位摘要
@@ -59,6 +55,7 @@ risks:
 - 主轨道：FDE
 - 次轨道：AI 产品经理
 - 匹配分：78/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

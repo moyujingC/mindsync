@@ -1,55 +1,51 @@
 ---
-job_id: "2026-06-09-bytedance-doubao-fde-001"
-captured_at: "2026-06-09"
-source_platform: "LinkedIn公开职位页"
-source_type: "public_job_page"
-status: "analyzed"
-
-company: "字节跳动"
-role_title: "豆包AI大模型FDE（Forward Deployed Engineer）-火山方舟MaaS"
-department: "火山方舟MaaS"
-city: "上海"
-work_mode: ""
-salary_range: ""
-experience_requirement: "3年以上"
-education_requirement: "本科及以上"
-
-primary_track: "fde"
-secondary_track: "ai-consulting"
+job_id: 2026-06-09-bytedance-doubao-fde-001
+captured_at: '2026-06-09'
+source_platform: LinkedIn公开职位页
+source_type: public_job_page
+status: applied
+applied_at: '2026-07-13'
+company: 字节跳动
+role_title: 豆包AI大模型FDE（Forward Deployed Engineer）-火山方舟MaaS
+department: 火山方舟MaaS
+city: 上海
+work_mode: ''
+salary_range: ''
+experience_requirement: 3年以上
+education_requirement: 本科及以上
+primary_track: fde
+secondary_track: ai-consulting
 match_score: 94
-
+boss_competitiveness_available: false
 keywords:
-  - "FDE"
-  - "Forward Deployed Engineer"
-  - "企业级AI"
-  - "多Agent"
-  - "RAG"
-  - "智能体编排"
-  - "POC"
-  - "Demo"
-  - "业务价值"
-  - "产品化沉淀"
-
+- FDE
+- Forward Deployed Engineer
+- 企业级AI
+- 多Agent
+- RAG
+- 智能体编排
+- POC
+- Demo
+- 业务价值
+- 产品化沉淀
 must_have:
-  - "对前沿 AI 技术和产品保持敏锐，理解趋势并据此设计客户应用方案"
-  - "深刻理解大模型、Agent、RAG、Multi-Agent 等技术能力及演进路径"
-  - "洞察客户需求，完成需求对接、痛点分析、解决方案设计和交付"
-  - "沉淀面向目标客户和场景的 AI 应用解决方案，帮助客户缩短 AI 落地周期并推动创新"
-  - "推动产品、工程和客户团队协作，完成项目规划和落地交付"
-  - "能独立使用产品搭建 Demo、智能体工作流，具备编程能力并能做复杂业务流程抽象"
-
+- 对前沿 AI 技术和产品保持敏锐，理解趋势并据此设计客户应用方案
+- 深刻理解大模型、Agent、RAG、Multi-Agent 等技术能力及演进路径
+- 洞察客户需求，完成需求对接、痛点分析、解决方案设计和交付
+- 沉淀面向目标客户和场景的 AI 应用解决方案，帮助客户缩短 AI 落地周期并推动创新
+- 推动产品、工程和客户团队协作，完成项目规划和落地交付
+- 能独立使用产品搭建 Demo、智能体工作流，具备编程能力并能做复杂业务流程抽象
 nice_to_have:
-  - "有 3 年以上企业级产品或商业化相关经验"
-  - "成功落地过大模型应用项目"
-  - "对生成式 AI 发展有独立见解"
-  - "有产品 0-1 孵化经验"
-  - "有咨询、产品、研发、技术交付等跨职能合作经验"
-  - "有多智能体项目经验或技能/工作流拆解能力"
-
+- 有 3 年以上企业级产品或商业化相关经验
+- 成功落地过大模型应用项目
+- 对生成式 AI 发展有独立见解
+- 有产品 0-1 孵化经验
+- 有咨询、产品、研发、技术交付等跨职能合作经验
+- 有多智能体项目经验或技能/工作流拆解能力
 risks:
-  - "岗位同时要求方案、产品、技术、交付四种能力，门槛很高"
-  - "公开页未展示薪资，但从职责强度看属于高要求 FDE 样本"
-  - "如果材料里缺乏真实 AI 应用落地案例，很难说服这类岗位"
+- 岗位同时要求方案、产品、技术、交付四种能力，门槛很高
+- 公开页未展示薪资，但从职责强度看属于高要求 FDE 样本
+- 如果材料里缺乏真实 AI 应用落地案例，很难说服这类岗位
 ---
 
 # 岗位摘要
@@ -57,10 +53,11 @@ risks:
 - 公司：字节跳动
 - 岗位：豆包AI大模型FDE（Forward Deployed Engineer）-火山方舟MaaS
 - 城市：上海
-- 薪资：未公开
+- 薪资：
 - 主轨道：FDE
 - 次轨道：AI 转型咨询顾问
 - 匹配分：94/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

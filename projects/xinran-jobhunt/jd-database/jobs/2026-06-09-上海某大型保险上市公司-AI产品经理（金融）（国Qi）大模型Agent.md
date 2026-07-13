@@ -1,54 +1,49 @@
 ---
-job_id: "2026-06-09-anonymous-insurance-ai-pm-finance-001"
-captured_at: "2026-06-09"
-source_platform: "BOSS直聘"
-source_type: "shared_image"
-status: "analyzed"
-
-company: "上海某大型保险上市公司"
-role_title: "AI产品经理（金融）（国Qi）大模型/Agent"
-department: ""
-city: "上海"
-work_mode: ""
-salary_range: "30-50K·16薪"
-experience_requirement: "经验不限"
-education_requirement: "本科"
-
-primary_track: "ai-pm"
-secondary_track: "ai-consulting"
+job_id: 2026-06-09-anonymous-insurance-ai-pm-finance-001
+captured_at: '2026-06-09'
+source_platform: BOSS直聘
+source_type: shared_image
+status: applied
+applied_at: '2026-07-13'
+company: 上海某大型保险上市公司
+role_title: AI产品经理（金融）（国Qi）大模型/Agent
+department: ''
+city: 上海
+work_mode: ''
+salary_range: 30-50K·16薪
+experience_requirement: 经验不限
+education_requirement: 本科
+primary_track: ai-pm
+secondary_track: ai-consulting
 match_score: 72
 boss_competitiveness_available: false
-
 keywords:
-  - "金融AI"
-  - "保险"
-  - "渠道经营"
-  - "客户经营"
-  - "PRD"
-  - "LLM"
-  - "RAG"
-  - "Agent"
-
+- 金融AI
+- 保险
+- 渠道经营
+- 客户经营
+- PRD
+- LLM
+- RAG
+- Agent
 must_have:
-  - "调研银保业务流程痛点，识别高价值 AI 切入场景"
-  - "结合银保战略制定 AI 应用路线图"
-  - "收集和转化业务部门对 AI 的需求，撰写 PRD"
-  - "定义功能逻辑、算法指标和交互体验"
-  - "与算法工程师协作，制定数据标注规范并参与模型评估调优"
-  - "组织试点、收集反馈、推动规模化推广和运营"
-  - "建立价值评估体系，用数据证明 AI 投入产出比"
-
+- 调研银保业务流程痛点，识别高价值 AI 切入场景
+- 结合银保战略制定 AI 应用路线图
+- 收集和转化业务部门对 AI 的需求，撰写 PRD
+- 定义功能逻辑、算法指标和交互体验
+- 与算法工程师协作，制定数据标注规范并参与模型评估调优
+- 组织试点、收集反馈、推动规模化推广和运营
+- 建立价值评估体系，用数据证明 AI 投入产出比
 nice_to_have:
-  - "7年以上大型互联网或保险行业经验"
-  - "至少3年以上产品或技术团队管理经验"
-  - "有完整 AI 应用级产品成功经验"
-  - "熟悉 SQL、Tableau、神策等分析工具"
-  - "了解银行保险业务模式，有银保相关经验"
-
+- 7年以上大型互联网或保险行业经验
+- 至少3年以上产品或技术团队管理经验
+- 有完整 AI 应用级产品成功经验
+- 熟悉 SQL、Tableau、神策等分析工具
+- 了解银行保险业务模式，有银保相关经验
 risks:
-  - "header 写经验不限，但正文要求 7 年以上经验，存在明显口径冲突"
-  - "岗位是强金融场景岗，行业背景可能比通用 AI 产品经验更关键"
-  - "年龄要求被截图打码，可能意味着还有隐性筛选条件"
+- header 写经验不限，但正文要求 7 年以上经验，存在明显口径冲突
+- 岗位是强金融场景岗，行业背景可能比通用 AI 产品经验更关键
+- 年龄要求被截图打码，可能意味着还有隐性筛选条件
 ---
 
 # 岗位摘要
@@ -60,6 +55,7 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：AI 转型咨询顾问
 - 匹配分：72/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

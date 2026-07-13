@@ -1,73 +1,68 @@
 ---
-job_id: "2026-07-09-large-internet-deepseek-agent-harness-pm-001"
-captured_at: "2026-07-09"
-source_platform: "BOSS直聘"
-source_type: "screenshot"
-status: "archived"
-
-company: "某大型互联网公司"
-role_title: "DeepSeek-Agent Harness 产品经理"
-department: "DeepSeek Harness 团队"
-city: "上海"
-work_mode: "未注明"
-salary_range: "60-90K·16薪"
-experience_requirement: "经验不限"
-education_requirement: "本科"
-
-primary_track: "ai-pm"
-secondary_track: "fde"
+job_id: 2026-07-09-large-internet-deepseek-agent-harness-pm-001
+captured_at: '2026-07-09'
+source_platform: BOSS直聘
+source_type: screenshot
+status: applied
+applied_at: '2026-07-13'
+company: 某大型互联网公司
+role_title: DeepSeek-Agent Harness 产品经理
+department: DeepSeek Harness 团队
+city: 上海
+work_mode: 未注明
+salary_range: 60-90K·16薪
+experience_requirement: 经验不限
+education_requirement: 本科
+primary_track: ai-pm
+secondary_track: fde
 match_score: 93
-boss_competitiveness_available: false
-
+boss_competitiveness_available: true
 keywords:
-  - "DeepSeek"
-  - "Agent Harness"
-  - "AI Agent"
-  - "Agent产品路线图"
-  - "Vibe Coding"
-  - "LLM API"
-  - "KV Cache"
-  - "Agent Loop"
-  - "Tool Use"
-  - "Reasoning"
-  - "Planning"
-  - "Skills"
-  - "MCP"
-  - "Memory"
-  - "Subagent"
-  - "Multi-Agent"
-  - "Prompt Engineering"
-  - "Context Engineering"
-  - "开源社区"
-  - "用户社区"
-  - "A/B测试"
-
+- DeepSeek
+- Agent Harness
+- AI Agent
+- Agent产品路线图
+- Vibe Coding
+- LLM API
+- KV Cache
+- Agent Loop
+- Tool Use
+- Reasoning
+- Planning
+- Skills
+- MCP
+- Memory
+- Subagent
+- Multi-Agent
+- Prompt Engineering
+- Context Engineering
+- 开源社区
+- 用户社区
+- A/B测试
 must_have:
-  - "规划 DeepSeek Harness 产品路线图，连接研究员、工程师、开源社区和广大用户"
-  - "理解并判断用户真实需求，定义与衡量 Agent 是否在更多场景下深入帮助用户的指标"
-  - "推动 Harness 产品落地，持续跟踪真实场景下的用户任务，推动产品创新和体验优化"
-  - "维护 Harness 产品用户社群，从潜在海量用户群体中获取反馈、提取信号并指导产品迭代"
-  - "与模型训练团队深度沟通合作，实现模型与 Harness 的共同进化"
-  - "能够使用 Vibe Coding 写代码，能在 AI 辅助下完成产品原型图、UI 设计等产品设计工作"
-  - "熟悉 Agent 产品形态，对模型行为、开发者体验和用户体验有判断力"
-  - "理解 LLM 与 Agent 基本机制，包括 LLM API、KV Cache、Agent Loop、Tool Use、Reasoning、Planning、Skills、MCP、Memory、Subagent、Multi-Agent、Prompt Engineering、Context Engineering、Harness Engineering 等"
-  - "能够系统性收集和分析用户数据，包括问卷、访谈、A/B测试、灰度测试，并使用统计学工具严谨分析数据"
-  - "对产品细节敏感，对异常分支、边界条件和失败场景有敏锐嗅觉"
-  - "优秀的中英文沟通能力，能用英文与开源社区、用户社区书面沟通"
-
+- 规划 DeepSeek Harness 产品路线图，连接研究员、工程师、开源社区和广大用户
+- 理解并判断用户真实需求，定义与衡量 Agent 是否在更多场景下深入帮助用户的指标
+- 推动 Harness 产品落地，持续跟踪真实场景下的用户任务，推动产品创新和体验优化
+- 维护 Harness 产品用户社群，从潜在海量用户群体中获取反馈、提取信号并指导产品迭代
+- 与模型训练团队深度沟通合作，实现模型与 Harness 的共同进化
+- 能够使用 Vibe Coding 写代码，能在 AI 辅助下完成产品原型图、UI 设计等产品设计工作
+- 熟悉 Agent 产品形态，对模型行为、开发者体验和用户体验有判断力
+- 理解 LLM 与 Agent 基本机制，包括 LLM API、KV Cache、Agent Loop、Tool Use、Reasoning、Planning、Skills、MCP、Memory、Subagent、Multi-Agent、Prompt Engineering、Context Engineering、Harness Engineering 等
+- 能够系统性收集和分析用户数据，包括问卷、访谈、A/B测试、灰度测试，并使用统计学工具严谨分析数据
+- 对产品细节敏感，对异常分支、边界条件和失败场景有敏锐嗅觉
+- 优秀的中英文沟通能力，能用英文与开源社区、用户社区书面沟通
 nice_to_have:
-  - "AI 行业从业经验、AI 相关产品经验"
-  - "作为小团队产品经理主导产品路线的经验"
-  - "与研究员深度协作的经验"
-  - "深度参与开源社区或维护开源社区关系的经验"
-  - "其它超乎常人的与此工作相关的才能"
-
+- AI 行业从业经验、AI 相关产品经验
+- 作为小团队产品经理主导产品路线的经验
+- 与研究员深度协作的经验
+- 深度参与开源社区或维护开源社区关系的经验
+- 其它超乎常人的与此工作相关的才能
 risks:
-  - "薪资 60-90K·16薪，真实竞争强度会很高，虽然头部字段写经验不限，但正文要求明显偏高阶产品负责人"
-  - "要求理解较完整的 LLM / Agent 技术机制，不能只用泛 AI 产品话术应对"
-  - "强调英文与开源社区、用户社区书面沟通，需要准备英文使用与社区参与证据"
-  - "要求系统性实验数据能力，包括问卷、访谈、A/B测试、灰度测试和统计分析，需要避免把定性用户研究讲成全部能力"
-  - "公司名称匿名，真实业务归属、汇报线、团队成熟度和招聘方筛选口径需要 HR 确认"
+- 薪资 60-90K·16薪，真实竞争强度会很高，虽然头部字段写经验不限，但正文要求明显偏高阶产品负责人
+- 要求理解较完整的 LLM / Agent 技术机制，不能只用泛 AI 产品话术应对
+- 强调英文与开源社区、用户社区书面沟通，需要准备英文使用与社区参与证据
+- 要求系统性实验数据能力，包括问卷、访谈、A/B测试、灰度测试和统计分析，需要避免把定性用户研究讲成全部能力
+- 公司名称匿名，真实业务归属、汇报线、团队成熟度和招聘方筛选口径需要 HR 确认
 ---
 
 # 岗位摘要
@@ -77,8 +72,9 @@ risks:
 - 城市：上海
 - 薪资：60-90K·16薪
 - 主轨道：AI 产品经理
-- 次轨道：FDE / AI Agent 工作流产品
+- 次轨道：FDE
 - 匹配分：93/100
+- 投递状态：已投递（2026-07-13）
 
 ## 开放状态记录
 

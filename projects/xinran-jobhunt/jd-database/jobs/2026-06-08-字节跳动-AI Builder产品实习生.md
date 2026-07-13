@@ -1,49 +1,46 @@
 ---
-job_id: "2026-06-08-bytedance-ai-builder-pm-intern-001"
-captured_at: "2026-06-08"
-source_platform: "BOSS直聘"
-source_type: "screenshot"
-status: "analyzed"
-
-company: "字节跳动"
-role_title: "AI Builder产品实习生"
-department: "隐私与数据保护核心团队"
-city: "上海"
-work_mode: "线下"
-salary_range: "500-510元/天"
-internship_length: "4天/周，5个月"
-education_requirement: "本科"
-
-primary_track: "ai-pm"
-secondary_track: "fde"
+job_id: 2026-06-08-bytedance-ai-builder-pm-intern-001
+captured_at: '2026-06-08'
+source_platform: BOSS直聘
+source_type: screenshot
+status: applied
+applied_at: '2026-07-13'
+company: 字节跳动
+role_title: AI Builder产品实习生
+department: 隐私与数据保护核心团队
+city: 上海
+work_mode: 线下
+salary_range: 500-510元/天
+experience_requirement: ''
+education_requirement: 本科
+primary_track: ai-pm
+secondary_track: fde
 match_score: 42
-
+boss_competitiveness_available: false
 keywords:
-  - "AI产品"
-  - "AI能力建设"
-  - "PM协作"
-  - "Demo制作"
-  - "AI Coding"
-  - "低代码"
-  - "隐私合规"
-  - "知识库"
-  - "Workshop"
-
+- AI产品
+- AI能力建设
+- PM协作
+- Demo制作
+- AI Coding
+- 低代码
+- 隐私合规
+- 知识库
+- Workshop
 must_have:
-  - "本科及以上学历在读，计算机、软件工程、人工智能、信息安全、网络安全等相关专业优先"
-  - "熟练使用AI模型与工具，了解产品经理基本方法论"
-  - "有使用AI Coding/低代码完成过网页或App Demo经验优先"
-  - "具备编程能力，能理解代码、前后端、接口等技术概念优先"
-
+- 本科及以上学历在读，计算机、软件工程、人工智能、信息安全、网络安全等相关专业优先
+- 熟练使用AI模型与工具，了解产品经理基本方法论
+- 有使用AI Coding/低代码完成过网页或App Demo经验优先
+- 具备编程能力，能理解代码、前后端、接口等技术概念优先
 nice_to_have:
-  - "跨团队协作和项目运营能力"
-  - "训练/Workshop/案例分享支持经验"
-  - "对隐私合规或数据安全场景有兴趣"
-
+- 跨团队协作和项目运营能力
+- 训练/Workshop/案例分享支持经验
+- 对隐私合规或数据安全场景有兴趣
 risks:
-  - "岗位明确要求在校生，本科及以上学历在读"
-  - "岗位是实习岗，与你当前更成熟的全职叙事不完全匹配"
-  - "部门场景偏隐私合规和数据安全，你的公开材料对应证据较弱"
+- 岗位明确要求在校生，本科及以上学历在读
+- 岗位是实习岗，与你当前更成熟的全职叙事不完全匹配
+- 部门场景偏隐私合规和数据安全，你的公开材料对应证据较弱
+internship_length: 4天/周，5个月
 ---
 
 # 岗位摘要
@@ -55,6 +52,7 @@ risks:
 - 主轨道：AI 产品经理
 - 次轨道：FDE
 - 匹配分：42/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

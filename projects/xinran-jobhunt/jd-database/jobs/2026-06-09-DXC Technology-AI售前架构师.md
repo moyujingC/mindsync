@@ -1,48 +1,44 @@
 ---
-job_id: "2026-06-09-dxc-ai-presales-architect-001"
-captured_at: "2026-06-09"
-source_platform: "LinkedIn公开职位页"
-source_type: "public_job_page"
-status: "analyzed"
-
-company: "DXC Technology"
-role_title: "AI售前架构师"
-department: ""
-city: "上海"
-work_mode: ""
-salary_range: ""
-experience_requirement: ""
-education_requirement: ""
-
-primary_track: "ai-consulting"
-secondary_track: "fde"
+job_id: 2026-06-09-dxc-ai-presales-architect-001
+captured_at: '2026-06-09'
+source_platform: LinkedIn公开职位页
+source_type: public_job_page
+status: applied
+applied_at: '2026-07-13'
+company: DXC Technology
+role_title: AI售前架构师
+department: ''
+city: 上海
+work_mode: ''
+salary_range: ''
+experience_requirement: ''
+education_requirement: ''
+primary_track: ai-consulting
+secondary_track: fde
 match_score: 76
-
+boss_competitiveness_available: false
 keywords:
-  - "售前架构师"
-  - "AI大模型"
-  - "客户沟通"
-  - "商务谈判"
-  - "解决方案撰写"
-  - "技术架构"
-  - "实施计划"
-  - "研发协同"
-  - "项目交付"
-
+- 售前架构师
+- AI大模型
+- 客户沟通
+- 商务谈判
+- 解决方案撰写
+- 技术架构
+- 实施计划
+- 研发协同
+- 项目交付
 must_have:
-  - "与客户深入沟通，识别 AI 大模型需求并提供技术咨询"
-  - "协助销售团队拜访客户与参与商务谈判"
-  - "独立撰写有针对性的解决方案，覆盖技术架构、应用场景和实施计划"
-  - "跟踪最新 AI 大模型技术并持续优化方案"
-  - "与研发团队合作，传递客户需求并参与测试验证"
-  - "在项目实施阶段提供技术支持和指导，保障高质量交付"
-
+- 与客户深入沟通，识别 AI 大模型需求并提供技术咨询
+- 协助销售团队拜访客户与参与商务谈判
+- 独立撰写有针对性的解决方案，覆盖技术架构、应用场景和实施计划
+- 跟踪最新 AI 大模型技术并持续优化方案
+- 与研发团队合作，传递客户需求并参与测试验证
+- 在项目实施阶段提供技术支持和指导，保障高质量交付
 nice_to_have: []
-
 risks:
-  - "公开页未展开更细的任职要求"
-  - "岗位已停止接受申请，更适合作为售前样本"
-  - "岗位明显偏售前与方案，不是产品经理岗"
+- 公开页未展开更细的任职要求
+- 岗位已停止接受申请，更适合作为售前样本
+- 岗位明显偏售前与方案，不是产品经理岗
 ---
 
 # 岗位摘要
@@ -50,10 +46,11 @@ risks:
 - 公司：DXC Technology
 - 岗位：AI售前架构师
 - 城市：上海
-- 薪资：未公开
+- 薪资：
 - 主轨道：AI 转型咨询顾问
 - 次轨道：FDE
 - 匹配分：76/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

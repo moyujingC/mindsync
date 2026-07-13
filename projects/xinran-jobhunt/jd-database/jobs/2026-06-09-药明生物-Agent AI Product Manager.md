@@ -1,54 +1,50 @@
 ---
-job_id: "2026-06-09-wuxi-biologics-agent-ai-product-manager-001"
-captured_at: "2026-06-09"
-source_platform: "LinkedIn公开职位页"
-source_type: "public_job_page"
-status: "analyzed"
-
-company: "药明生物"
-role_title: "Agent AI Product Manager"
-department: "Digital Labs"
-city: "上海"
-work_mode: ""
-salary_range: ""
-experience_requirement: "3-6年"
-education_requirement: "本科/硕士优先"
-
-primary_track: "ai-pm"
-secondary_track: "fde"
+job_id: 2026-06-09-wuxi-biologics-agent-ai-product-manager-001
+captured_at: '2026-06-09'
+source_platform: LinkedIn公开职位页
+source_type: public_job_page
+status: applied
+applied_at: '2026-07-13'
+company: 药明生物
+role_title: Agent AI Product Manager
+department: Digital Labs
+city: 上海
+work_mode: ''
+salary_range: ''
+experience_requirement: 3-6年
+education_requirement: 本科/硕士优先
+primary_track: ai-pm
+secondary_track: fde
 match_score: 90
-
+boss_competitiveness_available: false
 keywords:
-  - "Agentic AI"
-  - "AI Native"
-  - "企业工作流"
-  - "产品原型"
-  - "RAG"
-  - "Tool Calling"
-  - "评估体系"
-  - "可观测性"
-  - "Human-in-the-loop"
-  - "Vibe Coding"
-
+- Agentic AI
+- AI Native
+- 企业工作流
+- 产品原型
+- RAG
+- Tool Calling
+- 评估体系
+- 可观测性
+- Human-in-the-loop
+- Vibe Coding
 must_have:
-  - "负责 agentic AI 产品战略、路线图与端到端交付"
-  - "识别高价值业务流程，将模糊问题转化为产品假设、用户旅程、需求和成功指标"
-  - "与工程团队共同定义智能体架构、工具调用、API、数据集成、权限、人工介入检查点、日志和运行护栏"
-  - "推动快速原型、用户试点、评估设计和迭代，评审智能体行为并识别失败模式"
-  - "跟踪采用率、节省时间、任务完成率、准确性、可靠性、升级率和用户信任等结果指标"
-  - "理解 LLM 与 agentic AI 概念，包括 Prompt、RAG、Tool Calling、Orchestration、Memory、Evaluation、Guardrails 与失败模式"
-
+- 负责 agentic AI 产品战略、路线图与端到端交付
+- 识别高价值业务流程，将模糊问题转化为产品假设、用户旅程、需求和成功指标
+- 与工程团队共同定义智能体架构、工具调用、API、数据集成、权限、人工介入检查点、日志和运行护栏
+- 推动快速原型、用户试点、评估设计和迭代，评审智能体行为并识别失败模式
+- 跟踪采用率、节省时间、任务完成率、准确性、可靠性、升级率和用户信任等结果指标
+- 理解 LLM 与 agentic AI 概念，包括 Prompt、RAG、Tool Calling、Orchestration、Memory、Evaluation、Guardrails 与失败模式
 nice_to_have:
-  - "有 AI、数据、平台、开发者工具、自动化或企业工作流产品从概念到上线经验"
-  - "技术背景较强，能与工程师讨论系统、API、数据流与技术权衡"
-  - "熟悉 Jira、Confluence、Figma、GitHub/GitLab、API 文档、分析看板和可观测性工具"
-  - "能把复杂业务流程拆成产品设计、系统流程、用户故事、验收标准、评估计划和优先级待办"
-  - "具备中英文书面和口头沟通能力"
-
+- 有 AI、数据、平台、开发者工具、自动化或企业工作流产品从概念到上线经验
+- 技术背景较强，能与工程师讨论系统、API、数据流与技术权衡
+- 熟悉 Jira、Confluence、Figma、GitHub/GitLab、API 文档、分析看板和可观测性工具
+- 能把复杂业务流程拆成产品设计、系统流程、用户故事、验收标准、评估计划和优先级待办
+- 具备中英文书面和口头沟通能力
 risks:
-  - "医疗行业和高合规业务场景可能提高业务理解门槛"
-  - "岗位要求产品经理具备明显工程思维，和传统偏需求文档型 PM 差异很大"
-  - "公开页未展示薪资和更细的组织分工信息"
+- 医疗行业和高合规业务场景可能提高业务理解门槛
+- 岗位要求产品经理具备明显工程思维，和传统偏需求文档型 PM 差异很大
+- 公开页未展示薪资和更细的组织分工信息
 ---
 
 # 岗位摘要
@@ -56,10 +52,11 @@ risks:
 - 公司：药明生物
 - 岗位：Agent AI Product Manager
 - 城市：上海
-- 薪资：未公开
+- 薪资：
 - 主轨道：AI 产品经理
 - 次轨道：FDE
 - 匹配分：90/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

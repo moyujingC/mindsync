@@ -3,7 +3,8 @@ job_id: ""
 captured_at: ""
 source_platform: ""
 source_type: "screenshot"
-status: "new"
+status: "applied"
+applied_at: "2026-07-13"
 
 company: ""
 role_title: ""
@@ -11,6 +12,8 @@ department: ""
 city: ""
 work_mode: ""
 salary_range: ""
+experience_requirement: ""
+education_requirement: ""
 
 primary_track: ""
 secondary_track: ""
@@ -31,6 +34,7 @@ risks: []
 - 薪资：
 - 主轨道：
 - 匹配分：
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 
@@ -122,4 +126,4 @@ risks: []
 
 - 当前阶段不直接改简历
 - 当前阶段不为单个岗位单独定制投递版本
-- 等样本积累到一定数量后，再统一做综合分析
+- 当前阶段已按你的要求默认记为已投递

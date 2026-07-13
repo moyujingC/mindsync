@@ -1,65 +1,61 @@
 ---
-job_id: "2026-06-08-kn-group-ai-builder-001"
-captured_at: "2026-06-08"
-source_platform: "BOSS直聘"
-source_type: "screenshot"
-status: "analyzed"
-
-company: "KN Group"
-role_title: "AI Builder"
-department: ""
-city: "上海"
-work_mode: "线下"
-salary_range: "25-40K·16薪"
-experience_requirement: "3-5年"
-education_requirement: "硕士"
-
-primary_track: "fde"
-secondary_track: "ai-pm"
+job_id: 2026-06-08-kn-group-ai-builder-001
+captured_at: '2026-06-08'
+source_platform: BOSS直聘
+source_type: screenshot
+status: applied
+applied_at: '2026-07-13'
+company: KN Group
+role_title: AI Builder
+department: ''
+city: 上海
+work_mode: 线下
+salary_range: 25-40K·16薪
+experience_requirement: 3-5年
+education_requirement: 硕士
+primary_track: fde
+secondary_track: ai-pm
 match_score: 84
-
+boss_competitiveness_available: false
 keywords:
-  - "AI Builder"
-  - "大模型应用"
-  - "Agent"
-  - "自动化工作流"
-  - "Prompt Engineering"
-  - "RAG"
-  - "Function Calling"
-  - "知识库"
-  - "Python"
-  - "SQL"
-  - "Dify"
-  - "Coze"
-  - "LangChain"
-  - "LangGraph"
-  - "Flowise"
-  - "MCP"
-  - "API集成"
-
+- AI Builder
+- 大模型应用
+- Agent
+- 自动化工作流
+- Prompt Engineering
+- RAG
+- Function Calling
+- 知识库
+- Python
+- SQL
+- Dify
+- Coze
+- LangChain
+- LangGraph
+- Flowise
+- MCP
+- API集成
 must_have:
-  - "基于主流大模型能力快速构建 AI 应用"
-  - "设计并搭建推荐助手、Agent、知识库问答、数据分析助手、运营工具等业务场景应用"
-  - "深入理解业务流程和痛点，将业务需求转化为 AI 解决方案"
-  - "设计和优化 AI Agent 工作流程，搭建多 Agent 协同、任务编排及自动化流程"
-  - "负责企业知识库建设与维护，设计 RAG 方案"
-  - "熟悉主流大模型产品及能力边界"
-  - "熟悉 Prompt Engineering、RAG、Agent、Function Calling 等核心概念"
-
+- 基于主流大模型能力快速构建 AI 应用
+- 设计并搭建推荐助手、Agent、知识库问答、数据分析助手、运营工具等业务场景应用
+- 深入理解业务流程和痛点，将业务需求转化为 AI 解决方案
+- 设计和优化 AI Agent 工作流程，搭建多 Agent 协同、任务编排及自动化流程
+- 负责企业知识库建设与维护，设计 RAG 方案
+- 熟悉主流大模型产品及能力边界
+- 熟悉 Prompt Engineering、RAG、Agent、Function Calling 等核心概念
 nice_to_have:
-  - "熟悉 Python、SQL"
-  - "有 Dify、Coze、LangChain、LangGraph、Flowise 平台使用经验"
-  - "具备 API 集成及自动化工作流搭建经验"
-  - "有 AI Agent 从 0 到 1 建设经验"
-  - "有企业级知识库项目经验"
-  - "有低代码/无代码平台实践经验"
-  - "熟悉 MCP 生态"
-  - "有 FinTech、互联网、电商、广告、数据平台等行业经验"
-
+- 熟悉 Python、SQL
+- 有 Dify、Coze、LangChain、LangGraph、Flowise 平台使用经验
+- 具备 API 集成及自动化工作流搭建经验
+- 有 AI Agent 从 0 到 1 建设经验
+- 有企业级知识库项目经验
+- 有低代码/无代码平台实践经验
+- 熟悉 MCP 生态
+- 有 FinTech、互联网、电商、广告、数据平台等行业经验
 risks:
-  - "岗位要求 3-5 年经验和硕士，门槛明显高于前两条样本"
-  - "岗位同时要求业务分析、应用搭建、知识库、Agent 编排和推广落地，复合度很高"
-  - "如果候选人只是会调工具，不具备端到端交付能力，匹配度会被迅速拉低"
+- 岗位要求 3-5 年经验和硕士，门槛明显高于前两条样本
+- 岗位同时要求业务分析、应用搭建、知识库、Agent 编排和推广落地，复合度很高
+- 如果候选人只是会调工具，不具备端到端交付能力，匹配度会被迅速拉低
 ---
 
 # 岗位摘要
@@ -71,6 +67,7 @@ risks:
 - 主轨道：FDE
 - 次轨道：AI 产品经理
 - 匹配分：84/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 

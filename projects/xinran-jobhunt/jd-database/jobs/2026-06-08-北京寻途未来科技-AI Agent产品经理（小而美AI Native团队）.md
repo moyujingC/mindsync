@@ -1,69 +1,66 @@
 ---
-job_id: "2026-06-08-ponder-ai-native-product-001"
-captured_at: "2026-06-08"
-source_platform: "BOSS直聘"
-source_type: "screenshot"
-status: "analyzed"
-
-company: "北京寻途未来科技"
-role_title: "【小而美AI Native团队】AI Agent产品经理"
-department: "Ponder AI / AI Native 团队"
-city: "上海"
-work_mode: "线下"
-salary_range: "35-60K·15薪"
-experience_requirement: "3-8年产品经验"
-education_requirement: "本科"
-
-primary_track: "ai-pm"
-secondary_track: "fde"
+job_id: 2026-06-08-ponder-ai-native-product-001
+captured_at: '2026-06-08'
+source_platform: BOSS直聘
+source_type: screenshot
+status: applied
+applied_at: '2026-07-13'
+company: 北京寻途未来科技
+role_title: 【小而美AI Native团队】AI Agent产品经理
+department: Ponder AI / AI Native 团队
+city: 上海
+work_mode: 线下
+salary_range: 35-60K·15薪
+experience_requirement: 3-8年产品经验
+education_requirement: 本科
+primary_track: ai-pm
+secondary_track: fde
 match_score: 86
-
+boss_competitiveness_available: false
 keywords:
-  - "AI Agent"
-  - "产品经理"
-  - "AI Native"
-  - "Vibe Coding"
-  - "MVP"
-  - "PRD"
-  - "原型验证"
-  - "Agent工作流"
-  - "交互设计"
-  - "记忆"
-  - "规划"
-  - "工具调用"
-  - "竞品分析"
-  - "知识工作"
-
+- AI Agent
+- 产品经理
+- AI Native
+- Vibe Coding
+- MVP
+- PRD
+- 原型验证
+- Agent工作流
+- 交互设计
+- 记忆
+- 规划
+- 工具调用
+- 竞品分析
+- 知识工作
 must_have:
-  - "负责 AI Agent 在生产力/协作场景中的产品定义、原型验证与迭代，输出 PRD 及可演示的 MVP 原型"
-  - "深度理解用户工作流和任务，设计能提升团队效能的 Agent 交互形式"
-  - "亲自使用代码或低代码工具（Vibe Coding）快速搭建产品原型，验证核心假设"
-  - "基于数据与用户行为持续优化 Agent 的记忆、规划与工具调用能力"
-  - "跟踪 AI 协作工具行业动态，完成竞争分析与机会判断"
-  - "对 AI Agent 有实践经验，能独立用 AI 工具快速跑通可演示的产品逻辑"
-  - "有生产力工具、任务/项目/文档协作或 AI 产品经验"
-
+- 负责 AI Agent 在生产力/协作场景中的产品定义、原型验证与迭代，输出 PRD 及可演示的 MVP 原型
+- 深度理解用户工作流和任务，设计能提升团队效能的 Agent 交互形式
+- 亲自使用代码或低代码工具（Vibe Coding）快速搭建产品原型，验证核心假设
+- 基于数据与用户行为持续优化 Agent 的记忆、规划与工具调用能力
+- 跟踪 AI 协作工具行业动态，完成竞争分析与机会判断
+- 对 AI Agent 有实践经验，能独立用 AI 工具快速跑通可演示的产品逻辑
+- 有生产力工具、任务/项目/文档协作或 AI 产品经验
 nice_to_have:
-  - "曾在 Linear、Notion、Slack 等团队或生态工作过"
-  - "有创业经历，如联合创始人或 0-1 产品负责人"
-  - "强烈的产品审美、结果导向和对用户工作流的同理心"
-
+- 曾在 Linear、Notion、Slack 等团队或生态工作过
+- 有创业经历，如联合创始人或 0-1 产品负责人
+- 强烈的产品审美、结果导向和对用户工作流的同理心
 risks:
-  - "岗位要求 3-8 年产品经验，默认会看成熟产品判断和产品 ownership（负责度）"
-  - "虽然强调 Vibe Coding，但本质仍是产品岗，不是纯工程岗"
-  - "岗位文化偏 AI Native 和创业式推进，对节奏、审美和抽象能力要求高"
-  - "2026-07-07 再次出现时，BOSS 头部字段显示经验不限，但正文仍写 3-8 年产品经验，需按正文要求判断"
+- 岗位要求 3-8 年产品经验，默认会看成熟产品判断和产品 ownership（负责度）
+- 虽然强调 Vibe Coding，但本质仍是产品岗，不是纯工程岗
+- 岗位文化偏 AI Native 和创业式推进，对节奏、审美和抽象能力要求高
+- 2026-07-07 再次出现时，BOSS 头部字段显示经验不限，但正文仍写 3-8 年产品经验，需按正文要求判断
 ---
 
 # 岗位摘要
 
 - 公司：北京寻途未来科技
-- 岗位：AI Agent产品经理（小而美AI Native团队）
+- 岗位：【小而美AI Native团队】AI Agent产品经理
 - 城市：上海
 - 薪资：35-60K·15薪
 - 主轨道：AI 产品经理
 - 次轨道：FDE
 - 匹配分：86/100
+- 投递状态：已投递（2026-07-13）
 
 ## 文字版 JD
 
