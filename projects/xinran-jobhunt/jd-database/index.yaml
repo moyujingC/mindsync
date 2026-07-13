@@ -1294,3 +1294,21 @@ jobs:
   - RAG
   - Coze
   - 商业闭环
+- job_id: 2026-07-13-elink-ai-presales-senior-product-manager-001
+  captured_at: '2026-07-13'
+  company: 埃林哲
+  role_title: 高级产品经理（AI售前）
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-consulting
+  match_score: 88
+  file: jobs/2026-07-13-埃林哲-高级产品经理-AI售前.md
+  keywords:
+  - AI售前
+  - 泛供应链
+  - 火山引擎
+  - 解决方案设计
+  - 售前演示
+  - 投标支持
