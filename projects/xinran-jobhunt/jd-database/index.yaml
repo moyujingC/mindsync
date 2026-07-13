@@ -1222,3 +1222,21 @@ jobs:
   - 内容分发
   - 海外增长
   - 指标体系
+- job_id: 2026-07-13-4paradigm-ai-native-product-expert-001
+  captured_at: '2026-07-13'
+  company: 第四范式
+  role_title: AI Native产品专家
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-pm
+  match_score: 90
+  file: jobs/2026-07-13-第四范式-AI Native产品专家.md
+  keywords:
+  - AI Native
+  - AI Coding
+  - 大模型应用
+  - 智能Agent
+  - 技术协同
+  - 产品增长
