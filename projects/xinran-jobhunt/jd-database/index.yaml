@@ -1204,3 +1204,21 @@ jobs:
   - 知识识别
   - 知识库
   - 质检
+- job_id: 2026-07-13-xiangxinguang-ai-product-content-remote-001
+  captured_at: '2026-07-13'
+  company: 相信光网络科技
+  role_title: AI产品-内容方向（远程）
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-13'
+  primary_track: ai-pm
+  match_score: 88
+  file: jobs/2026-07-13-相信光网络科技-AI产品-内容方向远程.md
+  keywords:
+  - 内容生态
+  - AI Agent
+  - 内容生产
+  - 内容分发
+  - 海外增长
+  - 指标体系
