@@ -29,7 +29,7 @@
 | 产品工程 | `Vibe Coding`、`AI Coding`、`Cursor`、`Claude Code`、`Codex`、`低代码` |
 | AI Builder / AI Native | `AI Builder`、`AI Native`、`AI Native Builder`、`AI 原生`、`产品工程型 PM` |
 | Harness / Context | `Harness Engineering`、`Context Engineering`、`Prompt Pack`、`输出契约`、`工具调用`、`交付回写` |
-| 评测与质量 | `Evaluation`、`Eval`、`评估`、`质量门`、`Guardrails`、`可观测性`、`灰度测试` |
+| 评测与质量 | `Evaluation`、`Eval`、`评测集`、`Eval Set`、`Golden Case`、`质量门`、`Guardrails`、`可观测性`、`灰度测试` |
 | 交付与方案 | `客户现场`、`售前支持`、`解决方案`、`项目交付`、`客户交付`、`验收` |
 
 ## 1. 当前总判断
@@ -53,7 +53,7 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 | P0 | Harness / Context / 输出契约 | Harness Engineering、Context Engineering、Prompt Pack、输出契约、工具调用、任务状态、交付回写 | DeepSeek-Agent Harness、阶跃星辰 AI Coding、药明生物 Agent AI PM、KN Group AI Builder | 明确归入 MindSync 项目；用来证明 AI 工作系统设计能力 |
 | P0 | PoC / MVP / Demo / 原型验证 | PoC、MVP、Demo、原型、试点、快速验证、灰度 | 字节 FDE、微软 AI FDE、德勤 AI 咨询、Ponder AI、上海瀚讯 | 三版简历都应保留；面试准备要补“最小闭环”说法 |
 | P0 | 客户场景 / 方案设计 / 交付 | 客户需求、客户现场、售前支持、解决方案、项目交付、客户交付、验收 | 字节 FDE、蚂蚁数科 FDE、网易 FDE、微软 AI FDE、DXC AI售前架构师 | FDE 版和 AI 转型咨询顾问版重点承接 |
-| P1 | 评测 / 质量门 / Guardrails | Eval、Evaluation、评估、质量标准、可观测性、Guardrails、灰度测试、A/B测试 | 药明生物 Agent AI PM、网易 FDE、DeepSeek Harness、上海联锐 | 已接近材料审核阈值；作品集和面试问答优先补证据 |
+| P1 | 评测集 / 质量门 / Guardrails | Eval、Evaluation、评测集、Eval Set、Golden Case、质量标准、可观测性、Guardrails、灰度测试、A/B测试 | 药明生物 Agent AI PM、网易 FDE、DeepSeek Harness、上海联锐 | 已有曼陀罗固定样本和 golden 资产；作品集和面试问答应显性补证据 |
 | P1 | 用户反馈 / 社群 / 数据实验 | 用户反馈、用户任务、用户社群、问卷、访谈、A/B测试、灰度测试、统计分析 | DeepSeek Harness、Ponder AI、Roche、上海联锐 | 新增强信号；暂不改主材料，先补面试表达 |
 | P1 | 培训赋能 / SOP / 组织推广 | 培训、Workshop、AI 赋能、内部推广、SOP、知识库、组织提效、AI 图文互动课程 | 字节 AI Builder、易鑫、月退制作、米哈游、艾特士、微软 AI FDE、Michael Page ToB AI 产品 | AI 转型咨询顾问版已能承接；healing-courses 可补“AI 互动课程设计与交付”证据 |
 | P1 | SDD / TDD / 工程化交付纪律 | Spec、Implementation Plan、验收标准、测试方式、边界情况、QA basis | DeepSeek Harness、AI Coding、懂研发 AI PM、FDE 交付类岗位 | 放入 MindSync 证明体系；写成工作方法，不写成纯工程师标签 |
@@ -146,14 +146,14 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - 材料映射：`Harness Engineering` 归入 MindSync 项目，不放到曼陀罗项目主能力里。曼陀罗可以作为具体应用场景提到报告链路如何组织输入、知识库、Prompt Pack 和质量门，但主证明放在 MindSync。
 - 当前动作：进入 P0 证明能力。后续改 MindSync 项目经历时，需要单独写清“输入、上下文、工具、输出契约、质量门、交付回写”。
 
-### 4.6 Evaluation / Guardrails / 质量门
+### 4.6 Evaluation / 评测集 / Guardrails / 质量门
 
-- 归一词：Evaluation、Eval、评估、质量门、Guardrails、安全边界、可观测性、失败兜底。
+- 归一词：Evaluation、Eval、评测集、Eval Set、Golden Case、固定样本、评估、质量门、Guardrails、安全边界、可观测性、失败兜底。
 - 代表 JD：药明生物、网易 FDE、上海联锐、DeepSeek Harness、美团 LongCat 观察样本。
-- 岗位含义：AI 产品开始要求可评估、可监控、可回滚，而不是一次性生成结果。
-- 馨冉匹配点：曼陀罗项目的报告质量门、MindSync 的任务验收和状态流转。
-- 材料映射：`作品集网站` 和 `面试问答` 优先补证据；主简历维持简洁。
-- 当前动作：接近材料审核阈值，等待 2-3 天新样本或面试追问。
+- 岗位含义：AI 产品开始要求可评估、可复现、可监控、可回滚，而不是一次性生成结果。评测集就是一组固定输入、期望表现、失败类型和人工审阅标准，用来比较不同版本的输出质量。
+- 馨冉匹配点：曼陀罗项目已有 `fixtures` 固定验证样本、脱敏画作资产、Lite / Pro golden 报告、debug trace、review 资产和 model-evals 记录；MindSync 也有任务验收和状态流转。
+- 材料映射：`作品集网站` 和 `面试问答` 应显性补“评测集 / Golden Case / 固定样本回归”的证据；主简历可以简洁写“建立固定样本与 golden case，用于报告质量回归验证”。
+- 当前动作：从“需要补小样”调整为“已有项目可证明，但需要写清楚”。
 
 ### 4.7 SDD / TDD / 工程化交付纪律
 
@@ -409,6 +409,7 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 | 知识库 / RAG 前置能力 | 企业 AI 岗持续要求知识治理和结构化知识 | MindSync、曼陀罗 | 容易被写成泛“知识库” | 写知识来源、结构、版本、调用方式、质量边界 |
 | 内容生产 AI 工作流 | 内容、电商、社交、AIGC 岗会看真实内容生产场景 | MindSync | 如果单独写“视觉工坊”会显窄 | 放进 MindSync，写选题、草稿、成稿、配图、排版、分发资产 |
 | AI 图文互动课程设计 | AI 转型、企业培训、产品培训和组织采用岗位会看“能不能教会别人用” | healing-courses、MindSync | 容易被写成传统课程制作，弱化 AI 互动性 | 写课程目标、课程脚本、互动问答、图文呈现、练习反馈和安全边界 |
+| 评测集 / Golden Case | Agent、AI Coding、FDE、评测产品都在看 AI 输出能否稳定复现和回归验证 | 曼陀罗、MindSync | 容易只写“质量门”，没有体现固定样本和人工审阅标准 | 写 fixtures、脱敏样本、Lite / Pro golden 报告、debug trace、review、model-evals |
 | 质量门 / Guardrails | AI 产品岗位越来越看可控性和风险边界 | 曼陀罗、MindSync | 容易停留在术语 | 写检查什么、拦截什么、何时人工复核、如何回写 |
 | 状态与 stale 处理 | Agent / 工作流产品需要处理结果过期、失败和重生成 | MindSync 内容生产模块 | 简历里几乎不会自然出现 | 在作品集里写状态机、单卡重生成、失败提示、导出 |
 
@@ -418,7 +419,6 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 
 | 能力 | JD 信号 | 现有基础 | 需要补的证据 |
 |---|---|---|---|
-| 模型评测 / evals | 阶跃星辰 AI Coding、DeepSeek Harness、LongCat 评测 | 质量门、任务复盘、AI Coding 使用 | 小型 AI Coding eval 样例、失败类型、评测表 |
 | 开发者体验 / DevTools | AI Coding、IDE、CLI、API 相关岗位 | 早期工程经历、Codex / Claude Code 高频使用 | 工具链体验对比、开发任务闭环、上下文管理案例 |
 | 开源项目贡献 | 第四范式、DeepSeek Harness、平台基础设施类岗位会看 repo / PR / commit | 目前已有 1 个可举证贡献；已重新启动自动化贡献项目，用于持续筛选 issue、生成补丁和推进 PR | 现有贡献的仓库 / PR / commit；自动化贡献项目的流程、筛选标准、PR 状态、被接受记录 |
 | 开源项目应用 / 二次开发 | AI Builder、懂研发 AI PM、教育培训产品会看是否能基于开源框架快速落地 | healing-courses 使用 `ai-shifu/ai-shifu` 制作 AI 图文互动课程；当前是开源代码应用，不是该项目贡献 | 课程链接 / 截图、ai-shifu 配置、课程脚本、互动流程、部署或运行方式 |
@@ -447,11 +447,11 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 
 | 项目 | 主要证明能力 | 不要承担的能力 |
 |---|---|---|
-| 曼陀罗绘画 AI 解读产品 | AI 产品 0 到 1、商业化产品路径、AI Builder、Vibe Coding、CI/CD、云服务器部署、知识库、AI 报告生成、质量门、安全边界 | Harness Engineering 主证明、医疗诊疗、成熟规模化商业化 |
+| 曼陀罗绘画 AI 解读产品 | AI 产品 0 到 1、商业化产品路径、AI Builder、Vibe Coding、CI/CD、云服务器部署、知识库、AI 报告生成、评测集 / Golden Case、质量门、安全边界 | Harness Engineering 主证明、医疗诊疗、成熟规模化商业化 |
 | MindSync / 一人公司 AI 工作系统 | AI Native 工作系统、Harness Engineering、SDD、TDD、Agent 工作流、知识治理、任务状态、交付回写、内容生产 AI 工作流、求职材料工作流、多项目治理 | 成熟企业 SaaS、多人企业平台、完全自动化公司 |
 | healing-courses / AI 图文互动课程 | AI 互动课程设计、培训赋能、课程脚本、图文讲解、练习反馈、开源项目应用、知识产品化 | 教育平台负责人、心理治疗产品、ai-shifu 开源维护者、大规模课程营收 |
 
-当前材料最容易漏掉的是：`AI Builder / AI Native`、`Harness Engineering`、`SDD / TDD`、`CI/CD / 云服务器部署`、`内容生产 AI 工作流`、`AI 图文互动课程`、`状态 / stale / 失败处理`、`开源项目贡献证据`、`本地 Markdown + 飞书协作边界`、`小型 evals 证据`。前八项已有事实基础，适合进入项目经历；`开源` 当前只能写 1 个已举证贡献、自动化贡献项目和 ai-shifu 开源应用，`飞书` 应写协作边界而不是产品专家，`evals` 需要先补一个小样。
+当前材料最容易漏掉的是：`AI Builder / AI Native`、`Harness Engineering`、`SDD / TDD`、`CI/CD / 云服务器部署`、`内容生产 AI 工作流`、`AI 图文互动课程`、`评测集 / Golden Case`、`状态 / stale / 失败处理`、`开源项目贡献证据`、`本地 Markdown + 飞书协作边界`。前九项已有事实基础，适合进入项目经历；`开源` 当前只能写 1 个已举证贡献、自动化贡献项目和 ai-shifu 开源应用，`飞书` 应写协作边界而不是产品专家。
 
 ## 13. 来源索引
 
@@ -464,6 +464,8 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - `projects/healing-courses/specs/2026-05-22-曼陀罗自我疗愈入门课程-SPEC.md`
 - `projects/healing-courses/delivery/mandala-healing/course-prompt.md`
 - `https://github.com/ai-shifu/ai-shifu`
+- `projects/aimandala/fixtures/README.md`
+- `projects/aimandala/fixtures/toc-mvp/README.md`
 
 代表 JD：
 
