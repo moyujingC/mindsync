@@ -27,7 +27,6 @@
 - [AI-MCP-系统性讨论.md](AI-MCP-系统性讨论.md)
 - [AI-Plugin-系统性讨论.md](AI-Plugin-系统性讨论.md)
 - [AI-Skill-MCP-Plugin-对比分析.md](AI-Skill-MCP-Plugin-对比分析.md)
-- [本地Markdown与飞书存储边界规则.md](本地Markdown与飞书存储边界规则.md)
 
 ## 2. 适用边界
 
@@ -60,4 +59,3 @@
 7. 如果要理解 AI 如何标准化连接外部系统，再看 [AI-MCP-系统性讨论.md](../../../company/knowledge-base/system/AI-MCP-系统性讨论.md)
 8. 如果要理解 AI 工具生态里的插件如何打包和分发能力，再看 [AI-Plugin-系统性讨论.md](../../../company/knowledge-base/system/AI-Plugin-系统性讨论.md)
 9. 如果要比较 `skill / MCP / plugin` 的职责边界和组合方式，再看 [AI-Skill-MCP-Plugin-对比分析.md](../../../company/knowledge-base/system/AI-Skill-MCP-Plugin-对比分析.md)
-10. 如果要判断一份知识、文档或协作页面应该留在本地还是进入飞书，再看 [本地Markdown与飞书存储边界规则.md](../../../company/knowledge-base/system/本地Markdown与飞书存储边界规则.md)

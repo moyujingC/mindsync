@@ -95,13 +95,14 @@ goals:
 10. [company/顶层任务收束规则.md](./company/顶层任务收束规则.md)
 11. [company/标签与状态使用说明.md](./company/标签与状态使用说明.md)
 12. [company/Git仓库管理系统说明.md](./company/Git仓库管理系统说明.md)
-13. [MONOREPO.md](MONOREPO.md)
-14. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
-15. [company/服务器与基础设施入口.md](./company/服务器与基础设施入口.md)
-16. [company/Paperclip-Agent-模型配置总表.md](./company/Paperclip-Agent-模型配置总表.md)
-17. [company/projects/Automation/PROJECT.md](./company/projects/Automation/PROJECT.md)
-18. [company/项目与仓库映射.md](./company/项目与仓库映射.md)
-19. [company/knowledge-base/README.md](./company/knowledge-base/README.md)
+13. [company/本地Markdown与飞书协作边界规则.md](./company/本地Markdown与飞书协作边界规则.md)
+14. [MONOREPO.md](MONOREPO.md)
+15. [DOCS_GOVERNANCE.md](DOCS_GOVERNANCE.md)
+16. [company/服务器与基础设施入口.md](./company/服务器与基础设施入口.md)
+17. [company/Paperclip-Agent-模型配置总表.md](./company/Paperclip-Agent-模型配置总表.md)
+18. [company/projects/Automation/PROJECT.md](./company/projects/Automation/PROJECT.md)
+19. [company/项目与仓库映射.md](./company/项目与仓库映射.md)
+20. [company/knowledge-base/README.md](./company/knowledge-base/README.md)
 
 其中：
 
@@ -117,6 +118,7 @@ goals:
 - `顶层任务收束规则` 定义顶层任务应如何长期收束，不混入阶段性整改表
 - `标签与状态使用说明` 解释这些标签和文档状态在实际运行中如何影响入口、巡检和默认动作
 - `Git仓库管理系统说明` 收口公司级 Git 仓库、Monorepo、worktree、分支和提交纪律的总入口
+- `本地Markdown与飞书协作边界规则` 定义本地仓库与飞书在主库、展示、协作和 `Codex` 读写上的默认分工
 - `MONOREPO` 只补充目录分层与对象落位原则
 - `DOCS_GOVERNANCE` 定义正式文档的状态、元数据和 artifact 规则
 - `服务器与基础设施入口` 定义当前可运维宿主机的公司级登录入口与项目 runbook 索引

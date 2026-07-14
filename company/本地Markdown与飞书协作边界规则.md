@@ -1,10 +1,10 @@
-# 本地 Markdown 与飞书存储边界规则
+# 本地 Markdown 与飞书协作边界规则
 
 > 状态：current
 > 版本：0.1.0
 > owner：CEO / Engineer
 > last_updated：2026-07-14
-> source_of_truth：company/knowledge-base/system/本地Markdown与飞书存储边界规则.md
+> source_of_truth：company/本地Markdown与飞书协作边界规则.md
 
 这份文档用于约束 `MindSync` 在 `Codex + 本地仓库 + 飞书` 组合下的默认存储边界。
 
