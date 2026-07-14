@@ -27,6 +27,7 @@
 | RAG / 知识库 | `RAG`、`知识库`、`向量检索`、`Graph RAG`、`结构化知识` |
 | 原型验证 | `PoC`、`POC`、`MVP`、`Demo`、`原型`、`快速原型`、`试点` |
 | 产品工程 | `Vibe Coding`、`AI Coding`、`Cursor`、`Claude Code`、`Codex`、`低代码` |
+| AI Builder / AI Native | `AI Builder`、`AI Native`、`AI Native Builder`、`AI 原生`、`产品工程型 PM` |
 | Harness / Context | `Harness Engineering`、`Context Engineering`、`Prompt Pack`、`输出契约`、`工具调用`、`交付回写` |
 | 评测与质量 | `Evaluation`、`Eval`、`评估`、`质量门`、`Guardrails`、`可观测性`、`灰度测试` |
 | 交付与方案 | `客户现场`、`售前支持`、`解决方案`、`项目交付`、`客户交付`、`验收` |
@@ -46,6 +47,7 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 | 优先级 | 信号簇 | 典型词 | 代表 JD | 材料动作 |
 |---|---|---|---|---|
 | P0 | Agent / 智能体 / Workflow | Agent、AI Agent、智能体、Workflow、Multi-Agent、Agent Loop、Tool Use | KN Group AI Builder、PDD Agent智能服务、药明生物 Agent AI PM、DeepSeek-Agent Harness 产品经理 | 三条主简历都要保留；AI 产品经理版和作品集优先讲清任务流与边界 |
+| P0 | AI Builder / AI Native | AI Builder、AI Native、AI Native Builder、AI 原生、产品工程型 PM | KN Group AI Builder、美团 AI Builder、上海尊范 AI Native、第四范式 AI Native 产品专家、动念涌现 AI Native Builder | 显性进入能力映射；用 MindSync + 曼陀罗证明“会定义，也能做出可运行系统” |
 | P0 | RAG / 知识库 / 结构化知识 | RAG、知识库、向量检索、Graph RAG、数据治理、语料质量 | KN Group、网易 FDE、上海连盛、上海联锐、国金证券观察样本 | 已是稳定高频；在线简历母版和 FDE 版必须可检索 |
 | P0 | 产品工程 / Vibe Coding | Vibe Coding、AI Coding、Cursor、Claude Code、Codex、Dify、Coze、LangChain | Ponder AI、哈啰 Builder、DeepSeek Harness、上海尊范、上海瀚讯 | 进入人工审核：AI 产品经理版开头是否补“产品工程 / Agent 工具重度使用” |
 | P0 | Harness / Context / 输出契约 | Harness Engineering、Context Engineering、Prompt Pack、输出契约、工具调用、任务状态、交付回写 | DeepSeek-Agent Harness、阶跃星辰 AI Coding、药明生物 Agent AI PM、KN Group AI Builder | 明确归入 MindSync 项目；用来证明 AI 工作系统设计能力 |
@@ -54,8 +56,10 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 | P1 | 评测 / 质量门 / Guardrails | Eval、Evaluation、评估、质量标准、可观测性、Guardrails、灰度测试、A/B测试 | 药明生物 Agent AI PM、网易 FDE、DeepSeek Harness、上海联锐 | 已接近材料审核阈值；作品集和面试问答优先补证据 |
 | P1 | 用户反馈 / 社群 / 数据实验 | 用户反馈、用户任务、用户社群、问卷、访谈、A/B测试、灰度测试、统计分析 | DeepSeek Harness、Ponder AI、Roche、上海联锐 | 新增强信号；暂不改主材料，先补面试表达 |
 | P1 | 培训赋能 / SOP / 组织推广 | 培训、Workshop、AI 赋能、内部推广、SOP、知识库、组织提效 | 字节 AI Builder、易鑫、月退制作、米哈游、艾特士 | AI 转型咨询顾问版已能承接，继续观察猎头反馈 |
+| P1 | SDD / TDD / 工程化交付纪律 | Spec、Implementation Plan、验收标准、测试方式、边界情况、QA basis | DeepSeek Harness、AI Coding、懂研发 AI PM、FDE 交付类岗位 | 放入 MindSync 证明体系；写成工作方法，不写成纯工程师标签 |
 | P2 | 行业 AI 转型 | 金融、医疗、制造、汽车、物流、供应链、电商、内容、游戏 | 蚂蚁、药明、Roche、上汽大众、夏晖物流、阅文 | 作为面试练习和内容选题，不写成已有行业负责人经验 |
 | P2 | 开源社区 / 开发者体验 | 开源社区、用户社区、开发者体验、英文沟通、模型行为判断 | DeepSeek Harness、药明生物、字节 FDE、火山方舟 | 新兴高门槛信号；先用于 P0 岗位定向沟通 |
+| P2 | 飞书 / 企业协作工具 | 飞书、飞书多维表、文档、表格、知识库、企业协作 | 上海尊范 AI Native、字节飞书 AI 策略、飞书 AI 解决方案、得物 HR AI | 作为企业协作语境辅助词；除非补足事实，不写成飞书产品专家 |
 
 ## 3. 业务关键词
 
@@ -106,7 +110,16 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - 材料映射：`在线简历母版`、`AI 产品经理版`、`FDE 版` 都应显性保留。
 - 当前动作：稳定高频，继续作为主线。
 
-### 4.2 RAG / 知识库 / 数据治理
+### 4.2 AI Builder / AI Native
+
+- 归一词：AI Builder、AI Native、AI Native Builder、AI 原生、产品工程型 PM、AI Native 产品专家。
+- 代表 JD：KN Group `AI Builder`、美团 `AI Builder`、上海尊范 `产品经理（AI Native）`、第四范式 `AI Native产品专家`、动念涌现 `AI Native Builder`。
+- 岗位含义：招聘方不只要会写 PRD 的 PM，而是在找能把 AI 能力、业务流程、工具链、原型、部署和迭代组织成可运行产品的人。
+- 馨冉匹配点：曼陀罗可以证明 AI 产品从 0 到 1、Vibe Coding、CI/CD、云服务器部署和可上线商业化路径；MindSync 可以证明 AI Native 工作系统、Agent 工作流、知识治理、内容生产自动化和 Harness Engineering。
+- 材料映射：`AI 产品经理版` 可显性加入 `AI Builder / AI Native` 词，但必须跟真实项目绑定；不要只把它当标题标签。
+- 当前动作：进入 P0 能力映射。后续重写项目经历时，MindSync 和曼陀罗都要承担一部分证明。
+
+### 4.3 RAG / 知识库 / 数据治理
 
 - 归一词：RAG、知识库、向量检索、Graph RAG、结构化知识、数据治理、语料质量。
 - 代表 JD：KN Group、网易 FDE、上海连盛、上海联锐、某大型互联网上市公司 `AI解决方案架构师`。
@@ -115,7 +128,7 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - 材料映射：`在线简历母版` 要保留检索词；`FDE 版` 和 `AI 转型咨询顾问版` 要讲“知识库先行”。
 - 当前动作：稳定高频，已达到材料长期保留标准。
 
-### 4.3 大模型 / LLM / 模型行为
+### 4.4 大模型 / LLM / 模型行为
 
 - 归一词：大模型、LLM、模型行为、模型调优、多模态、推理服务。
 - 代表 JD：字节火山方舟、上海海能证券、夏晖物流、DeepSeek Harness、上汽大众。
@@ -124,7 +137,7 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - 材料映射：`AI 产品经理版` 讲“理解模型行为和产品边界”；避免包装成算法工程师。
 - 当前动作：已覆盖，面试中要用通俗语言解释。
 
-### 4.4 Prompt / Context / Harness Engineering
+### 4.5 Prompt / Context / Harness Engineering
 
 - 归一词：Prompt Engineering、Context Engineering、Harness Engineering、Prompt Pack、上下文、输出契约、工具调用、任务状态、交付回写。
 - 代表 JD：DeepSeek Harness、KN Group、药明生物、某大型互联网上市公司 `AI解决方案架构师`、中国盛裕 FDE。
@@ -133,7 +146,7 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - 材料映射：`Harness Engineering` 归入 MindSync 项目，不放到曼陀罗项目主能力里。曼陀罗可以作为具体应用场景提到报告链路如何组织输入、知识库、Prompt Pack 和质量门，但主证明放在 MindSync。
 - 当前动作：进入 P0 证明能力。后续改 MindSync 项目经历时，需要单独写清“输入、上下文、工具、输出契约、质量门、交付回写”。
 
-### 4.5 Evaluation / Guardrails / 质量门
+### 4.6 Evaluation / Guardrails / 质量门
 
 - 归一词：Evaluation、Eval、评估、质量门、Guardrails、安全边界、可观测性、失败兜底。
 - 代表 JD：药明生物、网易 FDE、上海联锐、DeepSeek Harness、美团 LongCat 观察样本。
@@ -141,6 +154,15 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - 馨冉匹配点：曼陀罗项目的报告质量门、MindSync 的任务验收和状态流转。
 - 材料映射：`作品集网站` 和 `面试问答` 优先补证据；主简历维持简洁。
 - 当前动作：接近材料审核阈值，等待 2-3 天新样本或面试追问。
+
+### 4.7 SDD / TDD / 工程化交付纪律
+
+- 归一词：SDD、Spec-Driven Development、TDD、Test-Driven Development、验收标准、测试方式、边界情况、QA basis。
+- 代表 JD：DeepSeek-Agent Harness、阶跃星辰 `AI Coding产品经理`、Excelfore `AI产品经理（懂研发）`、江苏卓易 `AI Agent产品经理（平台基础设施方向）`。
+- 岗位含义：这类词不一定直接写在 JD 标题里，但懂研发、AI Coding、Agent Harness、FDE 岗位都在筛“能不能把不确定 AI 需求变成可验证交付”。
+- 馨冉匹配点：MindSync 公司研发原则已经把 Harness Engineering、SDD、TDD、Docs As System 写成工作纪律；项目推进里有 spec、implementation plan、qa basis、delivery 和复盘回写。
+- 材料映射：适合放在 MindSync 项目经历和面试回答里，表述为“用 SDD 明确问题和方案，用 TDD 明确验收标准和边界情况”，不要写成“资深测试工程师”。
+- 当前动作：进入人工审核。后续改 MindSync 项目经历时建议显性补一条。
 
 ## 5. 工具关键词
 
@@ -179,6 +201,15 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - 馨冉匹配点：目前可讲方法论和工作流记录，但真实大规模 A/B 经验有限。
 - 材料映射：只进面试准备，不直接补进主简历。
 - 当前动作：观察信号，避免过度包装。
+
+### 5.5 飞书 / 企业协作工具
+
+- 归一词：飞书、飞书多维表、文档、表格、知识库、企业协作、工作台、协同空间。
+- 代表 JD：上海尊范 `产品经理（AI Native）`、字节飞书 `AI策略产品经理`、字节飞书 `AI解决方案架构师`、得物 `HR产品经理（AI方向）`。
+- 岗位含义：飞书通常不是单独能力，而是企业协作、知识库、表格、流程、权限和组织采用的工具语境。
+- 馨冉匹配点：MindSync 的文档治理、任务状态、知识库、内容生产工作流和多项目协作，可以承接“企业协作工具理解”；如果有实际飞书空间、飞书多维表或飞书自动化使用记录，需要单独补证据。
+- 材料映射：定向投递飞书、企业协作、HR SaaS、B 端协作平台岗位时可以放入沟通话术；主简历不要写成“飞书产品经验”。
+- 当前动作：列入证据待补。需要确认真实使用深度后再决定是否写入简历。
 
 ## 6. 行业关键词
 
@@ -235,8 +266,10 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 
 - `Agent / AI Agent / AI Native`
 - `Vibe Coding / AI Coding / 原型 / Demo / MVP`
+- `AI Builder / AI Native`
 - `用户任务 / 用户反馈 / 产品路线图`
 - `Prompt Engineering / Context Engineering / Harness Engineering`
+- `SDD / TDD / 验收标准`
 - `评测 / 质量门 / 反馈迭代`
 
 材料承接：
@@ -339,6 +372,10 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 6. 一个 AI PoC 如何避免只做成演示玩具？
 7. 如何从用户访谈、问卷、A/B 测试和灰度数据里判断 Agent 是否真的有用？
 8. 如果 AI 输出有风险，应该设计哪些质量门、人工审核和失败兜底？
+9. AI Builder 和传统产品经理的差异是什么？你如何证明自己不是只会提需求？
+10. SDD / TDD 在 AI 产品里怎么落地？如果输出不可完全确定，验收标准怎么写？
+11. 如果岗位要求开源贡献，你能拿出哪个 repo、PR、commit 和负责功能？
+12. 飞书、多维表、知识库这类协作工具经验，如何转化成企业 AI 工作台的产品理解？
 
 ## 11. 墨予镜选题池
 
@@ -346,6 +383,9 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - `为什么 RAG 不是接一个知识库就结束`
 - `AI PoC 的最小闭环：目标、数据、流程、评测和失败边界`
 - `Vibe Coding 对产品经理意味着什么`
+- `AI Builder 不是搭积木：把业务动作变成可控执行链`
+- `AI Native 产品经理到底在筛什么`
+- `SDD / TDD 放到 AI 产品里，解决的是可验证交付问题`
 - `企业招 FDE，本质是在找能把现场问题翻译成系统的人`
 - `Agent 产品最难的不是聊天，而是任务、工具和边界`
 - `为什么传统行业的 AI 转型岗位越来越多`
@@ -361,7 +401,9 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 | 能力 | 为什么重要 | 主要证明项目 | 当前写法风险 | 建议补法 |
 |---|---|---|---|---|
 | Harness Engineering | DeepSeek Harness、Agent、FDE、AI Coding 岗都在筛“能否把 AI 任务工程化” | MindSync | 容易被写成普通 Prompt 能力 | 写清输入、上下文、工具、输出契约、质量门、交付回写 |
+| AI Builder / AI Native | 第四范式、上海尊范、KN Group、美团、动念涌现都在筛“能定义也能做出来” | MindSync、曼陀罗 | 容易只写成流行标签 | 写成业务场景、工作流、可运行产品、部署、迭代和验证 |
 | AI Coding / Vibe Coding | AI PM 越来越要求自己做原型和验证 | 曼陀罗、MindSync | 容易被写成“会用 AI 工具” | 写成需求拆解、代码实现、调试、部署、迭代 |
+| SDD / TDD | 懂研发 AI PM、Agent Harness、FDE 岗都看重可验证交付 | MindSync | 容易被误解成纯工程流程 | 写成重要工作先有 spec、验收标准、边界情况、验证方式 |
 | CI/CD 与云服务器部署 | 能证明产品不是概念稿，而是可上线系统 | 曼陀罗 | 现在没有被充分前置 | 写构建、环境配置、服务器、域名、HTTPS、Nginx、上线迭代 |
 | 知识库 / RAG 前置能力 | 企业 AI 岗持续要求知识治理和结构化知识 | MindSync、曼陀罗 | 容易被写成泛“知识库” | 写知识来源、结构、版本、调用方式、质量边界 |
 | 内容生产 AI 工作流 | 内容、电商、社交、AIGC 岗会看真实内容生产场景 | MindSync | 如果单独写“视觉工坊”会显窄 | 放进 MindSync，写选题、草稿、成稿、配图、排版、分发资产 |
@@ -376,6 +418,8 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 |---|---|---|---|
 | 模型评测 / evals | 阶跃星辰 AI Coding、DeepSeek Harness、LongCat 评测 | 质量门、任务复盘、AI Coding 使用 | 小型 AI Coding eval 样例、失败类型、评测表 |
 | 开发者体验 / DevTools | AI Coding、IDE、CLI、API 相关岗位 | 早期工程经历、Codex / Claude Code 高频使用 | 工具链体验对比、开发任务闭环、上下文管理案例 |
+| 开源项目贡献 | 第四范式、DeepSeek Harness、平台基础设施类岗位会看 repo / PR / commit | 可能有 Paperclip 等实践线索，但简历证据尚未整理 | 仓库链接、PR 链接、commit 记录、负责功能、是否 merged / reviewed |
+| 飞书使用经验 | 飞书 AI、企业协作、HR SaaS、AI Native 工作台岗位会提 | 文档、知识库、任务协作和工作流经验可迁移 | 实际飞书空间、飞书多维表、自动化、权限或业务流程案例 |
 | A/B 测试 / 灰度 / 数据实验 | 内容、消费、Agent 产品反复出现 | 方法论理解、产品迭代意识 | 真实实验设计样例、指标口径、灰度规则 |
 | 客户 PoC 验收 | FDE、AI 解决方案、AI 咨询岗位 | 房产咨询、自由职业交付、MindSync 质量门 | 一页 PoC 验收模板：目标、输入、成功标准、风险 |
 | 企业级权限 / 数据安全 | 企业 AI、RAG、金融、制造岗位 | 高信任服务和风险意识 | 数据权限、敏感信息、人审、日志、回滚的方案例子 |
@@ -392,16 +436,18 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 | 大型企业 AI 转型负责人 | MindSync 是自用系统，房产咨询是可迁移能力 | 写业务诊断、流程设计、SOP，不写大型企业负责人 |
 | 医疗 / 心理诊疗产品经验 | 曼陀罗不能包装成医疗或心理治疗 | 写自我探索、内容解读、高信任边界 |
 | 成熟 DevTools 产品负责人 | 有 AI Coding 使用和工程背景，但缺开发者产品商业化证据 | 写产品工程和 AI Coding 实践 |
+| 深度开源社区维护者 | 可以准备开源贡献证据，但若没有长期 maintainer / community owner 经历，不要写成强项 | 写具体 PR / commit / issue 协作，不写“维护大型开源社区” |
+| 飞书产品专家 / 飞书管理员 | 飞书相关岗位可借企业协作经验沟通，但没有确认的深度飞书产品或管理经验 | 写企业协作、知识库、流程工具理解；待补证据后再写飞书 |
 | 生产级平台架构负责人 | 有部署和云服务器使用，但不是大型平台架构 | 写 Web 产品部署、CI/CD、服务器运维 |
 
 ### 12.4 两个主项目的能力承接
 
 | 项目 | 主要证明能力 | 不要承担的能力 |
 |---|---|---|
-| 曼陀罗绘画 AI 解读产品 | AI 产品 0 到 1、商业化产品路径、Vibe Coding、CI/CD、云服务器部署、知识库、AI 报告生成、质量门、安全边界 | Harness Engineering 主证明、医疗诊疗、成熟规模化商业化 |
-| MindSync / 一人公司 AI 工作系统 | Harness Engineering、Agent 工作流、知识治理、任务状态、交付回写、内容生产 AI 工作流、求职材料工作流、多项目治理 | 成熟企业 SaaS、多人企业平台、完全自动化公司 |
+| 曼陀罗绘画 AI 解读产品 | AI 产品 0 到 1、商业化产品路径、AI Builder、Vibe Coding、CI/CD、云服务器部署、知识库、AI 报告生成、质量门、安全边界 | Harness Engineering 主证明、医疗诊疗、成熟规模化商业化 |
+| MindSync / 一人公司 AI 工作系统 | AI Native 工作系统、Harness Engineering、SDD、TDD、Agent 工作流、知识治理、任务状态、交付回写、内容生产 AI 工作流、求职材料工作流、多项目治理 | 成熟企业 SaaS、多人企业平台、完全自动化公司 |
 
-当前材料最容易漏掉的是：`Harness Engineering`、`CI/CD / 云服务器部署`、`内容生产 AI 工作流`、`状态 / stale / 失败处理`、`小型 evals 证据`。前四项已有事实基础，适合进入项目经历；`evals` 需要先补一个小样。
+当前材料最容易漏掉的是：`AI Builder / AI Native`、`Harness Engineering`、`SDD / TDD`、`CI/CD / 云服务器部署`、`内容生产 AI 工作流`、`状态 / stale / 失败处理`、`开源项目贡献证据`、`飞书使用证据`、`小型 evals 证据`。前六项已有事实基础，适合进入项目经历；`开源`、`飞书`、`evals` 需要先补证据。
 
 ## 13. 来源索引
 
@@ -415,6 +461,7 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 
 - `2026-06-08-KN Group-AI Builder.md`
 - `2026-06-08-北京寻途未来科技-AI Agent产品经理（小而美AI Native团队）.md`
+- `2026-06-08-上海尊范科技有限公司-产品经理（AI Native）.md`
 - `2026-06-09-网易-FDE工程师.md`
 - `2026-06-09-蚂蚁集团-蚂蚁数科-FDE前沿部署工程师-B端.md`
 - `2026-06-09-药明生物-Agent AI Product Manager.md`
@@ -423,6 +470,8 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - `2026-07-08-阅文集团-AI产品经理.md`
 - `2026-07-09-某大型互联网公司-DeepSeek-Agent-Harness产品经理.md`
 - `2026-07-13-上海阶跃星辰智能科技-AI Coding产品经理模型方向.md`
+- `2026-07-13-动念涌现-AI Native Builder.md`
+- `2026-07-13-第四范式-AI Native产品专家.md`
 - `2026-07-13-瑞声科技-AI产品经理.md`
 - `2026-07-13-北京某大型互联网社交平台上市公司-AI Native产品经理旅行方向-P6P7.md`
 
