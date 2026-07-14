@@ -69,6 +69,7 @@
 ## 4. 当前直接编辑入口
 
 - [服务 Framing](specs/2026-07-01-AI服务小单-Framing.md)
+- [业务系统](system/README.md)
 - [AI 工作流诊断 SOP](sops/AI工作流诊断-SOP.md)
 - [AI 文档知识库整理 SOP](sops/AI文档知识库整理-SOP.md)
 - [低压力获客话术](outreach/低压力获客话术.md)
