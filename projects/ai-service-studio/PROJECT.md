@@ -3,7 +3,7 @@
 > 状态：draft
 > 版本：0.2.0
 > owner：CEO / Orchestrator
-> last_updated：2026-07-13
+> last_updated：2026-07-15
 > source_of_truth：projects/ai-service-studio/PROJECT.md
 > 公司侧入口：[company/projects/知行AI服务/PROJECT.md](../../company/projects/知行AI服务/PROJECT.md)
 > 项目类型：AI 服务收入验证工作区
@@ -66,10 +66,24 @@
 
 升级服务如“小团队 AI 工作台搭建”只在客户明确需要并且已有诊断基础时作为后续选项。
 
+## 3.1 获客依据与内容系统
+
+`知行AI服务` 的公域内容和私域触达，应逐步接入 `内容矩阵` 下的 [AI 营销获客系统](../content-matrix/specs/2026-07-15-AI营销获客系统总定义.md)。
+
+这套系统把市场需求调研、博主 / 对标账号追踪、评论区需求归纳、选题、草稿、成稿、配图、排版、发布和反馈回流连成一条链路。
+
+对本项目的作用：
+
+- 为服务选题提供市场信号，而不是只凭个人判断写内容。
+- 把内容反馈回写到样本沟通、售前判断和服务 SOP。
+- 让 `AI 工作流诊断`、`AI 文档 / 知识库整理`、企业 FDE 式服务都有可追溯的需求依据。
+- 避免把未验证市场信号包装成成熟案例或确定需求。
+
 ## 4. 当前直接编辑入口
 
 - [服务 Framing](specs/2026-07-01-AI服务小单-Framing.md)
 - [业务系统](system/README.md)
+- [AI 营销获客系统总定义](../content-matrix/specs/2026-07-15-AI营销获客系统总定义.md)
 - [AI 工作流诊断 SOP](sops/AI工作流诊断-SOP.md)
 - [AI 文档知识库整理 SOP](sops/AI文档知识库整理-SOP.md)
 - [低压力获客话术](outreach/低压力获客话术.md)
