@@ -1,7 +1,7 @@
 # JD 高频词与材料映射
 
 > 状态：持续维护
-> 重建日期：2026-07-09
+> 重建日期：2026-07-14
 > 项目：馨冉求职
 > 主语料：`projects/xinran-jobhunt/jd-database/jobs/*.md`
 > 辅助语料：近期 `delivery/上海新增岗位筛选*.md`、猎头岗位、BOSS 竞争力分析、面试反馈
@@ -12,7 +12,7 @@
 
 本次重建以 `JD 数据库` 为主，不再只依据每日筛选报告做阶段性判断。
 
-- 扫描范围：`jd-database/index.yaml` 中 52 条正式 JD。
+- 扫描范围：`jd-database/jobs/` 中 75 份有效 JD。
 - 排除项：`jd-database/jobs/README.md` 不参与统计。
 - 读取字段：frontmatter 中的 `keywords`、`primary_track`、`match_score`、`company`、`role_title`、`captured_at`。
 - 读取正文：每份 JD 的 `## 关键词提炼`，按 `业务关键词 / AI 关键词 / 工具关键词 / 行业关键词` 四类处理。
@@ -27,16 +27,17 @@
 | RAG / 知识库 | `RAG`、`知识库`、`向量检索`、`Graph RAG`、`结构化知识` |
 | 原型验证 | `PoC`、`POC`、`MVP`、`Demo`、`原型`、`快速原型`、`试点` |
 | 产品工程 | `Vibe Coding`、`AI Coding`、`Cursor`、`Claude Code`、`Codex`、`低代码` |
+| Harness / Context | `Harness Engineering`、`Context Engineering`、`Prompt Pack`、`输出契约`、`工具调用`、`交付回写` |
 | 评测与质量 | `Evaluation`、`Eval`、`评估`、`质量门`、`Guardrails`、`可观测性`、`灰度测试` |
 | 交付与方案 | `客户现场`、`售前支持`、`解决方案`、`项目交付`、`客户交付`、`验收` |
 
 ## 1. 当前总判断
 
-JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 Agent / RAG / 大模型产品机制，能用 AI Coding 和原型工具快速验证想法，能把客户或业务场景转成 PoC、Demo、工作流、知识库和评测口径，并能持续通过用户反馈、数据实验和交付复盘迭代。
+JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 Agent / RAG / 大模型产品机制，能用 AI Coding 和原型工具快速验证想法，能把客户或业务场景转成 PoC、Demo、工作流、知识库和评测口径，并能用 Harness Engineering 把输入、上下文、工具、输出契约、质量门和交付回写组织成稳定工作流。
 
 对馨冉来说，当前材料表达的主线应收束为：
 
-> 从真实业务任务出发，拆解可被 AI 改造的流程，设计 Agent / RAG / Workflow 方案，用 Vibe Coding / 原型 / Demo 快速验证，再用质量门、评测口径、用户反馈和交付文档形成可复用的产品与方案能力。
+> 从真实业务任务出发，拆解可被 AI 改造的流程，设计 Agent / RAG / Workflow 方案，用 Vibe Coding / 原型 / Demo 快速验证，再用 Harness Engineering、质量门、评测口径、用户反馈和交付文档形成可复用的产品与方案能力。
 
 本次重建不直接触发主材料修改。它只给出哪些信号已经进入“稳定高频”、哪些信号需要人工审核、哪些信号继续观察。
 
@@ -47,6 +48,7 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 | P0 | Agent / 智能体 / Workflow | Agent、AI Agent、智能体、Workflow、Multi-Agent、Agent Loop、Tool Use | KN Group AI Builder、PDD Agent智能服务、药明生物 Agent AI PM、DeepSeek-Agent Harness 产品经理 | 三条主简历都要保留；AI 产品经理版和作品集优先讲清任务流与边界 |
 | P0 | RAG / 知识库 / 结构化知识 | RAG、知识库、向量检索、Graph RAG、数据治理、语料质量 | KN Group、网易 FDE、上海连盛、上海联锐、国金证券观察样本 | 已是稳定高频；在线简历母版和 FDE 版必须可检索 |
 | P0 | 产品工程 / Vibe Coding | Vibe Coding、AI Coding、Cursor、Claude Code、Codex、Dify、Coze、LangChain | Ponder AI、哈啰 Builder、DeepSeek Harness、上海尊范、上海瀚讯 | 进入人工审核：AI 产品经理版开头是否补“产品工程 / Agent 工具重度使用” |
+| P0 | Harness / Context / 输出契约 | Harness Engineering、Context Engineering、Prompt Pack、输出契约、工具调用、任务状态、交付回写 | DeepSeek-Agent Harness、阶跃星辰 AI Coding、药明生物 Agent AI PM、KN Group AI Builder | 明确归入 MindSync 项目；用来证明 AI 工作系统设计能力 |
 | P0 | PoC / MVP / Demo / 原型验证 | PoC、MVP、Demo、原型、试点、快速验证、灰度 | 字节 FDE、微软 AI FDE、德勤 AI 咨询、Ponder AI、上海瀚讯 | 三版简历都应保留；面试准备要补“最小闭环”说法 |
 | P0 | 客户场景 / 方案设计 / 交付 | 客户需求、客户现场、售前支持、解决方案、项目交付、客户交付、验收 | 字节 FDE、蚂蚁数科 FDE、网易 FDE、微软 AI FDE、DXC AI售前架构师 | FDE 版和 AI 转型咨询顾问版重点承接 |
 | P1 | 评测 / 质量门 / Guardrails | Eval、Evaluation、评估、质量标准、可观测性、Guardrails、灰度测试、A/B测试 | 药明生物 Agent AI PM、网易 FDE、DeepSeek Harness、上海联锐 | 已接近材料审核阈值；作品集和面试问答优先补证据 |
@@ -124,12 +126,12 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 
 ### 4.4 Prompt / Context / Harness Engineering
 
-- 归一词：Prompt Engineering、Context Engineering、Harness Engineering、Prompt 模板、上下文、输出契约。
+- 归一词：Prompt Engineering、Context Engineering、Harness Engineering、Prompt Pack、上下文、输出契约、工具调用、任务状态、交付回写。
 - 代表 JD：DeepSeek Harness、KN Group、药明生物、某大型互联网上市公司 `AI解决方案架构师`、中国盛裕 FDE。
 - 岗位含义：提示词已经从“会写 prompt”升级为上下文组织、工具调用、评测、质量边界和真实任务完成率。
-- 馨冉匹配点：MindSync 的 Prompt Pack、角色入口、任务状态、质量门和交付说明。
-- 材料映射：建议进入人工审核：`AI 产品经理版` 和 `作品集网站` 是否更清楚解释 `Harness / Context` 这组能力。
-- 当前动作：P0 岗位沟通中优先使用，主材料先不直接改。
+- 馨冉匹配点：MindSync 的 Prompt Pack、角色入口、任务状态、质量门、工具调用边界、交付说明和复盘回写。
+- 材料映射：`Harness Engineering` 归入 MindSync 项目，不放到曼陀罗项目主能力里。曼陀罗可以作为具体应用场景提到报告链路如何组织输入、知识库、Prompt Pack 和质量门，但主证明放在 MindSync。
+- 当前动作：进入 P0 证明能力。后续改 MindSync 项目经历时，需要单独写清“输入、上下文、工具、输出契约、质量门、交付回写”。
 
 ### 4.5 Evaluation / Guardrails / 质量门
 
@@ -245,7 +247,8 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 
 当前建议：
 
-- 进入人工审核：是否在 `AI 产品经理版` 开头补一行 `Agent 工具重度用户 + 产品工程 / Harness 实践`。
+- 进入人工审核：是否在 `AI 产品经理版` 开头补一行 `Agent 工具重度用户 + 产品工程 / AI Coding 实践`。
+- `Harness Engineering` 不放在 AI 产品经理版开头抢主线，放在 MindSync 项目经历和作品集证据里。
 - 暂不直接改文件，等 2-3 条类似 DeepSeek Harness 的高强度岗位或 HR 反馈再执行。
 
 ### 7.2 AI 转型咨询顾问
@@ -318,12 +321,12 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 | 材料 | 当前判断 | 动作 |
 |---|---|---|
 | 在线简历母版 | 已能覆盖 `Agent / RAG / Workflow / PoC / 质量门` 等主信号 | 暂不改 |
-| AI 产品经理版 | 需要观察 `Agent Harness / 产品工程 / 开发者体验` 是否继续增强 | 进入人工审核候选，不立即改 |
+| AI 产品经理版 | 需要观察 `产品工程 / AI Coding / 开发者体验` 是否继续增强 | 进入人工审核候选，不立即改 |
 | AI 转型咨询顾问版 | 已能承接客户诊断、流程梳理、PoC、培训赋能 | 暂不改 |
 | FDE 版 | 已能承接客户现场、PoC、RAG / Agent、交付闭环 | 暂不改 |
 | 猎头版简历 | 已有三方向推荐结构 | 等猎头反馈后再微调 |
-| 作品集网站 | 已能承接部分质量门和工作流证据 | 若面试追问 Harness / Context，再补证据页 |
-| 面试准备 | 需要补 `Agent Harness`、`评测口径`、`A/B / 灰度`、`客户 PoC 验收` | 建议下一步补问答 |
+| 作品集网站 | 已能承接部分质量门和工作流证据 | MindSync 项目页需要补 Harness / Context 证据 |
+| 面试准备 | 需要补 `Harness Engineering`、`评测口径`、`A/B / 灰度`、`客户 PoC 验收` | 建议下一步补问答 |
 | 墨予镜内容 | 可从 JD 信号转内容选题 | 暂不发布 |
 
 ## 10. 面试追问池
@@ -339,7 +342,7 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 
 ## 11. 墨予镜选题池
 
-- `AI 产品经理开始被要求懂 Agent Harness，这说明岗位在筛什么`
+- `为什么 AI 岗位开始要求 Harness Engineering，这说明岗位在筛什么`
 - `为什么 RAG 不是接一个知识库就结束`
 - `AI PoC 的最小闭环：目标、数据、流程、评测和失败边界`
 - `Vibe Coding 对产品经理意味着什么`
@@ -347,7 +350,60 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - `Agent 产品最难的不是聊天，而是任务、工具和边界`
 - `为什么传统行业的 AI 转型岗位越来越多`
 
-## 12. 来源索引
+## 12. 还需要证明的能力清单
+
+这一节用于检查材料里还有哪些能力可能漏掉。判断标准不是“JD 里出现过一次”，而是：是否已经多次出现、是否能提升三条主线可信度、是否有真实项目可以承接。
+
+### 12.1 已有项目可以证明，但需要写清楚
+
+这些能力不是缺事实，而是现有简历和作品集需要写得更清楚。
+
+| 能力 | 为什么重要 | 主要证明项目 | 当前写法风险 | 建议补法 |
+|---|---|---|---|---|
+| Harness Engineering | DeepSeek Harness、Agent、FDE、AI Coding 岗都在筛“能否把 AI 任务工程化” | MindSync | 容易被写成普通 Prompt 能力 | 写清输入、上下文、工具、输出契约、质量门、交付回写 |
+| AI Coding / Vibe Coding | AI PM 越来越要求自己做原型和验证 | 曼陀罗、MindSync | 容易被写成“会用 AI 工具” | 写成需求拆解、代码实现、调试、部署、迭代 |
+| CI/CD 与云服务器部署 | 能证明产品不是概念稿，而是可上线系统 | 曼陀罗 | 现在没有被充分前置 | 写构建、环境配置、服务器、域名、HTTPS、Nginx、上线迭代 |
+| 知识库 / RAG 前置能力 | 企业 AI 岗持续要求知识治理和结构化知识 | MindSync、曼陀罗 | 容易被写成泛“知识库” | 写知识来源、结构、版本、调用方式、质量边界 |
+| 内容生产 AI 工作流 | 内容、电商、社交、AIGC 岗会看真实内容生产场景 | MindSync | 如果单独写“视觉工坊”会显窄 | 放进 MindSync，写选题、草稿、成稿、配图、排版、分发资产 |
+| 质量门 / Guardrails | AI 产品岗位越来越看可控性和风险边界 | 曼陀罗、MindSync | 容易停留在术语 | 写检查什么、拦截什么、何时人工复核、如何回写 |
+| 状态与 stale 处理 | Agent / 工作流产品需要处理结果过期、失败和重生成 | MindSync 内容生产模块 | 简历里几乎不会自然出现 | 在作品集里写状态机、单卡重生成、失败提示、导出 |
+
+### 12.2 有一定基础，但需要补证据
+
+这些能力可以作为面试和作品集补强方向，不建议马上写成强经历。
+
+| 能力 | JD 信号 | 现有基础 | 需要补的证据 |
+|---|---|---|---|
+| 模型评测 / evals | 阶跃星辰 AI Coding、DeepSeek Harness、LongCat 评测 | 质量门、任务复盘、AI Coding 使用 | 小型 AI Coding eval 样例、失败类型、评测表 |
+| 开发者体验 / DevTools | AI Coding、IDE、CLI、API 相关岗位 | 早期工程经历、Codex / Claude Code 高频使用 | 工具链体验对比、开发任务闭环、上下文管理案例 |
+| A/B 测试 / 灰度 / 数据实验 | 内容、消费、Agent 产品反复出现 | 方法论理解、产品迭代意识 | 真实实验设计样例、指标口径、灰度规则 |
+| 客户 PoC 验收 | FDE、AI 解决方案、AI 咨询岗位 | 房产咨询、自由职业交付、MindSync 质量门 | 一页 PoC 验收模板：目标、输入、成功标准、风险 |
+| 企业级权限 / 数据安全 | 企业 AI、RAG、金融、制造岗位 | 高信任服务和风险意识 | 数据权限、敏感信息、人审、日志、回滚的方案例子 |
+| 多 Agent 协同 | Agent / Workflow 岗位高频 | MindSync 角色入口和任务分工 | 一个多 Agent 任务流的完整图和交付例子 |
+
+### 12.3 不建议现在强行证明
+
+这些能力虽然在部分 JD 中出现，但当前不适合写成强项。
+
+| 能力 | 原因 | 建议处理 |
+|---|---|---|
+| 模型训练 / 算法调优 | 没有足够事实支撑，容易被算法岗追问穿 | 只写理解模型边界和应用层机制 |
+| 大规模商业化增长 | 曼陀罗可写可上线商业化产品，但不能写成熟规模化收入 | 写 Lite / Pro 付费路径和可上线，不写收入结果 |
+| 大型企业 AI 转型负责人 | MindSync 是自用系统，房产咨询是可迁移能力 | 写业务诊断、流程设计、SOP，不写大型企业负责人 |
+| 医疗 / 心理诊疗产品经验 | 曼陀罗不能包装成医疗或心理治疗 | 写自我探索、内容解读、高信任边界 |
+| 成熟 DevTools 产品负责人 | 有 AI Coding 使用和工程背景，但缺开发者产品商业化证据 | 写产品工程和 AI Coding 实践 |
+| 生产级平台架构负责人 | 有部署和云服务器使用，但不是大型平台架构 | 写 Web 产品部署、CI/CD、服务器运维 |
+
+### 12.4 两个主项目的能力承接
+
+| 项目 | 主要证明能力 | 不要承担的能力 |
+|---|---|---|
+| 曼陀罗绘画 AI 解读产品 | AI 产品 0 到 1、商业化产品路径、Vibe Coding、CI/CD、云服务器部署、知识库、AI 报告生成、质量门、安全边界 | Harness Engineering 主证明、医疗诊疗、成熟规模化商业化 |
+| MindSync / 一人公司 AI 工作系统 | Harness Engineering、Agent 工作流、知识治理、任务状态、交付回写、内容生产 AI 工作流、求职材料工作流、多项目治理 | 成熟企业 SaaS、多人企业平台、完全自动化公司 |
+
+当前材料最容易漏掉的是：`Harness Engineering`、`CI/CD / 云服务器部署`、`内容生产 AI 工作流`、`状态 / stale / 失败处理`、`小型 evals 证据`。前四项已有事实基础，适合进入项目经历；`evals` 需要先补一个小样。
+
+## 13. 来源索引
 
 主来源：
 
@@ -366,6 +422,9 @@ JD 数据库里的真实岗位正在集中筛选一种复合能力：能理解 A
 - `2026-07-07-哈啰普惠-builder（AI产品）.md`
 - `2026-07-08-阅文集团-AI产品经理.md`
 - `2026-07-09-某大型互联网公司-DeepSeek-Agent-Harness产品经理.md`
+- `2026-07-13-上海阶跃星辰智能科技-AI Coding产品经理模型方向.md`
+- `2026-07-13-瑞声科技-AI产品经理.md`
+- `2026-07-13-北京某大型互联网社交平台上市公司-AI Native产品经理旅行方向-P6P7.md`
 
 辅助来源：
 
