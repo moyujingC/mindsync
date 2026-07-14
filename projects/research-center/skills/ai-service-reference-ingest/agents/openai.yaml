@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI服务参考录入"
+  short_description: "为知行AI服务录入原文与业务转译参考"
+  default_prompt: "Use $ai-service-reference-ingest to ingest this AI service reference into source-original and synthesized reference documents."
