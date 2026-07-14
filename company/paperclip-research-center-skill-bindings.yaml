@@ -1,5 +1,5 @@
 version: 0.1.0
-last_updated: 2026-04-15
+last_updated: 2026-07-14
 source_of_truth: company/paperclip-research-center-skill-bindings.yaml
 description: >
   研究中心 repo 内 skill 的公司挂载清单。用于在 Paperclip 扫描项目工作区后，
@@ -14,6 +14,9 @@ bindings:
       - skill_alias: "reference-intake-routing"
         source_type: "local_path"
         source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/reference-intake-routing"
+      - skill_alias: "ai-service-reference-ingest"
+        source_type: "local_path"
+        source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/ai-service-reference-ingest"
       - skill_alias: "artifact-readiness-check"
         source_type: "local_path"
         source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/artifact-readiness-check"
@@ -29,6 +32,9 @@ bindings:
       - skill_alias: "external-knowledge-intake"
         source_type: "local_path"
         source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/external-knowledge-intake"
+      - skill_alias: "ai-service-reference-ingest"
+        source_type: "local_path"
+        source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/ai-service-reference-ingest"
       - skill_alias: "research-brief"
         source_type: "local_path"
         source_locator: "/opt/automation/app/mindsync/projects/research-center/skills/research-brief"
