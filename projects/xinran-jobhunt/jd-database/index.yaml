@@ -1,5 +1,5 @@
 version: 0.1.0
-last_updated: '2026-07-13'
+last_updated: '2026-07-14'
 description: '馨冉求职 JD 数据库总索引。每次新增岗位时，同时补一条索引记录。
 
   '
@@ -1366,3 +1366,57 @@ jobs:
   - 知识库
   - AI Agent
   - RAG
+- job_id: 2026-07-14-anonymous-content-ecommerce-ai-data-product-manager-001
+  captured_at: '2026-07-14'
+  company: 上海某大型内容电商公司
+  role_title: AI数据产品经理（北京/上海）
+  city: 上海 / 北京
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-14'
+  primary_track: ai-pm
+  match_score: 83
+  file: jobs/2026-07-14-上海某大型内容电商公司-AI数据产品经理.md
+  keywords:
+  - AI数据产品
+  - 数据分析
+  - 洞察产品
+  - 评估体系
+  - 数据飞轮
+  - RAG
+- job_id: 2026-07-14-haineng-investment-ai-product-manager-001
+  captured_at: '2026-07-14'
+  company: 海能投资
+  role_title: AI产品经理
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-14'
+  primary_track: ai-pm
+  match_score: 78
+  file: jobs/2026-07-14-海能投资-AI产品经理.md
+  keywords:
+  - AI产品经理
+  - AI营销
+  - AI合规
+  - 内容审核
+  - 模型安全
+  - 数据合规
+- job_id: 2026-07-14-shanghai-aolun-ai-product-manager-001
+  captured_at: '2026-07-14'
+  company: 上海奥论
+  role_title: AI产品经理
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-14'
+  primary_track: ai-pm
+  match_score: 66
+  file: jobs/2026-07-14-上海奥论-AI产品经理.md
+  keywords:
+  - AI产品经理
+  - B2B智能AI产品
+  - 企业培训
+  - 学习管理系统
+  - LMS
+  - 医疗行业
