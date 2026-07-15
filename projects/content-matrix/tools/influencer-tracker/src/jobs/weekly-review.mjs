@@ -8,12 +8,14 @@ export async function buildWeeklyReview({
   runsDir,
   topicDir,
   accountsRoot,
+  feedbackRoot,
   outputPath,
 }) {
   const dates = enumerateDates(startDate, endDate);
   const runReports = await loadRunReports({ runsDir, dates });
   const topicBatches = await loadTopicBatches({ topicDir, dates });
   const accountArtifacts = await loadAccountArtifacts({ accountsRoot, dates });
+  const feedbackStats = await loadFeedbackStats({ feedbackRoot, dates });
 
   const summary = {
     startDate,
@@ -29,10 +31,12 @@ export async function buildWeeklyReview({
     briefCount: accountArtifacts.briefCount,
     draftCount: accountArtifacts.draftCount,
     finalDraftCount: accountArtifacts.finalDraftCount,
+    feedbackCount: feedbackStats.feedbackCount,
+    sampleConversationCount: feedbackStats.sampleConversationCount,
     failedCreators: collectFailedCreators(runReports),
   };
 
-  const markdown = renderWeeklyReviewMarkdown({ summary, runReports, topicBatches, accountArtifacts });
+  const markdown = renderWeeklyReviewMarkdown({ summary, runReports, topicBatches, accountArtifacts, feedbackStats });
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, `${markdown}\n`, 'utf8');
 
@@ -103,7 +107,35 @@ async function loadAccountArtifacts({ accountsRoot, dates }) {
   return stats;
 }
 
-function renderWeeklyReviewMarkdown({ summary, runReports, topicBatches, accountArtifacts }) {
+async function loadFeedbackStats({ feedbackRoot, dates }) {
+  if (!feedbackRoot) {
+    return {
+      feedbackCount: 0,
+      sampleConversationCount: 0,
+      files: [],
+    };
+  }
+
+  const files = await safeReadDir(feedbackRoot);
+  const dateSet = new Set(dates);
+  const matched = files.filter((file) => file.endsWith('-发布反馈.md') && dateSet.has(file.slice(0, 10)));
+  let sampleConversationCount = 0;
+
+  for (const file of matched) {
+    const raw = await readMarkdownIfExists(join(feedbackRoot, file));
+    if (raw.includes('是否进入样本沟通：是')) {
+      sampleConversationCount += 1;
+    }
+  }
+
+  return {
+    feedbackCount: matched.length,
+    sampleConversationCount,
+    files: matched,
+  };
+}
+
+function renderWeeklyReviewMarkdown({ summary, runReports, topicBatches, accountArtifacts, feedbackStats }) {
   return [
     `# AI 营销获客系统周复盘（${summary.startDate} ~ ${summary.endDate}）`,
     '',
@@ -120,6 +152,8 @@ function renderWeeklyReviewMarkdown({ summary, runReports, topicBatches, account
     `- brief 数：${summary.briefCount}`,
     `- 账号草稿数：${summary.draftCount}`,
     `- 账号成稿骨架数：${summary.finalDraftCount}`,
+    `- 发布反馈记录数：${summary.feedbackCount}`,
+    `- 进入样本沟通数：${summary.sampleConversationCount}`,
     '',
     '## 本周运行报告',
     '',
@@ -147,6 +181,13 @@ function renderWeeklyReviewMarkdown({ summary, runReports, topicBatches, account
     listOrFallback(
       accountArtifacts.files.map((item) => `${item.account} / ${item.file}`),
       '本周没有账号目录产物。',
+    ),
+    '',
+    '## 本周发布反馈',
+    '',
+    listOrFallback(
+      feedbackStats.files,
+      '本周没有发布反馈记录。',
     ),
     '',
     '## 本周复盘问题',

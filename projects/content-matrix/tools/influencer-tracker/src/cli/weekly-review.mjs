@@ -9,6 +9,7 @@ const startDate = args.startDate ?? shiftDate(endDate, -6);
 const runsDir = resolve(process.cwd(), args.runsDir ?? 'logs/runs');
 const topicDir = resolve(process.cwd(), args.topicDir ?? 'logs/topic-candidates');
 const accountsRoot = resolve(process.cwd(), args.accountsRoot ?? '../../accounts');
+const feedbackRoot = resolve(process.cwd(), args.feedbackRoot ?? '../../accounts/墨予镜/feedback');
 const outputPath = resolve(process.cwd(), args.output ?? `logs/weekly-reviews/${endDate}.md`);
 
 try {
@@ -18,6 +19,7 @@ try {
     runsDir,
     topicDir,
     accountsRoot,
+    feedbackRoot,
     outputPath,
   });
 
