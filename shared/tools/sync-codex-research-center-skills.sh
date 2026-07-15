@@ -6,7 +6,10 @@ SOURCE_BASE="${REPO_ROOT}/projects/research-center/skills"
 TARGET_BASE="${HOME}/.codex/skills"
 
 SKILLS=(
+  "ai-service-reference-ingest"
+  "experience-to-system-synthesis"
   "prompt-pack-rebuild"
+  "system-refactor-from-synthesis"
 )
 
 usage() {

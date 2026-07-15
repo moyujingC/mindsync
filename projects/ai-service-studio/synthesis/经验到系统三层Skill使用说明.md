@@ -220,16 +220,53 @@ projects/ai-service-studio/synthesis/YYYY-MM-DD-主题纵向复盘.md
   - 当用户给新帖子、截图、PDF、评论，并明确要求录入参考时，可以直接执行。
   - 单篇录入后必须判断 `system_update_level`。
   - 只有 `patch` 才允许立刻改 system。
+  - 已接入 Codex 本地 skill，可在 Codex 中用 `/ai-service-reference-ingest` 手动调用。
 
 必须手动：
 
 - `experience-to-system-synthesis`
   - 因为它需要选择主题和材料范围。
   - 不应每篇材料后自动触发。
+  - 已接入 Codex 本地 skill，可在 Codex 中用 `/experience-to-system-synthesis` 手动调用。
 
 - `system-refactor-from-synthesis`
   - 因为它会重写业务系统。
   - 必须在用户确认 synthesis 结论后执行。
+  - 已接入 Codex 本地 skill，可在 Codex 中用 `/system-refactor-from-synthesis` 手动调用。
+
+## 6.1 Codex 本地安装方式
+
+这三个 skill 的仓库源文件在：
+
+```text
+projects/research-center/skills/
+```
+
+Codex 本地通过软链接读取：
+
+```text
+~/.codex/skills/
+```
+
+同步脚本：
+
+```text
+shared/tools/sync-codex-research-center-skills.sh
+```
+
+查看状态：
+
+```bash
+shared/tools/sync-codex-research-center-skills.sh status
+```
+
+安装 / 刷新软链接：
+
+```bash
+shared/tools/sync-codex-research-center-skills.sh install
+```
+
+如果 Codex 斜杠菜单没有立刻出现新 skill，重启或刷新 Codex 会话。
 
 ## 7. 推荐工作节奏
 
