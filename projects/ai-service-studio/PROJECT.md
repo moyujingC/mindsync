@@ -16,6 +16,11 @@
 
 `知行AI服务` 用于承接 AI 服务的定义、SOP、报价实验、交付模板、参考研究和复盘。
 
+项目内同时采用两种组织方式：
+
+- 按可交付能力组织：沉淀跨行业可复用的能力包，例如 AI 营销获客、AI 工作流诊断、AI 文档 / 知识库整理。
+- 按行业组织：沉淀行业客户、行业流程、行业风险和行业资产，例如心理与疗愈行业。
+
 项目分为两条线：
 
 1. 企业 AI 服务
@@ -79,10 +84,29 @@
 - 让 `AI 工作流诊断`、`AI 文档 / 知识库整理`、企业 FDE 式服务都有可追溯的需求依据。
 - 避免把未验证市场信号包装成成熟案例或确定需求。
 
+在 `ai-service-studio` 内，`AI 营销获客` 作为 [可交付能力包](capabilities/ai-marketing-acquisition/README.md) 维护。内容生产系统本体仍归 `内容矩阵`，这里维护售前、交付、报价、私域承接和复盘边界。
+
+## 3.2 能力包与行业包
+
+当前新增两个积累入口：
+
+- [可交付能力包](capabilities/README.md)
+  - 按“可以解决什么问题”组织。
+  - 用于积累服务动作、输入材料、交付物、验收口径、报价边界和复盘资产。
+- [行业方案包](industries/README.md)
+  - 按“在哪个行业深耕”组织。
+  - 用于积累行业客户、业务流程、合规边界、行业话术和行业样本。
+
+当前优先行业是 [心理与疗愈](industries/psychology-healing/README.md)。
+
 ## 4. 当前直接编辑入口
 
 - [服务 Framing](specs/2026-07-01-AI服务小单-Framing.md)
 - [业务系统](system/README.md)
+- [可交付能力包](capabilities/README.md)
+- [AI 营销获客能力包](capabilities/ai-marketing-acquisition/README.md)
+- [行业方案包](industries/README.md)
+- [心理与疗愈行业方案包](industries/psychology-healing/README.md)
 - [AI 营销获客系统总定义](../content-matrix/specs/2026-07-15-AI营销获客系统总定义.md)
 - [AI 工作流诊断 SOP](sops/AI工作流诊断-SOP.md)
 - [AI 文档知识库整理 SOP](sops/AI文档知识库整理-SOP.md)

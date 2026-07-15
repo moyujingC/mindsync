@@ -31,6 +31,13 @@
 
 本项目不承接求职定位陪跑，也不对外承诺收入增长、组织转型成功或大而全的企业 AI 改造结果。
 
+项目工作区同时按两种方式积累资产：
+
+- 按能力包积累：例如 AI 营销获客、AI 工作流诊断、AI 文档 / 知识库整理。
+- 按行业包积累：例如心理与疗愈行业。
+
+能力包解决“能交付什么”，行业包解决“在哪个行业深耕、如何理解客户流程和风险”。
+
 ## 2. 当前服务判断
 
 当前公司的判断很明确：
@@ -75,5 +82,7 @@
 项目工作区默认从这里进入：
 
 - [projects/ai-service-studio/PROJECT.md](../../../projects/ai-service-studio/PROJECT.md)
+- [可交付能力包](../../../projects/ai-service-studio/capabilities/README.md)
+- [行业方案包](../../../projects/ai-service-studio/industries/README.md)
 
 公司侧只维护项目定位、边界和关键原则；服务定义、SOP、报价实验、交付模板和复盘放在项目工作区。
