@@ -151,6 +151,8 @@
 - [移民机构 AI 自动化系统实战 OCR 原文](references/2026-07-15-移民机构AI自动化系统实战-OCR原文.md)
 - [线下分享拿下 AI 企业服务第一单参考](references/2026-07-15-线下分享拿下AI企业服务第一单参考.md)
 - [线下分享拿下 AI 企业服务第一单原文](references/2026-07-15-线下分享拿下AI企业服务第一单-原文.md)
+- [ToB AI 产品经理复盘参考](references/2026-07-15-ToB-AI产品经理复盘参考.md)
+- [ToB AI 产品经理复盘 OCR 原文](references/2026-07-15-ToB-AI产品经理复盘-OCR原文.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
 
 ## 5. 合规和表达边界
