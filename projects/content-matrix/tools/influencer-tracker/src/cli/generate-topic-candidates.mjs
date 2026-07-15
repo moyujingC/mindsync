@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { parseArgs } from '../utils/args.mjs';
 import { readJsonFile } from '../utils/json-file.mjs';
-import { buildTopicCandidatesFromRunReport } from '../analysis/topic-candidates.mjs';
+import { buildTopicCandidatesFromRunReport, writeTopicCandidatesReport } from '../analysis/topic-candidates.mjs';
 import { writeTopicCandidatesToFeishu } from '../jobs/write-topic-candidates.mjs';
 
 const args = parseArgs(process.argv.slice(2));
@@ -22,16 +21,12 @@ try {
     candidates,
     feishuPath,
   });
-  const outputPath = join(outputDir, `${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
-  await mkdir(dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, `${JSON.stringify({
-    schema: 'content-matrix/topic-candidates-batch/v1',
-    generatedAt: new Date().toISOString(),
-    sourceReport: reportPath,
-    count: candidates.length,
-    feishu: writeResult,
+  const { outputPath } = await writeTopicCandidatesReport({
+    report: reportPath,
     candidates,
-  }, null, 2)}\n`, 'utf8');
+    outputDir,
+    feishu: writeResult,
+  });
 
   console.log(JSON.stringify({
     ok: true,

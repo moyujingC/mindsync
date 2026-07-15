@@ -11,6 +11,7 @@ export async function buildFailureReview({
   feishuClient = null,
   feishuConfig = null,
   markStatus = false,
+  pauseSource = false,
 }) {
   const dates = enumerateLookbackDates(date, lookbackDays);
   const reports = await loadRunReports({ runsDir, dates });
@@ -19,7 +20,13 @@ export async function buildFailureReview({
   const updates = [];
   if (markStatus && feishuClient && feishuConfig) {
     for (const creator of flaggedCreators) {
-      updates.push(await updateCreatorManualReview(feishuClient, feishuConfig, creator, threshold));
+      updates.push(await updateCreatorManualReview(
+        feishuClient,
+        feishuConfig,
+        creator,
+        threshold,
+        pauseSource,
+      ));
     }
   }
 
@@ -98,17 +105,22 @@ function collectFlaggedCreators({ reports, threshold }) {
     .sort((left, right) => right.consecutiveFailures - left.consecutiveFailures);
 }
 
-async function updateCreatorManualReview(feishuClient, feishuConfig, creator, threshold) {
+async function updateCreatorManualReview(feishuClient, feishuConfig, creator, threshold, pauseSource) {
   const fieldMap = feishuConfig.tables.creators.fields;
-  await feishuClient.updateRecord('creators', creator.creatorId, {
+  const fields = {
     [fieldMap.lastCheckedAt]: new Date().toISOString(),
     [fieldMap.lastStatus]: '需人工处理',
     [fieldMap.failureReason]: `连续失败 ${creator.consecutiveFailures} 次：${creator.latestError}`,
-  });
+  };
+  if (pauseSource && fieldMap.enabledStatus) {
+    fields[fieldMap.enabledStatus] = '暂停';
+  }
+  await feishuClient.updateRecord('creators', creator.creatorId, fields);
   return {
     creatorId: creator.creatorId,
     creatorName: creator.creatorName,
     threshold,
+    paused: pauseSource,
   };
 }
 
@@ -136,13 +148,13 @@ function renderFailureReviewMarkdown({ summary, updates }) {
     '## 处理建议',
     '',
     '- 先检查数据源链接、平台账号 ID 和可访问性。',
-    '- 如果是平台规则变动，先暂停自动采集，再补手工导入。',
-    '- 只有确认问题稳定存在时，才回写飞书为 `需人工处理`。',
+    '- 如果是平台规则变动，可以回写 `需人工处理`，并把启用状态改成 `暂停`。',
+    '- 对抖音、小红书优先切回手工导入，不要在失败状态下持续重试。',
     '',
     '## 飞书回写记录',
     '',
     listOrFallback(
-      updates.map((item) => `${item.creatorName} | 已回写为需人工处理`),
+      updates.map((item) => `${item.creatorName} | 已回写为需人工处理${item.paused ? '，并暂停采集' : ''}`),
       '本次没有执行飞书回写。',
     ),
     '',

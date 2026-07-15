@@ -1,3 +1,6 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+
 const SERVICE_KEYWORDS = [
   ['AI 工作流诊断', ['流程', '工作流', '自动化', 'agent', 'Agent', 'AI']],
   ['AI 文档 / 知识库整理', ['资料', '文档', '知识库', '整理', '沉淀']],
@@ -48,6 +51,30 @@ export function buildTopicCandidate({ creator, content, sourceReport }) {
     evidenceSummary: `来源账号「${creator.creatorName}」发布了「${content.title}」。需人工打开原文判断是否存在真实需求信号。`,
     nextAction: '人工查看原内容和评论区，判断是否进入 AI 服务选题池。',
     cta: inferCta(primaryDirection),
+  };
+}
+
+export async function writeTopicCandidatesReport({
+  report,
+  candidates,
+  outputDir,
+  feishu = null,
+  generatedAt = new Date().toISOString(),
+}) {
+  const outputPath = join(outputDir, `${generatedAt.replace(/[:.]/g, '-')}.json`);
+  await mkdir(dirname(outputPath), { recursive: true });
+  await writeFile(outputPath, `${JSON.stringify({
+    schema: 'content-matrix/topic-candidates-batch/v1',
+    generatedAt,
+    sourceReport: report,
+    count: candidates.length,
+    feishu,
+    candidates,
+  }, null, 2)}\n`, 'utf8');
+
+  return {
+    outputPath,
+    count: candidates.length,
   };
 }
 

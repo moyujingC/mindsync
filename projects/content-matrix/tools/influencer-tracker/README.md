@@ -29,6 +29,8 @@
 
 阶段 5 周复盘与失败处理实现记录见：[AI 营销获客系统阶段 5 周复盘与失败处理实现记录](../../delivery/2026-07-15-AI营销获客系统阶段5周复盘与失败处理实现记录.md)。
 
+阶段 5 调度接入与失败 SOP 实现记录见：[AI 营销获客系统阶段 5 调度接入与失败 SOP 实现记录](../../delivery/2026-07-15-AI营销获客系统阶段5调度接入与失败SOP实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -198,6 +200,24 @@ node src/cli/run-daily.mjs --feishu config/feishu.local.json
 ```
 
 `run-daily` 会在 `logs/runs/YYYY-MM-DD/` 下写入 JSON 运行报告，便于 cron（定时任务）或 Automation Platform 做审计。
+
+如果要一条命令跑完整个日常运维链路，直接用：
+
+```bash
+node src/cli/ops-daily.mjs --feishu config/feishu.local.json --pause-source
+```
+
+它会串起来：
+
+```text
+run-daily -> 运行报告 -> 选题候选 -> 每日摘要 -> 失败复核
+```
+
+本地 dry-run：
+
+```bash
+npm run ops:daily
+```
 
 生成某天的每日摘要：
 
@@ -390,7 +410,30 @@ projects/content-matrix/accounts/<账号名>/<日期>-<标题>-成稿.md
 cron 示例：
 
 ```cron
-15 9 * * * cd /Users/xinran/Downloads/dev/mindsync/projects/content-matrix/tools/influencer-tracker && /usr/local/bin/node src/cli/run-daily.mjs --feishu config/feishu.local.json >> logs/cron.log 2>&1
+15 9 * * * /Users/xinran/Downloads/dev/mindsync/projects/content-matrix/tools/influencer-tracker/scripts/run-ops-daily.sh
+```
+
+失败处理 SOP（标准操作流程）最简版：
+
+1. 先跑 `node src/cli/failure-review.mjs --date 2026-07-15 --lookback-days 7 --threshold 3` 看复核清单。
+2. 如果只是临时波动，先不暂停，继续观察下一轮。
+3. 如果确认数据源稳定失效，再执行：
+
+```bash
+node src/cli/failure-review.mjs \
+  --date 2026-07-15 \
+  --lookback-days 7 \
+  --threshold 3 \
+  --feishu config/feishu.local.json \
+  --mark-status \
+  --pause-source
+```
+
+这会把飞书里的账号回写成：
+
+```text
+最近状态 = 需人工处理
+启用状态 = 暂停
 ```
 
 ## 当前边界

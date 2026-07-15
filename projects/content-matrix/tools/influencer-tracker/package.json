@@ -12,6 +12,7 @@
     "failure:review": "node src/cli/failure-review.mjs --date 2026-07-15",
     "generate:topics": "node src/cli/generate-topic-candidates.mjs --report fixtures/run-report.example.json",
     "manual:import": "node src/cli/manual-import.mjs --dry-run --input fixtures/manual-import.example.json",
+    "ops:daily": "node src/cli/ops-daily.mjs --dry-run --creators fixtures/creators.example.json --pause-source",
     "prepare:edit": "node src/cli/prepare-edit.mjs",
     "promote:draft": "node src/cli/promote-draft.mjs",
     "scaffold:final": "node src/cli/scaffold-final.mjs",

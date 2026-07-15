@@ -103,6 +103,7 @@ test('buildFailureReview can write back manual-review status to Feishu client', 
         tables: {
           creators: {
             fields: {
+              enabledStatus: '启用状态',
               lastCheckedAt: '最近检查时间',
               lastStatus: '最近状态',
               failureReason: '失败原因',
@@ -111,12 +112,14 @@ test('buildFailureReview can write back manual-review status to Feishu client', 
         },
       },
       markStatus: true,
+      pauseSource: true,
     });
 
     assert.equal(result.updates.length, 1);
     assert.equal(updates[0].tableName, 'creators');
     assert.equal(updates[0].recordId, 'rec_fail');
     assert.equal(updates[0].fields['最近状态'], '需人工处理');
+    assert.equal(updates[0].fields['启用状态'], '暂停');
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

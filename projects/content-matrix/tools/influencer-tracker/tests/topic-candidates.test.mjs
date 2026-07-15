@@ -1,8 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import {
   buildTopicCandidate,
   buildTopicCandidatesFromRunReport,
+  writeTopicCandidatesReport,
 } from '../src/analysis/topic-candidates.mjs';
 
 test('buildTopicCandidatesFromRunReport creates one candidate per new content', () => {
@@ -54,4 +58,23 @@ test('buildTopicCandidate keeps unclear items for human review', () => {
   assert.equal(candidate.serviceDirection, '待人工判断');
   assert.equal(candidate.status, '待人工审核');
   assert.match(candidate.nextAction, /人工查看/);
+});
+
+test('writeTopicCandidatesReport writes batch json file', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-topic-report-'));
+  try {
+    const { outputPath } = await writeTopicCandidatesReport({
+      report: 'logs/runs/2026-07-15/sample.json',
+      candidates: [{
+        candidateId: 'candidate-1',
+      }],
+      outputDir: dir,
+    });
+
+    const raw = await readFile(outputPath, 'utf8');
+    assert.match(raw, /content-matrix\/topic-candidates-batch\/v1/);
+    assert.match(raw, /candidate-1/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });

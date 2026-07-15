@@ -14,6 +14,7 @@ const outputPath = resolve(process.cwd(), args.output ?? `logs/failure-reviews/$
 const lookbackDays = Number(args.lookbackDays ?? 7);
 const threshold = Number(args.threshold ?? 3);
 const markStatus = Boolean(args.markStatus);
+const pauseSource = Boolean(args.pauseSource);
 
 try {
   let feishuClient = null;
@@ -39,6 +40,7 @@ try {
     feishuClient,
     feishuConfig,
     markStatus,
+    pauseSource,
   });
 
   console.log(JSON.stringify({
