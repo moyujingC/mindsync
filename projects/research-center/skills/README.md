@@ -44,6 +44,9 @@
 - `cicd-check`
 - `mvp-deploy-trigger`
 - `prompt-pack-rebuild`
+- `ai-service-reference-ingest`
+- `experience-to-system-synthesis`
+- `system-refactor-from-synthesis`
 
 ## 配套文档
 

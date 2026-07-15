@@ -1,9 +1,9 @@
 ---
 name: ai-service-reference-ingest
-description: 为知行AI服务录入同行经验、帖子、评论、PDF/OCR等参考材料时使用；每次同时生成可读 Markdown 原文留存和业务转译参考文档，并在录入后同步评估、更新 ai-service-studio/system。
+description: 为知行AI服务录入同行经验、帖子、评论、PDF/OCR等参考材料时使用；每次同时生成可读 Markdown 原文留存和业务转译参考文档，并评估 system_update_level，必要时只做轻量 system 补丁。
 owner: Research & Knowledge Lead / CEO
 status: draft
-version: 0.2.0
+version: 0.3.0
 skill_type: project
 applies_to:
   - ai-service-studio
@@ -23,7 +23,9 @@ outputs:
   - synthesized reference markdown
   - project index update
   - system impact analysis
-  - updated ai-service-studio system docs
+  - system_update_level
+  - optional lightweight system patch
+  - synthesis candidate signal
 handoff_to:
   - CEO
   - Business Lead
@@ -43,15 +45,17 @@ handoff_to:
 
 原文文档保留上下文，参考文档负责转译成 `知行AI服务` 的业务判断。
 
-完成参考录入后，必须继续评估并同步 `projects/ai-service-studio/system/`。`system/` 只沉淀已经转成 `知行AI服务` 自己可执行的方法、规则、SOP 或边界的内容，不直接搬运外部原文。
+完成参考录入后，必须继续评估 `projects/ai-service-studio/system/` 影响，但不再默认修改 `system/`。
+
+`system/` 只沉淀已经转成 `知行AI服务` 自己可执行的方法、规则、SOP 或边界的内容，不直接搬运外部原文。单篇材料通常只负责“采矿 + 初筛 + 少量补丁”；跨材料的“炼钢”由 `experience-to-system-synthesis` 负责。
 
 ## 硬规则
 
 - 原文必须做 Markdown 排版，不能只丢一整段原始粘贴文本。
 - 原文只做结构整理，不改写事实、观点、案例、评论和语气。
 - 参考文档不是摘要，而是对 `知行AI服务` 的业务转译。
-- 新参考必须更新 `references/`、`PROJECT.md` 链接，并同步评估是否需要修改 `system/`。
-- 默认要把参考文档中已判断采用的内容同步到 `system/`；不再等待二次确认。
+- 新参考必须更新 `references/`、`PROJECT.md` 链接，并同步评估 `system_update_level`。
+- 不再默认把单篇参考同步到 `system/`；只有满足 `patch` 条件时才立刻修改 `system/`。
 - 修改 `system/` 时只能写入已经转成当前业务方法、SOP、报价边界、合同条款或能力边界的内容，不得把外部经验原文直接搬进去。
 - 未核验事实、收入数字、客户成果、平台价格和案例结果不能写成稳定事实；如果进入 `system/`，必须改写成“经验信号 / 候选规则 / 待验证问题 / 边界提醒”。
 - 如果材料信号很弱、明显重复、只适合留档，或和当前业务方向冲突，可以不修改 `system/`，但必须在参考文档中写清“不更新 system 的原因”。
@@ -148,12 +152,17 @@ YYYY-MM-DD-短主题-OCR原文.md
 
 ## 10. 不适合直接照搬的部分
 
-## 11. 对 system 的影响判断
-## 12. system 同步结果
+## 11. system_update_level
 
-## 13. 对当前项目文件的影响
+## 12. 对 system 的影响判断
 
-## 14. KB 入库判断
+## 13. system 同步结果
+
+## 14. 进入纵向复盘的建议
+
+## 15. 对当前项目文件的影响
+
+## 16. KB 入库判断
 ```
 
 可按材料内容删减小节，但必须保留：
@@ -162,7 +171,9 @@ YYYY-MM-DD-短主题-OCR原文.md
 - 对当前项目的启发
 - 不适合直接照搬的部分
 - 对 system 的影响判断
+- system_update_level
 - system 同步结果
+- 进入纵向复盘的建议
 - KB 入库判断
 
 ## 参考文档写法
@@ -181,18 +192,75 @@ YYYY-MM-DD-短主题-OCR原文.md
 - 哪些内容应该同步到 `system/`？
 - 本次实际更新了哪些 `system/` 文件？
 - 哪些建议暂不进入 `system/`，为什么？
+- 本篇属于 `none`、`candidate` 还是 `patch`？
+- 本篇是否应进入后续纵向复盘？
 - 哪些内容可以进入 `kb/`，哪些还只是单一来源观察？
+
+## system_update_level 判断
+
+参考文档必须写 `## system_update_level`，结论只能是：
+
+```text
+none
+candidate
+patch
+```
+
+### none
+
+不更新 `system/`，只留参考。
+
+适用情况：
+
+- 材料信号弱。
+- 明显重复，且没有新增判断。
+- 只适合作为原文留档。
+- 与当前业务方向冲突。
+- 信息不足，无法转成业务判断。
+
+### candidate
+
+暂不更新 `system/`，但进入后续纵向复盘候选。
+
+适用情况：
+
+- 单篇材料有启发，但还不能直接变成当前规则。
+- 新观点需要和其他材料对比。
+- 适合放进某个专题，例如第一单路径、报价边界、交付坑点、认知 gap。
+- 对方路径强相关，需观察是否可迁移。
+- 可能影响 system，但需要 5-8 篇材料一起判断。
+
+### patch
+
+立刻小幅更新 `system/`。
+
+只允许用于以下情况：
+
+- 会影响下一次获客、售前、报价或交付动作。
+- 明确收紧风险边界或不做清单。
+- 补强已有多篇材料反复支持的判断。
+- 修正已有 `system/` 里明显不准确或不完整的表述。
+- 用户明确要求本次同步到 `system/`。
+
+`patch` 禁止用于：
+
+- 只是一篇材料里的新鲜观点。
+- 未核验的数字、结果、价格或客户成果。
+- 对方个人路径、资源、人脉和城市强相关经验。
+- 会导致 `system/` 变成参考摘要的长段新增。
 
 ## system 同步规则
 
-参考文档中的 `## 对 system 的影响判断` 要先写清材料对 `system/` 的影响，再实际同步到 `projects/ai-service-studio/system/`。
+参考文档中的 `## 对 system 的影响判断` 要先写清材料对 `system/` 的影响，再根据 `system_update_level` 决定是否实际同步到 `projects/ai-service-studio/system/`。
 
 推荐格式：
 
 ```markdown
 ## 对 system 的影响判断
 
-本次需要同步 `system/`。同步范围：
+本次 system_update_level：patch。
+
+同步范围：
 
 - `system/获客与售前SOP-v0.1.md`：...
 - `system/AI服务产品体系-v0.1.md`：...
@@ -219,7 +287,7 @@ YYYY-MM-DD-短主题-OCR原文.md
 ```markdown
 ## 对 system 的影响判断
 
-本次不更新 `system/`。
+本次 system_update_level：none / candidate。
 
 原因：
 
@@ -229,6 +297,32 @@ YYYY-MM-DD-短主题-OCR原文.md
 
 未修改 `system/`。
 ```
+
+## 进入纵向复盘的建议
+
+参考文档必须包含：
+
+```markdown
+## 进入纵向复盘的建议
+
+结论：建议进入 / 暂不进入
+
+适合对比的主题：
+
+- 第一单路径
+- 售前认知 gap
+- 报价边界
+- 交付坑点
+- 产品形态
+- 客户分层
+- 能力与合作边界
+
+理由：
+
+- ...
+```
+
+如果 `system_update_level` 是 `candidate`，默认应建议进入纵向复盘。
 
 ### system 文件选择
 
@@ -290,7 +384,10 @@ YYYY-MM-DD-短主题-OCR原文.md
 - `PROJECT.md` 是否链接两个文档。
 - 未核验事实是否标明边界。
 - 参考文档是否写清 `system` 影响判断。
-- 是否已经按判断同步 `system/`，或写清不更新原因。
+- 参考文档是否写清 `system_update_level`。
+- 参考文档是否写清进入纵向复盘的建议。
+- 如果是 `patch`，是否已经按判断同步 `system/`。
+- 如果是 `none` 或 `candidate`，是否没有擅自修改 `system/`。
 - `system/` 修改是否只落在相关文件。
 - `system/` 是否没有写入未核验结果承诺。
 - `git diff --check` 是否通过。
