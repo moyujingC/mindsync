@@ -29,6 +29,7 @@ npm test
 npm run check
 npm run validate:feishu
 npm run run:daily
+npm run generate:topics
 ```
 
 或直接运行：
@@ -92,6 +93,22 @@ node src/cli/run-daily.mjs --feishu config/feishu.local.json
 
 `run-daily` 会在 `logs/runs/YYYY-MM-DD/` 下写入 JSON 运行报告，便于 cron（定时任务）或 Automation Platform 做审计。
 
+## 选题候选
+
+从运行报告生成待人工审核的选题候选：
+
+```bash
+node src/cli/generate-topic-candidates.mjs --report logs/runs/2026-07-15/xxx.json
+```
+
+本地样例：
+
+```bash
+npm run generate:topics
+```
+
+输出会写入 `logs/topic-candidates/`。这些结果只能作为选题池输入，不能直接当成最终内容判断。每条候选仍需要人工查看原文和评论区，再决定是否进入 `知行AI服务` 的内容获客链路。
+
 cron 示例：
 
 ```cron
@@ -107,3 +124,4 @@ cron 示例：
 - `validate-config` 只验证配置结构，飞书字段类型差异仍需要用真实表验证后再细调。
 - `inspect-feishu` 需要真实飞书应用权限和网络访问，样例配置不能直接通过。
 - `run-daily` 的默认样例是 dry-run；真实运行前必须确认飞书配置和字段验表通过。
+- `generate-topic-candidates` 使用的是规则推断，不是最终市场洞察；输出状态默认是 `待人工审核`。

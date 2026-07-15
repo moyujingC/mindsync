@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "check": "node src/cli/check-updates.mjs --dry-run --creators fixtures/creators.example.json",
+    "generate:topics": "node src/cli/generate-topic-candidates.mjs --report fixtures/run-report.example.json",
     "inspect:feishu": "node src/cli/inspect-feishu.mjs --feishu config/feishu.example.json",
     "run:daily": "node src/cli/run-daily.mjs --dry-run --creators fixtures/creators.example.json",
     "validate:feishu": "node src/cli/validate-config.mjs --feishu config/feishu.example.json",

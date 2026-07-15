@@ -1,0 +1,42 @@
+{
+  "schema": "content-matrix/influencer-tracker-run/v1",
+  "generatedAt": "2026-07-15T06:00:00.000Z",
+  "meta": {
+    "mode": "daily"
+  },
+  "summary": {
+    "dryRun": true,
+    "startedAt": "2026-07-15T06:00:00.000Z",
+    "finishedAt": "2026-07-15T06:00:01.000Z",
+    "creatorCount": 1,
+    "createdCount": 2,
+    "duplicateCount": 0,
+    "failedCount": 0
+  },
+  "creators": [
+    {
+      "creatorId": "sample-bilibili-rss",
+      "creatorName": "B站样例账号",
+      "platform": "bilibili",
+      "fetchedCount": 2,
+      "createdCount": 2,
+      "duplicateCount": 0,
+      "failed": false,
+      "error": null,
+      "newContents": [
+        {
+          "uniqueKey": "bilibili:BV1sample001",
+          "title": "内容团队如何用 AI 拆选题和草稿",
+          "url": "https://www.bilibili.com/video/BV1sample001",
+          "publishedAt": "2026-07-15T01:00:00.000Z"
+        },
+        {
+          "uniqueKey": "bilibili:BV1sample002",
+          "title": "企业 AI 落地为什么先选一条流程",
+          "url": "https://www.bilibili.com/video/BV1sample002",
+          "publishedAt": "2026-07-15T02:00:00.000Z"
+        }
+      ]
+    }
+  ]
+}
