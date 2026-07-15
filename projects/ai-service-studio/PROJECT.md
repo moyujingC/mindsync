@@ -121,6 +121,8 @@
 - [AI 落地翻译官翻译机制与五行业演绎](references/2026-07-15-AI落地翻译官翻译机制与五行业演绎.md)
 - [企业 AI 定制服务入门参考](references/2026-07-15-企业AI定制服务入门参考.md)
 - [企业 AI 定制服务入门原文](references/2026-07-15-企业AI定制服务入门-原文.md)
+- [老板思维下企业 AI 服务设计参考](references/2026-07-15-老板思维下企业AI服务设计参考.md)
+- [老板思维下企业 AI 服务设计原文](references/2026-07-15-老板思维下企业AI服务设计-原文.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
 
 ## 5. 合规和表达边界
