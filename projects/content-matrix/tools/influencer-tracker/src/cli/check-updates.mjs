@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { parseArgs } from '../utils/args.mjs';
 import { readJsonFile } from '../utils/json-file.mjs';
 import { FeishuBitableClient, mapFeishuCreatorRecord } from '../feishu/client.mjs';
+import { validateFeishuConfig } from '../feishu/config.mjs';
 import { checkUpdates } from '../jobs/check-updates.mjs';
 
 const args = parseArgs(process.argv.slice(2));
@@ -53,6 +54,11 @@ async function loadCreators({ creatorsPath, feishuPath }) {
   }
 
   const feishuConfig = await readJsonFile(feishuPath);
+  const configValidation = validateFeishuConfig(feishuConfig);
+  if (!configValidation.ok) {
+    throw new Error(`Invalid Feishu config: ${configValidation.errors.join('; ')}`);
+  }
+
   const feishuClient = new FeishuBitableClient(feishuConfig);
   const records = await feishuClient.listRecords('creators');
   const creatorsFieldMap = feishuConfig.tables.creators.fields;
