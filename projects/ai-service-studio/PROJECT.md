@@ -118,6 +118,7 @@
 - [海外 AI 产品转型企业 AI 服务原文](references/2026-07-07-海外AI产品转型企业AI服务-原文.md)
 - [AI 落地翻译官开源项目参考](references/2026-07-15-AI落地翻译官开源项目参考.md)
 - [AI 落地翻译官开源项目原文](references/2026-07-15-AI落地翻译官开源项目-原文.md)
+- [AI 落地翻译官翻译机制与五行业演绎](references/2026-07-15-AI落地翻译官翻译机制与五行业演绎.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
 
 ## 5. 合规和表达边界
