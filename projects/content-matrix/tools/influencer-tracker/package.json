@@ -10,6 +10,7 @@
     "generate:topics": "node src/cli/generate-topic-candidates.mjs --report fixtures/run-report.example.json",
     "prepare:edit": "node src/cli/prepare-edit.mjs",
     "promote:draft": "node src/cli/promote-draft.mjs",
+    "scaffold:final": "node src/cli/scaffold-final.mjs",
     "inspect:feishu": "node src/cli/inspect-feishu.mjs --feishu config/feishu.example.json",
     "run:daily": "node src/cli/run-daily.mjs --dry-run --creators fixtures/creators.example.json",
     "validate:feishu": "node src/cli/validate-config.mjs --feishu config/feishu.example.json",
