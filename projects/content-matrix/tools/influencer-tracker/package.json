@@ -7,6 +7,7 @@
     "check": "node src/cli/check-updates.mjs --dry-run --creators fixtures/creators.example.json",
     "build:briefs": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json",
     "build:drafts": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json --draft-dir logs/drafts --mark-status 已验证",
+    "backfill:sample": "node src/cli/backfill-creator.mjs --dry-run --creators fixtures/creators.example.json --creator-id sample-bilibili-rss --limit 20",
     "generate:topics": "node src/cli/generate-topic-candidates.mjs --report fixtures/run-report.example.json",
     "manual:import": "node src/cli/manual-import.mjs --dry-run --input fixtures/manual-import.example.json",
     "prepare:edit": "node src/cli/prepare-edit.mjs",
