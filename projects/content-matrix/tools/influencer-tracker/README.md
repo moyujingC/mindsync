@@ -37,6 +37,10 @@
 
 阶段 5 连续运行审计实现记录见：[AI 营销获客系统阶段 5 连续运行审计实现记录](../../delivery/2026-07-15-AI营销获客系统阶段5连续运行审计实现记录.md)。
 
+`ai-boshu-crawler` 能力迁移计划见：[ai-boshu-crawler 能力迁移计划](../../delivery/2026-07-15-ai-boshu-crawler能力迁移计划.md)。
+
+阶段 6 P0-1 B站下载链路实现记录见：[AI 营销获客系统阶段 6 P0-1 B站下载链路实现记录](../../delivery/2026-07-15-AI营销获客系统阶段6-P0-1-B站下载链路实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -133,6 +137,48 @@ node src/cli/backfill-creator.mjs \
 - `--since`
 
 这条链路适合对标账号内容回溯和样本积累，不会重复写入飞书已有内容。
+
+## B站真实下载最小链路
+
+如果要把 B站内容从“元数据追踪”升级到“本地素材沉淀”，可以先跑：
+
+```bash
+node src/cli/download-bilibili.mjs --creator-id sample-bilibili-rss --limit 1
+```
+
+默认输出到：
+
+```text
+logs/downloads/bilibili/<账号>/<内容ID>/
+```
+
+当前最小产物包括：
+
+- `metadata.json`
+- `description.txt`
+- `download-manifest.json`
+- `video.*`（仅在真实下载成功时出现）
+
+默认只写元数据，不会真的下载视频。
+
+如果本机已经安装 `yt-dlp`，并且要启用真实下载，再显式加上：
+
+```bash
+node src/cli/download-bilibili.mjs \
+  --creator-id sample-bilibili-rss \
+  --limit 1 \
+  --download-mode yt-dlp
+```
+
+这样做是为了避免把 B站网页地址误保存成伪 `.mp4` 文件。
+
+这条链路是后续：
+
+```text
+视频下载 -> 转写 -> 评论 -> enrich -> 选题
+```
+
+的第一步。
 
 ## 真实飞书配置
 
