@@ -45,6 +45,33 @@ export class FeishuBitableClient {
     return response.data?.items ?? [];
   }
 
+  async listTables() {
+    const response = await this.request(
+      `/bitable/v1/apps/${this.config.baseAppToken}/tables`,
+      {
+        method: 'GET',
+      },
+    );
+    return response.data?.items ?? [];
+  }
+
+  async createTable(schema) {
+    const response = await this.request(
+      `/bitable/v1/apps/${this.config.baseAppToken}/tables`,
+      {
+        method: 'POST',
+        body: {
+          table: {
+            name: schema.tableName,
+            default_view_name: schema.defaultViewName,
+            fields: Object.values(schema.fields),
+          },
+        },
+      },
+    );
+    return response.data?.table;
+  }
+
   async createRecords(tableName, records) {
     if (records.length === 0) {
       return [];

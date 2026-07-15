@@ -62,8 +62,21 @@ cp config/feishu.example.json config/feishu.local.json
 - `appId`
 - `appSecret`
 - `baseAppToken`
-- `tableId`
-- 字段映射
+
+先创建表结构：
+
+```bash
+node src/cli/bootstrap-feishu-schema.mjs --feishu config/feishu.local.json
+```
+
+它会在指定 `baseAppToken` 对应的多维表格里创建：
+
+- `博主账号`
+- `内容更新`
+- `评论样本`
+- `洞察与选题`
+
+命令会输出 `nextConfig`，把其中的 `tables` 回填到 `config/feishu.local.json` 后，再继续执行：
 
 然后运行：
 
