@@ -1,0 +1,35 @@
+{
+  "schema": "content-matrix/manual-import/v1",
+  "items": [
+    {
+      "platform": "小红书",
+      "creatorName": "小红书样例账号",
+      "externalId": "xhs-note-001",
+      "url": "https://www.xiaohongshu.com/explore/xhs-note-001",
+      "title": "AI 工作流诊断怎么从一个真实流程开始",
+      "description": "手工粘贴的小红书样例内容，用于验证半自动导入。",
+      "publishedAt": "2026-07-15T09:00:00.000Z",
+      "contentType": "图文",
+      "tags": ["AI工作流", "需求样本"],
+      "likeCount": 12,
+      "commentCount": 3,
+      "favoriteCount": 5,
+      "shareCount": 1
+    },
+    {
+      "platform": "抖音",
+      "creatorName": "抖音样例账号",
+      "externalId": "douyin-video-001",
+      "url": "https://www.douyin.com/video/douyin-video-001",
+      "title": "企业 AI 落地先别急着买工具",
+      "description": "手工粘贴的抖音样例内容，用于验证半自动导入。",
+      "publishedAt": "2026-07-15T10:00:00.000Z",
+      "contentType": "视频",
+      "tags": ["企业AI", "落地"],
+      "likeCount": 30,
+      "commentCount": 8,
+      "favoriteCount": 10,
+      "shareCount": 2
+    }
+  ]
+}

@@ -94,8 +94,39 @@ export class LarkCliBitableClient {
     const { stdout } = await execFileAsync(this.bin, args, {
       maxBuffer: 10 * 1024 * 1024,
     });
-    return JSON.parse(stdout);
+    return parseJsonFromStdout(stdout);
   }
+}
+
+export function parseJsonFromStdout(stdout) {
+  const trimmed = stdout.trim();
+  if (!trimmed) {
+    throw new Error('lark-cli returned empty stdout');
+  }
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    const jsonStart = findLastJsonStart(trimmed);
+    if (jsonStart === -1) {
+      throw new Error(`lark-cli stdout does not contain JSON: ${trimmed.slice(0, 120)}`);
+    }
+    return JSON.parse(trimmed.slice(jsonStart));
+  }
+}
+
+function findLastJsonStart(value) {
+  const objectStart = value.lastIndexOf('\n{');
+  if (objectStart !== -1) {
+    return objectStart + 1;
+  }
+  const arrayStart = value.lastIndexOf('\n[');
+  if (arrayStart !== -1) {
+    return arrayStart + 1;
+  }
+  if (value.startsWith('{') || value.startsWith('[')) {
+    return 0;
+  }
+  return -1;
 }
 
 function normalizeRecordList(json) {

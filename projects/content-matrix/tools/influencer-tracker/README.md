@@ -21,6 +21,8 @@
 
 阶段 4 成稿骨架实现记录见：[AI 营销获客系统阶段 4 成稿骨架实现记录](../../delivery/2026-07-15-AI营销获客系统阶段4成稿骨架实现记录.md)。
 
+阶段 2 手工导入实现记录见：[AI 营销获客系统阶段 2 手工导入实现记录](../../delivery/2026-07-15-AI营销获客系统阶段2手工导入实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -67,6 +69,29 @@ node src/cli/check-updates.mjs --dry-run --creators fixtures/creators.example.js
   "url": "https://rsshub.app/bilibili/user/video/2"
 }
 ```
+
+## 手工导入小红书 / 抖音
+
+本地 dry-run：
+
+```bash
+npm run manual:import
+```
+
+真实飞书写入：
+
+```bash
+node src/cli/manual-import.mjs \
+  --input fixtures/manual-import.example.json \
+  --feishu config/feishu.local.json \
+  --store logs/content-store.manual.feishu.json
+```
+
+这条链路适合：
+
+- 人工粘贴小红书 / 抖音链接、标题、正文和互动数。
+- 系统统一标准化后写入 `内容更新` 表。
+- 通过 `uniqueKey` 做去重，不重复写入。
 
 ## 真实飞书配置
 
