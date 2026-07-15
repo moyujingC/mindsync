@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { readJsonFile } from '../src/utils/json-file.mjs';
 import { mapCommentToFeishuFields, mapFeishuCommentRecord } from '../src/feishu/client.mjs';
 import { syncBilibiliComments, normalizeBilibiliComments } from '../src/jobs/sync-bilibili-comments.mjs';
@@ -101,4 +104,24 @@ test('syncBilibiliComments deduplicates existing comment keys from Feishu', asyn
   assert.equal(createdPayloads.length, 1);
   assert.equal(createdPayloads[0].tableName, 'comments');
   assert.equal(createdPayloads[0].records[0]['评论唯一键'], 'bilibili:bilibili:BV1sample001:1002');
+});
+
+test('syncBilibiliComments can write comments manifest into artifact directory', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-comments-manifest-'));
+
+  try {
+    const result = await syncBilibiliComments({
+      inputPath: 'fixtures/bilibili-comments.example.json',
+      artifactDir: dir,
+      dryRun: true,
+      cwd: new URL('../', import.meta.url).pathname,
+    });
+
+    const manifest = JSON.parse(await readFile(join(dir, 'comments-manifest.json'), 'utf8'));
+    assert.equal(result.createdCount, 2);
+    assert.equal(manifest.job, 'comments');
+    assert.equal(manifest.output.createdCount, 2);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });

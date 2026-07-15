@@ -1,9 +1,11 @@
 import { resolve } from 'node:path';
 import { readJsonFile } from '../utils/json-file.mjs';
 import { mapCommentToFeishuFields, extractFeishuTextField } from '../feishu/client.mjs';
+import { writeJobManifest } from '../utils/manifest.mjs';
 
 export async function syncBilibiliComments({
   inputPath,
+  artifactDir = null,
   feishuClient,
   feishuConfig,
   dryRun = false,
@@ -31,7 +33,7 @@ export async function syncBilibiliComments({
     recordIds = await feishuClient.createRecords('comments', records);
   }
 
-  return {
+  const result = {
     inputCount: comments.length,
     createdCount: newComments.length,
     duplicateCount,
@@ -39,6 +41,26 @@ export async function syncBilibiliComments({
     recordIds,
     comments: newComments,
   };
+
+  if (artifactDir) {
+    await writeJobManifest({
+      manifestPath: resolve(cwd, artifactDir, 'comments-manifest.json'),
+      job: 'comments',
+      status: 'ok',
+      input: {
+        inputPath: resolve(cwd, inputPath),
+        dryRun,
+      },
+      output: {
+        inputCount: result.inputCount,
+        createdCount: result.createdCount,
+        duplicateCount: result.duplicateCount,
+        recordIds: result.recordIds,
+      },
+    });
+  }
+
+  return result;
 }
 
 export function normalizeBilibiliComments(input) {

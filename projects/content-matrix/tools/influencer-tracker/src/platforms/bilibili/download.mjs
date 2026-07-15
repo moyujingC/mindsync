@@ -2,6 +2,7 @@ import { promisify } from 'node:util';
 import { execFile as execFileCallback } from 'node:child_process';
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import { basename, extname, join } from 'node:path';
+import { writeJobManifest } from '../../utils/manifest.mjs';
 
 const execFile = promisify(execFileCallback);
 
@@ -58,7 +59,21 @@ export async function downloadBilibiliArtifact(content, {
     }
   }
 
-  await writeFile(manifestPath, `${JSON.stringify(result, null, 2)}\n`, 'utf8');
+  await writeJobManifest({
+    manifestPath,
+    job: 'download',
+    status: result.downloadStatus === 'failed' ? 'failed' : 'ok',
+    input: {
+      platform: content.platform,
+      creatorName: creator?.name,
+      creatorExternalId: creator?.externalId,
+      contentExternalId: content.contentExternalId,
+      url: content.url,
+    },
+    output: result,
+    legacyFields: result,
+    error: result.error,
+  });
   return result;
 }
 

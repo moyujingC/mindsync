@@ -21,6 +21,7 @@ try {
 
   const result = await syncBilibiliComments({
     inputPath: args.input,
+    artifactDir: args.artifactDir ?? null,
     feishuClient,
     feishuConfig,
     dryRun: Boolean(args.dryRun || !args.feishu),

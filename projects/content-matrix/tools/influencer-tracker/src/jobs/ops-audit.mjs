@@ -1,12 +1,14 @@
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { readJsonFile } from '../utils/json-file.mjs';
+import { summarizeManifestCoverage } from '../utils/manifest.mjs';
 
 export async function buildOpsAudit({
   endDate,
   requiredDays = 7,
   runsDir,
   outputPath,
+  downloadsRoot = null,
 }) {
   const dates = enumerateLookbackDates(endDate, requiredDays);
   const reportsByDate = {};
@@ -33,18 +35,22 @@ export async function buildOpsAudit({
     missingDates,
     passes: missingDates.length === 0,
   };
+  const manifestCoverage = downloadsRoot
+    ? await summarizeManifestCoverage(downloadsRoot)
+    : null;
 
-  const markdown = renderOpsAuditMarkdown({ summary, reportsByDate, dates });
+  const markdown = renderOpsAuditMarkdown({ summary, reportsByDate, dates, manifestCoverage });
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, `${markdown}\n`, 'utf8');
 
   return {
     outputPath,
     summary,
+    manifestCoverage,
   };
 }
 
-function renderOpsAuditMarkdown({ summary, reportsByDate, dates }) {
+function renderOpsAuditMarkdown({ summary, reportsByDate, dates, manifestCoverage }) {
   return [
     `# AI 营销获客系统连续运行审计（截至 ${summary.endDate}）`,
     '',
@@ -64,6 +70,18 @@ function renderOpsAuditMarkdown({ summary, reportsByDate, dates }) {
     ...(summary.missingDates.length
       ? summary.missingDates.map((date) => `- ${date}`)
       : ['- 无']),
+    '',
+    '## Artifact Manifest 覆盖',
+    '',
+    ...(manifestCoverage
+      ? [
+        `- artifact 数量：${manifestCoverage.artifactCount}`,
+        `- download manifest：${manifestCoverage.downloadCount}`,
+        `- transcribe manifest：${manifestCoverage.transcribeCount}`,
+        `- comments manifest：${manifestCoverage.commentsCount}`,
+        `- enrich manifest：${manifestCoverage.enrichCount}`,
+      ]
+      : ['- 未提供 downloadsRoot，未执行 artifact manifest 审计']),
     '',
   ].join('\n');
 }

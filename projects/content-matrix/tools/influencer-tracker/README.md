@@ -45,6 +45,8 @@
 
 阶段 6 P0-3 B站评论入库实现记录见：[AI 营销获客系统阶段 6 P0-3 B站评论入库实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P0-3-B站评论入库实现记录.md)。
 
+阶段 6 P0-4 manifest 统一实现记录见：[AI营销获客系统阶段 6 P0-4 manifest 统一实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P0-4-manifest统一实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -231,6 +233,35 @@ npm run comments:bili
 - 稳定 `commentUniqueKey`
 - `dry-run`
 - 真实飞书模式下按 `评论唯一键` 去重
+
+如果要把评论链路也记到某个 artifact（产物）目录，可以额外传：
+
+```bash
+node src/cli/sync-bilibili-comments.mjs \
+  --input fixtures/bilibili-comments.example.json \
+  --artifact-dir fixtures/bilibili-artifact.example \
+  --dry-run
+```
+
+这样会额外写出：
+
+- `comments-manifest.json`
+
+## Manifest 统一结构
+
+现在 `download`、`transcribe`、`comments` 三条链路都开始统一写 manifest。
+
+当前统一字段包括：
+
+- `version`
+- `job`
+- `status`
+- `generatedAt`
+- `input`
+- `output`
+- `error`
+
+`ops-audit` 也会额外输出 artifact manifest 覆盖情况，方便判断哪些链路真的留下了结构化产物。
 
 ## 真实飞书配置
 

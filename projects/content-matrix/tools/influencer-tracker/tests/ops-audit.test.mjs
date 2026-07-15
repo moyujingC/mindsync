@@ -8,11 +8,17 @@ import { buildOpsAudit } from '../src/jobs/ops-audit.mjs';
 test('buildOpsAudit reports missing days in a 7-day window', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-ops-audit-'));
   const runsDir = join(dir, 'runs');
+  const downloadsDir = join(dir, 'downloads', 'bilibili');
   const outputPath = join(dir, 'ops-audits', '2026-07-15.md');
 
   await mkdir(join(runsDir, '2026-07-15'), { recursive: true });
+  await mkdir(join(downloadsDir, 'B站样例账号', 'BV1sample001'), { recursive: true });
   await writeFile(join(runsDir, '2026-07-15', 'run.json'), JSON.stringify({
     generatedAt: '2026-07-15T10:00:00.000Z',
+  }), 'utf8');
+  await writeFile(join(downloadsDir, 'B站样例账号', 'BV1sample001', 'download-manifest.json'), JSON.stringify({
+    job: 'download',
+    status: 'ok',
   }), 'utf8');
 
   try {
@@ -21,15 +27,18 @@ test('buildOpsAudit reports missing days in a 7-day window', async () => {
       requiredDays: 7,
       runsDir,
       outputPath,
+      downloadsRoot: downloadsDir,
     });
 
     assert.equal(result.summary.coveredDayCount, 1);
     assert.equal(result.summary.missingDayCount, 6);
     assert.equal(result.summary.passes, false);
+    assert.equal(result.manifestCoverage.downloadCount, 1);
 
     const markdown = await readFile(outputPath, 'utf8');
     assert.match(markdown, /是否通过：否/);
     assert.match(markdown, /2026-07-15 \| 运行报告数 1/);
+    assert.match(markdown, /download manifest：1/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

@@ -4,6 +4,7 @@ import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 import { readJsonFile } from '../utils/json-file.mjs';
+import { writeJobManifest } from '../utils/manifest.mjs';
 
 const execFile = promisify(execFileCallback);
 
@@ -78,7 +79,21 @@ export async function transcribeVideoArtifact({
     result.error = error.message;
   }
 
-  await writeFile(manifestPath, `${JSON.stringify(result, null, 2)}\n`, 'utf8');
+  await writeJobManifest({
+    manifestPath,
+    job: 'transcribe',
+    status: result.transcriptStatus === 'failed' ? 'failed' : 'ok',
+    input: {
+      artifactDir: resolvedArtifactDir,
+      mode,
+      language,
+      whisperModel,
+      videoPath: downloadManifest.videoPath ?? null,
+    },
+    output: result,
+    legacyFields: result,
+    error: result.error,
+  });
   return result;
 }
 
