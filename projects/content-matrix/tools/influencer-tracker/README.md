@@ -15,6 +15,8 @@
 
 阶段 4 第三轮实现记录见：[AI 营销获客系统阶段 4 实现记录](../../delivery/2026-07-15-AI营销获客系统阶段4实现记录.md)。
 
+阶段 4 草稿转存实现记录见：[AI 营销获客系统阶段 4 草稿转存实现记录](../../delivery/2026-07-15-AI营销获客系统阶段4草稿转存实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -197,6 +199,30 @@ node src/cli/build-briefs.mjs \
 ```
 
 `--mark-status` 会修改飞书 `洞察与选题` 表。日常建议只在人工确认后使用；默认命令不会回写状态。
+
+## 转存到账号草稿目录
+
+当某条 draft seed 已经确认要进入具体账号，可以显式转存到账号目录：
+
+```bash
+node src/cli/promote-draft.mjs \
+  --draft logs/drafts/xxx-draft.md \
+  --account 墨予镜
+```
+
+默认输出到：
+
+```text
+projects/content-matrix/accounts/<账号名>/<日期>-<标题>-草稿.md
+```
+
+如果同名草稿已存在，命令会失败；确认要覆盖时再加：
+
+```bash
+--overwrite
+```
+
+这个命令只创建账号草稿，不生成成稿、不配图、不排版、不发布。
 
 cron 示例：
 
