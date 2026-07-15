@@ -30,6 +30,17 @@ const REQUIRED_TABLES = {
     'shareCount',
     'analysisStatus',
   ],
+  comments: [
+    'commentKey',
+    'contentKey',
+    'commentText',
+    'commentedAt',
+    'likeCount',
+    'userHandle',
+    'demandType',
+    'sentiment',
+    'insightStatus',
+  ],
   insights: [
     'title',
     'sourceContentKeys',

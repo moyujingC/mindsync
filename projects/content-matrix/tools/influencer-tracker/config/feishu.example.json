@@ -41,6 +41,20 @@
         "analysisStatus": "分析状态"
       }
     },
+    "comments": {
+      "tableId": "tbl_xxx",
+      "fields": {
+        "commentKey": "评论唯一键",
+        "contentKey": "内容唯一键",
+        "commentText": "评论文本",
+        "commentedAt": "评论时间",
+        "likeCount": "点赞数",
+        "userHandle": "用户标识",
+        "demandType": "需求类型",
+        "sentiment": "情绪倾向",
+        "insightStatus": "是否进入洞察"
+      }
+    },
     "insights": {
       "tableId": "tbl_xxx",
       "fields": {

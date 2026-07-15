@@ -35,6 +35,10 @@ test('bootstrap schema can produce tracker config field maps', () => {
         tableId: 'tbl_contents',
         fields: buildFieldNameMap(FEISHU_TABLE_SCHEMAS.contents),
       },
+      comments: {
+        tableId: 'tbl_comments',
+        fields: buildFieldNameMap(FEISHU_TABLE_SCHEMAS.comments),
+      },
       insights: {
         tableId: 'tbl_insights',
         fields: buildFieldNameMap(FEISHU_TABLE_SCHEMAS.insights),

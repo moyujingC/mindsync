@@ -179,6 +179,20 @@ export function mapContentToFeishuFields(content, fieldMap) {
   });
 }
 
+export function mapCommentToFeishuFields(comment, fieldMap) {
+  return compactObject({
+    [fieldMap.commentKey]: comment.commentUniqueKey,
+    [fieldMap.contentKey]: comment.contentUniqueKey,
+    [fieldMap.commentText]: comment.commentText,
+    [fieldMap.commentedAt]: comment.commentedAt,
+    [fieldMap.likeCount]: comment.likeCount,
+    [fieldMap.userHandle]: comment.userHandle,
+    [fieldMap.demandType]: comment.demandType,
+    [fieldMap.sentiment]: comment.sentiment,
+    [fieldMap.insightStatus]: comment.insightStatus,
+  });
+}
+
 export function mapTopicCandidateToFeishuFields(candidate, fieldMap) {
   return compactObject({
     [fieldMap.title]: candidate.topicTitle,
@@ -194,6 +208,23 @@ export function mapTopicCandidateToFeishuFields(candidate, fieldMap) {
     ].filter(Boolean).join('\n'),
     [fieldMap.status]: '待处理',
   });
+}
+
+export function mapFeishuCommentRecord(record, fieldMap) {
+  const fields = record.fields ?? {};
+  const value = (key) => fields[fieldMap[key]];
+  return {
+    recordId: record.record_id,
+    commentUniqueKey: extractTextValue(value('commentKey')),
+    contentUniqueKey: extractTextValue(value('contentKey')),
+    commentText: extractTextValue(value('commentText')),
+    commentedAt: extractTextValue(value('commentedAt')),
+    likeCount: numberOrNull(value('likeCount')),
+    userHandle: extractTextValue(value('userHandle')),
+    demandType: normalizeMultiSelect(value('demandType')),
+    sentiment: normalizeSingleSelect(value('sentiment')),
+    insightStatus: normalizeSingleSelect(value('insightStatus')),
+  };
 }
 
 export function mapFeishuInsightRecord(record, fieldMap) {
@@ -267,6 +298,14 @@ function extractTextValue(value) {
     return value;
   }
   return value.text ?? value.name ?? value.link ?? '';
+}
+
+function numberOrNull(value) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
 
 function buildSource({ kind, pathOrUrl }) {

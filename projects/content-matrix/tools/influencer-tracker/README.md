@@ -43,6 +43,8 @@
 
 阶段 6 P0-2 转写链路实现记录见：[AI 营销获客系统阶段 6 P0-2 转写链路实现记录](../../delivery/2026-07-15-AI营销获客系统阶段6-P0-2-转写链路实现记录.md)。
 
+阶段 6 P0-3 B站评论入库实现记录见：[AI 营销获客系统阶段 6 P0-3 B站评论入库实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P0-3-B站评论入库实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -206,6 +208,29 @@ node src/cli/transcribe-video.mjs \
 如果走 `whisper` 路径，还会多出：
 
 - `audio.m4a`
+
+## B站评论入库最小链路
+
+如果要先验证“评论样本 -> 去重 -> 入库”这条链路，可以跑：
+
+```bash
+node src/cli/sync-bilibili-comments.mjs \
+  --input fixtures/bilibili-comments.example.json \
+  --dry-run
+```
+
+或直接：
+
+```bash
+npm run comments:bili
+```
+
+当前最小能力包括：
+
+- 评论对象标准化
+- 稳定 `commentUniqueKey`
+- `dry-run`
+- 真实飞书模式下按 `评论唯一键` 去重
 
 ## 真实飞书配置
 

@@ -67,6 +67,7 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
     tables: {
       creators: minimumTable('tbl_creators'),
       contents: minimumTable('tbl_contents'),
+      comments: commentsTable('tbl_comments'),
       insights: {
         tableId: 'tbl_insights',
         fields: {
@@ -133,6 +134,7 @@ if (process.argv.includes('+record-batch-create')) {
     tables: {
       creators: minimumTable('tbl_creators'),
       contents: minimumTable('tbl_contents'),
+      comments: commentsTable('tbl_comments'),
       insights: insightTable('tbl_insights'),
     },
   }, null, 2), 'utf8');
@@ -205,6 +207,23 @@ function insightTable(tableId) {
       evidenceSummary: '证据摘要',
       nextAction: '建议动作',
       status: '状态',
+    },
+  };
+}
+
+function commentsTable(tableId) {
+  return {
+    tableId,
+    fields: {
+      commentKey: '评论唯一键',
+      contentKey: '内容唯一键',
+      commentText: '评论文本',
+      commentedAt: '评论时间',
+      likeCount: '点赞数',
+      userHandle: '用户标识',
+      demandType: '需求类型',
+      sentiment: '情绪倾向',
+      insightStatus: '是否进入洞察',
     },
   };
 }

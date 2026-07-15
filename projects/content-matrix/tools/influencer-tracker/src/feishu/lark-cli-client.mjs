@@ -201,5 +201,18 @@ function orderedFieldsForTable(tableName, fields) {
       fields.status,
     ].filter(Boolean);
   }
+  if (tableName === 'comments') {
+    return [
+      fields.commentKey,
+      fields.contentKey,
+      fields.commentText,
+      fields.commentedAt,
+      fields.likeCount,
+      fields.userHandle,
+      fields.demandType,
+      fields.sentiment,
+      fields.insightStatus,
+    ].filter(Boolean);
+  }
   return Object.values(fields);
 }

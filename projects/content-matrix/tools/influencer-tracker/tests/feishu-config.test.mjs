@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateFeishuConfig, validateFeishuTableFields } from '../src/feishu/config.mjs';
-import { mapContentToFeishuFields, mapFeishuCreatorRecord } from '../src/feishu/client.mjs';
+import { mapCommentToFeishuFields, mapContentToFeishuFields, mapFeishuCreatorRecord } from '../src/feishu/client.mjs';
 
 const fields = {
   name: '博主名称',
@@ -47,6 +47,18 @@ const insightFields = {
   status: '状态',
 };
 
+const commentFields = {
+  commentKey: '评论唯一键',
+  contentKey: '内容唯一键',
+  commentText: '评论文本',
+  commentedAt: '评论时间',
+  likeCount: '点赞数',
+  userHandle: '用户标识',
+  demandType: '需求类型',
+  sentiment: '情绪倾向',
+  insightStatus: '是否进入洞察',
+};
+
 test('validateFeishuConfig reports missing values', () => {
   const result = validateFeishuConfig({
     appId: 'cli_xxx',
@@ -73,6 +85,10 @@ test('validateFeishuConfig accepts complete config shape', () => {
       contents: {
         tableId: 'tbl_contents',
         fields: contentFields,
+      },
+      comments: {
+        tableId: 'tbl_comments',
+        fields: commentFields,
       },
       insights: {
         tableId: 'tbl_insights',
@@ -137,6 +153,24 @@ test('mapContentToFeishuFields maps normalized content to table fields', () => {
   assert.equal(fieldsForWrite['点赞数'], 1);
 });
 
+test('mapCommentToFeishuFields maps normalized comment fields', () => {
+  const fieldsForWrite = mapCommentToFeishuFields({
+    commentUniqueKey: 'bilibili:bilibili:BV1sample001:1001',
+    contentUniqueKey: 'bilibili:BV1sample001',
+    commentText: '测试评论',
+    commentedAt: '2026-07-15T01:10:00.000Z',
+    likeCount: 2,
+    userHandle: '用户A',
+    demandType: ['问题咨询'],
+    sentiment: '中性',
+    insightStatus: '待定',
+  }, commentFields);
+
+  assert.equal(fieldsForWrite['评论唯一键'], 'bilibili:bilibili:BV1sample001:1001');
+  assert.equal(fieldsForWrite['内容唯一键'], 'bilibili:BV1sample001');
+  assert.deepEqual(fieldsForWrite['需求类型'], ['问题咨询']);
+});
+
 test('validateFeishuTableFields checks mapped field names against live schema summary', () => {
   const config = {
     appId: 'cli_xxx',
@@ -151,6 +185,10 @@ test('validateFeishuTableFields checks mapped field names against live schema su
         tableId: 'tbl_contents',
         fields: contentFields,
       },
+      comments: {
+        tableId: 'tbl_comments',
+        fields: commentFields,
+      },
       insights: {
         tableId: 'tbl_insights',
         fields: insightFields,
@@ -162,6 +200,7 @@ test('validateFeishuTableFields checks mapped field names against live schema su
     contents: Object.values(contentFields)
       .filter((fieldName) => fieldName !== '标题')
       .map((fieldName) => ({ fieldName })),
+    comments: Object.values(commentFields).map((fieldName) => ({ fieldName })),
     insights: Object.values(insightFields).map((fieldName) => ({ fieldName })),
   };
 
