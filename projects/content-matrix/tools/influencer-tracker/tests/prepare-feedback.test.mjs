@@ -36,7 +36,8 @@ test('prepareFeedbackRecord writes feedback template', async () => {
     const output = await readFile(result.outputPath, 'utf8');
     assert.match(output, /^# 样例成稿 发布反馈记录/m);
     assert.match(output, /## 发布信息/);
-    assert.match(output, /是否进入样本沟通：是 \/ 否/);
+    assert.match(output, /是否进入样本沟通：否/);
+    assert.match(output, /是否需要转入 ai-service-studio 记录：否/);
     assert.match(output, /样本沟通记录\.md/);
   } finally {
     await rm(dir, { recursive: true, force: true });

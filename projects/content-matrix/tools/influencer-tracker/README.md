@@ -23,6 +23,8 @@
 
 阶段 4 发布反馈实现记录见：[AI 营销获客系统阶段 4 发布反馈实现记录](../../delivery/2026-07-15-AI营销获客系统阶段4发布反馈实现记录.md)。
 
+阶段 4 反馈转样本沟通实现记录见：[AI 营销获客系统阶段 4 反馈转样本沟通实现记录](../../delivery/2026-07-15-AI营销获客系统阶段4反馈转样本沟通实现记录.md)。
+
 阶段 2 手工导入实现记录见：[AI 营销获客系统阶段 2 手工导入实现记录](../../delivery/2026-07-15-AI营销获客系统阶段2手工导入实现记录.md)。
 
 阶段 2 回溯采集实现记录见：[AI 营销获客系统阶段 2 回溯采集实现记录](../../delivery/2026-07-15-AI营销获客系统阶段2回溯采集实现记录.md)。
@@ -32,6 +34,8 @@
 阶段 5 周复盘与失败处理实现记录见：[AI 营销获客系统阶段 5 周复盘与失败处理实现记录](../../delivery/2026-07-15-AI营销获客系统阶段5周复盘与失败处理实现记录.md)。
 
 阶段 5 调度接入与失败 SOP 实现记录见：[AI 营销获客系统阶段 5 调度接入与失败 SOP 实现记录](../../delivery/2026-07-15-AI营销获客系统阶段5调度接入与失败SOP实现记录.md)。
+
+阶段 5 连续运行审计实现记录见：[AI 营销获客系统阶段 5 连续运行审计实现记录](../../delivery/2026-07-15-AI营销获客系统阶段5连续运行审计实现记录.md)。
 
 当前目标是跑通：
 
@@ -437,6 +441,22 @@ projects/content-matrix/accounts/<账号名>/feedback/<日期>-<标题>-发布�
 - 评论、私信、咨询、样本沟通。
 - 是否需要转入 `projects/ai-service-studio/records/样本沟通记录.md`。
 
+如果一条反馈已经确认要转入 `ai-service-studio`：
+
+```bash
+node src/cli/promote-feedback.mjs \
+  --feedback ../../accounts/墨予镜/feedback/2026-07-15-从AI服务第一条样例视频看AI工作流诊断的真实需求-发布反馈.md \
+  --service-direction AI工作流诊断
+```
+
+这会往：
+
+```text
+projects/ai-service-studio/records/样本沟通记录.md
+```
+
+追加一条样本沟通记录。
+
 cron 示例：
 
 ```cron
@@ -464,6 +484,18 @@ node src/cli/failure-review.mjs \
 ```text
 最近状态 = 需人工处理
 启用状态 = 暂停
+```
+
+检查最近 7 天是否满足连续运行要求：
+
+```bash
+node src/cli/ops-audit.mjs --end-date 2026-07-15 --required-days 7
+```
+
+输出会写入：
+
+```text
+logs/ops-audits/<date>.md
 ```
 
 ## 当前边界
