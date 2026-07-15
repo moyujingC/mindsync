@@ -34,6 +34,17 @@ export class FeishuBitableClient {
     return response.data?.items ?? [];
   }
 
+  async listFields(tableName) {
+    const table = this.getTable(tableName);
+    const response = await this.request(
+      `/bitable/v1/apps/${this.config.baseAppToken}/tables/${table.tableId}/fields`,
+      {
+        method: 'GET',
+      },
+    );
+    return response.data?.items ?? [];
+  }
+
   async createRecords(tableName, records) {
     if (records.length === 0) {
       return [];
@@ -104,6 +115,15 @@ export function mapFeishuCreatorRecord(record, fieldMap) {
     homepageUrl: value('homepageUrl')?.link ?? value('homepageUrl'),
     enabledStatus: normalizeSingleSelect(value('enabledStatus')),
     checkFrequency: normalizeSingleSelect(value('checkFrequency')),
+  };
+}
+
+export function summarizeFeishuField(field) {
+  return {
+    fieldId: field.field_id,
+    fieldName: field.field_name,
+    type: field.type,
+    isPrimary: Boolean(field.is_primary),
   };
 }
 

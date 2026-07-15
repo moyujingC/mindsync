@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateFeishuConfig } from '../src/feishu/config.mjs';
+import { validateFeishuConfig, validateFeishuTableFields } from '../src/feishu/config.mjs';
 import { mapContentToFeishuFields, mapFeishuCreatorRecord } from '../src/feishu/client.mjs';
 
 const fields = {
@@ -112,4 +112,32 @@ test('mapContentToFeishuFields maps normalized content to table fields', () => {
   });
   assert.equal(fieldsForWrite['分析状态'], '待分析');
   assert.equal(fieldsForWrite['点赞数'], 1);
+});
+
+test('validateFeishuTableFields checks mapped field names against live schema summary', () => {
+  const config = {
+    appId: 'cli_xxx',
+    appSecret: 'secret',
+    baseAppToken: 'base',
+    tables: {
+      creators: {
+        tableId: 'tbl_creators',
+        fields,
+      },
+      contents: {
+        tableId: 'tbl_contents',
+        fields: contentFields,
+      },
+    },
+  };
+  const actualFieldsByTable = {
+    creators: Object.values(fields).map((fieldName) => ({ fieldName })),
+    contents: Object.values(contentFields)
+      .filter((fieldName) => fieldName !== '标题')
+      .map((fieldName) => ({ fieldName })),
+  };
+
+  const result = validateFeishuTableFields(config, actualFieldsByTable);
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join('\n'), /contents.title -> 标题/);
 });

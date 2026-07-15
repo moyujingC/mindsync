@@ -57,6 +57,39 @@ export function validateFeishuConfig(config) {
   };
 }
 
+export function validateFeishuTableFields(config, actualFieldsByTable) {
+  const errors = [];
+  const warnings = [];
+
+  for (const [tableName, requiredFields] of Object.entries(REQUIRED_TABLES)) {
+    const mappedFields = config.tables?.[tableName]?.fields ?? {};
+    const actualFields = actualFieldsByTable[tableName] ?? [];
+    const actualNames = new Set(actualFields.map((field) => field.fieldName));
+
+    for (const fieldKey of requiredFields) {
+      const mappedName = mappedFields[fieldKey];
+      if (!mappedName) {
+        errors.push(`Missing field mapping: tables.${tableName}.fields.${fieldKey}`);
+      } else if (!actualNames.has(mappedName)) {
+        errors.push(`Mapped field not found in Feishu table: ${tableName}.${fieldKey} -> ${mappedName}`);
+      }
+    }
+
+    for (const actualField of actualFields) {
+      const configured = Object.values(mappedFields).includes(actualField.fieldName);
+      if (!configured) {
+        warnings.push(`Unmapped Feishu field in ${tableName}: ${actualField.fieldName}`);
+      }
+    }
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+    warnings,
+  };
+}
+
 function requireString(object, displayPath, errors, key = displayPath) {
   if (!object?.[key] || typeof object[key] !== 'string') {
     errors.push(`Missing config value: ${displayPath}`);

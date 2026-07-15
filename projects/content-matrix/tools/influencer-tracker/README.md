@@ -67,10 +67,13 @@ cp config/feishu.example.json config/feishu.local.json
 
 ```bash
 node src/cli/validate-config.mjs --feishu config/feishu.local.json
+node src/cli/inspect-feishu.mjs --feishu config/feishu.local.json
 node src/cli/check-updates.mjs --feishu config/feishu.local.json
 ```
 
 `validate-config` 只检查配置结构和字段映射是否齐全，不会访问飞书 API（应用程序接口）。
+
+`inspect-feishu` 会访问飞书 API，读取真实多维表格字段，并检查配置中的字段名是否存在。它是只读命令，不会创建或修改记录。
 
 ## 当前边界
 
@@ -79,3 +82,4 @@ node src/cli/check-updates.mjs --feishu config/feishu.local.json
 - 抖音、小红书暂时只保留适配器边界，不在本轮强行接入。
 - 评论区采集不属于当前 MVP。
 - `validate-config` 只验证配置结构，飞书字段类型差异仍需要用真实表验证后再细调。
+- `inspect-feishu` 需要真实飞书应用权限和网络访问，样例配置不能直接通过。
