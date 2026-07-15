@@ -28,6 +28,7 @@
 npm test
 npm run check
 npm run validate:feishu
+npm run run:daily
 ```
 
 或直接运行：
@@ -75,6 +76,28 @@ node src/cli/check-updates.mjs --feishu config/feishu.local.json
 
 `inspect-feishu` 会访问飞书 API，读取真实多维表格字段，并检查配置中的字段名是否存在。它是只读命令，不会创建或修改记录。
 
+## 日常运行
+
+本地 dry-run：
+
+```bash
+node src/cli/run-daily.mjs --dry-run --creators fixtures/creators.example.json
+```
+
+真实飞书运行：
+
+```bash
+node src/cli/run-daily.mjs --feishu config/feishu.local.json
+```
+
+`run-daily` 会在 `logs/runs/YYYY-MM-DD/` 下写入 JSON 运行报告，便于 cron（定时任务）或 Automation Platform 做审计。
+
+cron 示例：
+
+```cron
+15 9 * * * cd /Users/xinran/Downloads/dev/mindsync/projects/content-matrix/tools/influencer-tracker && /usr/local/bin/node src/cli/run-daily.mjs --feishu config/feishu.local.json >> logs/cron.log 2>&1
+```
+
 ## 当前边界
 
 - 第一版不绕过平台风控。
@@ -83,3 +106,4 @@ node src/cli/check-updates.mjs --feishu config/feishu.local.json
 - 评论区采集不属于当前 MVP。
 - `validate-config` 只验证配置结构，飞书字段类型差异仍需要用真实表验证后再细调。
 - `inspect-feishu` 需要真实飞书应用权限和网络访问，样例配置不能直接通过。
+- `run-daily` 的默认样例是 dry-run；真实运行前必须确认飞书配置和字段验表通过。
