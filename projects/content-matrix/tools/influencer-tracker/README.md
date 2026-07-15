@@ -25,6 +25,10 @@
 
 阶段 2 回溯采集实现记录见：[AI 营销获客系统阶段 2 回溯采集实现记录](../../delivery/2026-07-15-AI营销获客系统阶段2回溯采集实现记录.md)。
 
+阶段 5 每日摘要实现记录见：[AI 营销获客系统阶段 5 每日摘要实现记录](../../delivery/2026-07-15-AI营销获客系统阶段5每日摘要实现记录.md)。
+
+阶段 5 周复盘与失败处理实现记录见：[AI 营销获客系统阶段 5 周复盘与失败处理实现记录](../../delivery/2026-07-15-AI营销获客系统阶段5周复盘与失败处理实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -194,6 +198,71 @@ node src/cli/run-daily.mjs --feishu config/feishu.local.json
 ```
 
 `run-daily` 会在 `logs/runs/YYYY-MM-DD/` 下写入 JSON 运行报告，便于 cron（定时任务）或 Automation Platform 做审计。
+
+生成某天的每日摘要：
+
+```bash
+node src/cli/daily-summary.mjs --date 2026-07-15
+```
+
+或直接运行：
+
+```bash
+npm run daily:summary
+```
+
+输出会写入：
+
+```text
+logs/daily-summaries/<date>.md
+```
+
+生成某一周的周复盘：
+
+```bash
+node src/cli/weekly-review.mjs --start-date 2026-07-09 --end-date 2026-07-15
+```
+
+或直接运行：
+
+```bash
+npm run weekly:review
+```
+
+输出会写入：
+
+```text
+logs/weekly-reviews/<end-date>.md
+```
+
+检查最近几天是否有连续失败账号：
+
+```bash
+node src/cli/failure-review.mjs --date 2026-07-15 --lookback-days 7 --threshold 3
+```
+
+或直接运行：
+
+```bash
+npm run failure:review
+```
+
+输出会写入：
+
+```text
+logs/failure-reviews/<date>.md
+```
+
+如果确认要把失败账号回写成 `需人工处理`，再追加：
+
+```bash
+node src/cli/failure-review.mjs \
+  --date 2026-07-15 \
+  --lookback-days 7 \
+  --threshold 3 \
+  --feishu config/feishu.local.json \
+  --mark-status
+```
 
 ## 选题候选
 

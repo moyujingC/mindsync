@@ -8,6 +8,8 @@
     "build:briefs": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json",
     "build:drafts": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json --draft-dir logs/drafts --mark-status 已验证",
     "backfill:sample": "node src/cli/backfill-creator.mjs --dry-run --creators fixtures/creators.example.json --creator-id sample-bilibili-rss --limit 20",
+    "daily:summary": "node src/cli/daily-summary.mjs --date 2026-07-15",
+    "failure:review": "node src/cli/failure-review.mjs --date 2026-07-15",
     "generate:topics": "node src/cli/generate-topic-candidates.mjs --report fixtures/run-report.example.json",
     "manual:import": "node src/cli/manual-import.mjs --dry-run --input fixtures/manual-import.example.json",
     "prepare:edit": "node src/cli/prepare-edit.mjs",
@@ -15,6 +17,7 @@
     "scaffold:final": "node src/cli/scaffold-final.mjs",
     "inspect:feishu": "node src/cli/inspect-feishu.mjs --feishu config/feishu.example.json",
     "run:daily": "node src/cli/run-daily.mjs --dry-run --creators fixtures/creators.example.json",
+    "weekly:review": "node src/cli/weekly-review.mjs --start-date 2026-07-09 --end-date 2026-07-15",
     "validate:feishu": "node src/cli/validate-config.mjs --feishu config/feishu.example.json",
     "test": "node --test tests/*.test.mjs"
   },
