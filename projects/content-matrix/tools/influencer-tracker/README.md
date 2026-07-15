@@ -41,6 +41,8 @@
 
 阶段 6 P0-1 B站下载链路实现记录见：[AI 营销获客系统阶段 6 P0-1 B站下载链路实现记录](../../delivery/2026-07-15-AI营销获客系统阶段6-P0-1-B站下载链路实现记录.md)。
 
+阶段 6 P0-2 转写链路实现记录见：[AI 营销获客系统阶段 6 P0-2 转写链路实现记录](../../delivery/2026-07-15-AI营销获客系统阶段6-P0-2-转写链路实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -179,6 +181,31 @@ node src/cli/download-bilibili.mjs \
 ```
 
 的第一步。
+
+## B站转写最小链路
+
+如果已有 B站 artifact 目录，可以继续跑：
+
+```bash
+node src/cli/transcribe-video.mjs \
+  --artifact-dir fixtures/bilibili-artifact.example \
+  --mode subtitle-only
+```
+
+当前逻辑：
+
+- 有字幕时，优先清洗字幕生成转写稿。
+- 没字幕时，`auto` 模式会继续尝试 `ffmpeg + whisper`。
+
+当前最小产物包括：
+
+- `speech-raw.txt`
+- `speech-clean.txt`
+- `transcribe-manifest.json`
+
+如果走 `whisper` 路径，还会多出：
+
+- `audio.m4a`
 
 ## 真实飞书配置
 

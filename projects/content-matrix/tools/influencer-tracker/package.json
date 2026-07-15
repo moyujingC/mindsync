@@ -9,6 +9,7 @@
     "build:drafts": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json --draft-dir logs/drafts --mark-status 已验证",
     "backfill:sample": "node src/cli/backfill-creator.mjs --dry-run --creators fixtures/creators.example.json --creator-id sample-bilibili-rss --limit 20",
     "download:bili": "node src/cli/download-bilibili.mjs --creator-id sample-bilibili-rss --limit 1",
+    "transcribe:bili": "node src/cli/transcribe-video.mjs --artifact-dir fixtures/bilibili-artifact.example --mode subtitle-only",
     "daily:summary": "node src/cli/daily-summary.mjs --date 2026-07-15",
     "failure:review": "node src/cli/failure-review.mjs --date 2026-07-15",
     "generate:topics": "node src/cli/generate-topic-candidates.mjs --report fixtures/run-report.example.json",
