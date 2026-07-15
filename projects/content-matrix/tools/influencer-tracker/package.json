@@ -6,6 +6,7 @@
   "scripts": {
     "check": "node src/cli/check-updates.mjs --dry-run --creators fixtures/creators.example.json",
     "build:briefs": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json",
+    "build:drafts": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json --draft-dir logs/drafts --mark-status 已验证",
     "generate:topics": "node src/cli/generate-topic-candidates.mjs --report fixtures/run-report.example.json",
     "inspect:feishu": "node src/cli/inspect-feishu.mjs --feishu config/feishu.example.json",
     "run:daily": "node src/cli/run-daily.mjs --dry-run --creators fixtures/creators.example.json",

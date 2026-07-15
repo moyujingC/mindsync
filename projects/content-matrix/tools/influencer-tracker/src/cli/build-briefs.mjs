@@ -6,6 +6,8 @@ import { buildBriefsFromFeishu } from '../jobs/build-briefs.mjs';
 const args = parseArgs(process.argv.slice(2));
 const feishuPath = args.feishu ? resolve(process.cwd(), args.feishu) : null;
 const outputDir = resolve(process.cwd(), args.outputDir ?? 'logs/briefs');
+const draftDir = args.draftDir ? resolve(process.cwd(), args.draftDir) : null;
+const markStatus = typeof args.markStatus === 'string' ? args.markStatus : null;
 
 try {
   if (!feishuPath) {
@@ -15,7 +17,9 @@ try {
   const result = await buildBriefsFromFeishu({
     feishuPath,
     outputDir,
+    draftDir,
     all: args.all,
+    markStatus,
   });
 
   console.log(JSON.stringify({

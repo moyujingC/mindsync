@@ -13,6 +13,8 @@
 
 阶段 3-4 第二轮实现记录见：[AI 营销获客系统阶段 3-4 实现记录](../../delivery/2026-07-15-AI营销获客系统阶段3-4实现记录.md)。
 
+阶段 4 第三轮实现记录见：[AI 营销获客系统阶段 4 实现记录](../../delivery/2026-07-15-AI营销获客系统阶段4实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -176,6 +178,25 @@ node src/cli/build-briefs.mjs --feishu config/feishu.local.json --all
 ```
 
 brief 用于交接给后续成稿、配图、排版链路，不代表已经完成事实核验或市场判断。
+
+如果要同时生成草稿种子：
+
+```bash
+node src/cli/build-briefs.mjs \
+  --feishu config/feishu.local.json \
+  --draft-dir logs/drafts
+```
+
+如果确认这些选题已经完成 brief / 草稿入口处理，可以回写飞书状态：
+
+```bash
+node src/cli/build-briefs.mjs \
+  --feishu config/feishu.local.json \
+  --draft-dir logs/drafts \
+  --mark-status 已验证
+```
+
+`--mark-status` 会修改飞书 `洞察与选题` 表。日常建议只在人工确认后使用；默认命令不会回写状态。
 
 cron 示例：
 
