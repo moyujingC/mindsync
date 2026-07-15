@@ -17,6 +17,8 @@ test('buildFieldNameMap converts internal keys to Feishu field names', () => {
   assert.equal(fieldMap.name, '博主名称');
   assert.equal(fieldMap.platform, '平台');
   assert.equal(fieldMap.failureReason, '失败原因');
+  assert.equal(fieldMap.sourceKind, '数据源类型');
+  assert.equal(fieldMap.sourcePath, '数据源地址');
 });
 
 test('bootstrap schema can produce tracker config field maps', () => {

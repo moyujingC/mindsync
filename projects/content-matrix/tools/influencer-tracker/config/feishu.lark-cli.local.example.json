@@ -1,10 +1,10 @@
 {
-  "appId": "cli_xxx",
-  "appSecret": "xxx",
-  "baseAppToken": "bascn_xxx",
+  "mode": "lark-cli",
+  "baseAppToken": "L2ghbMSJiaJrJKsUNMTcMLxInMb",
+  "as": "user",
   "tables": {
     "creators": {
-      "tableId": "tbl_xxx",
+      "tableId": "tblShoJENEvdH1m6",
       "fields": {
         "name": "博主名称",
         "platform": "平台",
@@ -21,7 +21,7 @@
       }
     },
     "contents": {
-      "tableId": "tbl_xxx",
+      "tableId": "tbl30niUryp9Sgp8",
       "fields": {
         "uniqueKey": "内容唯一键",
         "platform": "平台",

@@ -38,6 +38,12 @@ export const FEISHU_TABLE_SCHEMAS = {
         property: { options: optionNames(['正常', '无更新', '失败', '需人工处理']) },
       },
       failureReason: { field_name: '失败原因', type: FEISHU_FIELD_TYPES.text },
+      sourceKind: {
+        field_name: '数据源类型',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['rss', 'rss-file']) },
+      },
+      sourcePath: { field_name: '数据源地址', type: FEISHU_FIELD_TYPES.text },
     },
   },
   contents: {

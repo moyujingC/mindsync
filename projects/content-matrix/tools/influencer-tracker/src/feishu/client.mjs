@@ -142,6 +142,10 @@ export function mapFeishuCreatorRecord(record, fieldMap) {
     homepageUrl: value('homepageUrl')?.link ?? value('homepageUrl'),
     enabledStatus: normalizeSingleSelect(value('enabledStatus')),
     checkFrequency: normalizeSingleSelect(value('checkFrequency')),
+    source: buildSource({
+      kind: normalizeSingleSelect(value('sourceKind')),
+      pathOrUrl: value('sourcePath'),
+    }),
   };
 }
 
@@ -180,6 +184,19 @@ function normalizeSingleSelect(value) {
     return value;
   }
   return value?.text ?? value?.name ?? value?.[0]?.text ?? value?.[0]?.name ?? '';
+}
+
+function buildSource({ kind, pathOrUrl }) {
+  if (!kind || !pathOrUrl) {
+    return undefined;
+  }
+  if (kind === 'rss-file') {
+    return { kind, path: pathOrUrl };
+  }
+  if (kind === 'rss') {
+    return { kind, url: pathOrUrl };
+  }
+  return undefined;
 }
 
 function compactObject(value) {

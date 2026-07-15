@@ -14,6 +14,8 @@ const fields = {
   latestContentAt: '最近内容时间',
   lastStatus: '最近状态',
   failureReason: '失败原因',
+  sourceKind: '数据源类型',
+  sourcePath: '数据源地址',
 };
 
 const contentFields = {
@@ -77,6 +79,8 @@ test('mapFeishuCreatorRecord normalizes single-select-like fields', () => {
       主页链接: { link: 'https://space.bilibili.com/2' },
       启用状态: { text: '启用' },
       检查频率: { text: '每日' },
+      数据源类型: 'rss-file',
+      数据源地址: 'fixtures/bilibili-rss.example.xml',
     },
   }, fields);
 
@@ -84,6 +88,10 @@ test('mapFeishuCreatorRecord normalizes single-select-like fields', () => {
   assert.equal(creator.platform, 'bilibili');
   assert.equal(creator.enabledStatus, '启用');
   assert.equal(creator.homepageUrl, 'https://space.bilibili.com/2');
+  assert.deepEqual(creator.source, {
+    kind: 'rss-file',
+    path: 'fixtures/bilibili-rss.example.xml',
+  });
 });
 
 test('mapContentToFeishuFields maps normalized content to table fields', () => {

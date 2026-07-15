@@ -10,6 +10,8 @@ const REQUIRED_TABLES = {
     'latestContentAt',
     'lastStatus',
     'failureReason',
+    'sourceKind',
+    'sourcePath',
   ],
   contents: [
     'uniqueKey',
@@ -32,8 +34,10 @@ const REQUIRED_TABLES = {
 
 export function validateFeishuConfig(config) {
   const errors = [];
-  requireString(config, 'appId', errors);
-  requireString(config, 'appSecret', errors);
+  if (config.mode !== 'lark-cli') {
+    requireString(config, 'appId', errors);
+    requireString(config, 'appSecret', errors);
+  }
   requireString(config, 'baseAppToken', errors);
 
   for (const [tableName, requiredFields] of Object.entries(REQUIRED_TABLES)) {

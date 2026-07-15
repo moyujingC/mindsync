@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import { readJsonFile } from '../utils/json-file.mjs';
 import { FeishuBitableClient, mapFeishuCreatorRecord } from '../feishu/client.mjs';
+import { LarkCliBitableClient } from '../feishu/lark-cli-client.mjs';
 import { validateFeishuConfig } from '../feishu/config.mjs';
 
 export async function loadCreators({ creatorsPath, feishuPath, cwd = process.cwd() }) {
@@ -27,7 +28,9 @@ export async function loadCreators({ creatorsPath, feishuPath, cwd = process.cwd
     throw new Error(`Invalid Feishu config: ${configValidation.errors.join('; ')}`);
   }
 
-  const feishuClient = new FeishuBitableClient(feishuConfig);
+  const feishuClient = feishuConfig.mode === 'lark-cli'
+    ? new LarkCliBitableClient(feishuConfig)
+    : new FeishuBitableClient(feishuConfig);
   const records = await feishuClient.listRecords('creators');
   const creatorsFieldMap = feishuConfig.tables.creators.fields;
   return {

@@ -90,6 +90,22 @@ node src/cli/check-updates.mjs --feishu config/feishu.local.json
 
 `inspect-feishu` 会访问飞书 API，读取真实多维表格字段，并检查配置中的字段名是否存在。它是只读命令，不会创建或修改记录。
 
+### 当前已创建的飞书表
+
+已通过 `lark-cli` 用用户身份创建：
+
+- Base：`AI营销获客系统`
+- URL：https://ocn8icdz3ez3.feishu.cn/base/L2ghbMSJiaJrJKsUNMTcMLxInMb
+- base token：`L2ghbMSJiaJrJKsUNMTcMLxInMb`
+- `博主账号`：`tblShoJENEvdH1m6`
+- `内容更新`：`tbl30niUryp9Sgp8`
+- `评论样本`：`tbl2NTi3iiKXjliG`
+- `洞察与选题`：`tblcgq7lKn2mXE6p`
+
+已写入 1 条样例博主，并验证采集器可写入 2 条样例内容更新。
+
+本地真实配置文件是 `config/feishu.local.json`，已被 `.gitignore` 排除，不提交到仓库。
+
 ## 日常运行
 
 本地 dry-run：
