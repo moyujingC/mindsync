@@ -179,11 +179,61 @@ export function mapContentToFeishuFields(content, fieldMap) {
   });
 }
 
+export function mapTopicCandidateToFeishuFields(candidate, fieldMap) {
+  return compactObject({
+    [fieldMap.title]: candidate.topicTitle,
+    [fieldMap.sourceContentKeys]: candidate.source?.contentUniqueKey,
+    [fieldMap.sourceCommentKeys]: '',
+    [fieldMap.insightType]: '选题',
+    [fieldMap.targetAccounts]: targetAccountsForServiceDirection(candidate.serviceDirection),
+    [fieldMap.evidenceSummary]: candidate.evidenceSummary,
+    [fieldMap.nextAction]: [
+      candidate.nextAction,
+      candidate.userProblem ? `用户问题：${candidate.userProblem}` : '',
+      candidate.cta ? `CTA：${candidate.cta}` : '',
+    ].filter(Boolean).join('\n'),
+    [fieldMap.status]: '待处理',
+  });
+}
+
+export function extractFeishuTextField(record, fieldName) {
+  const value = record.fields?.[fieldName];
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => extractTextValue(item)).filter(Boolean).join(',');
+  }
+  return extractTextValue(value);
+}
+
 function normalizeSingleSelect(value) {
   if (typeof value === 'string') {
     return value;
   }
   return value?.text ?? value?.name ?? value?.[0]?.text ?? value?.[0]?.name ?? '';
+}
+
+function targetAccountsForServiceDirection(serviceDirection) {
+  if ([
+    'AI 工作流诊断',
+    'AI 文档 / 知识库整理',
+    '企业 AI 落地 / FDE',
+    '内容生产系统',
+  ].includes(serviceDirection)) {
+    return ['知行AI服务'];
+  }
+  return ['墨予镜'];
+}
+
+function extractTextValue(value) {
+  if (!value) {
+    return '';
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  return value.text ?? value.name ?? value.link ?? '';
 }
 
 function buildSource({ kind, pathOrUrl }) {

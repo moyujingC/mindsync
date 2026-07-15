@@ -30,6 +30,16 @@ const REQUIRED_TABLES = {
     'shareCount',
     'analysisStatus',
   ],
+  insights: [
+    'title',
+    'sourceContentKeys',
+    'sourceCommentKeys',
+    'insightType',
+    'targetAccounts',
+    'evidenceSummary',
+    'nextAction',
+    'status',
+  ],
 };
 
 export function validateFeishuConfig(config) {

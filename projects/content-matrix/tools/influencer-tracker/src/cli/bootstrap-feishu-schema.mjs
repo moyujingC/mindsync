@@ -37,7 +37,6 @@ try {
     ...config,
     tables: Object.fromEntries(
       Object.entries(outputTables)
-        .filter(([tableKey]) => ['creators', 'contents'].includes(tableKey))
         .map(([tableKey, table]) => [tableKey, {
           tableId: table.tableId,
           fields: table.fields,

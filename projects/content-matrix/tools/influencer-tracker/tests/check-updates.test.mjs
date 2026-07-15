@@ -99,3 +99,69 @@ test('checkUpdates dry-run does not persist store', async () => {
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test('checkUpdates deduplicates against existing Feishu content keys', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-feishu-dedupe-'));
+  const storePath = join(dir, 'store.json');
+  const originalFetch = globalThis.fetch;
+
+  globalThis.fetch = async () => new Response(`
+    <rss><channel>
+      <item>
+        <title>第一条</title>
+        <link>https://www.bilibili.com/video/BV3333333333</link>
+        <guid>https://www.bilibili.com/video/BV3333333333</guid>
+        <pubDate>Wed, 15 Jul 2026 01:00:00 GMT</pubDate>
+        <description>简介</description>
+      </item>
+    </channel></rss>
+  `, { status: 200 });
+
+  const createdRecords = [];
+  const feishuClient = {
+    async listRecords(tableName) {
+      assert.equal(tableName, 'contents');
+      return [{
+        record_id: 'rec_existing',
+        fields: {
+          内容唯一键: 'bilibili:BV3333333333',
+        },
+      }];
+    },
+    async createRecords(tableName, records) {
+      createdRecords.push({ tableName, records });
+      return [];
+    },
+  };
+
+  try {
+    const result = await checkUpdates({
+      creators: [{
+        id: 'enabled',
+        name: '启用账号',
+        platform: 'bilibili',
+        externalId: '2',
+        enabledStatus: '启用',
+      }],
+      feishuClient,
+      feishuConfig: {
+        tables: {
+          contents: {
+            fields: {
+              uniqueKey: '内容唯一键',
+            },
+          },
+        },
+      },
+      storePath,
+      dryRun: false,
+    });
+
+    assert.equal(result.createdCount, 0);
+    assert.equal(result.duplicateCount, 1);
+    assert.deepEqual(createdRecords, []);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(dir, { recursive: true, force: true });
+  }
+});

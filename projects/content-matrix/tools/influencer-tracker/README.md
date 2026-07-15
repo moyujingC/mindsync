@@ -9,6 +9,8 @@
 
 后续阶段计划见：[AI 营销获客系统后续阶段路线图](../../delivery/2026-07-15-AI营销获客系统后续阶段路线图.md)。
 
+阶段 1-3 第一轮实现记录见：[AI 营销获客系统阶段 1-3 实现记录](../../delivery/2026-07-15-AI营销获客系统阶段1-3实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -23,8 +25,9 @@
 - 支持 `dry-run`，不会写飞书。
 - 支持 B 站 RSS 入口作为第一版公开数据源。
 - 支持本地 RSS fixture，保证无网络时也能验证 MVP。
-- 支持内容唯一键去重。
+- 支持内容唯一键去重；真实飞书模式会优先读取 `内容更新` 表已有 `内容唯一键`，本地 store 只做缓存。
 - 支持单个账号失败后继续处理其他账号。
+- 支持把选题候选写入飞书 `洞察与选题` 表。
 
 ## 本地验证
 
@@ -132,6 +135,14 @@ node src/cli/run-daily.mjs --feishu config/feishu.local.json
 
 ```bash
 node src/cli/generate-topic-candidates.mjs --report logs/runs/2026-07-15/xxx.json
+```
+
+生成候选并写入飞书 `洞察与选题` 表：
+
+```bash
+node src/cli/generate-topic-candidates.mjs \
+  --report logs/runs/2026-07-15/xxx.json \
+  --feishu config/feishu.local.json
 ```
 
 本地样例：

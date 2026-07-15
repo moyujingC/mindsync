@@ -36,6 +36,17 @@ const contentFields = {
   analysisStatus: '分析状态',
 };
 
+const insightFields = {
+  title: '洞察标题',
+  sourceContentKeys: '来源内容',
+  sourceCommentKeys: '来源评论',
+  insightType: '洞察类型',
+  targetAccounts: '适用账号',
+  evidenceSummary: '证据摘要',
+  nextAction: '建议动作',
+  status: '状态',
+};
+
 test('validateFeishuConfig reports missing values', () => {
   const result = validateFeishuConfig({
     appId: 'cli_xxx',
@@ -62,6 +73,10 @@ test('validateFeishuConfig accepts complete config shape', () => {
       contents: {
         tableId: 'tbl_contents',
         fields: contentFields,
+      },
+      insights: {
+        tableId: 'tbl_insights',
+        fields: insightFields,
       },
     },
   });
@@ -136,6 +151,10 @@ test('validateFeishuTableFields checks mapped field names against live schema su
         tableId: 'tbl_contents',
         fields: contentFields,
       },
+      insights: {
+        tableId: 'tbl_insights',
+        fields: insightFields,
+      },
     },
   };
   const actualFieldsByTable = {
@@ -143,6 +162,7 @@ test('validateFeishuTableFields checks mapped field names against live schema su
     contents: Object.values(contentFields)
       .filter((fieldName) => fieldName !== '标题')
       .map((fieldName) => ({ fieldName })),
+    insights: Object.values(insightFields).map((fieldName) => ({ fieldName })),
   };
 
   const result = validateFeishuTableFields(config, actualFieldsByTable);

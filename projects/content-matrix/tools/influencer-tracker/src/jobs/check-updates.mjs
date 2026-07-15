@@ -1,6 +1,6 @@
 import { ContentStore } from '../storage/content-store.mjs';
 import { getPlatformAdapter } from '../platforms/registry.mjs';
-import { mapContentToFeishuFields } from '../feishu/client.mjs';
+import { extractFeishuTextField, mapContentToFeishuFields } from '../feishu/client.mjs';
 
 export async function checkUpdates({
   creators,
@@ -14,6 +14,7 @@ export async function checkUpdates({
 }) {
   const store = new ContentStore({ filePath: storePath });
   await store.load();
+  const remoteContentKeys = await loadRemoteContentKeys({ feishuClient, feishuConfig, dryRun });
 
   const enabledCreators = creators.filter((creator) => {
     const enabled = creator.enabledStatus === '启用';
@@ -52,7 +53,7 @@ export async function checkUpdates({
 
       const newContents = [];
       for (const content of limitedContents) {
-        if (store.hasContent(content.uniqueKey)) {
+        if (store.hasContent(content.uniqueKey) || remoteContentKeys.has(content.uniqueKey)) {
           creatorResult.duplicateCount += 1;
           run.duplicateCount += 1;
           continue;
@@ -68,6 +69,7 @@ export async function checkUpdates({
 
       for (const content of newContents) {
         store.addContent(content.uniqueKey);
+        remoteContentKeys.add(content.uniqueKey);
       }
       creatorResult.createdCount = newContents.length;
       run.createdCount += newContents.length;
@@ -103,6 +105,19 @@ export async function checkUpdates({
   }
 
   return run;
+}
+
+async function loadRemoteContentKeys({ feishuClient, feishuConfig, dryRun }) {
+  if (dryRun || !feishuClient || !feishuConfig) {
+    return new Set();
+  }
+  const uniqueKeyField = feishuConfig.tables.contents.fields.uniqueKey;
+  const records = await feishuClient.listRecords('contents');
+  return new Set(
+    records
+      .map((record) => extractFeishuTextField(record, uniqueKeyField))
+      .filter(Boolean),
+  );
 }
 
 function validateCreator(creator) {

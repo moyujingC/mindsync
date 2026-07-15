@@ -158,5 +158,17 @@ function orderedFieldsForTable(tableName, fields) {
       fields.analysisStatus,
     ].filter(Boolean);
   }
+  if (tableName === 'insights') {
+    return [
+      fields.title,
+      fields.sourceContentKeys,
+      fields.sourceCommentKeys,
+      fields.insightType,
+      fields.targetAccounts,
+      fields.evidenceSummary,
+      fields.nextAction,
+      fields.status,
+    ].filter(Boolean);
+  }
   return Object.values(fields);
 }

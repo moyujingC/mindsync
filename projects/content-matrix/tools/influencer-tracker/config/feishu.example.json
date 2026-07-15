@@ -40,6 +40,19 @@
         "shareCount": "转发/分享数",
         "analysisStatus": "分析状态"
       }
+    },
+    "insights": {
+      "tableId": "tbl_xxx",
+      "fields": {
+        "title": "洞察标题",
+        "sourceContentKeys": "来源内容",
+        "sourceCommentKeys": "来源评论",
+        "insightType": "洞察类型",
+        "targetAccounts": "适用账号",
+        "evidenceSummary": "证据摘要",
+        "nextAction": "建议动作",
+        "status": "状态"
+      }
     }
   }
 }
