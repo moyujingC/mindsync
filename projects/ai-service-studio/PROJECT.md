@@ -147,6 +147,8 @@
 - [企业 AI 定制服务入门原文](references/2026-07-15-企业AI定制服务入门-原文.md)
 - [老板思维下企业 AI 服务设计参考](references/2026-07-15-老板思维下企业AI服务设计参考.md)
 - [老板思维下企业 AI 服务设计原文](references/2026-07-15-老板思维下企业AI服务设计-原文.md)
+- [移民机构 AI 自动化系统实战参考](references/2026-07-15-移民机构AI自动化系统实战参考.md)
+- [移民机构 AI 自动化系统实战 OCR 原文](references/2026-07-15-移民机构AI自动化系统实战-OCR原文.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
 
 ## 5. 合规和表达边界
