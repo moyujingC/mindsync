@@ -1,0 +1,76 @@
+# 博主更新追踪 MVP
+
+> 状态：working
+> source_of_truth：projects/content-matrix/tools/influencer-tracker/README.md
+
+这是 `AI 营销获客系统` 的第一版采集工具。
+
+当前目标是跑通：
+
+```text
+博主列表 -> 检查更新 -> 标准化内容 -> 去重 -> dry-run / 飞书写入 -> 状态日志
+```
+
+## 当前能力
+
+- 支持本地 JSON 博主清单。
+- 支持飞书多维表格读写骨架。
+- 支持 `dry-run`，不会写飞书。
+- 支持 B 站 RSS 入口作为第一版公开数据源。
+- 支持本地 RSS fixture，保证无网络时也能验证 MVP。
+- 支持内容唯一键去重。
+- 支持单个账号失败后继续处理其他账号。
+
+## 本地验证
+
+```bash
+npm test
+npm run check
+```
+
+或直接运行：
+
+```bash
+node src/cli/check-updates.mjs --dry-run --creators fixtures/creators.example.json
+```
+
+默认样例使用 `fixtures/bilibili-rss.example.xml`，所以不依赖外部网络。
+
+如果要测试真实 RSS 源，把博主配置中的 `source` 改成：
+
+```json
+{
+  "kind": "rss",
+  "url": "https://rsshub.app/bilibili/user/video/2"
+}
+```
+
+## 真实飞书配置
+
+复制配置样例：
+
+```bash
+cp config/feishu.example.json config/feishu.local.json
+```
+
+填入：
+
+- `appId`
+- `appSecret`
+- `baseAppToken`
+- `tableId`
+- 字段映射
+
+然后运行：
+
+```bash
+node src/cli/check-updates.mjs --feishu config/feishu.local.json
+```
+
+## 当前边界
+
+- 第一版不绕过平台风控。
+- B 站适配器先使用 RSS 源，后续可以替换为更稳定的数据入口。
+- 抖音、小红书暂时只保留适配器边界，不在本轮强行接入。
+- 评论区采集不属于当前 MVP。
+- 飞书字段类型差异需要用真实表验证后再细调。

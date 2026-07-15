@@ -1,0 +1,19 @@
+<rss>
+  <channel>
+    <title>B站样例账号</title>
+    <item>
+      <title><![CDATA[AI 服务第一条样例视频]]></title>
+      <link>https://www.bilibili.com/video/BV1sample001</link>
+      <guid>https://www.bilibili.com/video/BV1sample001</guid>
+      <pubDate>Wed, 15 Jul 2026 01:00:00 GMT</pubDate>
+      <description><![CDATA[<p>这是一条用于本地 dry-run 的样例内容。</p>]]></description>
+    </item>
+    <item>
+      <title><![CDATA[AI 服务第二条样例视频]]></title>
+      <link>https://www.bilibili.com/video/BV1sample002</link>
+      <guid>https://www.bilibili.com/video/BV1sample002</guid>
+      <pubDate>Wed, 15 Jul 2026 02:00:00 GMT</pubDate>
+      <description><![CDATA[<p>用于验证批量内容标准化和输出。</p>]]></description>
+    </item>
+  </channel>
+</rss>
