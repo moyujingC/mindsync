@@ -196,6 +196,22 @@ export function mapTopicCandidateToFeishuFields(candidate, fieldMap) {
   });
 }
 
+export function mapFeishuInsightRecord(record, fieldMap) {
+  const fields = record.fields ?? {};
+  const value = (key) => fields[fieldMap[key]];
+  return {
+    recordId: record.record_id,
+    title: extractTextValue(value('title')),
+    sourceContentKeys: extractTextValue(value('sourceContentKeys')),
+    sourceCommentKeys: extractTextValue(value('sourceCommentKeys')),
+    insightType: normalizeSingleSelect(value('insightType')),
+    targetAccounts: normalizeMultiSelect(value('targetAccounts')),
+    evidenceSummary: extractTextValue(value('evidenceSummary')),
+    nextAction: extractTextValue(value('nextAction')),
+    status: normalizeSingleSelect(value('status')),
+  };
+}
+
 export function extractFeishuTextField(record, fieldName) {
   const value = record.fields?.[fieldName];
   if (typeof value === 'string') {
@@ -207,11 +223,28 @@ export function extractFeishuTextField(record, fieldName) {
   return extractTextValue(value);
 }
 
+export function buildInsightDedupeKey(insight) {
+  return [
+    insight.sourceContentKeys,
+    insight.insightType || '选题',
+  ].filter(Boolean).join('::');
+}
+
 function normalizeSingleSelect(value) {
   if (typeof value === 'string') {
     return value;
   }
   return value?.text ?? value?.name ?? value?.[0]?.text ?? value?.[0]?.name ?? '';
+}
+
+function normalizeMultiSelect(value) {
+  if (!value) {
+    return [];
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => extractTextValue(item)).filter(Boolean);
+  }
+  return [extractTextValue(value)].filter(Boolean);
 }
 
 function targetAccountsForServiceDirection(serviceDirection) {

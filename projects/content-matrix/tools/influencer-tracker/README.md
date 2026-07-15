@@ -11,6 +11,8 @@
 
 阶段 1-3 第一轮实现记录见：[AI 营销获客系统阶段 1-3 实现记录](../../delivery/2026-07-15-AI营销获客系统阶段1-3实现记录.md)。
 
+阶段 3-4 第二轮实现记录见：[AI 营销获客系统阶段 3-4 实现记录](../../delivery/2026-07-15-AI营销获客系统阶段3-4实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -28,6 +30,8 @@
 - 支持内容唯一键去重；真实飞书模式会优先读取 `内容更新` 表已有 `内容唯一键`，本地 store 只做缓存。
 - 支持单个账号失败后继续处理其他账号。
 - 支持把选题候选写入飞书 `洞察与选题` 表。
+- 支持 `洞察与选题` 按 `来源内容 + 洞察类型` 去重，避免重复写入同一来源候选。
+- 支持从飞书已审核选题生成 Markdown brief（内容生产交接稿）。
 
 ## 本地验证
 
@@ -145,6 +149,8 @@ node src/cli/generate-topic-candidates.mjs \
   --feishu config/feishu.local.json
 ```
 
+写入飞书时会按 `来源内容 + 洞察类型` 去重。重复执行同一份报告时，已存在的候选会被跳过。
+
 本地样例：
 
 ```bash
@@ -152,6 +158,24 @@ npm run generate:topics
 ```
 
 输出会写入 `logs/topic-candidates/`。这些结果只能作为选题池输入，不能直接当成最终内容判断。每条候选仍需要人工查看原文和评论区，再决定是否进入 `知行AI服务` 的内容获客链路。
+
+## 生成内容 brief
+
+当人工在飞书 `洞察与选题` 表中把候选状态改成 `已转选题` 后，可以生成 Markdown brief：
+
+```bash
+node src/cli/build-briefs.mjs --feishu config/feishu.local.json
+```
+
+默认只处理 `状态 = 已转选题` 的记录，输出到 `logs/briefs/`。
+
+如果要临时导出全部洞察：
+
+```bash
+node src/cli/build-briefs.mjs --feishu config/feishu.local.json --all
+```
+
+brief 用于交接给后续成稿、配图、排版链路，不代表已经完成事实核验或市场判断。
 
 cron 示例：
 

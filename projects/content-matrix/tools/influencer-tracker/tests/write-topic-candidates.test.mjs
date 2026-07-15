@@ -42,6 +42,10 @@ test('writeTopicCandidatesToFeishu writes candidates to insights table with lark
   const feishuPath = join(dir, 'feishu.json');
 
   await writeFile(fakeCliPath, `#!/usr/bin/env node
+if (process.argv.includes('+record-list')) {
+  console.log(JSON.stringify({ data: { fields: ['来源内容', '洞察类型'], data: [] } }));
+  process.exit(0);
+}
 const jsonIndex = process.argv.indexOf('--json');
 const payload = JSON.parse(process.argv[jsonIndex + 1]);
 if (!process.argv.includes('+record-batch-create')) {
@@ -101,6 +105,61 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
   }
 });
 
+test('writeTopicCandidatesToFeishu skips duplicate source content insights', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-topic-dedupe-'));
+  const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
+  const feishuPath = join(dir, 'feishu.json');
+
+  await writeFile(fakeCliPath, `#!/usr/bin/env node
+if (process.argv.includes('+record-list')) {
+  console.log(JSON.stringify({
+    data: {
+      fields: ['来源内容', '洞察类型'],
+      data: [['bilibili:BV1', '选题']],
+      record_id_list: ['rec_existing']
+    }
+  }));
+  process.exit(0);
+}
+if (process.argv.includes('+record-batch-create')) {
+  throw new Error('should not create duplicate records');
+}
+`, 'utf8');
+  await chmod(fakeCliPath, 0o755);
+  await writeFile(feishuPath, JSON.stringify({
+    mode: 'lark-cli',
+    bin: fakeCliPath,
+    baseAppToken: 'base_xxx',
+    tables: {
+      creators: minimumTable('tbl_creators'),
+      contents: minimumTable('tbl_contents'),
+      insights: insightTable('tbl_insights'),
+    },
+  }, null, 2), 'utf8');
+
+  try {
+    const result = await writeTopicCandidatesToFeishu({
+      feishuPath,
+      candidates: [{
+        topicTitle: '样例选题',
+        serviceDirection: '内容生产系统',
+        evidenceSummary: '样例证据',
+        nextAction: '人工审核',
+        source: {
+          contentUniqueKey: 'bilibili:BV1',
+        },
+      }],
+    });
+
+    assert.equal(result.enabled, true);
+    assert.equal(result.createdCount, 0);
+    assert.equal(result.duplicateCount, 1);
+    assert.deepEqual(result.recordIds, []);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 function minimumTable(tableId) {
   return {
     tableId,
@@ -130,6 +189,22 @@ function minimumTable(tableId) {
       favoriteCount: '收藏数',
       shareCount: '转发/分享数',
       analysisStatus: '分析状态',
+    },
+  };
+}
+
+function insightTable(tableId) {
+  return {
+    tableId,
+    fields: {
+      title: '洞察标题',
+      sourceContentKeys: '来源内容',
+      sourceCommentKeys: '来源评论',
+      insightType: '洞察类型',
+      targetAccounts: '适用账号',
+      evidenceSummary: '证据摘要',
+      nextAction: '建议动作',
+      status: '状态',
     },
   };
 }
