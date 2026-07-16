@@ -53,6 +53,8 @@
 
 阶段 6 P1-3 批量 enrichment 写入实现记录见：[AI营销获客系统阶段 6 P1-3 批量 enrichment 写入实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-3-批量enrichment写入实现记录.md)。
 
+阶段 6 P1-4 批量写入报告与状态回写实现记录见：[AI营销获客系统阶段 6 P1-4 批量写入报告与状态回写实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-4-批量写入报告与状态回写实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -336,7 +338,8 @@ node src/cli/write-enrichment-insights.mjs \
 
 ```bash
 node src/cli/write-enrichment-directory-insights.mjs \
-  --root-dir fixtures/enrichments.example
+  --root-dir fixtures/enrichments.example \
+  --report logs/enrichment-writes/example.json
 ```
 
 或直接：
@@ -350,10 +353,21 @@ npm run insights:enrichments
 ```bash
 node src/cli/write-enrichment-directory-insights.mjs \
   --root-dir logs/downloads/bilibili \
-  --feishu config/feishu.local.json
+  --feishu config/feishu.local.json \
+  --report logs/enrichment-writes/$(date +%F).json \
+  --mark-processed
 ```
 
 这条链路会递归扫描 `rootDir` 下的 `enrichment.json`，汇总后统一写入飞书，减少重复读取远端表的次数。
+
+`--report` 会写出批量处理报告。`--mark-processed` 会把每个本地 `enrichment.json` 的处理结果回写到 `handoff` 字段。
+
+当前单项状态包括：
+
+- `disabled`
+- `written`
+- `duplicate`
+- `empty`
 
 ## 真实飞书配置
 

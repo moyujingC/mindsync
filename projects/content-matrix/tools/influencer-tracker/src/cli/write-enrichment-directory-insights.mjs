@@ -14,6 +14,8 @@ try {
   const result = await writeEnrichmentDirectoryInsightsToFeishu({
     rootDir: resolve(process.cwd(), args.rootDir),
     feishuPath: args.feishu ? resolve(process.cwd(), args.feishu) : null,
+    reportPath: args.report ? resolve(process.cwd(), args.report) : null,
+    markProcessed: Boolean(args.markProcessed),
   });
 
   console.log(JSON.stringify({

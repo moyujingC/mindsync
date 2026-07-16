@@ -1,6 +1,6 @@
 import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { readJsonFile } from '../utils/json-file.mjs';
+import { readJsonFile, writeJsonFile } from '../utils/json-file.mjs';
 import { writeTopicCandidatesToFeishu } from './write-topic-candidates.mjs';
 
 export async function writeEnrichmentInsightsToFeishu({
@@ -27,10 +27,12 @@ export async function writeEnrichmentInsightsToFeishu({
 export async function writeEnrichmentDirectoryInsightsToFeishu({
   rootDir,
   feishuPath,
+  reportPath = null,
+  markProcessed = false,
 }) {
   const enrichmentPaths = await findEnrichmentFiles(rootDir);
   const enrichments = await Promise.all(enrichmentPaths.map((path) => readJsonFile(path)));
-  const candidates = enrichments.flatMap((enrichment, index) => buildInsightCandidatesFromEnrichment(enrichment)
+  const candidatesByEnrichment = enrichments.map((enrichment, index) => buildInsightCandidatesFromEnrichment(enrichment)
     .map((candidate) => ({
       ...candidate,
       source: {
@@ -38,10 +40,28 @@ export async function writeEnrichmentDirectoryInsightsToFeishu({
         enrichmentPath: enrichmentPaths[index],
       },
     })));
+  const candidates = candidatesByEnrichment.flat();
   const feishu = await writeTopicCandidatesToFeishu({
     candidates,
     feishuPath,
   });
+  const report = buildEnrichmentWriteReport({
+    rootDir,
+    feishuPath,
+    enrichmentPaths,
+    candidatesByEnrichment,
+    feishu,
+  });
+
+  if (reportPath) {
+    await writeJsonFile(reportPath, report);
+  }
+  if (markProcessed) {
+    await Promise.all(enrichments.map((enrichment, index) => writeJsonFile(enrichmentPaths[index], {
+      ...enrichment,
+      handoff: report.items[index],
+    })));
+  }
 
   return {
     enabled: feishu.enabled,
@@ -50,6 +70,8 @@ export async function writeEnrichmentDirectoryInsightsToFeishu({
     createdCount: feishu.createdCount,
     duplicateCount: feishu.duplicateCount ?? 0,
     recordIds: feishu.recordIds,
+    reportPath,
+    report,
     enrichmentPaths,
     candidates,
   };
@@ -155,4 +177,68 @@ function targetAccountsForDirection(direction) {
     return ['知行AI服务'];
   }
   return ['墨予镜'];
+}
+
+function buildEnrichmentWriteReport({
+  rootDir,
+  feishuPath,
+  enrichmentPaths,
+  candidatesByEnrichment,
+  feishu,
+}) {
+  const recordIds = feishu.recordIds ?? [];
+  let createdCursor = 0;
+  const items = enrichmentPaths.map((enrichmentPath, index) => {
+    const candidates = candidatesByEnrichment[index] ?? [];
+    const duplicateCount = estimateDuplicateCount({
+      candidateCount: candidates.length,
+      totalCandidateCount: candidatesByEnrichment.flat().length,
+      totalDuplicateCount: feishu.duplicateCount ?? 0,
+    });
+    const createdCount = feishu.enabled === false ? 0 : Math.max(0, candidates.length - duplicateCount);
+    const itemRecordIds = recordIds.slice(createdCursor, createdCursor + createdCount);
+    createdCursor += createdCount;
+    return {
+      enrichmentPath,
+      status: buildItemStatus({ feishuEnabled: feishu.enabled, createdCount, duplicateCount }),
+      candidateCount: candidates.length,
+      createdCount,
+      duplicateCount,
+      recordIds: itemRecordIds,
+      processedAt: new Date().toISOString(),
+    };
+  });
+
+  return {
+    schema: 'content-matrix/enrichment-write-report/v1',
+    generatedAt: new Date().toISOString(),
+    rootDir,
+    feishuEnabled: Boolean(feishuPath),
+    enrichmentCount: enrichmentPaths.length,
+    inputCount: candidatesByEnrichment.flat().length,
+    createdCount: feishu.createdCount ?? 0,
+    duplicateCount: feishu.duplicateCount ?? 0,
+    recordIds,
+    items,
+  };
+}
+
+function estimateDuplicateCount({ candidateCount, totalCandidateCount, totalDuplicateCount }) {
+  if (!totalDuplicateCount || !totalCandidateCount) {
+    return 0;
+  }
+  return Math.min(candidateCount, totalDuplicateCount);
+}
+
+function buildItemStatus({ feishuEnabled, createdCount, duplicateCount }) {
+  if (feishuEnabled === false) {
+    return 'disabled';
+  }
+  if (createdCount > 0) {
+    return 'written';
+  }
+  if (duplicateCount > 0) {
+    return 'duplicate';
+  }
+  return 'empty';
 }

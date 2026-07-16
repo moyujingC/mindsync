@@ -191,6 +191,84 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
   }
 });
 
+test('writeEnrichmentDirectoryInsightsToFeishu writes report and marks enrichment files', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-report-'));
+  const rootDir = join(dir, 'downloads');
+  const artifactDir = join(rootDir, 'B站样例账号', 'BV1sample001');
+  const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
+  const feishuPath = join(dir, 'feishu.json');
+  const reportPath = join(dir, 'reports', 'enrichment-write.json');
+  const enrichmentPath = join(artifactDir, 'enrichment.json');
+
+  await mkdir(artifactDir, { recursive: true });
+  await writeFile(enrichmentPath, JSON.stringify(enrichment, null, 2), 'utf8');
+  await writeFile(fakeCliPath, `#!/usr/bin/env node
+if (process.argv.includes('+record-list')) {
+  console.log(JSON.stringify({ data: { fields: ['来源内容', '洞察类型'], data: [] } }));
+  process.exit(0);
+}
+const jsonIndex = process.argv.indexOf('--json');
+const payload = JSON.parse(process.argv[jsonIndex + 1]);
+console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index) => 'rec_report_' + index) } }));
+`, 'utf8');
+  await chmod(fakeCliPath, 0o755);
+  await writeFile(feishuPath, JSON.stringify({
+    mode: 'lark-cli',
+    bin: fakeCliPath,
+    baseAppToken: 'base_xxx',
+    tables: {
+      creators: minimumTable('tbl_creators'),
+      contents: minimumTable('tbl_contents'),
+      comments: commentsTable('tbl_comments'),
+      insights: insightTable('tbl_insights'),
+    },
+  }, null, 2), 'utf8');
+
+  try {
+    const result = await writeEnrichmentDirectoryInsightsToFeishu({
+      rootDir,
+      feishuPath,
+      reportPath,
+      markProcessed: true,
+    });
+
+    const report = JSON.parse(await readFile(reportPath, 'utf8'));
+    const updatedEnrichment = JSON.parse(await readFile(enrichmentPath, 'utf8'));
+
+    assert.equal(result.reportPath, reportPath);
+    assert.equal(report.schema, 'content-matrix/enrichment-write-report/v1');
+    assert.equal(report.items[0].status, 'written');
+    assert.deepEqual(updatedEnrichment.handoff.recordIds, ['rec_report_0', 'rec_report_1']);
+    assert.equal(updatedEnrichment.handoff.createdCount, 2);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('writeEnrichmentDirectoryInsightsToFeishu marks report as disabled without Feishu', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-report-disabled-'));
+  const rootDir = join(dir, 'downloads');
+  const artifactDir = join(rootDir, 'B站样例账号', 'BV1sample001');
+  const reportPath = join(dir, 'reports', 'enrichment-write.json');
+
+  await mkdir(artifactDir, { recursive: true });
+  await writeFile(join(artifactDir, 'enrichment.json'), JSON.stringify(enrichment, null, 2), 'utf8');
+
+  try {
+    const result = await writeEnrichmentDirectoryInsightsToFeishu({
+      rootDir,
+      feishuPath: null,
+      reportPath,
+    });
+
+    assert.equal(result.report.feishuEnabled, false);
+    assert.equal(result.report.items[0].status, 'disabled');
+    assert.equal(result.report.items[0].createdCount, 0);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 function minimumTable(tableId) {
   return {
     tableId,
