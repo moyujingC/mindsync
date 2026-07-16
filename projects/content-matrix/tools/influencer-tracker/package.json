@@ -10,6 +10,7 @@
     "backfill:sample": "node src/cli/backfill-creator.mjs --dry-run --creators fixtures/creators.example.json --creator-id sample-bilibili-rss --limit 20",
     "download:bili": "node src/cli/download-bilibili.mjs --creator-id sample-bilibili-rss --limit 1",
     "comments:bili": "node src/cli/sync-bilibili-comments.mjs --input fixtures/bilibili-comments.example.json --dry-run",
+    "enrich:bili": "node src/cli/enrich-content.mjs --artifact-dir fixtures/bilibili-artifact.example --comments fixtures/bilibili-comments.example.json",
     "transcribe:bili": "node src/cli/transcribe-video.mjs --artifact-dir fixtures/bilibili-artifact.example --mode subtitle-only",
     "daily:summary": "node src/cli/daily-summary.mjs --date 2026-07-15",
     "failure:review": "node src/cli/failure-review.mjs --date 2026-07-15",

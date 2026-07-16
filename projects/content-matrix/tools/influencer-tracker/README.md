@@ -47,6 +47,8 @@
 
 阶段 6 P0-4 manifest 统一实现记录见：[AI营销获客系统阶段 6 P0-4 manifest 统一实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P0-4-manifest统一实现记录.md)。
 
+阶段 6 P1-1 enrich 内容理解实现记录见：[AI营销获客系统阶段 6 P1-1 enrich 内容理解实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-1-enrich内容理解实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -262,6 +264,37 @@ node src/cli/sync-bilibili-comments.mjs \
 - `error`
 
 `ops-audit` 也会额外输出 artifact manifest 覆盖情况，方便判断哪些链路真的留下了结构化产物。
+
+## Enrich 内容理解最小链路
+
+如果要把本地 artifact 转成结构化分析结果，可以跑：
+
+```bash
+node src/cli/enrich-content.mjs \
+  --artifact-dir fixtures/bilibili-artifact.example \
+  --comments fixtures/bilibili-comments.example.json
+```
+
+或直接：
+
+```bash
+npm run enrich:bili
+```
+
+当前输出：
+
+- `enrichment.json`
+- `enrich-manifest.json`
+
+当前 enrich 使用规则版，不调用 LLM（大语言模型）。它会先生成：
+
+- `serviceDirections`
+- `demandSignals`
+- `userProblems`
+- `insights`
+- `topicCandidates`
+
+这些结果默认 `reviewStatus` 为 `待人工审核`，不能直接当成最终市场结论。
 
 ## 真实飞书配置
 
