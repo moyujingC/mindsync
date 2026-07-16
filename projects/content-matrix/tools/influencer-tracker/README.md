@@ -57,6 +57,8 @@
 
 阶段 6 P1-5 批量失败隔离与重试实现记录见：[AI营销获客系统阶段 6 P1-5 批量失败隔离与重试实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-5-批量失败隔离与重试实现记录.md)。
 
+阶段 6 P1-6 基于报告的失败重试命令实现记录见：[AI营销获客系统阶段 6 P1-6 基于报告的失败重试命令实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-6-基于报告的失败重试命令实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -372,7 +374,25 @@ node src/cli/write-enrichment-directory-insights.mjs \
 - `empty`
 - `failed`
 
-如果某个 `enrichment.json` 解析失败，它会进入报告的 `failed` 项，不会阻断其他正常 enrichment 写入。修复失败文件后，可以重新运行同一条批量命令。
+如果某个 `enrichment.json` 解析失败，它会进入报告的 `failed` 项，不会阻断其他正常 enrichment 写入。修复失败文件后，可以只重试失败项：
+
+```bash
+node src/cli/retry-failed-enrichment-insights.mjs \
+  --report logs/enrichment-writes/2026-07-16.json \
+  --retry-report logs/enrichment-writes/2026-07-16-retry.json
+```
+
+真实写飞书：
+
+```bash
+node src/cli/retry-failed-enrichment-insights.mjs \
+  --report logs/enrichment-writes/2026-07-16.json \
+  --feishu config/feishu.local.json \
+  --retry-report logs/enrichment-writes/2026-07-16-retry.json \
+  --mark-processed
+```
+
+重试命令只读取上一轮报告中 `status: failed` 的 `enrichmentPath`，不会重新扫描整个目录。`--retry-report` 会记录本次重试结果，并保留 `retrySourceReportPath`，方便追溯它来自哪一次失败报告。
 
 ## 真实飞书配置
 

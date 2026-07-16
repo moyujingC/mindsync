@@ -8,6 +8,7 @@ import {
   findEnrichmentFiles,
   writeEnrichmentDirectoryInsightsToFeishu,
   writeEnrichmentInsightsToFeishu,
+  writeFailedEnrichmentInsightsToFeishu,
 } from '../src/jobs/write-enrichment-insights.mjs';
 
 const enrichment = {
@@ -318,6 +319,119 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
     assert.equal(report.failedCount, 1);
     assert.equal(report.items.find((item) => item.status === 'failed').candidateCount, 0);
     assert.match(report.items.find((item) => item.status === 'failed').error, /Failed to read JSON file/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('writeFailedEnrichmentInsightsToFeishu retries only failed report items', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-retry-'));
+  const rootDir = join(dir, 'downloads');
+  const failedDir = join(rootDir, 'B站样例账号', 'failed');
+  const skippedDir = join(rootDir, 'B站样例账号', 'skipped');
+  const failedEnrichmentPath = join(failedDir, 'enrichment.json');
+  const skippedEnrichmentPath = join(skippedDir, 'enrichment.json');
+  const sourceReportPath = join(dir, 'reports', 'source.json');
+  const retryReportPath = join(dir, 'reports', 'retry.json');
+  const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
+  const feishuPath = join(dir, 'feishu.json');
+
+  await mkdir(failedDir, { recursive: true });
+  await mkdir(skippedDir, { recursive: true });
+  await mkdir(join(dir, 'reports'), { recursive: true });
+  await writeFile(failedEnrichmentPath, JSON.stringify(enrichment, null, 2), 'utf8');
+  await writeFile(skippedEnrichmentPath, JSON.stringify({
+    ...enrichment,
+    source: {
+      ...enrichment.source,
+      contentExternalId: 'BV1skipped001',
+    },
+  }, null, 2), 'utf8');
+  await writeFile(sourceReportPath, JSON.stringify({
+    schema: 'content-matrix/enrichment-write-report/v1',
+    rootDir,
+    items: [{
+      enrichmentPath: failedEnrichmentPath,
+      status: 'failed',
+      error: 'old parse error',
+    }, {
+      enrichmentPath: skippedEnrichmentPath,
+      status: 'written',
+      createdCount: 2,
+    }],
+  }, null, 2), 'utf8');
+  await writeFile(fakeCliPath, `#!/usr/bin/env node
+if (process.argv.includes('+record-list')) {
+  console.log(JSON.stringify({ data: { fields: ['来源内容', '洞察类型'], data: [] } }));
+  process.exit(0);
+}
+const jsonIndex = process.argv.indexOf('--json');
+const payload = JSON.parse(process.argv[jsonIndex + 1]);
+console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index) => 'rec_retry_' + index) } }));
+`, 'utf8');
+  await chmod(fakeCliPath, 0o755);
+  await writeFile(feishuPath, JSON.stringify({
+    mode: 'lark-cli',
+    bin: fakeCliPath,
+    baseAppToken: 'base_xxx',
+    tables: {
+      creators: minimumTable('tbl_creators'),
+      contents: minimumTable('tbl_contents'),
+      comments: commentsTable('tbl_comments'),
+      insights: insightTable('tbl_insights'),
+    },
+  }, null, 2), 'utf8');
+
+  try {
+    const result = await writeFailedEnrichmentInsightsToFeishu({
+      reportPath: sourceReportPath,
+      feishuPath,
+      retryReportPath,
+    });
+    const retryReport = JSON.parse(await readFile(retryReportPath, 'utf8'));
+
+    assert.equal(result.retryCount, 1);
+    assert.equal(result.enrichmentCount, 1);
+    assert.equal(result.inputCount, 2);
+    assert.equal(result.createdCount, 2);
+    assert.equal(retryReport.retrySourceReportPath, sourceReportPath);
+    assert.equal(retryReport.items.length, 1);
+    assert.equal(retryReport.items[0].enrichmentPath, failedEnrichmentPath);
+    assert.match(retryReport.items[0].source?.contentUniqueKey ?? result.candidates[0].source.contentUniqueKey, /BV1sample001/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('writeFailedEnrichmentInsightsToFeishu skips Feishu write when report has no failed items', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-retry-empty-'));
+  const sourceReportPath = join(dir, 'source.json');
+  const retryReportPath = join(dir, 'retry.json');
+
+  await writeFile(sourceReportPath, JSON.stringify({
+    schema: 'content-matrix/enrichment-write-report/v1',
+    rootDir: join(dir, 'downloads'),
+    items: [{
+      enrichmentPath: join(dir, 'downloads', 'ok', 'enrichment.json'),
+      status: 'written',
+      createdCount: 2,
+    }],
+  }, null, 2), 'utf8');
+
+  try {
+    const result = await writeFailedEnrichmentInsightsToFeishu({
+      reportPath: sourceReportPath,
+      feishuPath: null,
+      retryReportPath,
+    });
+    const retryReport = JSON.parse(await readFile(retryReportPath, 'utf8'));
+
+    assert.equal(result.retryCount, 0);
+    assert.equal(result.enrichmentCount, 0);
+    assert.equal(result.inputCount, 0);
+    assert.equal(result.createdCount, 0);
+    assert.equal(retryReport.retryCount, 0);
+    assert.deepEqual(retryReport.items, []);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

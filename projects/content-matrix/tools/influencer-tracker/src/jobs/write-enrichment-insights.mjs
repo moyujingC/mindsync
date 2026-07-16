@@ -31,6 +31,42 @@ export async function writeEnrichmentDirectoryInsightsToFeishu({
   markProcessed = false,
 }) {
   const enrichmentPaths = await findEnrichmentFiles(rootDir);
+  return writeEnrichmentPathsToFeishu({
+    enrichmentPaths,
+    rootDir,
+    feishuPath,
+    reportPath,
+    markProcessed,
+  });
+}
+
+export async function writeFailedEnrichmentInsightsToFeishu({
+  reportPath,
+  feishuPath,
+  retryReportPath = null,
+  markProcessed = false,
+}) {
+  const sourceReport = await readJsonFile(reportPath);
+  const enrichmentPaths = extractFailedEnrichmentPaths(sourceReport);
+
+  return writeEnrichmentPathsToFeishu({
+    enrichmentPaths,
+    rootDir: sourceReport.rootDir,
+    feishuPath,
+    reportPath: retryReportPath,
+    markProcessed,
+    retrySourceReportPath: reportPath,
+  });
+}
+
+async function writeEnrichmentPathsToFeishu({
+  enrichmentPaths,
+  rootDir = null,
+  feishuPath,
+  reportPath = null,
+  markProcessed = false,
+  retrySourceReportPath = null,
+}) {
   const loaded = await loadEnrichmentsSafely(enrichmentPaths);
   const validItems = loaded.filter((item) => item.ok);
   const candidatesByEnrichment = validItems.map((item) => buildInsightCandidatesFromEnrichment(item.enrichment)
@@ -52,6 +88,7 @@ export async function writeEnrichmentDirectoryInsightsToFeishu({
     loaded,
     candidatesByEnrichment,
     feishu,
+    retrySourceReportPath,
   });
 
   if (reportPath) {
@@ -70,6 +107,8 @@ export async function writeEnrichmentDirectoryInsightsToFeishu({
     enabled: feishu.enabled,
     enrichmentCount: validItems.length,
     failedCount: loaded.filter((item) => !item.ok).length,
+    retryCount: retrySourceReportPath ? enrichmentPaths.length : undefined,
+    retrySourceReportPath,
     inputCount: candidates.length,
     createdCount: feishu.createdCount,
     duplicateCount: feishu.duplicateCount ?? 0,
@@ -207,6 +246,7 @@ function buildEnrichmentWriteReport({
   loaded,
   candidatesByEnrichment,
   feishu,
+  retrySourceReportPath = null,
 }) {
   const recordIds = feishu.recordIds ?? [];
   let createdCursor = 0;
@@ -250,6 +290,8 @@ function buildEnrichmentWriteReport({
     schema: 'content-matrix/enrichment-write-report/v1',
     generatedAt: new Date().toISOString(),
     rootDir,
+    retrySourceReportPath,
+    retryCount: retrySourceReportPath ? loaded.length : undefined,
     feishuEnabled: Boolean(feishuPath),
     enrichmentCount: loaded.filter((item) => item.ok).length,
     failedCount: loaded.filter((item) => !item.ok).length,
@@ -259,6 +301,13 @@ function buildEnrichmentWriteReport({
     recordIds,
     items,
   };
+}
+
+function extractFailedEnrichmentPaths(report) {
+  return (report.items ?? [])
+    .filter((item) => item.status === 'failed')
+    .map((item) => item.enrichmentPath)
+    .filter(Boolean);
 }
 
 function estimateDuplicateCount({ candidateCount, totalCandidateCount, totalDuplicateCount }) {
