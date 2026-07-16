@@ -197,9 +197,9 @@ export function mapTopicCandidateToFeishuFields(candidate, fieldMap) {
   return compactObject({
     [fieldMap.title]: candidate.topicTitle,
     [fieldMap.sourceContentKeys]: candidate.source?.contentUniqueKey,
-    [fieldMap.sourceCommentKeys]: '',
-    [fieldMap.insightType]: '选题',
-    [fieldMap.targetAccounts]: targetAccountsForServiceDirection(candidate.serviceDirection),
+    [fieldMap.sourceCommentKeys]: candidate.source?.commentUniqueKeys?.join(',') ?? '',
+    [fieldMap.insightType]: candidate.insightType ?? '选题',
+    [fieldMap.targetAccounts]: candidate.targetAccounts ?? targetAccountsForServiceDirection(candidate.serviceDirection),
     [fieldMap.evidenceSummary]: candidate.evidenceSummary,
     [fieldMap.nextAction]: [
       candidate.nextAction,

@@ -49,6 +49,8 @@
 
 阶段 6 P1-1 enrich 内容理解实现记录见：[AI营销获客系统阶段 6 P1-1 enrich 内容理解实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-1-enrich内容理解实现记录.md)。
 
+阶段 6 P1-2 enrichment 转飞书洞察候选实现记录见：[AI营销获客系统阶段 6 P1-2 enrichment 转飞书洞察候选实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-2-enrichment转飞书洞察候选实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -295,6 +297,36 @@ npm run enrich:bili
 - `topicCandidates`
 
 这些结果默认 `reviewStatus` 为 `待人工审核`，不能直接当成最终市场结论。
+
+## Enrichment 转飞书洞察候选
+
+如果要把 `enrichment.json` 转成飞书 `洞察与选题` 候选，可以先本地 dry-run：
+
+```bash
+node src/cli/write-enrichment-insights.mjs \
+  --enrichment fixtures/enrichment.example.json
+```
+
+或直接：
+
+```bash
+npm run insights:enrichment
+```
+
+真实写飞书：
+
+```bash
+node src/cli/write-enrichment-insights.mjs \
+  --enrichment fixtures/enrichment.example.json \
+  --feishu config/feishu.local.json
+```
+
+当前会生成两类候选：
+
+- `用户需求`
+- `选题`
+
+写入飞书时按 `来源内容 + 洞察类型` 去重，默认状态仍是 `待处理`，需要人工审核。
 
 ## 真实飞书配置
 
