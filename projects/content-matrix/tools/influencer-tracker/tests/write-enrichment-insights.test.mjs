@@ -269,6 +269,60 @@ test('writeEnrichmentDirectoryInsightsToFeishu marks report as disabled without 
   }
 });
 
+test('writeEnrichmentDirectoryInsightsToFeishu isolates invalid enrichment files', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-isolate-'));
+  const rootDir = join(dir, 'downloads');
+  const goodDir = join(rootDir, 'B站样例账号', 'BV1sample001');
+  const badDir = join(rootDir, 'B站样例账号', 'bad');
+  const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
+  const feishuPath = join(dir, 'feishu.json');
+  const reportPath = join(dir, 'reports', 'enrichment-write.json');
+
+  await mkdir(goodDir, { recursive: true });
+  await mkdir(badDir, { recursive: true });
+  await writeFile(join(goodDir, 'enrichment.json'), JSON.stringify(enrichment, null, 2), 'utf8');
+  await writeFile(join(badDir, 'enrichment.json'), '{bad json', 'utf8');
+  await writeFile(fakeCliPath, `#!/usr/bin/env node
+if (process.argv.includes('+record-list')) {
+  console.log(JSON.stringify({ data: { fields: ['来源内容', '洞察类型'], data: [] } }));
+  process.exit(0);
+}
+const jsonIndex = process.argv.indexOf('--json');
+const payload = JSON.parse(process.argv[jsonIndex + 1]);
+console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index) => 'rec_isolated_' + index) } }));
+`, 'utf8');
+  await chmod(fakeCliPath, 0o755);
+  await writeFile(feishuPath, JSON.stringify({
+    mode: 'lark-cli',
+    bin: fakeCliPath,
+    baseAppToken: 'base_xxx',
+    tables: {
+      creators: minimumTable('tbl_creators'),
+      contents: minimumTable('tbl_contents'),
+      comments: commentsTable('tbl_comments'),
+      insights: insightTable('tbl_insights'),
+    },
+  }, null, 2), 'utf8');
+
+  try {
+    const result = await writeEnrichmentDirectoryInsightsToFeishu({
+      rootDir,
+      feishuPath,
+      reportPath,
+    });
+
+    const report = JSON.parse(await readFile(reportPath, 'utf8'));
+    assert.equal(result.enrichmentCount, 1);
+    assert.equal(result.failedCount, 1);
+    assert.equal(result.createdCount, 2);
+    assert.equal(report.failedCount, 1);
+    assert.equal(report.items.find((item) => item.status === 'failed').candidateCount, 0);
+    assert.match(report.items.find((item) => item.status === 'failed').error, /Failed to read JSON file/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 function minimumTable(tableId) {
   return {
     tableId,

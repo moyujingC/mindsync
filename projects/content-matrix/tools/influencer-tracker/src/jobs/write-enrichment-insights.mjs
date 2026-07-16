@@ -31,13 +31,14 @@ export async function writeEnrichmentDirectoryInsightsToFeishu({
   markProcessed = false,
 }) {
   const enrichmentPaths = await findEnrichmentFiles(rootDir);
-  const enrichments = await Promise.all(enrichmentPaths.map((path) => readJsonFile(path)));
-  const candidatesByEnrichment = enrichments.map((enrichment, index) => buildInsightCandidatesFromEnrichment(enrichment)
+  const loaded = await loadEnrichmentsSafely(enrichmentPaths);
+  const validItems = loaded.filter((item) => item.ok);
+  const candidatesByEnrichment = validItems.map((item) => buildInsightCandidatesFromEnrichment(item.enrichment)
     .map((candidate) => ({
       ...candidate,
       source: {
         ...candidate.source,
-        enrichmentPath: enrichmentPaths[index],
+        enrichmentPath: item.enrichmentPath,
       },
     })));
   const candidates = candidatesByEnrichment.flat();
@@ -48,7 +49,7 @@ export async function writeEnrichmentDirectoryInsightsToFeishu({
   const report = buildEnrichmentWriteReport({
     rootDir,
     feishuPath,
-    enrichmentPaths,
+    loaded,
     candidatesByEnrichment,
     feishu,
   });
@@ -57,15 +58,18 @@ export async function writeEnrichmentDirectoryInsightsToFeishu({
     await writeJsonFile(reportPath, report);
   }
   if (markProcessed) {
-    await Promise.all(enrichments.map((enrichment, index) => writeJsonFile(enrichmentPaths[index], {
-      ...enrichment,
-      handoff: report.items[index],
-    })));
+    await Promise.all(loaded
+      .filter((item) => item.ok)
+      .map((item) => writeJsonFile(item.enrichmentPath, {
+        ...item.enrichment,
+        handoff: report.items.find((reportItem) => reportItem.enrichmentPath === item.enrichmentPath),
+      })));
   }
 
   return {
     enabled: feishu.enabled,
-    enrichmentCount: enrichments.length,
+    enrichmentCount: validItems.length,
+    failedCount: loaded.filter((item) => !item.ok).length,
     inputCount: candidates.length,
     createdCount: feishu.createdCount,
     duplicateCount: feishu.duplicateCount ?? 0,
@@ -179,16 +183,49 @@ function targetAccountsForDirection(direction) {
   return ['墨予镜'];
 }
 
+async function loadEnrichmentsSafely(enrichmentPaths) {
+  return Promise.all(enrichmentPaths.map(async (enrichmentPath) => {
+    try {
+      return {
+        ok: true,
+        enrichmentPath,
+        enrichment: await readJsonFile(enrichmentPath),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        enrichmentPath,
+        error: error.message,
+      };
+    }
+  }));
+}
+
 function buildEnrichmentWriteReport({
   rootDir,
   feishuPath,
-  enrichmentPaths,
+  loaded,
   candidatesByEnrichment,
   feishu,
 }) {
   const recordIds = feishu.recordIds ?? [];
   let createdCursor = 0;
-  const items = enrichmentPaths.map((enrichmentPath, index) => {
+  let validIndex = 0;
+  const items = loaded.map((item) => {
+    if (!item.ok) {
+      return {
+        enrichmentPath: item.enrichmentPath,
+        status: 'failed',
+        candidateCount: 0,
+        createdCount: 0,
+        duplicateCount: 0,
+        recordIds: [],
+        error: item.error,
+        processedAt: new Date().toISOString(),
+      };
+    }
+    const index = validIndex;
+    validIndex += 1;
     const candidates = candidatesByEnrichment[index] ?? [];
     const duplicateCount = estimateDuplicateCount({
       candidateCount: candidates.length,
@@ -199,7 +236,7 @@ function buildEnrichmentWriteReport({
     const itemRecordIds = recordIds.slice(createdCursor, createdCursor + createdCount);
     createdCursor += createdCount;
     return {
-      enrichmentPath,
+      enrichmentPath: item.enrichmentPath,
       status: buildItemStatus({ feishuEnabled: feishu.enabled, createdCount, duplicateCount }),
       candidateCount: candidates.length,
       createdCount,
@@ -214,7 +251,8 @@ function buildEnrichmentWriteReport({
     generatedAt: new Date().toISOString(),
     rootDir,
     feishuEnabled: Boolean(feishuPath),
-    enrichmentCount: enrichmentPaths.length,
+    enrichmentCount: loaded.filter((item) => item.ok).length,
+    failedCount: loaded.filter((item) => !item.ok).length,
     inputCount: candidatesByEnrichment.flat().length,
     createdCount: feishu.createdCount ?? 0,
     duplicateCount: feishu.duplicateCount ?? 0,
