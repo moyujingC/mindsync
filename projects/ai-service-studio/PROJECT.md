@@ -3,7 +3,7 @@
 > 状态：draft
 > 版本：0.2.0
 > owner：CEO / Orchestrator
-> last_updated：2026-07-15
+> last_updated：2026-07-16
 > source_of_truth：projects/ai-service-studio/PROJECT.md
 > 公司侧入口：[company/projects/知行AI服务/PROJECT.md](../../company/projects/知行AI服务/PROJECT.md)
 > 项目类型：AI 服务收入验证工作区
@@ -163,6 +163,7 @@
 - [千万级企业 AI 服务增长闭环 OCR 原文](references/2026-07-16-千万级企业AI服务增长闭环-OCR原文.md)
 - [企业知识库分阶段治理参考](references/2026-07-16-企业知识库分阶段治理参考.md)
 - [企业知识库分阶段治理原文](references/2026-07-16-企业知识库分阶段治理-原文.md)
+- [企业 AI 培训到服务与知识治理纵向复盘](synthesis/2026-07-16-企业AI培训到服务与知识治理纵向复盘.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
 
 ## 5. 合规和表达边界
