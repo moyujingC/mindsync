@@ -161,6 +161,8 @@
 - [年入百万 AI 培训师 OCR 原文](references/2025-05-09-年入百万AI培训师-OCR原文.md)
 - [千万级企业 AI 服务增长闭环参考](references/2026-07-16-千万级企业AI服务增长闭环参考.md)
 - [千万级企业 AI 服务增长闭环 OCR 原文](references/2026-07-16-千万级企业AI服务增长闭环-OCR原文.md)
+- [企业知识库分阶段治理参考](references/2026-07-16-企业知识库分阶段治理参考.md)
+- [企业知识库分阶段治理原文](references/2026-07-16-企业知识库分阶段治理-原文.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
 
 ## 5. 合规和表达边界
