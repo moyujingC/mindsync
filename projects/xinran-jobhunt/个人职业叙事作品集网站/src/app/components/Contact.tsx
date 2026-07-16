@@ -135,7 +135,7 @@ export function Contact() {
         </Reveal>
 
         <Reveal delay={320}>
-          <div className="text-center">
+          <div className="flex flex-wrap justify-center gap-4 text-center">
             <a
               href="/online-resume-full.pdf"
               download="崔兴-完整履历.pdf"
@@ -144,6 +144,15 @@ export function Contact() {
             >
               <Download className="w-4 h-4 mr-3" strokeWidth={1.5} />
               下载完整履历
+            </a>
+            <a
+              href="/xinran-portfolio.pdf"
+              download="崔兴-AI产品与解决方案作品集.pdf"
+              className="group inline-flex items-center px-9 py-3.5 border border-[#C9A57A]/55 text-[#F9F7F3] tracking-[0.25em] hover:bg-[#C9A57A] hover:text-[#2C3E50] transition-all duration-500"
+              style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "0.875rem" }}
+            >
+              <Download className="w-4 h-4 mr-3" strokeWidth={1.5} />
+              下载作品集 PDF
             </a>
           </div>
         </Reveal>

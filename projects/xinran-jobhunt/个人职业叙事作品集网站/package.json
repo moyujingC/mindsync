@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "portfolio:pdf": "node scripts/generate-portfolio-pdf.mjs",
     "dev": "vite"
   },
   "dependencies": {
