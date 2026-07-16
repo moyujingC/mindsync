@@ -1,5 +1,5 @@
-import { readdir } from 'node:fs/promises';
-import { join } from 'node:path';
+import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 import { readJsonFile, writeJsonFile } from '../utils/json-file.mjs';
 import { writeTopicCandidatesToFeishu } from './write-topic-candidates.mjs';
 
@@ -28,15 +28,26 @@ export async function writeEnrichmentDirectoryInsightsToFeishu({
   rootDir,
   feishuPath,
   reportPath = null,
+  markdownReportPath = null,
   markProcessed = false,
+  date = null,
+  creator = null,
 }) {
-  const enrichmentPaths = await findEnrichmentFiles(rootDir);
+  const enrichmentPaths = filterEnrichmentPaths(await findEnrichmentFiles(rootDir), {
+    date,
+    creator,
+  });
   return writeEnrichmentPathsToFeishu({
     enrichmentPaths,
     rootDir,
     feishuPath,
     reportPath,
+    markdownReportPath,
     markProcessed,
+    filters: {
+      date,
+      creator,
+    },
   });
 }
 
@@ -44,6 +55,7 @@ export async function writeFailedEnrichmentInsightsToFeishu({
   reportPath,
   feishuPath,
   retryReportPath = null,
+  markdownReportPath = null,
   markProcessed = false,
 }) {
   const sourceReport = await readJsonFile(reportPath);
@@ -54,6 +66,7 @@ export async function writeFailedEnrichmentInsightsToFeishu({
     rootDir: sourceReport.rootDir,
     feishuPath,
     reportPath: retryReportPath,
+    markdownReportPath,
     markProcessed,
     retrySourceReportPath: reportPath,
   });
@@ -64,8 +77,10 @@ async function writeEnrichmentPathsToFeishu({
   rootDir = null,
   feishuPath,
   reportPath = null,
+  markdownReportPath = null,
   markProcessed = false,
   retrySourceReportPath = null,
+  filters = {},
 }) {
   const loaded = await loadEnrichmentsSafely(enrichmentPaths);
   const validItems = loaded.filter((item) => item.ok);
@@ -90,11 +105,16 @@ async function writeEnrichmentPathsToFeishu({
     candidatesByEnrichment,
     feishu: writeResult.feishu,
     itemWriteResults: writeResult.itemResults,
+    reportPath,
     retrySourceReportPath,
+    filters,
   });
 
   if (reportPath) {
     await writeJsonFile(reportPath, report);
+  }
+  if (markdownReportPath) {
+    await writeMarkdownFile(markdownReportPath, buildEnrichmentWriteMarkdownReport(report));
   }
   if (markProcessed) {
     await Promise.all(loaded
@@ -111,6 +131,7 @@ async function writeEnrichmentPathsToFeishu({
     failedCount: report.failedCount,
     retryCount: retrySourceReportPath ? enrichmentPaths.length : undefined,
     retrySourceReportPath,
+    filters,
     inputCount: candidates.length,
     createdCount: writeResult.feishu.createdCount,
     duplicateCount: writeResult.feishu.duplicateCount ?? 0,
@@ -118,10 +139,69 @@ async function writeEnrichmentPathsToFeishu({
     batchWriteFailed: writeResult.batchWriteFailed,
     batchWriteError: writeResult.batchWriteError,
     reportPath,
+    markdownReportPath,
     report,
     enrichmentPaths,
     candidates,
   };
+}
+
+export function buildEnrichmentWriteMarkdownReport(report) {
+  const failedItems = report.items.filter((item) => item.status === 'failed');
+  const retryCommand = buildRetryCommand(report);
+  const lines = [
+    '# Enrichment 写入报告',
+    '',
+    `- 生成时间：${report.generatedAt}`,
+    `- 根目录：${report.rootDir ?? '未记录'}`,
+    `- 飞书写入：${report.feishuEnabled ? '启用' : '未启用'}`,
+    `- Enrichment 数：${report.enrichmentCount}`,
+    `- 候选数：${report.inputCount}`,
+    `- 新建数：${report.createdCount}`,
+    `- 重复数：${report.duplicateCount}`,
+    `- 失败数：${report.failedCount}`,
+  ];
+
+  if (report.retrySourceReportPath) {
+    lines.push(`- 重试来源：${report.retrySourceReportPath}`);
+    lines.push(`- 重试项数：${report.retryCount ?? 0}`);
+  }
+
+  lines.push('');
+  lines.push('## 状态汇总');
+  lines.push('');
+  for (const [status, count] of Object.entries(countItemsByStatus(report.items))) {
+    lines.push(`- ${status}: ${count}`);
+  }
+
+  lines.push('');
+  lines.push('## 失败项');
+  lines.push('');
+
+  if (failedItems.length === 0) {
+    lines.push('无失败项。');
+  } else {
+    failedItems.forEach((item, index) => {
+      lines.push(`### ${index + 1}. ${item.enrichmentPath}`);
+      lines.push('');
+      lines.push(`- 候选数：${item.candidateCount}`);
+      lines.push(`- 错误：${item.error ?? '未记录'}`);
+      lines.push('- 建议：修复该 enrichment 文件或字段后，使用 retry 命令只重试失败项。');
+      lines.push('');
+    });
+  }
+
+  lines.push('## 重试命令');
+  lines.push('');
+  if (retryCommand) {
+    lines.push('```bash');
+    lines.push(retryCommand);
+    lines.push('```');
+  } else {
+    lines.push('本报告没有 `reportPath`，无法自动生成重试命令。');
+  }
+
+  return `${lines.join('\n')}\n`;
 }
 
 async function writeCandidatesWithFallback({
@@ -194,6 +274,18 @@ export async function findEnrichmentFiles(rootDir) {
     .sort();
 }
 
+export function filterEnrichmentPaths(enrichmentPaths, { date = null, creator = null } = {}) {
+  return enrichmentPaths.filter((enrichmentPath) => {
+    if (date && !pathContainsSegmentOrText(enrichmentPath, date)) {
+      return false;
+    }
+    if (creator && !pathContainsSegmentOrText(enrichmentPath, creator)) {
+      return false;
+    }
+    return true;
+  });
+}
+
 async function walk(dir, files) {
   const entries = await safeReadDir(dir);
   for (const entry of entries) {
@@ -263,6 +355,15 @@ function buildContentUniqueKey(source) {
   return `${source.platform}:${source.contentExternalId}`;
 }
 
+function pathContainsSegmentOrText(filePath, value) {
+  const normalizedValue = String(value).trim();
+  if (!normalizedValue) {
+    return true;
+  }
+  return filePath.split(/[\\/]/).some((segment) => segment === normalizedValue)
+    || filePath.includes(normalizedValue);
+}
+
 function targetAccountsForDirection(direction) {
   if ([
     'AI 工作流诊断',
@@ -300,7 +401,9 @@ function buildEnrichmentWriteReport({
   candidatesByEnrichment,
   feishu,
   itemWriteResults = null,
+  reportPath = null,
   retrySourceReportPath = null,
+  filters = {},
 }) {
   const recordIds = feishu.recordIds ?? [];
   let createdCursor = 0;
@@ -365,6 +468,8 @@ function buildEnrichmentWriteReport({
     schema: 'content-matrix/enrichment-write-report/v1',
     generatedAt: new Date().toISOString(),
     rootDir,
+    reportPath,
+    filters: compactFilters(filters),
     retrySourceReportPath,
     retryCount: retrySourceReportPath ? loaded.length : undefined,
     feishuEnabled: Boolean(feishuPath),
@@ -385,6 +490,36 @@ function combineItemWriteResults({ itemResults, feishuPath }) {
     duplicateCount: itemResults.reduce((total, item) => total + (item.feishu.duplicateCount ?? 0), 0),
     recordIds: itemResults.flatMap((item) => item.feishu.recordIds ?? []),
   };
+}
+
+function compactFilters(filters) {
+  return Object.fromEntries(
+    Object.entries(filters ?? {}).filter(([, value]) => value !== null && value !== undefined && value !== ''),
+  );
+}
+
+async function writeMarkdownFile(filePath, content) {
+  await mkdir(dirname(filePath), { recursive: true });
+  await writeFile(filePath, content, 'utf8');
+}
+
+function countItemsByStatus(items) {
+  return items.reduce((counts, item) => ({
+    ...counts,
+    [item.status]: (counts[item.status] ?? 0) + 1,
+  }), {});
+}
+
+function buildRetryCommand(report) {
+  const sourceReportPath = report.reportPath ?? report.retrySourceReportPath;
+  if (!sourceReportPath) {
+    return '';
+  }
+  return [
+    'node src/cli/retry-failed-enrichment-insights.mjs',
+    `  --report ${sourceReportPath}`,
+    '  --retry-report logs/enrichment-writes/retry.json',
+  ].join(' \\\n');
 }
 
 function extractFailedEnrichmentPaths(report) {

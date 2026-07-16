@@ -15,6 +15,7 @@ try {
     reportPath: resolve(process.cwd(), args.report),
     feishuPath: args.feishu ? resolve(process.cwd(), args.feishu) : null,
     retryReportPath: args.retryReport ? resolve(process.cwd(), args.retryReport) : null,
+    markdownReportPath: args.markdownReport ? resolve(process.cwd(), args.markdownReport) : null,
     markProcessed: Boolean(args.markProcessed),
   });
 

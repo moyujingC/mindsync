@@ -5,6 +5,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
   buildInsightCandidatesFromEnrichment,
+  buildEnrichmentWriteMarkdownReport,
+  filterEnrichmentPaths,
   findEnrichmentFiles,
   writeEnrichmentDirectoryInsightsToFeishu,
   writeEnrichmentInsightsToFeishu,
@@ -139,6 +141,58 @@ test('findEnrichmentFiles scans nested artifact directories', async () => {
     const files = await findEnrichmentFiles(dir);
     assert.equal(files.length, 1);
     assert.match(files[0], /creator-a\/content-a\/enrichment\.json$/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('filterEnrichmentPaths narrows by date and creator path segments', () => {
+  const files = [
+    '/downloads/bilibili/2026-07-16/B站样例账号/BV1a/enrichment.json',
+    '/downloads/bilibili/2026-07-16/其他账号/BV1b/enrichment.json',
+    '/downloads/bilibili/2026-07-15/B站样例账号/BV1c/enrichment.json',
+  ];
+
+  assert.deepEqual(filterEnrichmentPaths(files, {
+    date: '2026-07-16',
+    creator: 'B站样例账号',
+  }), [
+    '/downloads/bilibili/2026-07-16/B站样例账号/BV1a/enrichment.json',
+  ]);
+});
+
+test('writeEnrichmentDirectoryInsightsToFeishu filters enrichment files by date and creator', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-filter-'));
+  const rootDir = join(dir, 'downloads');
+  const targetDir = join(rootDir, 'bilibili', '2026-07-16', 'B站样例账号', 'BV1target');
+  const otherCreatorDir = join(rootDir, 'bilibili', '2026-07-16', '其他账号', 'BV1other');
+  const otherDateDir = join(rootDir, 'bilibili', '2026-07-15', 'B站样例账号', 'BV1old');
+  const reportPath = join(dir, 'reports', 'filtered.json');
+
+  await mkdir(targetDir, { recursive: true });
+  await mkdir(otherCreatorDir, { recursive: true });
+  await mkdir(otherDateDir, { recursive: true });
+  await writeFile(join(targetDir, 'enrichment.json'), JSON.stringify(enrichment, null, 2), 'utf8');
+  await writeFile(join(otherCreatorDir, 'enrichment.json'), JSON.stringify(enrichment, null, 2), 'utf8');
+  await writeFile(join(otherDateDir, 'enrichment.json'), JSON.stringify(enrichment, null, 2), 'utf8');
+
+  try {
+    const result = await writeEnrichmentDirectoryInsightsToFeishu({
+      rootDir,
+      feishuPath: null,
+      reportPath,
+      date: '2026-07-16',
+      creator: 'B站样例账号',
+    });
+    const report = JSON.parse(await readFile(reportPath, 'utf8'));
+
+    assert.equal(result.enrichmentCount, 1);
+    assert.equal(result.enrichmentPaths.length, 1);
+    assert.match(result.enrichmentPaths[0], /BV1target\/enrichment\.json$/);
+    assert.deepEqual(report.filters, {
+      date: '2026-07-16',
+      creator: 'B站样例账号',
+    });
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -508,6 +562,63 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
+});
+
+test('writeEnrichmentDirectoryInsightsToFeishu writes markdown failure report', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-markdown-report-'));
+  const rootDir = join(dir, 'downloads');
+  const badDir = join(rootDir, 'B站样例账号', 'bad');
+  const reportPath = join(dir, 'reports', 'enrichment-write.json');
+  const markdownReportPath = join(dir, 'reports', 'enrichment-write.md');
+
+  await mkdir(badDir, { recursive: true });
+  await writeFile(join(badDir, 'enrichment.json'), '{bad json', 'utf8');
+
+  try {
+    const result = await writeEnrichmentDirectoryInsightsToFeishu({
+      rootDir,
+      feishuPath: null,
+      reportPath,
+      markdownReportPath,
+    });
+    const markdown = await readFile(markdownReportPath, 'utf8');
+
+    assert.equal(result.markdownReportPath, markdownReportPath);
+    assert.match(markdown, /# Enrichment 写入报告/);
+    assert.match(markdown, /失败数：1/);
+    assert.match(markdown, /## 失败项/);
+    assert.match(markdown, /Failed to read JSON file/);
+    assert.match(markdown, /retry-failed-enrichment-insights\.mjs/);
+    assert.match(markdown, new RegExp(reportPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('buildEnrichmentWriteMarkdownReport summarizes successful reports', () => {
+  const markdown = buildEnrichmentWriteMarkdownReport({
+    schema: 'content-matrix/enrichment-write-report/v1',
+    generatedAt: '2026-07-16T00:00:00.000Z',
+    rootDir: '/tmp/downloads',
+    reportPath: '/tmp/report.json',
+    feishuEnabled: true,
+    enrichmentCount: 1,
+    failedCount: 0,
+    inputCount: 2,
+    createdCount: 2,
+    duplicateCount: 0,
+    items: [{
+      enrichmentPath: '/tmp/downloads/a/enrichment.json',
+      status: 'written',
+      candidateCount: 2,
+      createdCount: 2,
+      duplicateCount: 0,
+      recordIds: ['rec_1', 'rec_2'],
+    }],
+  });
+
+  assert.match(markdown, /无失败项/);
+  assert.match(markdown, /written: 1/);
 });
 
 function minimumTable(tableId) {

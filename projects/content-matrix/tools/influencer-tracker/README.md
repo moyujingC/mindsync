@@ -61,6 +61,12 @@
 
 阶段 6 P1-7 飞书写入阶段部分失败隔离实现记录见：[AI营销获客系统阶段 6 P1-7 飞书写入阶段部分失败隔离实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-7-飞书写入阶段部分失败隔离实现记录.md)。
 
+阶段 6 P1-8 失败报告 Markdown 化实现记录见：[AI营销获客系统阶段 6 P1-8 失败报告 Markdown 化实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-8-失败报告Markdown化实现记录.md)。
+
+阶段 6 P1-9 enrichment 写入范围筛选实现记录见：[AI营销获客系统阶段 6 P1-9 enrichment 写入范围筛选实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-9-enrichment写入范围筛选实现记录.md)。
+
+阶段 6 P1 总体验收记录见：[AI营销获客系统阶段 6 P1 总体验收记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-总体验收记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -361,12 +367,26 @@ node src/cli/write-enrichment-directory-insights.mjs \
   --root-dir logs/downloads/bilibili \
   --feishu config/feishu.local.json \
   --report logs/enrichment-writes/$(date +%F).json \
+  --markdown-report logs/enrichment-writes/$(date +%F).md \
   --mark-processed
 ```
 
 这条链路会递归扫描 `rootDir` 下的 `enrichment.json`，汇总后统一写入飞书，减少重复读取远端表的次数。
 
-`--report` 会写出批量处理报告。`--mark-processed` 会把每个本地 `enrichment.json` 的处理结果回写到 `handoff` 字段。
+`--report` 会写出 JSON 批量处理报告。`--markdown-report` 会额外写出人工可读的 Markdown 报告，便于每天查看失败项和复制 retry 命令。`--mark-processed` 会把每个本地 `enrichment.json` 的处理结果回写到 `handoff` 字段。
+
+如果只想处理某一天或某个账号，可以加筛选参数：
+
+```bash
+node src/cli/write-enrichment-directory-insights.mjs \
+  --root-dir logs/downloads/bilibili \
+  --date 2026-07-16 \
+  --creator B站样例账号 \
+  --report logs/enrichment-writes/2026-07-16-B站样例账号.json \
+  --markdown-report logs/enrichment-writes/2026-07-16-B站样例账号.md
+```
+
+`--date` 和 `--creator` 会匹配 `enrichment.json` 路径中的日期和账号片段，用来避免真实运营时误扫过多历史 artifact。
 
 当前单项状态包括：
 
@@ -395,6 +415,7 @@ node src/cli/retry-failed-enrichment-insights.mjs \
   --report logs/enrichment-writes/2026-07-16.json \
   --feishu config/feishu.local.json \
   --retry-report logs/enrichment-writes/2026-07-16-retry.json \
+  --markdown-report logs/enrichment-writes/2026-07-16-retry.md \
   --mark-processed
 ```
 

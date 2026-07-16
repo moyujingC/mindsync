@@ -15,7 +15,10 @@ try {
     rootDir: resolve(process.cwd(), args.rootDir),
     feishuPath: args.feishu ? resolve(process.cwd(), args.feishu) : null,
     reportPath: args.report ? resolve(process.cwd(), args.report) : null,
+    markdownReportPath: args.markdownReport ? resolve(process.cwd(), args.markdownReport) : null,
     markProcessed: Boolean(args.markProcessed),
+    date: args.date ?? null,
+    creator: args.creator ?? null,
   });
 
   console.log(JSON.stringify({
