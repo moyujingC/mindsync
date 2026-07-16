@@ -1,3 +1,5 @@
+import { readdir } from 'node:fs/promises';
+import { join } from 'node:path';
 import { readJsonFile } from '../utils/json-file.mjs';
 import { writeTopicCandidatesToFeishu } from './write-topic-candidates.mjs';
 
@@ -22,6 +24,37 @@ export async function writeEnrichmentInsightsToFeishu({
   };
 }
 
+export async function writeEnrichmentDirectoryInsightsToFeishu({
+  rootDir,
+  feishuPath,
+}) {
+  const enrichmentPaths = await findEnrichmentFiles(rootDir);
+  const enrichments = await Promise.all(enrichmentPaths.map((path) => readJsonFile(path)));
+  const candidates = enrichments.flatMap((enrichment, index) => buildInsightCandidatesFromEnrichment(enrichment)
+    .map((candidate) => ({
+      ...candidate,
+      source: {
+        ...candidate.source,
+        enrichmentPath: enrichmentPaths[index],
+      },
+    })));
+  const feishu = await writeTopicCandidatesToFeishu({
+    candidates,
+    feishuPath,
+  });
+
+  return {
+    enabled: feishu.enabled,
+    enrichmentCount: enrichments.length,
+    inputCount: candidates.length,
+    createdCount: feishu.createdCount,
+    duplicateCount: feishu.duplicateCount ?? 0,
+    recordIds: feishu.recordIds,
+    enrichmentPaths,
+    candidates,
+  };
+}
+
 export function buildInsightCandidatesFromEnrichment(enrichment) {
   const source = enrichment.source ?? {};
   const contentUniqueKey = buildContentUniqueKey(source);
@@ -33,6 +66,37 @@ export function buildInsightCandidatesFromEnrichment(enrichment) {
     ...buildUserDemandCandidates({ enrichment, contentUniqueKey, commentUniqueKeys }),
     ...buildTopicCandidates({ enrichment, contentUniqueKey, commentUniqueKeys }),
   ];
+}
+
+export async function findEnrichmentFiles(rootDir) {
+  const files = [];
+  await walk(rootDir, files);
+  return files
+    .filter((filePath) => filePath.endsWith('/enrichment.json'))
+    .sort();
+}
+
+async function walk(dir, files) {
+  const entries = await safeReadDir(dir);
+  for (const entry of entries) {
+    const fullPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      await walk(fullPath, files);
+    } else if (entry.isFile()) {
+      files.push(fullPath);
+    }
+  }
+}
+
+async function safeReadDir(dir) {
+  try {
+    return await readdir(dir, { withFileTypes: true });
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
 }
 
 function buildUserDemandCandidates({ enrichment, contentUniqueKey, commentUniqueKeys }) {

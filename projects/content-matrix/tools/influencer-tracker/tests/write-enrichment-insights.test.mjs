@@ -1,9 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { chmod, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildInsightCandidatesFromEnrichment, writeEnrichmentInsightsToFeishu } from '../src/jobs/write-enrichment-insights.mjs';
+import {
+  buildInsightCandidatesFromEnrichment,
+  findEnrichmentFiles,
+  writeEnrichmentDirectoryInsightsToFeishu,
+  writeEnrichmentInsightsToFeishu,
+} from '../src/jobs/write-enrichment-insights.mjs';
 
 const enrichment = {
   schema: 'content-matrix/content-enrichment/v1',
@@ -116,6 +121,71 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
     assert.equal(result.createdCount, 1);
     assert.equal(result.duplicateCount, 1);
     assert.deepEqual(result.recordIds, ['rec_new_0']);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('findEnrichmentFiles scans nested artifact directories', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-scan-'));
+
+  try {
+    await mkdir(join(dir, 'creator-a', 'content-a'), { recursive: true });
+    await mkdir(join(dir, 'creator-b', 'content-b'), { recursive: true });
+    await writeFile(join(dir, 'creator-a', 'content-a', 'enrichment.json'), '{}', 'utf8');
+    await writeFile(join(dir, 'creator-b', 'content-b', 'other.json'), '{}', 'utf8');
+
+    const files = await findEnrichmentFiles(dir);
+    assert.equal(files.length, 1);
+    assert.match(files[0], /creator-a\/content-a\/enrichment\.json$/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('writeEnrichmentDirectoryInsightsToFeishu batches candidates from directory', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-batch-'));
+  const rootDir = join(dir, 'downloads');
+  const artifactDir = join(rootDir, 'B站样例账号', 'BV1sample001');
+  const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
+  const feishuPath = join(dir, 'feishu.json');
+
+  await mkdir(artifactDir, { recursive: true });
+  await writeFile(join(artifactDir, 'enrichment.json'), JSON.stringify(enrichment, null, 2), 'utf8');
+  await writeFile(fakeCliPath, `#!/usr/bin/env node
+if (process.argv.includes('+record-list')) {
+  console.log(JSON.stringify({ data: { fields: ['来源内容', '洞察类型'], data: [] } }));
+  process.exit(0);
+}
+const jsonIndex = process.argv.indexOf('--json');
+const payload = JSON.parse(process.argv[jsonIndex + 1]);
+console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index) => 'rec_batch_' + index) } }));
+`, 'utf8');
+  await chmod(fakeCliPath, 0o755);
+  await writeFile(feishuPath, JSON.stringify({
+    mode: 'lark-cli',
+    bin: fakeCliPath,
+    baseAppToken: 'base_xxx',
+    tables: {
+      creators: minimumTable('tbl_creators'),
+      contents: minimumTable('tbl_contents'),
+      comments: commentsTable('tbl_comments'),
+      insights: insightTable('tbl_insights'),
+    },
+  }, null, 2), 'utf8');
+
+  try {
+    const result = await writeEnrichmentDirectoryInsightsToFeishu({
+      rootDir,
+      feishuPath,
+    });
+
+    assert.equal(result.enabled, true);
+    assert.equal(result.enrichmentCount, 1);
+    assert.equal(result.inputCount, 2);
+    assert.equal(result.createdCount, 2);
+    assert.deepEqual(result.recordIds, ['rec_batch_0', 'rec_batch_1']);
+    assert.match(result.candidates[0].source.enrichmentPath, /enrichment\.json$/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

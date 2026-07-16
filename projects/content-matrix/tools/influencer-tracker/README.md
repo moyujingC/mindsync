@@ -51,6 +51,8 @@
 
 阶段 6 P1-2 enrichment 转飞书洞察候选实现记录见：[AI营销获客系统阶段 6 P1-2 enrichment 转飞书洞察候选实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-2-enrichment转飞书洞察候选实现记录.md)。
 
+阶段 6 P1-3 批量 enrichment 写入实现记录见：[AI营销获客系统阶段 6 P1-3 批量 enrichment 写入实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-3-批量enrichment写入实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -327,6 +329,31 @@ node src/cli/write-enrichment-insights.mjs \
 - `选题`
 
 写入飞书时按 `来源内容 + 洞察类型` 去重，默认状态仍是 `待处理`，需要人工审核。
+
+## 批量 Enrichment 写入
+
+如果要从目录里批量扫描 `enrichment.json`，可以跑：
+
+```bash
+node src/cli/write-enrichment-directory-insights.mjs \
+  --root-dir fixtures/enrichments.example
+```
+
+或直接：
+
+```bash
+npm run insights:enrichments
+```
+
+真实写飞书：
+
+```bash
+node src/cli/write-enrichment-directory-insights.mjs \
+  --root-dir logs/downloads/bilibili \
+  --feishu config/feishu.local.json
+```
+
+这条链路会递归扫描 `rootDir` 下的 `enrichment.json`，汇总后统一写入飞书，减少重复读取远端表的次数。
 
 ## 真实飞书配置
 

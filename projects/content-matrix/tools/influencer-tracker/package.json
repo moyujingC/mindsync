@@ -16,6 +16,7 @@
     "failure:review": "node src/cli/failure-review.mjs --date 2026-07-15",
     "generate:topics": "node src/cli/generate-topic-candidates.mjs --report fixtures/run-report.example.json",
     "insights:enrichment": "node src/cli/write-enrichment-insights.mjs --enrichment fixtures/enrichment.example.json",
+    "insights:enrichments": "node src/cli/write-enrichment-directory-insights.mjs --root-dir fixtures/enrichments.example",
     "manual:import": "node src/cli/manual-import.mjs --dry-run --input fixtures/manual-import.example.json",
     "ops:daily": "node src/cli/ops-daily.mjs --dry-run --creators fixtures/creators.example.json --pause-source",
     "prepare:feedback": "node src/cli/prepare-feedback.mjs --final-draft ../../accounts/墨予镜/2026-07-15-从AI服务第一条样例视频看AI工作流诊断的真实需求-成稿.md --account 墨予镜",
