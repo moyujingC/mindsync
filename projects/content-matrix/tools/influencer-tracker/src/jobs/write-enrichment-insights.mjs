@@ -78,8 +78,9 @@ async function writeEnrichmentPathsToFeishu({
       },
     })));
   const candidates = candidatesByEnrichment.flat();
-  const feishu = await writeTopicCandidatesToFeishu({
+  const writeResult = await writeCandidatesWithFallback({
     candidates,
+    candidatesByEnrichment,
     feishuPath,
   });
   const report = buildEnrichmentWriteReport({
@@ -87,7 +88,8 @@ async function writeEnrichmentPathsToFeishu({
     feishuPath,
     loaded,
     candidatesByEnrichment,
-    feishu,
+    feishu: writeResult.feishu,
+    itemWriteResults: writeResult.itemResults,
     retrySourceReportPath,
   });
 
@@ -104,20 +106,71 @@ async function writeEnrichmentPathsToFeishu({
   }
 
   return {
-    enabled: feishu.enabled,
+    enabled: writeResult.feishu.enabled,
     enrichmentCount: validItems.length,
-    failedCount: loaded.filter((item) => !item.ok).length,
+    failedCount: report.failedCount,
     retryCount: retrySourceReportPath ? enrichmentPaths.length : undefined,
     retrySourceReportPath,
     inputCount: candidates.length,
-    createdCount: feishu.createdCount,
-    duplicateCount: feishu.duplicateCount ?? 0,
-    recordIds: feishu.recordIds,
+    createdCount: writeResult.feishu.createdCount,
+    duplicateCount: writeResult.feishu.duplicateCount ?? 0,
+    recordIds: writeResult.feishu.recordIds,
+    batchWriteFailed: writeResult.batchWriteFailed,
+    batchWriteError: writeResult.batchWriteError,
     reportPath,
     report,
     enrichmentPaths,
     candidates,
   };
+}
+
+async function writeCandidatesWithFallback({
+  candidates,
+  candidatesByEnrichment,
+  feishuPath,
+}) {
+  try {
+    return {
+      feishu: await writeTopicCandidatesToFeishu({
+        candidates,
+        feishuPath,
+      }),
+      itemResults: null,
+      batchWriteFailed: false,
+      batchWriteError: null,
+    };
+  } catch (error) {
+    const itemResults = await Promise.all(candidatesByEnrichment.map(async (itemCandidates) => {
+      try {
+        const feishu = await writeTopicCandidatesToFeishu({
+          candidates: itemCandidates,
+          feishuPath,
+        });
+        return {
+          ok: true,
+          feishu,
+        };
+      } catch (itemError) {
+        return {
+          ok: false,
+          error: itemError.message,
+          feishu: {
+            enabled: Boolean(feishuPath),
+            createdCount: 0,
+            duplicateCount: 0,
+            recordIds: [],
+          },
+        };
+      }
+    }));
+
+    return {
+      feishu: combineItemWriteResults({ itemResults, feishuPath }),
+      itemResults,
+      batchWriteFailed: true,
+      batchWriteError: error.message,
+    };
+  }
 }
 
 export function buildInsightCandidatesFromEnrichment(enrichment) {
@@ -246,6 +299,7 @@ function buildEnrichmentWriteReport({
   loaded,
   candidatesByEnrichment,
   feishu,
+  itemWriteResults = null,
   retrySourceReportPath = null,
 }) {
   const recordIds = feishu.recordIds ?? [];
@@ -267,14 +321,35 @@ function buildEnrichmentWriteReport({
     const index = validIndex;
     validIndex += 1;
     const candidates = candidatesByEnrichment[index] ?? [];
-    const duplicateCount = estimateDuplicateCount({
+    const itemWriteResult = itemWriteResults?.[index];
+    if (itemWriteResult && !itemWriteResult.ok) {
+      return {
+        enrichmentPath: item.enrichmentPath,
+        status: 'failed',
+        candidateCount: candidates.length,
+        createdCount: 0,
+        duplicateCount: 0,
+        recordIds: [],
+        error: itemWriteResult.error,
+        processedAt: new Date().toISOString(),
+      };
+    }
+    const duplicateCount = itemWriteResult
+      ? itemWriteResult.feishu.duplicateCount ?? 0
+      : estimateDuplicateCount({
       candidateCount: candidates.length,
       totalCandidateCount: candidatesByEnrichment.flat().length,
       totalDuplicateCount: feishu.duplicateCount ?? 0,
     });
-    const createdCount = feishu.enabled === false ? 0 : Math.max(0, candidates.length - duplicateCount);
-    const itemRecordIds = recordIds.slice(createdCursor, createdCursor + createdCount);
-    createdCursor += createdCount;
+    const createdCount = itemWriteResult
+      ? itemWriteResult.feishu.createdCount ?? 0
+      : feishu.enabled === false ? 0 : Math.max(0, candidates.length - duplicateCount);
+    const itemRecordIds = itemWriteResult
+      ? itemWriteResult.feishu.recordIds ?? []
+      : recordIds.slice(createdCursor, createdCursor + createdCount);
+    if (!itemWriteResult) {
+      createdCursor += createdCount;
+    }
     return {
       enrichmentPath: item.enrichmentPath,
       status: buildItemStatus({ feishuEnabled: feishu.enabled, createdCount, duplicateCount }),
@@ -294,12 +369,21 @@ function buildEnrichmentWriteReport({
     retryCount: retrySourceReportPath ? loaded.length : undefined,
     feishuEnabled: Boolean(feishuPath),
     enrichmentCount: loaded.filter((item) => item.ok).length,
-    failedCount: loaded.filter((item) => !item.ok).length,
+    failedCount: items.filter((item) => item.status === 'failed').length,
     inputCount: candidatesByEnrichment.flat().length,
     createdCount: feishu.createdCount ?? 0,
     duplicateCount: feishu.duplicateCount ?? 0,
     recordIds,
     items,
+  };
+}
+
+function combineItemWriteResults({ itemResults, feishuPath }) {
+  return {
+    enabled: Boolean(feishuPath),
+    createdCount: itemResults.reduce((total, item) => total + (item.feishu.createdCount ?? 0), 0),
+    duplicateCount: itemResults.reduce((total, item) => total + (item.feishu.duplicateCount ?? 0), 0),
+    recordIds: itemResults.flatMap((item) => item.feishu.recordIds ?? []),
   };
 }
 

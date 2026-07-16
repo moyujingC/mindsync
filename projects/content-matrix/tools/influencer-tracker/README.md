@@ -59,6 +59,8 @@
 
 阶段 6 P1-6 基于报告的失败重试命令实现记录见：[AI营销获客系统阶段 6 P1-6 基于报告的失败重试命令实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-6-基于报告的失败重试命令实现记录.md)。
 
+阶段 6 P1-7 飞书写入阶段部分失败隔离实现记录见：[AI营销获客系统阶段 6 P1-7 飞书写入阶段部分失败隔离实现记录](../../delivery/2026-07-16-AI营销获客系统阶段6-P1-7-飞书写入阶段部分失败隔离实现记录.md)。
+
 当前目标是跑通：
 
 ```text
@@ -374,7 +376,11 @@ node src/cli/write-enrichment-directory-insights.mjs \
 - `empty`
 - `failed`
 
-如果某个 `enrichment.json` 解析失败，它会进入报告的 `failed` 项，不会阻断其他正常 enrichment 写入。修复失败文件后，可以只重试失败项：
+如果某个 `enrichment.json` 解析失败，或某个 enrichment 对应的飞书写入失败，它会进入报告的 `failed` 项，不会阻断其他正常 enrichment 写入。
+
+飞书写入阶段采用“整批优先，失败后按 enrichment 降级重试”的策略：日常成功路径仍保持批量写入；一旦整批写入失败，系统会逐个 enrichment 重试，把成功项继续写入，把失败项记录为 `failed`。
+
+修复失败文件或字段后，可以只重试失败项：
 
 ```bash
 node src/cli/retry-failed-enrichment-insights.mjs \

@@ -437,6 +437,79 @@ test('writeFailedEnrichmentInsightsToFeishu skips Feishu write when report has n
   }
 });
 
+test('writeEnrichmentDirectoryInsightsToFeishu isolates Feishu write failures by enrichment', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-feishu-isolate-'));
+  const rootDir = join(dir, 'downloads');
+  const goodDir = join(rootDir, 'B站样例账号', 'good');
+  const badDir = join(rootDir, 'B站样例账号', 'bad-write');
+  const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
+  const feishuPath = join(dir, 'feishu.json');
+  const reportPath = join(dir, 'reports', 'enrichment-write.json');
+
+  await mkdir(goodDir, { recursive: true });
+  await mkdir(badDir, { recursive: true });
+  await writeFile(join(goodDir, 'enrichment.json'), JSON.stringify(enrichment, null, 2), 'utf8');
+  await writeFile(join(badDir, 'enrichment.json'), JSON.stringify({
+    ...enrichment,
+    source: {
+      ...enrichment.source,
+      contentExternalId: 'BV1badwrite001',
+    },
+  }, null, 2), 'utf8');
+  await writeFile(fakeCliPath, `#!/usr/bin/env node
+if (process.argv.includes('+record-list')) {
+  console.log(JSON.stringify({ data: { fields: ['来源内容', '洞察类型'], data: [] } }));
+  process.exit(0);
+}
+const jsonIndex = process.argv.indexOf('--json');
+const payload = JSON.parse(process.argv[jsonIndex + 1]);
+if (payload.rows.length > 2) {
+  console.error('batch too large');
+  process.exit(1);
+}
+if (payload.rows.some((row) => String(row[1]).includes('BV1badwrite001'))) {
+  console.error('bad enrichment write');
+  process.exit(1);
+}
+console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index) => 'rec_partial_' + index) } }));
+`, 'utf8');
+  await chmod(fakeCliPath, 0o755);
+  await writeFile(feishuPath, JSON.stringify({
+    mode: 'lark-cli',
+    bin: fakeCliPath,
+    baseAppToken: 'base_xxx',
+    tables: {
+      creators: minimumTable('tbl_creators'),
+      contents: minimumTable('tbl_contents'),
+      comments: commentsTable('tbl_comments'),
+      insights: insightTable('tbl_insights'),
+    },
+  }, null, 2), 'utf8');
+
+  try {
+    const result = await writeEnrichmentDirectoryInsightsToFeishu({
+      rootDir,
+      feishuPath,
+      reportPath,
+    });
+    const report = JSON.parse(await readFile(reportPath, 'utf8'));
+    const failedItem = report.items.find((item) => item.status === 'failed');
+    const writtenItem = report.items.find((item) => item.status === 'written');
+
+    assert.equal(result.batchWriteFailed, true);
+    assert.match(result.batchWriteError, /batch too large/);
+    assert.equal(result.enrichmentCount, 2);
+    assert.equal(result.failedCount, 1);
+    assert.equal(result.createdCount, 2);
+    assert.match(failedItem.enrichmentPath, /bad-write\/enrichment\.json$/);
+    assert.match(failedItem.error, /bad enrichment write/);
+    assert.match(writtenItem.enrichmentPath, /good\/enrichment\.json$/);
+    assert.deepEqual(writtenItem.recordIds, ['rec_partial_0', 'rec_partial_1']);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 function minimumTable(tableId) {
   return {
     tableId,
