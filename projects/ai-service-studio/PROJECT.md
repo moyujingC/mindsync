@@ -159,6 +159,8 @@
 - [中型企业 AI 预算上车路径原文](references/2026-07-15-中型企业AI预算上车路径-原文.md)
 - [年入百万 AI 培训师参考](references/2025-05-09-年入百万AI培训师参考.md)
 - [年入百万 AI 培训师 OCR 原文](references/2025-05-09-年入百万AI培训师-OCR原文.md)
+- [千万级企业 AI 服务增长闭环参考](references/2026-07-16-千万级企业AI服务增长闭环参考.md)
+- [千万级企业 AI 服务增长闭环 OCR 原文](references/2026-07-16-千万级企业AI服务增长闭环-OCR原文.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
 
 ## 5. 合规和表达边界
