@@ -5,7 +5,7 @@
 作品集：[https://xinran.jingshu.cc](https://xinran.jingshu.cc) 
 完整履历：[https://xinran.jingshu.cc/online-resume-full.pdf](https://xinran.jingshu.cc/online-resume-full.pdf)
 
-> 18 年技术研发、复杂服务咨询、商业落地及 AI 实战经验，当前重点求职方向为 AI 产品经理 / AI 应用产品经理 / AI Agent 与 Workflow 产品经理。从一线工程研发、创业带队到 AI 产品化落地，长期处理复杂业务拆解、知识库沉淀、人机协作机制设计、AI 应用开发与企业落地服务。近期聚焦 AI 产品 0 到 1、Agent / Workflow、RAG 思路、输出契约、质量门、评估口径与安全边界，能把模糊需求拆成产品方案、用户路径、验证闭环和可推进的 MVP。
+> 18 年技术研发、复杂服务咨询、商业落地及 AI 实战经验，当前重点求职方向为 AI 产品经理 / AI 应用产品经理 / AI Agent 与 Workflow 产品经理。从一线工程研发、创业带队到 AI 产品化落地，长期处理复杂业务拆解、知识库沉淀、人机协作机制设定、从0到1的AI 应用开发与企业落地服务。近期聚焦 AI 产品 0 到 1、Agent / Workflow、RAG 思路、输出契约、质量门、评估口径与安全边界，能把模糊需求拆成产品方案、用户路径、验证闭环和可推进的 MVP。
 
 ## 核心技能
 
