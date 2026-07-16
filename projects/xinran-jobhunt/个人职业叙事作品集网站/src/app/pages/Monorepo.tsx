@@ -20,10 +20,10 @@ export default function Monorepo() {
         eyebrow="P R O J E C T &nbsp; 0 2"
         title="知行工坊"
         subtitle="AI 一人公司 Monorepo / 公司工作空间"
-        oneLiner="一个自用中的 AI 一人公司工作系统原型：把公司治理、项目入口、角色定义、知识库、共享工具、质量记录和阶段 artifact 收束到同一仓库，减少长期协作对聊天记录的依赖。"
+        oneLiner="一个自用中的 AI 一人公司工作系统原型：把公司治理、项目入口、Agent 协作、ai-service-studio、influencer-tracker、知识库和阶段 artifact 收束到同一仓库，让 AI 产品、服务验证和内容获客工作可追踪、可交接、可复盘。"
         role="系统设计者 / 一人公司工作空间搭建者 / Agent 协作机制推进者"
         period="2026 — 至今"
-        tags={["Monorepo", "Agent 协作", "Docs As System", "知识治理", "交付回写"]}
+        tags={["Monorepo", "Agent 协作", "AI 服务验证", "内容系统", "交付回写"]}
         accent={ACCENT}
       />
 
@@ -31,7 +31,7 @@ export default function Monorepo() {
         <Prose>
           <p>当 AI 参与长期工作后，问题会从「怎么写一个 prompt」扩展到信息、任务、角色和项目如何持续保持可追踪。</p>
           <p>在多项目并行时，如果所有信息都散落在聊天记录、临时文档和运行时工具里，Agent 很难稳定接手上下文，人也很难判断当前项目到底处于什么阶段。</p>
-          <p>知行工坊要解决的是一人公司在 AI 协作下的长期运转问题：让公司治理、项目实现、角色分工和知识沉淀有统一入口。</p>
+          <p>知行工坊要解决的是一人公司在 AI 协作下的长期运转问题：让公司治理、项目实现、角色分工、知识沉淀、服务验证和内容获客都有统一入口。</p>
         </Prose>
       </Section>
 
@@ -42,9 +42,9 @@ export default function Monorepo() {
             "设计并落地 MindSync（知行工坊）Monorepo / 公司工作空间。",
             "建立 company、projects、agents、shared、knowledge-base 五层结构。",
             "建立项目注册表、公司蓝图、研发原则、任务状态流转规则和文档治理入口。",
-            "将 AI 产品、研究、内容、求职材料等项目纳入统一工作区。",
+            "将 AI 产品、研究、内容、求职材料、ai-service-studio 和 influencer-tracker 等项目纳入统一工作区。",
             "基于 Paperclip、本地 Codex / Claude Code 和 artifact-based handoff，设计多角色 Agent 协作方式。",
-            "将 spec、task、QA、delivery 等阶段产物纳入项目推进闭环，保留质量检查、问题定位和交付回写记录。",
+            "将 spec、task、QA、delivery 等阶段产物纳入项目推进闭环，保留质量检查、问题定位、验收口径和交付回写记录。",
           ]}
         />
       </Section>
@@ -76,7 +76,7 @@ export default function Monorepo() {
           modules={[
             { title: "agents", body: "角色定义，回答谁负责做什么。" },
             { title: "company", body: "公司治理规则、注册表、蓝图和公司级入口。" },
-            { title: "projects", body: "项目工作区、项目实现和项目级文档。" },
+              { title: "projects", body: "项目工作区、项目实现和项目级文档，承载 AI 产品、AI 服务验证和内容系统。" },
             { title: "shared", body: "共享脚本、模板和跨项目工具。" },
             { title: "company / knowledge-base", body: "长期复用知识沉淀。" },
           ]}
@@ -91,6 +91,8 @@ export default function Monorepo() {
             ["公司规则和项目实现放在哪里", "company 和 projects 分层", "区分公司治理和项目源码边界"],
             ["Agent 如何接手上下文", "每个项目有稳定入口文件", "减少重复解释和聊天依赖"],
             ["任务如何进入长期闭环", "spec / task / QA / delivery artifact", "让工作过程可追踪、可复盘、可交接"],
+            ["AI 服务如何避免空泛包装", "ai-service-studio 只记录输入、边界、验收和样本沟通", "把服务验证限制在可交付范围内"],
+            ["内容获客如何变成数据链路", "influencer-tracker 先跑通采集、去重、选题和 brief", "让内容系统从人工判断升级为可审计工作流"],
             ["多项目如何保持边界", "项目注册表和项目工作区", "区分品牌、产品、能力和项目对象"],
             ["知识如何复用", "knowledge-base 长期沉淀", "把一次性研究变成可调用资产"],
           ]}
@@ -109,6 +111,8 @@ export default function Monorepo() {
             ["研究母库衔接文档", "projects/research-center/kb/研究母库与项目研究衔接说明.md", "明确写清 research、kb、产品化知识库和公司级知识库四层分工。"],
             ["研究中心双入口", "company/projects/研究中心/PROJECT.md + projects/research-center/PROJECT.md", "公司级说明和项目级工作区明确分层。"],
             ["研究母库目录", "projects/research-center/kb/", "研究母库是一层正式工作区，包含 README、模板、规则和主题知识。"],
+            ["AI 服务验证工作区", "projects/ai-service-studio/", "沉淀 AI 工作流诊断、知识库整理、FDE 售前诊断模板和交付边界。"],
+            ["内容采集工具", "projects/content-matrix/tools/influencer-tracker/", "跑通对标账号更新、内容标准化、去重、飞书写入、选题候选、brief 和每日摘要。"],
           ]}
         />
       </Section>
@@ -121,17 +125,19 @@ export default function Monorepo() {
             modules={[
               { title: "8 个公司对象已统一登记", body: "产品、能力和品牌对象都已经进入 company/项目注册表.yaml，形成稳定登记口径。"},
               { title: "10 个核心角色入口已独立维护", body: "CEO、产品、研究、架构、工程、QA、内容等角色有各自 AGENTS.md。"},
-              { title: "8 个主工作区已进入 projects", body: "研究、内容、求职、产品和共享能力底座都在同一仓库内并行推进。"},
+              { title: "多个主工作区已进入 projects", body: "研究、内容、求职、AI 服务、内容采集工具和共享能力底座都在同一仓库内并行推进。"},
               { title: "知识分流规则已正式成文", body: "研究区、研究母库、产品化知识库、公司级知识库之间的边界已正式成文。"},
+              { title: "内容获客工具已形成 MVP", body: "influencer-tracker 已打通 RSS 追踪、去重、飞书写入、选题候选、brief、每日摘要和评论入库链路。"},
+              { title: "AI 服务验证骨架已成形", body: "ai-service-studio 已沉淀工作流诊断、文档知识库整理、FDE 售前诊断模板和样本沟通记录。"},
             ]}
           />
           <BulletList
             accent={ACCENT}
             items={[
               "它已经承载公司治理：公司蓝图、研发原则、任务规范、对象注册表都有正式入口。",
-              "它已经承载项目推进：一镜一梳、研究中心、内容矩阵、馨冉求职等工作进入统一项目入口。",
+              "它已经承载项目推进：一镜一梳、研究中心、内容矩阵、馨冉求职、知行AI服务等工作进入统一项目入口。",
               "它已经承载角色协作：当任务需要换角色时，有明确入口和上下文交接材料。",
-              "它已经承载知识沉淀：研究与交付可以继续回写成长期资产。",
+              "它已经承载知识沉淀：研究、内容、服务验证与交付可以继续回写成长期资产。",
             ]}
           />
         </div>
@@ -141,14 +147,14 @@ export default function Monorepo() {
         <RoleFit
           accent={ACCENT}
           items={[
-            { role: "AI 产品经理", fit: "体现信息架构、工作流产品思维、复杂系统拆解和工程协作理解。" },
-            { role: "AI 转型咨询顾问", fit: "体现组织知识治理、AI 协作流程设计和从工具使用走向工作系统建设的能力。" },
+            { role: "AI 产品经理", fit: "体现信息架构、工作流产品思维、复杂系统拆解、数据入口和工程协作理解。" },
+            { role: "AI 转型咨询顾问", fit: "体现组织知识治理、AI 协作流程设计、服务边界定义和从工具使用走向工作系统建设的能力。" },
             { role: "FDE", fit: "体现我能为复杂客户场景搭建 Agent 协作、项目入口、质量记录、交付 artifact、问题排查和复盘回写系统。" },
           ]}
         />
         <div className="mt-6">
           <Boundary accent={ACCENT}>
-            对外定位为自用 AI 一人公司工作系统、Monorepo 实践和一人公司操作系统原型；重点呈现项目入口、知识治理、任务流转、质量记录和交付回写能力。
+            对外定位为自用 AI 一人公司工作系统、Monorepo 实践和一人公司操作系统原型；重点呈现项目入口、知识治理、任务流转、质量记录、交付回写、服务验证和内容系统能力，不包装成成熟 SaaS 或已规模化商业案例。
           </Boundary>
         </div>
       </Section>

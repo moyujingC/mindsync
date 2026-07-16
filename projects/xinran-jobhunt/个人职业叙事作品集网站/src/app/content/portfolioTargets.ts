@@ -18,20 +18,20 @@ const roleTracks: RoleTrack[] = [
   {
     id: "role-ai-product-manager",
     title: "AI 产品经理",
-    summary: "从真实痛点出发，定义 AI 产品路径、MVP 范围、用户体验、输出契约、质量门和迭代评估口径。",
-    proof: ["一镜一梳", "心理疗愈 AI 产品观察", "游戏开发技术履历"],
+    summary: "从真实痛点出发，定义 AI 产品路径、BRD / PRD、MVP / PoC 范围、Agent Loop、输出契约、质量门和迭代评估口径。",
+    proof: ["一镜一梳", "知行工坊", "心理疗愈 AI 产品观察"],
   },
   {
     id: "role-ai-transformation-consultant",
     title: "AI 转型咨询顾问",
-    summary: "进入复杂业务现场，诊断流程问题，把专家经验沉淀为 SOP、知识库、AI 工作流、试点路径和组织采用口径。",
-    proof: ["知行工坊", "房产咨询与经纪人孵化", "曼陀罗疗愈知识库"],
+    summary: "进入复杂业务现场，诊断流程问题，把专家经验沉淀为 SOP、知识库、AI 工作流、试点路径、交付边界和组织采用口径。",
+    proof: ["知行工坊", "ai-service-studio 服务验证", "房产咨询与经纪人孵化"],
   },
   {
     id: "role-fde-ai-solution-engineer",
     title: "FDE / AI 解决方案工程师",
-    summary: "把客户场景拆成可验证 PoC、Agent 工作流、数据与权限边界、日志 / 人审 / 回滚、评估口径和 ROI 口径。",
-    proof: ["知行工坊", "一镜一梳", "早期工程与独立交付经历"],
+    summary: "把客户场景拆成可验证 PoC、Agent 工作流、数据与权限边界、日志 / 人审 / 回滚、评估口径和可交付材料。",
+    proof: ["知行工坊", "influencer-tracker 内容系统", "早期工程与独立交付经历"],
   },
 ];
 
@@ -42,7 +42,7 @@ const targetProfiles = {
   "ai-product-manager": {
     label: "AI 产品经理",
     shortLabel: "产品经理版",
-    summary: "把 AI 产品经理放在第一优先级，并突出一镜一梳作为主案例。",
+    summary: "把 AI 产品经理放在第一优先级，并突出一镜一梳与知行工坊作为主案例。",
     roleOrder: [
       "role-ai-product-manager",
       "role-ai-transformation-consultant",
@@ -51,15 +51,15 @@ const targetProfiles = {
     workOrder: [
       "mandala-app",
       "healing-ai-research",
-      "game-career",
       "monorepo",
+      "game-career",
       "healing-kb",
     ],
   },
   "ai-transformation-consultant": {
     label: "AI 转型咨询顾问",
     shortLabel: "咨询顾问版",
-    summary: "把复杂业务诊断、知识沉淀和流程落地相关案例放在最前面。",
+    summary: "把复杂业务诊断、服务边界、知识沉淀和流程落地相关案例放在最前面。",
     roleOrder: [
       "role-ai-transformation-consultant",
       "role-fde-ai-solution-engineer",

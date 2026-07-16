@@ -15,7 +15,7 @@ const contacts = [
   { icon: ExternalLink, label: "小红书", value: "墨予镜", href: "https://xhslink.com/m/7VPwpjmF501" },
 ];
 
-const opportunityFocus = ["AI 产品从 0 到 1", "业务流程 AI 化 / Agent 工作流", "FDE / AI 解决方案落地"];
+const opportunityFocus = ["AI 产品从 0 到 1", "Agent / Workflow / PoC", "ToB / FDE / AI 解决方案落地"];
 
 export function Contact() {
   return (
@@ -41,7 +41,7 @@ export function Contact() {
         <Reveal delay={120}>
           <div className="max-w-3xl mx-auto text-center mb-14" style={{ fontFamily: "'Noto Sans SC', sans-serif" }}>
             <p className="text-[#F9F7F3]/78 leading-[1.9]" style={{ fontSize: "1rem" }}>
-              如果你的团队正在推进这些方向，欢迎联系我。
+              如果你的团队正在推进这些方向，欢迎联系我。我更适合参与从需求诊断、流程拆解、试点设计到交付边界定义的 AI 产品和解决方案工作。
             </p>
             <div className="grid md:grid-cols-3 gap-3 mt-6">
               {opportunityFocus.map((item) => (
@@ -143,7 +143,7 @@ export function Contact() {
               style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "0.875rem" }}
             >
               <Download className="w-4 h-4 mr-3" strokeWidth={1.5} />
-              下载我的简历
+              下载完整履历
             </a>
           </div>
         </Reveal>
