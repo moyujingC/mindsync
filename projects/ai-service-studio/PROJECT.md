@@ -169,6 +169,8 @@
 - [AI 错误兜底管理者视角原文](references/2026-07-16-AI错误兜底管理者视角-原文.md)
 - [企业 AI 定制一线实战拆解参考](references/2026-07-16-企业AI定制一线实战拆解参考.md)
 - [企业 AI 定制一线实战拆解 OCR 原文](references/2026-07-16-企业AI定制一线实战拆解-OCR原文.md)
+- [AI Native 内容获客系统参考](references/2026-07-17-AINative内容获客系统参考.md)
+- [AI Native 内容获客系统 OCR 原文](references/2026-07-17-AINative内容获客系统-OCR原文.md)
 - [企业 AI 培训到服务与知识治理纵向复盘](synthesis/2026-07-16-企业AI培训到服务与知识治理纵向复盘.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
 
