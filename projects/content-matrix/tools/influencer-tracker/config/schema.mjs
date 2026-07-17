@@ -44,6 +44,19 @@ export const FEISHU_TABLE_SCHEMAS = {
         property: { options: optionNames(['rss', 'rss-file']) },
       },
       sourcePath: { field_name: '数据源地址', type: FEISHU_FIELD_TYPES.text },
+      collectAction: {
+        field_name: '采集动作',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['无', '待检查', '待回溯']) },
+      },
+      taskStatus: {
+        field_name: '任务状态',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['空闲', '执行中', '完成', '失败']) },
+      },
+      collectSince: { field_name: '采集起始日期', type: FEISHU_FIELD_TYPES.date },
+      taskReport: { field_name: '任务报告', type: FEISHU_FIELD_TYPES.text },
+      taskLockedAt: { field_name: '任务锁定时间', type: FEISHU_FIELD_TYPES.date },
     },
   },
   contents: {

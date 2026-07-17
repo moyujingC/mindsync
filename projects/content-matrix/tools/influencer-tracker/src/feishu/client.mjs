@@ -142,11 +142,30 @@ export function mapFeishuCreatorRecord(record, fieldMap) {
     homepageUrl: value('homepageUrl')?.link ?? value('homepageUrl'),
     enabledStatus: normalizeSingleSelect(value('enabledStatus')),
     checkFrequency: normalizeSingleSelect(value('checkFrequency')),
+    collectAction: normalizeSingleSelect(value('collectAction')),
+    taskStatus: normalizeSingleSelect(value('taskStatus')),
+    collectSince: extractTextValue(value('collectSince')),
+    taskReport: extractTextValue(value('taskReport')),
+    taskLockedAt: extractTextValue(value('taskLockedAt')),
     source: buildSource({
       kind: normalizeSingleSelect(value('sourceKind')),
       pathOrUrl: value('sourcePath'),
     }),
   };
+}
+
+export function mapCreatorTaskFields(fields, fieldMap) {
+  return compactObject({
+    [fieldMap.collectAction]: fields.collectAction,
+    [fieldMap.taskStatus]: fields.taskStatus,
+    [fieldMap.collectSince]: fields.collectSince,
+    [fieldMap.taskReport]: fields.taskReport,
+    [fieldMap.taskLockedAt]: fields.taskLockedAt,
+    [fieldMap.lastStatus]: fields.lastStatus,
+    [fieldMap.failureReason]: fields.failureReason,
+    [fieldMap.lastCheckedAt]: fields.lastCheckedAt,
+    [fieldMap.latestContentAt]: fields.latestContentAt,
+  });
 }
 
 export function summarizeFeishuField(field) {

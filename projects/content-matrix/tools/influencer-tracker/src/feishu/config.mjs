@@ -53,6 +53,16 @@ const REQUIRED_TABLES = {
   ],
 };
 
+const OPTIONAL_TABLE_FIELDS = {
+  creators: [
+    'collectAction',
+    'taskStatus',
+    'collectSince',
+    'taskReport',
+    'taskLockedAt',
+  ],
+};
+
 export function validateFeishuConfig(config) {
   const errors = [];
   if (config.mode !== 'lark-cli') {
@@ -122,3 +132,4 @@ function requireString(object, displayPath, errors, key = displayPath) {
 }
 
 export { REQUIRED_TABLES };
+export { OPTIONAL_TABLE_FIELDS };

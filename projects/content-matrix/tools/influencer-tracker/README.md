@@ -496,6 +496,62 @@ node src/cli/check-updates.mjs --feishu config/feishu.local.json
 
 本地真实配置文件是 `config/feishu.local.json`，已被 `.gitignore` 排除，不提交到仓库。
 
+## 飞书操作台模式
+
+如果不想每天手敲采集命令，可以把飞书 `博主账号` 表当操作台。
+
+需要在 `博主账号` 表补充这些字段：
+
+- `采集动作`：单选，选项为 `无`、`待检查`、`待回溯`
+- `任务状态`：单选，选项为 `空闲`、`执行中`、`完成`、`失败`
+- `采集起始日期`：日期，用于回溯采集的 `since`
+- `任务报告`：文本，用于写回本次执行摘要或错误
+- `任务锁定时间`：日期，用于记录 worker 开始处理时间
+
+同时在 `config/feishu.local.json` 的 `tables.creators.fields` 里补充：
+
+```json
+{
+  "collectAction": "采集动作",
+  "taskStatus": "任务状态",
+  "collectSince": "采集起始日期",
+  "taskReport": "任务报告",
+  "taskLockedAt": "任务锁定时间"
+}
+```
+
+飞书里日常操作：
+
+```text
+1. 在博主账号表新增或选择一个账号
+2. 启用状态 = 启用
+3. 采集起始日期 = 2026-05-01
+4. 采集动作 = 待回溯
+5. 等 worker 执行并回写任务状态 / 任务报告
+```
+
+本地手动跑 worker：
+
+```bash
+npm run worker:feishu
+```
+
+或：
+
+```bash
+node src/cli/feishu-action-worker.mjs \
+  --feishu config/feishu.local.json \
+  --limit 50 \
+  --store logs/content-store.feishu-worker.json
+```
+
+worker 当前处理两种动作：
+
+- `待检查`：检查该账号最新内容。
+- `待回溯`：按 `采集起始日期` 回溯内容。
+
+执行成功后会把 `采集动作` 改回 `无`，把 `任务状态` 改成 `完成`，并写入 `任务报告`。执行失败时会写入 `失败` 和错误原因。
+
 ## 日常运行
 
 本地 dry-run：

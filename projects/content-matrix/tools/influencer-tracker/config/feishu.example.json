@@ -17,7 +17,12 @@
         "lastStatus": "最近状态",
         "failureReason": "失败原因",
         "sourceKind": "数据源类型",
-        "sourcePath": "数据源地址"
+        "sourcePath": "数据源地址",
+        "collectAction": "采集动作",
+        "taskStatus": "任务状态",
+        "collectSince": "采集起始日期",
+        "taskReport": "任务报告",
+        "taskLockedAt": "任务锁定时间"
       }
     },
     "contents": {
