@@ -74,7 +74,7 @@ function normalizeManualItem(item, index) {
   const url = requiredString(item.url, `items[${index}].url`);
   const title = requiredString(item.title, `items[${index}].title`);
   const externalId = item.externalId ?? stableExternalIdFromUrl(url);
-  const creatorName = item.creatorName ?? item.creator ?? 'manual';
+  const creatorName = item.creatorName ?? item.creator ?? '随机发现';
   const publishedAt = item.publishedAt ?? new Date().toISOString();
   return {
     uniqueKey: buildManualContentKey({ platform, externalId, url }),

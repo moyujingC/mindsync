@@ -1,0 +1,34 @@
+{
+  "schema": "content-matrix/reference-import/v1",
+  "items": [
+    {
+      "platform": "小红书",
+      "url": "https://www.xiaohongshu.com/explore/random-reference-note-001",
+      "title": "随机刷到的 AI 获客案例拆解",
+      "description": "这条内容不属于已追踪博主，但评论区出现了多个企业 AI 落地的真实问题，适合作为内容参考。",
+      "publishedAt": "2026-07-17T09:00:00.000Z",
+      "contentType": "图文",
+      "tags": ["随机发现", "内容参考", "AI获客"],
+      "likeCount": 88,
+      "commentCount": 21,
+      "favoriteCount": 34,
+      "shareCount": 6,
+      "referenceReason": "评论区有需求信号，可用于选题和市场调研。"
+    },
+    {
+      "platform": "抖音",
+      "creatorName": "随机刷到的企业服务号",
+      "url": "https://www.douyin.com/video/random-reference-video-001",
+      "title": "企业知识库从混乱资料开始治理",
+      "description": "这条视频适合放入内容参考库，后续可对标其表达结构和评论区问题。",
+      "publishedAt": "2026-07-17T10:00:00.000Z",
+      "contentType": "视频",
+      "tags": ["随机发现", "知识库治理", "企业AI"],
+      "likeCount": 120,
+      "commentCount": 18,
+      "favoriteCount": 42,
+      "shareCount": 9,
+      "referenceReason": "表达方式和评论问题都值得复盘。"
+    }
+  ]
+}

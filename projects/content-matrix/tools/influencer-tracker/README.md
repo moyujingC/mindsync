@@ -122,6 +122,23 @@ node src/cli/check-updates.mjs --dry-run --creators fixtures/creators.example.js
 npm run manual:import
 ```
 
+如果是随机刷到的内容，不属于正在追踪的博主账号，也可以作为内容参考导入：
+
+```bash
+npm run reference:import
+```
+
+真实飞书写入：
+
+```bash
+node src/cli/manual-import.mjs \
+  --input fixtures/reference-import.example.json \
+  --feishu config/feishu.local.json \
+  --store logs/content-store.references.json
+```
+
+这类内容会写入 `内容更新` 表，默认账号名为 `随机发现`。如果输入里带 `creatorName`，会保留实际账号名。适合把刷到的案例、评论区需求、竞品表达放入内容参考数据库。
+
 真实飞书写入：
 
 ```bash
@@ -134,6 +151,7 @@ node src/cli/manual-import.mjs \
 这条链路适合：
 
 - 人工粘贴小红书 / 抖音链接、标题、正文和互动数。
+- 导入随机刷到的内容参考，不要求账号已在 `博主账号` 表中。
 - 系统统一标准化后写入 `内容更新` 表。
 - 通过 `uniqueKey` 做去重，不重复写入。
 

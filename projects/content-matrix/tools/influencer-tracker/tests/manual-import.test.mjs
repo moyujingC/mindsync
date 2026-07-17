@@ -25,6 +25,37 @@ test('normalizeManualInput creates stable content keys for manual items', () => 
   assert.equal(contents[0].tags, undefined);
 });
 
+test('normalizeManualInput supports random reference items without tracked creator', () => {
+  const contents = normalizeManualInput({
+    items: [{
+      platform: '小红书',
+      url: 'https://www.xiaohongshu.com/explore/random-note-001',
+      title: '随机刷到的内容参考',
+      description: '评论区有值得参考的需求表达。',
+      referenceReason: '选题参考',
+    }],
+  });
+
+  assert.equal(contents.length, 1);
+  assert.equal(contents[0].creatorName, '随机发现');
+  assert.equal(contents[0].contentExternalId, 'www.xiaohongshu.com/explore/random-note-001');
+  assert.equal(contents[0].uniqueKey, '小红书:www.xiaohongshu.com/explore/random-note-001');
+  assert.equal(contents[0].raw.referenceReason, '选题参考');
+});
+
+test('normalizeManualInput keeps explicit creator when random item has one', () => {
+  const contents = normalizeManualInput({
+    items: [{
+      platform: '抖音',
+      creatorName: '随机刷到的专家号',
+      url: 'https://www.douyin.com/video/random-video-001',
+      title: '临时发现的对标视频',
+    }],
+  });
+
+  assert.equal(contents[0].creatorName, '随机刷到的专家号');
+});
+
 test('importManualContents dry-run does not persist store', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-manual-dry-'));
   const inputPath = join(dir, 'input.json');
