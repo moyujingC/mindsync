@@ -97,6 +97,25 @@ test('buildBilibiliRssUrls expands configured source URL with fallback bases', (
   ]);
 });
 
+test('buildBilibiliRssUrls can disable source URL expansion for diagnosis', () => {
+  const urls = internals.buildBilibiliRssUrls({
+    externalId: 'ignored',
+    source: {
+      kind: 'rss',
+      url: 'https://rsshub.app/bilibili/user/video/123',
+    },
+  }, {
+    disableRsshubExpansion: true,
+    platformConfig: {
+      rsshubBaseUrls: ['https://rsshub-a.example.com'],
+    },
+  });
+
+  assert.deepEqual(urls, [
+    'https://rsshub.app/bilibili/user/video/123',
+  ]);
+});
+
 test('parseRsshubBilibiliUrl extracts user id from RSSHub route', () => {
   assert.deepEqual(
     internals.parseRsshubBilibiliUrl('https://rsshub.app/bilibili/user/video/123'),

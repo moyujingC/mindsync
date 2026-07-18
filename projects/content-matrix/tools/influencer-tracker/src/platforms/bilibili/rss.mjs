@@ -17,14 +17,17 @@ async function loadRssXml(creator, options) {
   }
 
   const sourceUrls = buildBilibiliRssUrls(creator, options);
-  const response = await fetchFirstRss(sourceUrls, options.signal);
+  const response = await fetchFirstRss(sourceUrls, {
+    signal: options.signal,
+    fetchImpl: options.fetchImpl,
+  });
 
   return response.text();
 }
 
-async function fetchRss(sourceUrl, signal) {
+async function fetchRss(sourceUrl, { signal, fetchImpl = globalThis.fetch } = {}) {
   try {
-    return await fetch(sourceUrl, {
+    return await fetchImpl(sourceUrl, {
       headers: {
         'user-agent': 'MindSyncInfluencerTracker/0.1 (+https://github.com/MindSyncHub)',
       },
@@ -36,11 +39,11 @@ async function fetchRss(sourceUrl, signal) {
   }
 }
 
-async function fetchFirstRss(sourceUrls, signal) {
+async function fetchFirstRss(sourceUrls, options = {}) {
   const errors = [];
   for (const sourceUrl of sourceUrls) {
     try {
-      const response = await fetchRss(sourceUrl, signal);
+      const response = await fetchRss(sourceUrl, options);
       if (response.ok) {
         return response;
       }
@@ -54,6 +57,9 @@ async function fetchFirstRss(sourceUrls, signal) {
 
 function buildBilibiliRssUrls(creator, options) {
   if (creator.source?.url) {
+    if (options.disableRsshubExpansion) {
+      return [creator.source.url];
+    }
     return expandConfiguredRssUrl(creator.source.url, options);
   }
 
