@@ -16,18 +16,27 @@ async function loadRssXml(creator, options) {
   }
 
   const sourceUrl = creator.source?.url ?? buildBilibiliRssUrl(creator.externalId, options);
-  const response = await fetch(sourceUrl, {
-    headers: {
-      'user-agent': 'MindSyncInfluencerTracker/0.1 (+https://github.com/MindSyncHub)',
-    },
-    signal: options.signal,
-  });
+  const response = await fetchRss(sourceUrl, options.signal);
 
   if (!response.ok) {
-    throw new Error(`Bilibili RSS request failed: ${response.status} ${response.statusText}`);
+    throw new Error(`Bilibili RSS request failed: ${response.status} ${response.statusText}; url=${sourceUrl}`);
   }
 
   return response.text();
+}
+
+async function fetchRss(sourceUrl, signal) {
+  try {
+    return await fetch(sourceUrl, {
+      headers: {
+        'user-agent': 'MindSyncInfluencerTracker/0.1 (+https://github.com/MindSyncHub)',
+      },
+      signal,
+    });
+  } catch (error) {
+    const reason = error.cause?.code ?? error.message;
+    throw new Error(`Bilibili RSS request failed: network error; url=${sourceUrl}; reason=${reason}`);
+  }
 }
 
 function buildBilibiliRssUrl(externalId, options) {
@@ -128,4 +137,5 @@ function normalizeDate(value) {
 export const internals = {
   parseRssItems,
   normalizeBilibiliRssItem,
+  fetchRss,
 };

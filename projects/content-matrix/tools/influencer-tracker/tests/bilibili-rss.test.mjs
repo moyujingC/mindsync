@@ -40,3 +40,21 @@ test('normalizeBilibiliRssItem creates stable unique key', () => {
   assert.equal(content.creatorName, '样例账号');
   assert.equal(content.publishedAt, '2026-07-15T01:00:00.000Z');
 });
+
+test('fetchRss reports source URL and network reason on fetch failure', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => {
+    const error = new TypeError('fetch failed');
+    error.cause = { code: 'UND_ERR_CONNECT_TIMEOUT' };
+    throw error;
+  };
+
+  try {
+    await assert.rejects(
+      () => internals.fetchRss('https://rsshub.app/bilibili/user/video/123', undefined),
+      /url=https:\/\/rsshub\.app\/bilibili\/user\/video\/123; reason=UND_ERR_CONNECT_TIMEOUT/,
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

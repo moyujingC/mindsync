@@ -80,6 +80,7 @@ export async function runFeishuActionWorker({
           lastStatus: '失败',
           failureReason: error.message,
           lastCheckedAt: new Date().toISOString(),
+          ...error.partialCreatorFields,
         });
       }
       results.push({
@@ -130,7 +131,7 @@ async function runCreatorAction({
   if (creator.collectAction === ACTION_CHECK) {
     const prepared = await prepareCreatorForCollection({ creator, resolveLink });
     const effectiveCreator = prepared.creator;
-    const result = await checkUpdates({
+    const result = await runCollectionWithPreparedFields(prepared, () => checkUpdates({
       creators: [effectiveCreator],
       feishuClient: loaded.feishuClient,
       feishuConfig: loaded.feishuConfig,
@@ -139,7 +140,7 @@ async function runCreatorAction({
       platform: effectiveCreator.platform,
       limitPerCreator: limit,
       cwd,
-    });
+    }));
     return {
       ...result,
       creatorFields: prepared.creatorFields,
@@ -149,7 +150,7 @@ async function runCreatorAction({
   if (creator.collectAction === ACTION_BACKFILL) {
     const prepared = await prepareCreatorForCollection({ creator, resolveLink });
     const effectiveCreator = prepared.creator;
-    const result = await backfillCreator({
+    const result = await runCollectionWithPreparedFields(prepared, () => backfillCreator({
       creators: [effectiveCreator],
       creatorId: effectiveCreator.id,
       feishuClient: loaded.feishuClient,
@@ -159,7 +160,7 @@ async function runCreatorAction({
       limit,
       since: effectiveCreator.collectSince,
       cwd,
-    });
+    }));
     return {
       ...result,
       creatorFields: prepared.creatorFields,
@@ -167,6 +168,15 @@ async function runCreatorAction({
   }
 
   throw new Error(`Unsupported collect action: ${creator.collectAction}`);
+}
+
+async function runCollectionWithPreparedFields(prepared, collect) {
+  try {
+    return await collect();
+  } catch (error) {
+    error.partialCreatorFields = prepared.creatorFields;
+    throw error;
+  }
 }
 
 async function prepareCreatorForCollection({ creator, resolveLink }) {

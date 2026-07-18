@@ -250,6 +250,52 @@ test('worker backfill normalizes manually typed Bilibili UID before collection',
   }
 });
 
+test('worker keeps normalized Bilibili fields when collection fails after preparation', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-worker-prepared-fail-'));
+  const storePath = join(dir, 'store.json');
+  const originalFetch = globalThis.fetch;
+
+  try {
+    const updates = [];
+    const loaded = workerLoaded({
+      creators: [{
+        id: 'rec_uid_fail',
+        recordId: 'rec_uid_fail',
+        name: '第四种黑猩猩',
+        platform: 'bilibili',
+        externalId: 'UID:3546830396721763',
+        enabledStatus: '启用',
+        collectAction: '待回溯',
+        taskStatus: '空闲',
+        collectSince: '2026-06-01T00:00:00.000Z',
+      }],
+      updates,
+    });
+    globalThis.fetch = async () => {
+      const error = new TypeError('fetch failed');
+      error.cause = { code: 'UND_ERR_CONNECT_TIMEOUT' };
+      throw error;
+    };
+
+    const result = await runFeishuActionWorker({
+      loaded,
+      storePath,
+      dryRun: false,
+      limit: 10,
+    });
+
+    assert.equal(result.failedCount, 1);
+    assert.match(result.results[0].error, /UND_ERR_CONNECT_TIMEOUT/);
+    assert.equal(updates.at(-1).fields['任务状态'], '失败');
+    assert.equal(updates.at(-1).fields['平台账号ID'], '3546830396721763');
+    assert.equal(updates.at(-1).fields['数据源类型'], 'rss');
+    assert.equal(updates.at(-1).fields['数据源地址'], 'https://rsshub.app/bilibili/user/video/3546830396721763');
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 function creatorFields() {
   return {
     name: '博主名称',
