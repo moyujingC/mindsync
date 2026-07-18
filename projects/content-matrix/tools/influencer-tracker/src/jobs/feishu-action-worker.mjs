@@ -1,8 +1,12 @@
 import { checkUpdates } from './check-updates.mjs';
 import { backfillCreator } from './backfill-creator.mjs';
 import { loadCreators } from './load-creators.mjs';
+import { importManualContentItems } from './manual-import.mjs';
+import { normalizeBilibiliUid, resolveBilibiliLink } from './resolve-bilibili-link.mjs';
 import { mapCreatorTaskFields } from '../feishu/client.mjs';
 
+const BILIBILI_RSS_BASE = 'https://rsshub.app/bilibili/user/video';
+const ACTION_RESOLVE_LINK = '待解析链接';
 const ACTION_CHECK = '待检查';
 const ACTION_BACKFILL = '待回溯';
 
@@ -13,6 +17,7 @@ export async function runFeishuActionWorker({
   limit = 20,
   dryRun = false,
   cwd = process.cwd(),
+  resolveLink = resolveBilibiliLink,
 }) {
   const source = loaded ?? await loadCreators({
     feishuPath,
@@ -42,6 +47,7 @@ export async function runFeishuActionWorker({
         limit,
         dryRun,
         cwd,
+        resolveLink,
       });
       const summary = buildTaskReport({ creator, result });
 
@@ -54,6 +60,7 @@ export async function runFeishuActionWorker({
           failureReason: '',
           lastCheckedAt: new Date().toISOString(),
           latestContentAt: latestPublishedAt(result.contents ?? []),
+          ...result.creatorFields,
         });
       }
 
@@ -97,7 +104,7 @@ export async function runFeishuActionWorker({
 
 function isPendingCreator(creator) {
   return creator.enabledStatus === '启用'
-    && [ACTION_CHECK, ACTION_BACKFILL].includes(creator.collectAction)
+    && [ACTION_RESOLVE_LINK, ACTION_CHECK, ACTION_BACKFILL].includes(creator.collectAction)
     && creator.taskStatus !== '执行中';
 }
 
@@ -108,35 +115,190 @@ async function runCreatorAction({
   limit,
   dryRun,
   cwd,
+  resolveLink,
 }) {
+  if (creator.collectAction === ACTION_RESOLVE_LINK) {
+    return resolveCreatorLinkAction({
+      creator,
+      loaded,
+      storePath,
+      dryRun,
+      resolveLink,
+    });
+  }
+
   if (creator.collectAction === ACTION_CHECK) {
-    return checkUpdates({
-      creators: [creator],
+    const prepared = await prepareCreatorForCollection({ creator, resolveLink });
+    const effectiveCreator = prepared.creator;
+    const result = await checkUpdates({
+      creators: [effectiveCreator],
       feishuClient: loaded.feishuClient,
       feishuConfig: loaded.feishuConfig,
       storePath,
       dryRun,
-      platform: creator.platform,
+      platform: effectiveCreator.platform,
       limitPerCreator: limit,
       cwd,
     });
+    return {
+      ...result,
+      creatorFields: prepared.creatorFields,
+    };
   }
 
   if (creator.collectAction === ACTION_BACKFILL) {
-    return backfillCreator({
-      creators: [creator],
-      creatorId: creator.id,
+    const prepared = await prepareCreatorForCollection({ creator, resolveLink });
+    const effectiveCreator = prepared.creator;
+    const result = await backfillCreator({
+      creators: [effectiveCreator],
+      creatorId: effectiveCreator.id,
       feishuClient: loaded.feishuClient,
       feishuConfig: loaded.feishuConfig,
       storePath,
       dryRun,
       limit,
-      since: creator.collectSince,
+      since: effectiveCreator.collectSince,
       cwd,
     });
+    return {
+      ...result,
+      creatorFields: prepared.creatorFields,
+    };
   }
 
   throw new Error(`Unsupported collect action: ${creator.collectAction}`);
+}
+
+async function prepareCreatorForCollection({ creator, resolveLink }) {
+  if (!isBilibiliCreator(creator)) {
+    return { creator, creatorFields: {} };
+  }
+
+  const normalizedUid = normalizeBilibiliUid(creator.externalId);
+  if (/^\d+$/.test(normalizedUid)) {
+    const fields = buildBilibiliCreatorFields(normalizedUid);
+    return {
+      creator: {
+        ...creator,
+        ...fields,
+        source: creator.source ?? { kind: fields.sourceKind, url: fields.sourcePath },
+      },
+      creatorFields: shouldWriteBackCreatorFields(creator, fields) ? fields : {},
+    };
+  }
+
+  const link = creator.sourceLink || creator.homepageUrl;
+  if (!link) {
+    return { creator, creatorFields: {} };
+  }
+
+  const resolved = await resolveLink(link);
+  if (resolved.kind === 'content') {
+    throw new Error('当前链接是 B站单条视频，不能直接回溯/检查博主；请把采集动作改为“待解析链接”，或粘贴博主主页链接。');
+  }
+  if (resolved.kind !== 'creator') {
+    return { creator, creatorFields: {} };
+  }
+
+  const fields = {
+    platform: resolved.platform,
+    externalId: resolved.externalId,
+    homepageUrl: resolved.homepageUrl,
+    sourceLink: resolved.finalUrl,
+    linkType: '博主主页',
+    sourceKind: resolved.sourceKind,
+    sourcePath: resolved.sourcePath,
+  };
+  return {
+    creator: {
+      ...creator,
+      ...fields,
+      source: { kind: fields.sourceKind, url: fields.sourcePath },
+    },
+    creatorFields: fields,
+  };
+}
+
+function isBilibiliCreator(creator) {
+  return creator.platform === 'bilibili'
+    || creator.platform === 'B站'
+    || /bilibili\.com|b23\.tv/.test(`${creator.homepageUrl ?? ''} ${creator.sourceLink ?? ''}`);
+}
+
+function buildBilibiliCreatorFields(uid) {
+  return {
+    platform: 'bilibili',
+    externalId: uid,
+    homepageUrl: `https://space.bilibili.com/${uid}`,
+    linkType: '博主主页',
+    sourceKind: 'rss',
+    sourcePath: `${BILIBILI_RSS_BASE}/${uid}`,
+  };
+}
+
+function shouldWriteBackCreatorFields(creator, fields) {
+  return creator.platform !== fields.platform
+    || creator.externalId !== fields.externalId
+    || creator.homepageUrl !== fields.homepageUrl
+    || creator.source?.kind !== fields.sourceKind
+    || creator.source?.url !== fields.sourcePath;
+}
+
+async function resolveCreatorLinkAction({
+  creator,
+  loaded,
+  storePath,
+  dryRun,
+  resolveLink,
+}) {
+  const link = creator.sourceLink || creator.homepageUrl;
+  if (!link) {
+    throw new Error('Missing source link or homepage URL');
+  }
+  const resolved = await resolveLink(link);
+
+  if (resolved.kind === 'creator') {
+    return {
+      actionType: 'resolve-link',
+      resolved,
+      createdCount: 0,
+      duplicateCount: 0,
+      contents: [],
+      creatorFields: {
+        platform: resolved.platform,
+        externalId: resolved.externalId,
+        homepageUrl: resolved.homepageUrl,
+        sourceLink: resolved.finalUrl,
+        linkType: '博主主页',
+        sourceKind: resolved.sourceKind,
+        sourcePath: resolved.sourcePath,
+      },
+    };
+  }
+
+  if (resolved.kind === 'content') {
+    const importResult = await importManualContentItems({
+      items: [resolved.content],
+      storePath,
+      feishuClient: loaded.feishuClient,
+      feishuConfig: loaded.feishuConfig,
+      dryRun,
+      runType: 'feishu-link-reference',
+    });
+    return {
+      actionType: 'resolve-link',
+      resolved,
+      createdCount: importResult.createdCount,
+      duplicateCount: importResult.duplicateCount,
+      contents: importResult.contents,
+      creatorFields: {
+        sourceLink: resolved.finalUrl,
+        linkType: '单条内容',
+      },
+    };
+  }
+
+  throw new Error(`Unsupported Bilibili link: ${resolved.finalUrl}`);
 }
 
 async function updateCreatorTask(loaded, recordId, fields) {
@@ -145,6 +307,12 @@ async function updateCreatorTask(loaded, recordId, fields) {
 }
 
 function buildTaskReport({ creator, result }) {
+  if (creator.collectAction === ACTION_RESOLVE_LINK) {
+    if (result.resolved.kind === 'creator') {
+      return `链接解析完成：识别为 B站博主主页，UID ${result.resolved.externalId}，已补全 RSS 地址。`;
+    }
+    return `链接解析完成：识别为 B站单条内容，新增 ${result.createdCount} 条，重复 ${result.duplicateCount} 条。`;
+  }
   if (creator.collectAction === ACTION_CHECK) {
     return `检查完成：新增 ${result.createdCount} 条，重复 ${result.duplicateCount} 条，失败 ${result.failedCount} 个账号。`;
   }

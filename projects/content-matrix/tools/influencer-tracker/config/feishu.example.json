@@ -10,6 +10,8 @@
         "platform": "平台",
         "externalId": "平台账号ID",
         "homepageUrl": "主页链接",
+        "sourceLink": "来源链接",
+        "linkType": "链接类型",
         "enabledStatus": "启用状态",
         "checkFrequency": "检查频率",
         "lastCheckedAt": "最近检查时间",

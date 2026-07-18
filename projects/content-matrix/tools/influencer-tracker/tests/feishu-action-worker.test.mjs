@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runFeishuActionWorker } from '../src/jobs/feishu-action-worker.mjs';
@@ -104,12 +104,160 @@ test('worker-style task flow filters pending creators and reports backfill summa
   }
 });
 
+test('worker resolves Bilibili creator homepage and fills tracking fields', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-worker-link-creator-'));
+  const storePath = join(dir, 'store.json');
+
+  try {
+    const updates = [];
+    const loaded = workerLoaded({
+      creators: [{
+        id: 'rec_link',
+        recordId: 'rec_link',
+        name: '待解析账号',
+        enabledStatus: '启用',
+        collectAction: '待解析链接',
+        taskStatus: '空闲',
+        homepageUrl: 'https://b23.tv/abc',
+      }],
+      updates,
+    });
+
+    const result = await runFeishuActionWorker({
+      loaded,
+      storePath,
+      dryRun: false,
+      resolveLink: async () => ({
+        kind: 'creator',
+        finalUrl: 'https://space.bilibili.com/123456789',
+        platform: 'bilibili',
+        externalId: '123456789',
+        homepageUrl: 'https://space.bilibili.com/123456789',
+        sourceKind: 'rss',
+        sourcePath: 'https://rsshub.app/bilibili/user/video/123456789',
+      }),
+    });
+
+    assert.equal(result.successCount, 1);
+    assert.match(result.results[0].summary, /UID 123456789/);
+    assert.equal(updates.at(-1).fields['平台'], 'bilibili');
+    assert.equal(updates.at(-1).fields['平台账号ID'], '123456789');
+    assert.equal(updates.at(-1).fields['主页链接'], 'https://space.bilibili.com/123456789');
+    assert.equal(updates.at(-1).fields['链接类型'], '博主主页');
+    assert.equal(updates.at(-1).fields['数据源类型'], 'rss');
+    assert.equal(updates.at(-1).fields['数据源地址'], 'https://rsshub.app/bilibili/user/video/123456789');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('worker resolves Bilibili video link as reference content', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-worker-link-video-'));
+  const storePath = join(dir, 'store.json');
+
+  try {
+    const updates = [];
+    const createdRecords = [];
+    const loaded = workerLoaded({
+      creators: [{
+        id: 'rec_video',
+        recordId: 'rec_video',
+        name: '视频链接行',
+        enabledStatus: '启用',
+        collectAction: '待解析链接',
+        taskStatus: '空闲',
+        sourceLink: 'https://b23.tv/video',
+      }],
+      updates,
+      createdRecords,
+    });
+
+    const result = await runFeishuActionWorker({
+      loaded,
+      storePath,
+      dryRun: false,
+      resolveLink: async () => ({
+        kind: 'content',
+        finalUrl: 'https://www.bilibili.com/video/BV1abcDEF12',
+        platform: 'bilibili',
+        externalId: 'BV1abcDEF12',
+        content: {
+          platform: 'bilibili',
+          creatorName: '随机发现',
+          externalId: 'BV1abcDEF12',
+          url: 'https://www.bilibili.com/video/BV1abcDEF12',
+          title: 'B站随机发现内容 BV1abcDEF12',
+          description: '自动导入',
+          contentType: '视频',
+        },
+      }),
+    });
+
+    assert.equal(result.successCount, 1);
+    assert.match(result.results[0].summary, /单条内容/);
+    assert.equal(createdRecords.length, 1);
+    assert.equal(createdRecords[0].records[0]['内容唯一键'], 'bilibili:BV1abcDEF12');
+    assert.equal(createdRecords[0].records[0]['博主'], '随机发现');
+    assert.equal(updates.at(-1).fields['链接类型'], '单条内容');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('worker backfill normalizes manually typed Bilibili UID before collection', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-worker-uid-'));
+  const storePath = join(dir, 'store.json');
+  const rssPath = join(dir, 'rss.xml');
+
+  try {
+    await writeFile(rssPath, bilibiliRssXml(), 'utf8');
+    const updates = [];
+    const createdRecords = [];
+    const loaded = workerLoaded({
+      creators: [{
+        id: 'rec_uid',
+        recordId: 'rec_uid',
+        name: '第四种黑猩猩',
+        platform: 'bilibili',
+        externalId: 'UID:3546830396721763',
+        enabledStatus: '启用',
+        collectAction: '待回溯',
+        taskStatus: '空闲',
+        collectSince: '2026-06-01T00:00:00.000Z',
+        source: {
+          kind: 'rss-file',
+          path: rssPath,
+        },
+      }],
+      updates,
+      createdRecords,
+    });
+
+    const result = await runFeishuActionWorker({
+      loaded,
+      storePath,
+      dryRun: false,
+      limit: 10,
+    });
+
+    assert.equal(result.successCount, 1);
+    assert.equal(createdRecords.length, 1);
+    assert.equal(createdRecords[0].records[0]['博主'], '第四种黑猩猩');
+    assert.equal(updates.at(-1).fields['平台账号ID'], '3546830396721763');
+    assert.equal(updates.at(-1).fields['数据源地址'], 'https://rsshub.app/bilibili/user/video/3546830396721763');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 function creatorFields() {
   return {
     name: '博主名称',
     platform: '平台',
     externalId: '平台账号ID',
     homepageUrl: '主页链接',
+    sourceLink: '来源链接',
+    linkType: '链接类型',
     enabledStatus: '启用状态',
     checkFrequency: '检查频率',
     lastCheckedAt: '最近检查时间',
@@ -145,4 +293,48 @@ function contentFields() {
     shareCount: '转发/分享数',
     analysisStatus: '分析状态',
   };
+}
+
+function workerLoaded({ creators, updates, createdRecords = [] }) {
+  return {
+    creators,
+    feishuClient: {
+      async listRecords(tableName) {
+        assert.equal(tableName, 'contents');
+        return [];
+      },
+      async createRecords(tableName, records) {
+        createdRecords.push({ tableName, records });
+        return records.map((_, index) => `rec_content_${index}`);
+      },
+      async updateRecord(tableName, recordId, fields) {
+        updates.push({ tableName, recordId, fields });
+      },
+    },
+    feishuConfig: {
+      tables: {
+        creators: {
+          fields: creatorFields(),
+        },
+        contents: {
+          fields: contentFields(),
+        },
+      },
+    },
+  };
+}
+
+function bilibiliRssXml() {
+  return `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <item>
+      <title>测试视频</title>
+      <link>https://www.bilibili.com/video/BV1uidTEST1</link>
+      <guid>https://www.bilibili.com/video/BV1uidTEST1</guid>
+      <pubDate>Mon, 15 Jun 2026 01:00:00 GMT</pubDate>
+      <description><![CDATA[测试简介]]></description>
+    </item>
+  </channel>
+</rss>`;
 }

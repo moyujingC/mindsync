@@ -20,6 +20,12 @@ export const FEISHU_TABLE_SCHEMAS = {
       },
       externalId: { field_name: '平台账号ID', type: FEISHU_FIELD_TYPES.text },
       homepageUrl: { field_name: '主页链接', type: FEISHU_FIELD_TYPES.url },
+      sourceLink: { field_name: '来源链接', type: FEISHU_FIELD_TYPES.url },
+      linkType: {
+        field_name: '链接类型',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['自动', '博主主页', '单条内容']) },
+      },
       enabledStatus: {
         field_name: '启用状态',
         type: FEISHU_FIELD_TYPES.singleSelect,
@@ -47,7 +53,7 @@ export const FEISHU_TABLE_SCHEMAS = {
       collectAction: {
         field_name: '采集动作',
         type: FEISHU_FIELD_TYPES.singleSelect,
-        property: { options: optionNames(['无', '待检查', '待回溯']) },
+        property: { options: optionNames(['无', '待解析链接', '待检查', '待回溯']) },
       },
       taskStatus: {
         field_name: '任务状态',

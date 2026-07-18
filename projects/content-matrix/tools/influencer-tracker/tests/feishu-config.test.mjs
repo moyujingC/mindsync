@@ -21,6 +21,7 @@ const fields = {
 const contentFields = {
   uniqueKey: '内容唯一键',
   platform: '平台',
+  creator: '博主',
   externalId: '内容ID',
   url: '内容链接',
   title: '标题',
@@ -129,6 +130,7 @@ test('mapContentToFeishuFields maps normalized content to table fields', () => {
   const fieldsForWrite = mapContentToFeishuFields({
     uniqueKey: 'bilibili:BV1',
     platform: 'bilibili',
+    creatorName: 'B站样例账号',
     contentExternalId: 'BV1',
     url: 'https://www.bilibili.com/video/BV1',
     title: '标题',
@@ -145,6 +147,7 @@ test('mapContentToFeishuFields maps normalized content to table fields', () => {
   }, contentFields);
 
   assert.equal(fieldsForWrite['内容唯一键'], 'bilibili:BV1');
+  assert.equal(fieldsForWrite['博主'], 'B站样例账号');
   assert.deepEqual(fieldsForWrite['内容链接'], {
     link: 'https://www.bilibili.com/video/BV1',
     text: 'https://www.bilibili.com/video/BV1',

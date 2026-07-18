@@ -11,14 +11,40 @@ export async function importManualContents({
   dryRun = false,
 }) {
   const input = await readJsonFile(inputPath);
-  const contents = normalizeManualInput(input);
+  const items = Array.isArray(input) ? input : input.items;
+  return importManualContentItems({
+    items,
+    storePath,
+    feishuPath,
+    dryRun,
+    inputPath,
+  });
+}
+
+export async function importManualContentItems({
+  items,
+  storePath,
+  feishuPath = null,
+  feishuClient = null,
+  feishuConfig = null,
+  dryRun = false,
+  inputPath = null,
+  runType = 'manual-import',
+}) {
+  const contents = normalizeManualInput({ items });
   const store = new ContentStore({ filePath: storePath });
   await store.load();
 
-  const { feishuClient, feishuConfig } = feishuPath
+  const loaded = feishuClient && feishuConfig
+    ? { feishuClient, feishuConfig }
+    : feishuPath
     ? await loadFeishu(feishuPath)
     : { feishuClient: null, feishuConfig: null };
-  const remoteContentKeys = await loadRemoteContentKeys({ feishuClient, feishuConfig, dryRun });
+  const remoteContentKeys = await loadRemoteContentKeys({
+    feishuClient: loaded.feishuClient,
+    feishuConfig: loaded.feishuConfig,
+    dryRun,
+  });
 
   const newContents = [];
   let duplicateCount = 0;
@@ -31,10 +57,10 @@ export async function importManualContents({
   }
 
   let recordIds = [];
-  if (!dryRun && feishuClient && newContents.length > 0) {
-    const fieldMap = feishuConfig.tables.contents.fields;
+  if (!dryRun && loaded.feishuClient && newContents.length > 0) {
+    const fieldMap = loaded.feishuConfig.tables.contents.fields;
     const records = newContents.map((content) => mapContentToFeishuFields(content, fieldMap));
-    recordIds = await feishuClient.createRecords('contents', records);
+    recordIds = await loaded.feishuClient.createRecords('contents', records);
   }
 
   if (!dryRun) {
@@ -42,7 +68,7 @@ export async function importManualContents({
       store.addContent(content.uniqueKey);
     }
     store.addRun({
-      type: 'manual-import',
+      type: runType,
       importedAt: new Date().toISOString(),
       inputPath,
       createdCount: newContents.length,

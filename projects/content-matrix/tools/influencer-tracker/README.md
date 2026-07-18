@@ -502,11 +502,13 @@ node src/cli/check-updates.mjs --feishu config/feishu.local.json
 
 需要在 `博主账号` 表补充这些字段：
 
-- `采集动作`：单选，选项为 `无`、`待检查`、`待回溯`
+- `采集动作`：单选，选项为 `无`、`待解析链接`、`待检查`、`待回溯`
 - `任务状态`：单选，选项为 `空闲`、`执行中`、`完成`、`失败`
 - `采集起始日期`：日期，用于回溯采集的 `since`
 - `任务报告`：文本，用于写回本次执行摘要或错误
 - `任务锁定时间`：日期，用于记录 worker 开始处理时间
+- `来源链接`：链接或文本，用于粘贴 B 站短链接、主页链接、视频链接
+- `链接类型`：单选，选项为 `自动`、`博主主页`、`单条内容`
 
 同时在 `config/feishu.local.json` 的 `tables.creators.fields` 里补充：
 
@@ -516,7 +518,9 @@ node src/cli/check-updates.mjs --feishu config/feishu.local.json
   "taskStatus": "任务状态",
   "collectSince": "采集起始日期",
   "taskReport": "任务报告",
-  "taskLockedAt": "任务锁定时间"
+  "taskLockedAt": "任务锁定时间",
+  "sourceLink": "来源链接",
+  "linkType": "链接类型"
 }
 ```
 
@@ -545,10 +549,25 @@ node src/cli/feishu-action-worker.mjs \
   --store logs/content-store.feishu-worker.json
 ```
 
-worker 当前处理两种动作：
+worker 当前处理三种动作：
 
+- `待解析链接`：解析 `来源链接` 或 `主页链接`。如果最终是 B 站博主主页，会补全平台、UID、主页链接、RSS 数据源；如果最终是 B 站单条视频，会先导入 `内容更新` 表，博主默认记为 `随机发现`。
 - `待检查`：检查该账号最新内容。
 - `待回溯`：按 `采集起始日期` 回溯内容。
+
+B 站短链接支持：
+
+```text
+主页短链接 -> 跳转到 https://space.bilibili.com/123456789
+-> 识别为博主主页
+-> 自动补全 平台=bilibili、平台账号ID=123456789、数据源类型=rss、数据源地址=https://rsshub.app/bilibili/user/video/123456789
+
+视频短链接 -> 跳转到 https://www.bilibili.com/video/BVxxxx
+-> 识别为单条内容
+-> 写入 内容更新 表，博主先记为 随机发现
+```
+
+如果你已经在 `平台账号ID` 里手动填了 `UID:3546830396721763`，worker 会清洗成纯 UID 再采集，避免拼出错误 RSS 地址。若 `待检查` / `待回溯` 时发现 B 站账号缺少 RSS 数据源，也会尝试先解析 `来源链接` 或 `主页链接` 再继续采集。
 
 执行成功后会把 `采集动作` 改回 `无`，把 `任务状态` 改成 `完成`，并写入 `任务报告`。执行失败时会写入 `失败` 和错误原因。
 

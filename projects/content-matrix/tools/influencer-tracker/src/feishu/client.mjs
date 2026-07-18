@@ -138,8 +138,10 @@ export function mapFeishuCreatorRecord(record, fieldMap) {
     id: record.record_id,
     name: value('name'),
     platform: normalizeSingleSelect(value('platform')),
-    externalId: value('externalId'),
-    homepageUrl: value('homepageUrl')?.link ?? value('homepageUrl'),
+    externalId: extractTextValue(value('externalId')),
+    homepageUrl: extractLinkOrTextValue(value('homepageUrl')),
+    sourceLink: extractLinkOrTextValue(value('sourceLink')),
+    linkType: normalizeSingleSelect(value('linkType')),
     enabledStatus: normalizeSingleSelect(value('enabledStatus')),
     checkFrequency: normalizeSingleSelect(value('checkFrequency')),
     collectAction: normalizeSingleSelect(value('collectAction')),
@@ -156,6 +158,13 @@ export function mapFeishuCreatorRecord(record, fieldMap) {
 
 export function mapCreatorTaskFields(fields, fieldMap) {
   return compactObject({
+    [fieldMap.platform]: fields.platform,
+    [fieldMap.externalId]: fields.externalId,
+    [fieldMap.homepageUrl]: fields.homepageUrl,
+    [fieldMap.sourceLink]: fields.sourceLink,
+    [fieldMap.linkType]: fields.linkType,
+    [fieldMap.sourceKind]: fields.sourceKind,
+    [fieldMap.sourcePath]: fields.sourcePath,
     [fieldMap.collectAction]: fields.collectAction,
     [fieldMap.taskStatus]: fields.taskStatus,
     [fieldMap.collectSince]: fields.collectSince,
@@ -182,6 +191,7 @@ export function mapContentToFeishuFields(content, fieldMap) {
   return compactObject({
     [fieldMap.uniqueKey]: content.uniqueKey,
     [fieldMap.platform]: content.platform,
+    [fieldMap.creator]: content.creatorName,
     [fieldMap.externalId]: content.contentExternalId,
     [fieldMap.url]: content.url ? { link: content.url, text: content.url } : undefined,
     [fieldMap.title]: content.title,
@@ -316,7 +326,24 @@ function extractTextValue(value) {
   if (typeof value === 'string') {
     return value;
   }
+  if (Array.isArray(value)) {
+    return value.map((item) => extractTextValue(item)).filter(Boolean).join('');
+  }
   return value.text ?? value.name ?? value.link ?? '';
+}
+
+function extractLinkOrTextValue(value) {
+  if (!value) {
+    return '';
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    const firstLink = value.map((item) => extractLinkOrTextValue(item)).find(Boolean);
+    return firstLink ?? '';
+  }
+  return value.link ?? value.text ?? value.name ?? '';
 }
 
 function numberOrNull(value) {

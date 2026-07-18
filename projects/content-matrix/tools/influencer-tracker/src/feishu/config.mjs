@@ -55,6 +55,8 @@ const REQUIRED_TABLES = {
 
 const OPTIONAL_TABLE_FIELDS = {
   creators: [
+    'sourceLink',
+    'linkType',
     'collectAction',
     'taskStatus',
     'collectSince',
