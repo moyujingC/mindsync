@@ -20,7 +20,10 @@ export async function backfillCreator({
   const remoteContentKeys = await loadRemoteContentKeys({ feishuClient, feishuConfig, dryRun });
 
   const adapter = getPlatformAdapter(creator.platform);
-  const fetched = await adapter(creator, { cwd });
+  const fetched = await adapter(creator, {
+    cwd,
+    platformConfig: feishuConfig?.platforms?.[creator.platform],
+  });
   const filtered = fetched
     .filter((content) => !since || isOnOrAfter(content.publishedAt, since))
     .slice(0, limit);

@@ -114,6 +114,29 @@ node src/cli/check-updates.mjs --dry-run --creators fixtures/creators.example.js
 }
 ```
 
+如果 `rsshub.app` 在本机网络下超时，可以在 `config/feishu.local.json` 增加 B 站 RSSHub 候选地址：
+
+```json
+{
+  "platforms": {
+    "bilibili": {
+      "rsshubBaseUrls": [
+        "https://rsshub.app",
+        "https://your-rsshub.example.com"
+      ]
+    }
+  }
+}
+```
+
+也可以临时用环境变量覆盖：
+
+```bash
+RSSHUB_BASE_URLS="https://your-rsshub.example.com,https://rsshub.app" npm run worker:feishu
+```
+
+注意：如果飞书 `博主账号` 表的 `数据源地址` 已经写了完整 RSS URL，系统会优先使用这条 URL；候选 `rsshubBaseUrls` 只在没有写死 `数据源地址` 时生效。
+
 ## 手工导入小红书 / 抖音
 
 本地 dry-run：
@@ -568,6 +591,8 @@ B 站短链接支持：
 ```
 
 如果你已经在 `平台账号ID` 里手动填了 `UID:3546830396721763`，worker 会清洗成纯 UID 再采集，避免拼出错误 RSS 地址。若 `待检查` / `待回溯` 时发现 B 站账号缺少 RSS 数据源，也会尝试先解析 `来源链接` 或 `主页链接` 再继续采集。
+
+如果 `rsshub.app` 超时，可以配置 `platforms.bilibili.rsshubBaseUrls` 或环境变量 `RSSHUB_BASE_URLS`，让系统按顺序尝试多个 RSSHub 地址。
 
 执行成功后会把 `采集动作` 改回 `无`，把 `任务状态` 改成 `完成`，并写入 `任务报告`。执行失败时会写入 `失败` 和错误原因。
 

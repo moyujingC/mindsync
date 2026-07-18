@@ -47,7 +47,10 @@ export async function checkUpdates({
     try {
       validateCreator(creator);
       const adapter = getPlatformAdapter(creator.platform);
-      const contents = await adapter(creator, { cwd });
+      const contents = await adapter(creator, {
+        cwd,
+        platformConfig: feishuConfig?.platforms?.[creator.platform],
+      });
       const limitedContents = contents.slice(0, limitPerCreator);
       creatorResult.fetchedCount = limitedContents.length;
 

@@ -165,3 +165,54 @@ test('checkUpdates deduplicates against existing Feishu content keys', async () 
     await rm(dir, { recursive: true, force: true });
   }
 });
+
+test('checkUpdates passes platform RSSHub config to Bilibili adapter', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-platform-config-'));
+  const storePath = join(dir, 'store.json');
+  const originalFetch = globalThis.fetch;
+  const requestedUrls = [];
+
+  globalThis.fetch = async (url) => {
+    requestedUrls.push(String(url));
+    return new Response(`
+      <rss><channel>
+        <item>
+          <title>平台配置测试</title>
+          <link>https://www.bilibili.com/video/BV4444444444</link>
+          <guid>https://www.bilibili.com/video/BV4444444444</guid>
+          <pubDate>Wed, 15 Jul 2026 01:00:00 GMT</pubDate>
+          <description>简介</description>
+        </item>
+      </channel></rss>
+    `, { status: 200 });
+  };
+
+  try {
+    const result = await checkUpdates({
+      creators: [{
+        id: 'enabled',
+        name: '启用账号',
+        platform: 'bilibili',
+        externalId: '444',
+        enabledStatus: '启用',
+      }],
+      feishuConfig: {
+        platforms: {
+          bilibili: {
+            rsshubBaseUrls: ['https://rsshub-config.example.com'],
+          },
+        },
+      },
+      storePath,
+      dryRun: true,
+    });
+
+    assert.equal(result.createdCount, 1);
+    assert.deepEqual(requestedUrls, [
+      'https://rsshub-config.example.com/bilibili/user/video/444',
+    ]);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(dir, { recursive: true, force: true });
+  }
+});

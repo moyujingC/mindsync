@@ -2,6 +2,13 @@
   "appId": "cli_xxx",
   "appSecret": "xxx",
   "baseAppToken": "bascn_xxx",
+  "platforms": {
+    "bilibili": {
+      "rsshubBaseUrls": [
+        "https://rsshub.app"
+      ]
+    }
+  },
   "tables": {
     "creators": {
       "tableId": "tbl_xxx",

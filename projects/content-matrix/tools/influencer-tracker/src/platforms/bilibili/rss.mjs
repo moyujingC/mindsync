@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const DEFAULT_RSSHUB_BASE_URL = 'https://rsshub.app';
+const RSSHUB_ENV = 'RSSHUB_BASE_URLS';
 
 export async function fetchBilibiliContents(creator, options = {}) {
   const xml = await loadRssXml(creator, options);
@@ -15,12 +16,8 @@ async function loadRssXml(creator, options) {
     return readFile(filePath, 'utf8');
   }
 
-  const sourceUrl = creator.source?.url ?? buildBilibiliRssUrl(creator.externalId, options);
-  const response = await fetchRss(sourceUrl, options.signal);
-
-  if (!response.ok) {
-    throw new Error(`Bilibili RSS request failed: ${response.status} ${response.statusText}; url=${sourceUrl}`);
-  }
+  const sourceUrls = buildBilibiliRssUrls(creator, options);
+  const response = await fetchFirstRss(sourceUrls, options.signal);
 
   return response.text();
 }
@@ -39,9 +36,75 @@ async function fetchRss(sourceUrl, signal) {
   }
 }
 
-function buildBilibiliRssUrl(externalId, options) {
-  const baseUrl = options.rsshubBaseUrl ?? DEFAULT_RSSHUB_BASE_URL;
+async function fetchFirstRss(sourceUrls, signal) {
+  const errors = [];
+  for (const sourceUrl of sourceUrls) {
+    try {
+      const response = await fetchRss(sourceUrl, signal);
+      if (response.ok) {
+        return response;
+      }
+      errors.push(`Bilibili RSS request failed: ${response.status} ${response.statusText}; url=${sourceUrl}`);
+    } catch (error) {
+      errors.push(error.message);
+    }
+  }
+  throw new Error(errors.join(' | '));
+}
+
+function buildBilibiliRssUrls(creator, options) {
+  if (creator.source?.url) {
+    return expandConfiguredRssUrl(creator.source.url, options);
+  }
+
+  return resolveRsshubBaseUrls(options).map((baseUrl) => buildBilibiliRssUrl({
+    baseUrl,
+    externalId: creator.externalId,
+  }));
+}
+
+function expandConfiguredRssUrl(sourceUrl, options) {
+  const parsed = parseRsshubBilibiliUrl(sourceUrl);
+  if (!parsed) {
+    return [sourceUrl];
+  }
+  return resolveRsshubBaseUrls(options).map((baseUrl) => buildBilibiliRssUrl({
+    baseUrl,
+    externalId: parsed.externalId,
+  }));
+}
+
+function parseRsshubBilibiliUrl(sourceUrl) {
+  try {
+    const parsed = new URL(sourceUrl);
+    const match = parsed.pathname.match(/^\/bilibili\/user\/video\/([^/]+)/);
+    if (!match) {
+      return null;
+    }
+    return {
+      baseUrl: parsed.origin,
+      externalId: decodeURIComponent(match[1]),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function buildBilibiliRssUrl({ baseUrl, externalId }) {
   return `${baseUrl.replace(/\/$/, '')}/bilibili/user/video/${encodeURIComponent(externalId)}`;
+}
+
+function resolveRsshubBaseUrls(options = {}) {
+  const configured = options.rsshubBaseUrls
+    ?? options.platformConfig?.rsshubBaseUrls
+    ?? options.platformConfig?.rsshubBaseUrl
+    ?? options.rsshubBaseUrl;
+  const fromConfig = Array.isArray(configured) ? configured : String(configured ?? '').split(',');
+  const fromEnv = String(process.env[RSSHUB_ENV] ?? '').split(',');
+  const candidates = [...fromConfig, ...fromEnv, DEFAULT_RSSHUB_BASE_URL]
+    .map((value) => String(value).trim())
+    .filter(Boolean);
+  return [...new Set(candidates)];
 }
 
 function parseRssItems(xml) {
@@ -138,4 +201,8 @@ export const internals = {
   parseRssItems,
   normalizeBilibiliRssItem,
   fetchRss,
+  fetchFirstRss,
+  buildBilibiliRssUrls,
+  resolveRsshubBaseUrls,
+  parseRsshubBilibiliUrl,
 };

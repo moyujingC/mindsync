@@ -58,3 +58,101 @@ test('fetchRss reports source URL and network reason on fetch failure', async ()
     globalThis.fetch = originalFetch;
   }
 });
+
+test('buildBilibiliRssUrls supports configured RSSHub base URLs', () => {
+  const urls = internals.buildBilibiliRssUrls({
+    externalId: '123',
+  }, {
+    platformConfig: {
+      rsshubBaseUrls: [
+        'https://rsshub-a.example.com',
+        'https://rsshub-b.example.com/',
+      ],
+    },
+  });
+
+  assert.deepEqual(urls, [
+    'https://rsshub-a.example.com/bilibili/user/video/123',
+    'https://rsshub-b.example.com/bilibili/user/video/123',
+    'https://rsshub.app/bilibili/user/video/123',
+  ]);
+});
+
+test('buildBilibiliRssUrls expands configured source URL with fallback bases', () => {
+  const urls = internals.buildBilibiliRssUrls({
+    externalId: 'ignored',
+    source: {
+      kind: 'rss',
+      url: 'https://rsshub.app/bilibili/user/video/123',
+    },
+  }, {
+    platformConfig: {
+      rsshubBaseUrls: ['https://rsshub-a.example.com'],
+    },
+  });
+
+  assert.deepEqual(urls, [
+    'https://rsshub-a.example.com/bilibili/user/video/123',
+    'https://rsshub.app/bilibili/user/video/123',
+  ]);
+});
+
+test('parseRsshubBilibiliUrl extracts user id from RSSHub route', () => {
+  assert.deepEqual(
+    internals.parseRsshubBilibiliUrl('https://rsshub.app/bilibili/user/video/123'),
+    { baseUrl: 'https://rsshub.app', externalId: '123' },
+  );
+  assert.equal(internals.parseRsshubBilibiliUrl('https://example.com/other/123'), null);
+});
+
+test('fetchFirstRss tries configured RSSHub URLs in order', async () => {
+  const originalFetch = globalThis.fetch;
+  const attempted = [];
+  globalThis.fetch = async (url) => {
+    attempted.push(String(url));
+    if (attempted.length === 1) {
+      throw new TypeError('fetch failed');
+    }
+    return new Response('<rss><channel></channel></rss>', { status: 200 });
+  };
+
+  try {
+    const response = await internals.fetchFirstRss([
+      'https://rsshub-a.example.com/bilibili/user/video/123',
+      'https://rsshub-b.example.com/bilibili/user/video/123',
+    ]);
+    assert.equal(response.status, 200);
+    assert.deepEqual(attempted, [
+      'https://rsshub-a.example.com/bilibili/user/video/123',
+      'https://rsshub-b.example.com/bilibili/user/video/123',
+    ]);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('fetchFirstRss continues after failed HTTP status', async () => {
+  const originalFetch = globalThis.fetch;
+  const attempted = [];
+  globalThis.fetch = async (url) => {
+    attempted.push(String(url));
+    if (attempted.length === 1) {
+      return new Response('bad gateway', { status: 502, statusText: 'Bad Gateway' });
+    }
+    return new Response('<rss><channel></channel></rss>', { status: 200 });
+  };
+
+  try {
+    const response = await internals.fetchFirstRss([
+      'https://rsshub-a.example.com/bilibili/user/video/123',
+      'https://rsshub-b.example.com/bilibili/user/video/123',
+    ]);
+    assert.equal(response.status, 200);
+    assert.deepEqual(attempted, [
+      'https://rsshub-a.example.com/bilibili/user/video/123',
+      'https://rsshub-b.example.com/bilibili/user/video/123',
+    ]);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
