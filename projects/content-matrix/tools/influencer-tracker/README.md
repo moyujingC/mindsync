@@ -123,7 +123,10 @@ node src/cli/check-updates.mjs --dry-run --creators fixtures/creators.example.js
       "rsshubBaseUrls": [
         "https://rsshub.app",
         "https://your-rsshub.example.com"
-      ]
+      ],
+      "ytDlpFallback": true,
+      "ytDlpLimit": 5,
+      "ytDlpBin": "yt-dlp"
     }
   }
 }
@@ -136,6 +139,10 @@ RSSHUB_BASE_URLS="https://your-rsshub.example.com,https://rsshub.app" npm run wo
 ```
 
 注意：如果飞书 `博主账号` 表的 `数据源地址` 是 RSSHub 的 B 站路由，系统会提取其中的 UID，并套用候选 `rsshubBaseUrls` 逐个尝试；如果是非 RSSHub URL，则按原样只尝试这条 URL。
+
+`ytDlpFallback` 是备用采集模式：当所有 RSSHub 都失败时，系统会调用本机 `yt-dlp --flat-playlist` 读取 B 站主页公开视频 BV 列表。这个模式通常只能拿到 BV 号和视频链接，标题会先记为 `B站视频 <BV号>`，发布时间为空，后续可以再补详情。
+
+默认 fallback 最多拉 5 条，降低被 B 站 412 拦截的概率；可以用 `ytDlpLimit` 调整。
 
 如果只是想诊断某个 B 站 UID 的数据源是否可用，可以先跑：
 
@@ -604,6 +611,18 @@ B 站短链接支持：
 如果 `rsshub.app` 超时，可以配置 `platforms.bilibili.rsshubBaseUrls` 或环境变量 `RSSHUB_BASE_URLS`，让系统按顺序尝试多个 RSSHub 地址。
 
 排障时可以先跑 `npm run diagnose:bili -- --uid <B站UID>`。如果诊断命令里所有 RSSHub 都失败，采集 worker 也会失败；这时优先换一个可访问 RSSHub，或者后续切换到非 RSSHub 数据源。
+
+如果本机装了 `yt-dlp`，也可以在 `config/feishu.local.json` 打开：
+
+```json
+{
+  "platforms": {
+    "bilibili": {
+      "ytDlpFallback": true
+    }
+  }
+}
+```
 
 执行成功后会把 `采集动作` 改回 `无`，把 `任务状态` 改成 `完成`，并写入 `任务报告`。执行失败时会写入 `失败` 和错误原因。
 

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { fetchBilibiliContents } from '../src/platforms/bilibili/rss.mjs';
 import { internals } from '../src/platforms/bilibili/rss.mjs';
 
 test('parseRssItems extracts Bilibili RSS items', () => {
@@ -174,4 +175,57 @@ test('fetchFirstRss continues after failed HTTP status', async () => {
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test('fetchBilibiliContents falls back to yt-dlp when enabled', async () => {
+  const contents = await fetchBilibiliContents({
+    name: '第四种黑猩猩',
+    externalId: '3546830396721763',
+  }, {
+    platformConfig: {
+      ytDlpFallback: true,
+    },
+    fetchImpl: async () => new Response('bad gateway', {
+      status: 503,
+      statusText: 'Service Unavailable',
+    }),
+    execFileImpl: async () => ({
+      stdout: `${JSON.stringify({
+        id: 'BV166Ni6JESi',
+        url: 'https://www.bilibili.com/video/BV166Ni6JESi',
+      })}\n`,
+    }),
+  });
+
+  assert.equal(contents.length, 1);
+  assert.equal(contents[0].uniqueKey, 'bilibili:BV166Ni6JESi');
+  assert.equal(contents[0].raw.source, 'yt-dlp-flat-playlist');
+});
+
+test('fetchBilibiliContents caps yt-dlp fallback limit at five by default', async () => {
+  let playlistEnd = null;
+  await fetchBilibiliContents({
+    name: '第四种黑猩猩',
+    externalId: '3546830396721763',
+  }, {
+    limit: 20,
+    platformConfig: {
+      ytDlpFallback: true,
+    },
+    fetchImpl: async () => new Response('bad gateway', {
+      status: 503,
+      statusText: 'Service Unavailable',
+    }),
+    execFileImpl: async (bin, args) => {
+      playlistEnd = args[args.indexOf('--playlist-end') + 1];
+      return {
+        stdout: `${JSON.stringify({
+          id: 'BV166Ni6JESi',
+          url: 'https://www.bilibili.com/video/BV166Ni6JESi',
+        })}\n`,
+      };
+    },
+  });
+
+  assert.equal(playlistEnd, '5');
 });

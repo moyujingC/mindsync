@@ -23,6 +23,7 @@ export async function backfillCreator({
   const fetched = await adapter(creator, {
     cwd,
     platformConfig: feishuConfig?.platforms?.[creator.platform],
+    limit,
   });
   const filtered = fetched
     .filter((content) => !since || isOnOrAfter(content.publishedAt, since))

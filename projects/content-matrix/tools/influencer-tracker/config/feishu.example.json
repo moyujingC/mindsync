@@ -6,7 +6,10 @@
     "bilibili": {
       "rsshubBaseUrls": [
         "https://rsshub.app"
-      ]
+      ],
+      "ytDlpFallback": false,
+      "ytDlpLimit": 5,
+      "ytDlpBin": "yt-dlp"
     }
   },
   "tables": {

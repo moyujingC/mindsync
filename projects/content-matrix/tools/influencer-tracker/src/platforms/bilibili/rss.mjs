@@ -1,13 +1,29 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { fetchBilibiliContentsWithYtDlp } from './yt-dlp.mjs';
 
 const DEFAULT_RSSHUB_BASE_URL = 'https://rsshub.app';
 const RSSHUB_ENV = 'RSSHUB_BASE_URLS';
 
 export async function fetchBilibiliContents(creator, options = {}) {
-  const xml = await loadRssXml(creator, options);
-  const items = parseRssItems(xml);
-  return items.map((item) => normalizeBilibiliRssItem(item, creator));
+  try {
+    const xml = await loadRssXml(creator, options);
+    const items = parseRssItems(xml);
+    return items.map((item) => normalizeBilibiliRssItem(item, creator));
+  } catch (error) {
+    if (!shouldUseYtDlpFallback(options)) {
+      throw error;
+    }
+    try {
+      return await fetchBilibiliContentsWithYtDlp(creator, {
+        limit: options.platformConfig?.ytDlpLimit ?? options.ytDlpLimit ?? Math.min(options.limit ?? options.limitPerCreator ?? 5, 5),
+        bin: options.platformConfig?.ytDlpBin ?? options.ytDlpBin,
+        execFileImpl: options.execFileImpl,
+      });
+    } catch (fallbackError) {
+      throw new Error(`${error.message} | Bilibili yt-dlp fallback failed: ${fallbackError.message}`);
+    }
+  }
 }
 
 async function loadRssXml(creator, options) {
@@ -113,6 +129,14 @@ function resolveRsshubBaseUrls(options = {}) {
   return [...new Set(candidates)];
 }
 
+function shouldUseYtDlpFallback(options = {}) {
+  return Boolean(
+    options.ytDlpFallback
+    || options.platformConfig?.ytDlpFallback
+    || process.env.BILIBILI_YTDLP_FALLBACK === '1',
+  );
+}
+
 function parseRssItems(xml) {
   const itemBlocks = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map((match) => match[1]);
   return itemBlocks.map((block) => ({
@@ -211,4 +235,5 @@ export const internals = {
   buildBilibiliRssUrls,
   resolveRsshubBaseUrls,
   parseRsshubBilibiliUrl,
+  shouldUseYtDlpFallback,
 };
