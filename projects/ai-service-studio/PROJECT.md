@@ -3,7 +3,7 @@
 > 状态：draft
 > 版本：0.2.0
 > owner：CEO / Orchestrator
-> last_updated：2026-07-16
+> last_updated：2026-07-18
 > source_of_truth：projects/ai-service-studio/PROJECT.md
 > 公司侧入口：[company/projects/知行AI服务/PROJECT.md](../../company/projects/知行AI服务/PROJECT.md)
 > 项目类型：AI 服务收入验证工作区
@@ -172,6 +172,7 @@
 - [AI Native 内容获客系统参考](references/2026-07-17-AINative内容获客系统参考.md)
 - [AI Native 内容获客系统 OCR 原文](references/2026-07-17-AINative内容获客系统-OCR原文.md)
 - [企业 AI 培训到服务与知识治理纵向复盘](synthesis/2026-07-16-企业AI培训到服务与知识治理纵向复盘.md)
+- [Agent/FDE 到内容获客与生产级边界纵向复盘](synthesis/2026-07-18-Agent-FDE到内容获客与生产级边界纵向复盘.md)
 - [KB：企业 AI 落地与 FDE](../research-center/kb/wiki/ai/企业AI落地与FDE.md)
 
 ## 5. 合规和表达边界

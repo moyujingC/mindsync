@@ -3,7 +3,7 @@
 > 状态：draft
 > 版本：0.1.0
 > owner：CEO / Orchestrator
-> last_updated：2026-07-15
+> last_updated：2026-07-18
 > source_of_truth：projects/ai-service-studio/system/README.md
 
 这里承载 `知行AI服务` 的业务方法论、产品设计、获客销售、报价合同和交付 SOP。
@@ -78,6 +78,7 @@
 - 先把同行材料转成“候选方法”，不要直接写成已验证事实。
 - 只有自己实际用过、报价过、交付过或被客户反馈过的内容，才升级为稳定 SOP。
 - 每次新增帖子，先进入 `references/`；只有改变自己的业务设计时，才同步更新 `system/`。
+- 纵向复盘确认后的规则，先进入 `synthesis/`，再通过 `system-refactor-from-synthesis` 集中写回 `system/`。
 - 如果某个判断被多个来源和真实样本反复支持，再考虑抽到 `projects/research-center/kb/`。
 
 ## 5. 当前状态
