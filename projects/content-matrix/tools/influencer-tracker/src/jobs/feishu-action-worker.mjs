@@ -2,7 +2,12 @@ import { checkUpdates } from './check-updates.mjs';
 import { backfillCreator } from './backfill-creator.mjs';
 import { loadCreators } from './load-creators.mjs';
 import { importManualContentItems } from './manual-import.mjs';
-import { normalizeBilibiliUid, resolveBilibiliLink } from './resolve-bilibili-link.mjs';
+import {
+  buildBilibiliReferenceContent,
+  extractBilibiliVideoReferences,
+  normalizeBilibiliUid,
+  resolveBilibiliLink,
+} from './resolve-bilibili-link.mjs';
 import { mapCreatorTaskFields } from '../feishu/client.mjs';
 
 const BILIBILI_RSS_BASE = 'https://rsshub.app/bilibili/user/video';
@@ -265,6 +270,17 @@ async function resolveCreatorLinkAction({
   if (!link) {
     throw new Error('Missing source link or homepage URL');
   }
+  const references = extractBilibiliVideoReferences(link);
+  if (shouldImportReferenceList({ link, references })) {
+    return importBilibiliReferenceList({
+      creator,
+      loaded,
+      storePath,
+      dryRun,
+      references,
+    });
+  }
+
   const resolved = await resolveLink(link);
 
   if (resolved.kind === 'creator') {
@@ -311,6 +327,50 @@ async function resolveCreatorLinkAction({
   throw new Error(`Unsupported Bilibili link: ${resolved.finalUrl}`);
 }
 
+async function importBilibiliReferenceList({
+  creator,
+  loaded,
+  storePath,
+  dryRun,
+  references,
+}) {
+  const importResult = await importManualContentItems({
+    items: references.map((reference) => buildBilibiliReferenceContent({
+      videoId: reference.videoId,
+      url: reference.url,
+      creatorName: creator.name || '随机发现',
+    })),
+    storePath,
+    feishuClient: loaded.feishuClient,
+    feishuConfig: loaded.feishuConfig,
+    dryRun,
+    runType: 'feishu-bilibili-reference-list',
+  });
+  return {
+    actionType: 'resolve-link',
+    resolved: {
+      kind: 'content-list',
+      count: references.length,
+    },
+    createdCount: importResult.createdCount,
+    duplicateCount: importResult.duplicateCount,
+    contents: importResult.contents,
+    creatorFields: {
+      linkType: '单条内容',
+    },
+  };
+}
+
+function shouldImportReferenceList({ link, references }) {
+  if (references.length > 1) {
+    return true;
+  }
+  if (references.length !== 1) {
+    return false;
+  }
+  return !/^https?:\/\//i.test(String(link).trim());
+}
+
 async function updateCreatorTask(loaded, recordId, fields) {
   const fieldMap = loaded.feishuConfig.tables.creators.fields;
   await loaded.feishuClient.updateRecord('creators', recordId, mapCreatorTaskFields(fields, fieldMap));
@@ -318,6 +378,9 @@ async function updateCreatorTask(loaded, recordId, fields) {
 
 function buildTaskReport({ creator, result }) {
   if (creator.collectAction === ACTION_RESOLVE_LINK) {
+    if (result.resolved.kind === 'content-list') {
+      return `链接解析完成：识别为 B站内容列表 ${result.resolved.count} 条，新增 ${result.createdCount} 条，重复 ${result.duplicateCount} 条。`;
+    }
     if (result.resolved.kind === 'creator') {
       return `链接解析完成：识别为 B站博主主页，UID ${result.resolved.externalId}，已补全 RSS 地址。`;
     }

@@ -2,8 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   classifyBilibiliUrl,
+  buildBilibiliReferenceContent,
   extractBilibiliUid,
   extractUrlFromText,
+  extractBilibiliVideoReferences,
   extractBilibiliVideoId,
   normalizeBilibiliUid,
   resolveBilibiliLink,
@@ -59,4 +61,30 @@ test('normalizeBilibiliUid accepts manually typed UID prefix', () => {
   assert.equal(normalizeBilibiliUid('UID:3546830396721763'), '3546830396721763');
   assert.equal(normalizeBilibiliUid('UID：3546830396721763'), '3546830396721763');
   assert.equal(normalizeBilibiliUid('3546830396721763'), '3546830396721763');
+});
+
+test('extractBilibiliVideoReferences accepts multiline BV and video links', () => {
+  const refs = extractBilibiliVideoReferences(`
+    BV166Ni6JESi
+    https://www.bilibili.com/video/BV126M76EEPz
+    BV166Ni6JESi
+  `);
+
+  assert.deepEqual(refs.map((ref) => ref.videoId), [
+    'BV166Ni6JESi',
+    'BV126M76EEPz',
+  ]);
+  assert.equal(refs[0].url, 'https://www.bilibili.com/video/BV166Ni6JESi');
+});
+
+test('buildBilibiliReferenceContent creates manual import item', () => {
+  const item = buildBilibiliReferenceContent({
+    videoId: 'BV166Ni6JESi',
+    url: 'https://www.bilibili.com/video/BV166Ni6JESi',
+    creatorName: '第四种黑猩猩',
+  });
+
+  assert.equal(item.platform, 'bilibili');
+  assert.equal(item.creatorName, '第四种黑猩猩');
+  assert.equal(item.externalId, 'BV166Ni6JESi');
 });

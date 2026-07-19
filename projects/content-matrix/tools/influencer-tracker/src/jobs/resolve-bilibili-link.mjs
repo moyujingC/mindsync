@@ -103,3 +103,43 @@ export function extractBilibiliVideoId(url) {
   }
   return match[1];
 }
+
+export function extractBilibiliVideoReferences(value) {
+  const text = String(value ?? '');
+  const refs = [];
+  const seen = new Set();
+  const pattern = /(https?:\/\/[^\s，。；、）)\],]+)|\b(BV[a-zA-Z0-9]+|av\d+)\b/gi;
+  for (const match of text.matchAll(pattern)) {
+    const raw = match[1] ?? match[2];
+    const videoId = extractVideoIdFromReference(raw);
+    if (!videoId || seen.has(videoId)) {
+      continue;
+    }
+    seen.add(videoId);
+    refs.push({
+      raw,
+      videoId,
+      url: raw.startsWith('http') ? raw : `https://www.bilibili.com/video/${videoId}`,
+    });
+  }
+  return refs;
+}
+
+export function buildBilibiliReferenceContent({ videoId, url, creatorName = '随机发现' }) {
+  return {
+    platform: 'bilibili',
+    creatorName,
+    externalId: videoId,
+    url,
+    title: `B站随机发现内容 ${videoId}`,
+    description: '由飞书 BV/链接列表自动导入，需人工补充标题和说明。',
+    contentType: '视频',
+    referenceReason: '飞书中粘贴的是 B站视频链接或 BV 列表，先作为内容参考入库。',
+  };
+}
+
+function extractVideoIdFromReference(value) {
+  const text = String(value ?? '');
+  const direct = text.match(/\b(BV[a-zA-Z0-9]+|av\d+)\b/i);
+  return direct ? direct[1] : null;
+}

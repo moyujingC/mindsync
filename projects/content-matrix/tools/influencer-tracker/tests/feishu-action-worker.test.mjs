@@ -204,6 +204,92 @@ test('worker resolves Bilibili video link as reference content', async () => {
   }
 });
 
+test('worker imports multiline Bilibili BV references as content list', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-worker-bv-list-'));
+  const storePath = join(dir, 'store.json');
+
+  try {
+    const updates = [];
+    const createdRecords = [];
+    const loaded = workerLoaded({
+      creators: [{
+        id: 'rec_bv_list',
+        recordId: 'rec_bv_list',
+        name: '第四种黑猩猩',
+        enabledStatus: '启用',
+        collectAction: '待解析链接',
+        taskStatus: '空闲',
+        sourceLink: [
+          'BV166Ni6JESi',
+          'https://www.bilibili.com/video/BV126M76EEPz',
+          'BV166Ni6JESi',
+        ].join('\n'),
+      }],
+      updates,
+      createdRecords,
+    });
+
+    const result = await runFeishuActionWorker({
+      loaded,
+      storePath,
+      dryRun: false,
+    });
+
+    assert.equal(result.successCount, 1);
+    assert.match(result.results[0].summary, /内容列表 2 条/);
+    assert.equal(createdRecords.length, 1);
+    assert.deepEqual(createdRecords[0].records.map((record) => record['内容唯一键']), [
+      'bilibili:BV166Ni6JESi',
+      'bilibili:BV126M76EEPz',
+    ]);
+    assert.deepEqual(createdRecords[0].records.map((record) => record['博主']), [
+      '第四种黑猩猩',
+      '第四种黑猩猩',
+    ]);
+    assert.equal(updates.at(-1).fields['链接类型'], '单条内容');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('worker imports single Bilibili BV reference without network resolution', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-worker-single-bv-'));
+  const storePath = join(dir, 'store.json');
+
+  try {
+    const updates = [];
+    const createdRecords = [];
+    const loaded = workerLoaded({
+      creators: [{
+        id: 'rec_single_bv',
+        recordId: 'rec_single_bv',
+        name: '第四种黑猩猩',
+        enabledStatus: '启用',
+        collectAction: '待解析链接',
+        taskStatus: '空闲',
+        sourceLink: 'BV166Ni6JESi',
+      }],
+      updates,
+      createdRecords,
+    });
+
+    const result = await runFeishuActionWorker({
+      loaded,
+      storePath,
+      dryRun: false,
+      resolveLink: async () => {
+        throw new Error('resolveLink should not be called for plain BV');
+      },
+    });
+
+    assert.equal(result.successCount, 1);
+    assert.equal(createdRecords[0].records[0]['内容唯一键'], 'bilibili:BV166Ni6JESi');
+    assert.equal(updates.at(-1).fields['任务状态'], '完成');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('worker backfill normalizes manually typed Bilibili UID before collection', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-worker-uid-'));
   const storePath = join(dir, 'store.json');
