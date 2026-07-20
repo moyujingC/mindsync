@@ -4,6 +4,25 @@ description: '馨冉求职 JD 数据库总索引。每次新增岗位时，同�
 
   '
 jobs:
+- job_id: 2026-07-20-anonymous-small-ai-company-product-technical-lead-001
+  captured_at: '2026-07-20'
+  company: 某小型人工智能公司（FuturX智音，需核实）
+  role_title: 产品技术负责人
+  city: 上海
+  source_platform: BOSS直聘
+  status: applied
+  applied_at: '2026-07-20'
+  primary_track: ai-pm
+  match_score: 83
+  file: jobs/2026-07-20-某小型人工智能公司-产品技术负责人.md
+  keywords:
+  - 产品技术负责人
+  - AI产品架构
+  - Agent
+  - RAG
+  - AI Coding
+  - ToB
+  - 团队管理
 - job_id: 2026-06-08-bytedance-ai-builder-pm-intern-001
   captured_at: '2026-06-08'
   company: 字节跳动
