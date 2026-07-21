@@ -1,0 +1,26 @@
+{
+  "status_code": 0,
+  "cursor": 20,
+  "has_more": 1,
+  "data": [
+    {
+      "type": 1,
+      "aweme_info": {
+        "aweme_id": "dy-real-envelope-001",
+        "desc": "企业 AI 工作流先从真实流程开始。",
+        "create_time": 1784041200,
+        "share_url": "https://www.douyin.com/video/dy-real-envelope-001",
+        "author": {
+          "nickname": "企业 AI 实践者",
+          "sec_uid": "douyin-real-creator-001"
+        },
+        "statistics": {
+          "digg_count": 12,
+          "comment_count": 3,
+          "collect_count": 4,
+          "share_count": 1
+        }
+      }
+    }
+  ]
+}

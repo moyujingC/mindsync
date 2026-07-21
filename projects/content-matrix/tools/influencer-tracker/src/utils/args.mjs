@@ -9,6 +9,8 @@ export function parseArgs(argv) {
     const arg = argv[index];
     if (arg === '--dry-run') {
       args.dryRun = true;
+    } else if (arg === '--no-comments') {
+      args.includeComments = false;
     } else if (arg === '--all') {
       args.all = true;
     } else if (arg.startsWith('--')) {

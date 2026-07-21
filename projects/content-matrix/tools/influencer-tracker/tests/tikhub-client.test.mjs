@@ -148,6 +148,27 @@ test('TikHub normalizers accept the real Xiaohongshu search envelope and note wr
   assert.equal(content.metrics.commentCount, 3);
 });
 
+test('TikHub normalizers accept the real Douyin card array and aweme wrapper', async () => {
+  const fixture = await readFixture('douyin-real-envelope-search.json');
+  const page = extractTikHubPage(fixture);
+  const content = normalizeTikHubContent({ platform: 'douyin', data: page.items[0] });
+
+  assert.equal(page.items.length, 1);
+  assert.equal(page.cursor, '20');
+  assert.equal(page.hasMore, true);
+  assert.equal(content.contentExternalId, 'dy-real-envelope-001');
+  assert.equal(content.creatorExternalId, 'douyin-real-creator-001');
+  assert.equal(content.metrics.commentCount, 3);
+});
+
+test('TikHub content normalizer removes URL query parameters before storage', () => {
+  const content = normalizeTikHubContent({
+    platform: 'douyin',
+    data: { aweme_id: 'dy-url-001', share_url: 'https://www.douyin.com/video/dy-url-001?token=secret&from=share' },
+  });
+  assert.equal(content.url, 'https://www.douyin.com/video/dy-url-001');
+});
+
 test('TikHub contract comment fixture exposes a next-page cursor', async () => {
   const page = extractTikHubPage(await readFixture('comments-page.json'));
   assert.equal(page.items.length, 1);

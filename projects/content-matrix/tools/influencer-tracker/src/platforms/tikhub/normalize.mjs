@@ -6,14 +6,14 @@ export function normalizeTikHubContent({ platform, data }) {
   const externalId = requiredString(first(source.aweme_id, source.note_id, source.id, source.item_id, source.object_id, source.url), 'TikHub content ID');
   const creator = first(source.author, source.user, source.user_info, {});
   const metrics = first(source.statistics, source.interact_info, source.interaction, {});
-  const description = first(source.desc, source.description, source.content, source.note_desc, '');
+  const description = first(source.desc, source.description, source.content, source.note_desc) ?? '';
   return {
     uniqueKey: `${platform}:${externalId}`,
     platform,
     creatorName: first(creator.nickname, creator.name, creator.user_name, source.author_name, '未知博主'),
     creatorExternalId: first(creator.sec_uid, creator.user_id, creator.uid, creator.id, null),
     contentExternalId: externalId,
-    url: first(source.share_url, source.url, source.note_url, source.link, null),
+    url: sanitizeContentUrl(first(source.share_url, source.url, source.note_url, source.link, null)),
     title: first(source.title, source.note_title, description.slice(0, 60), `${platform} 内容 ${externalId}`),
     description,
     publishedAt: normalizeTimestamp(first(source.create_time, source.time, source.publish_time, source.publish_date, null)),
@@ -58,7 +58,7 @@ export function extractTikHubItems(data) {
 export function extractTikHubPage(data) {
   const envelope = data ?? {};
   const source = envelope.data ?? envelope;
-  const items = unwrapItems(first(
+  const items = Array.isArray(source) ? source : unwrapItems(first(
     source.comments,
     source.items,
     source.list,
@@ -82,7 +82,8 @@ export function extractTikHubPage(data) {
 }
 
 function unwrapContent(data) {
-  return data?.data?.note
+  return data?.aweme_info
+    ?? data?.data?.note
     ?? data?.note
     ?? data?.data?.aweme_detail
     ?? data?.data?.aweme
@@ -147,4 +148,16 @@ function normalizeTags(value) {
     return [];
   }
   return value.map((item) => typeof item === 'string' ? item : first(item.name, item.tag_name, '')).filter(Boolean);
+}
+
+function sanitizeContentUrl(value) {
+  if (!value || typeof value !== 'string') {
+    return value ?? null;
+  }
+  try {
+    const url = new URL(value);
+    return `${url.origin}${url.pathname}`;
+  } catch {
+    return value;
+  }
 }

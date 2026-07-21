@@ -37,7 +37,7 @@ try {
         keyword: args.keyword,
         creatorId: args.creatorId,
         // Omit this key unless explicitly requested so a research template can supply its default.
-        includeComments: args.includeComments ? true : undefined,
+        includeComments: typeof args.includeComments === 'boolean' ? args.includeComments : undefined,
         limit: args.limit ? Number(args.limit) : undefined,
         maxPages: args.maxPages ? Number(args.maxPages) : undefined,
         commentLimit: args.commentLimit ? Number(args.commentLimit) : undefined,
