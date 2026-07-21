@@ -92,6 +92,27 @@ test('TikHubClient uses each platform detail identifier contract', async () => {
   assert.match(urls[2], /share_url=/);
 });
 
+test('TikHubClient uses documented POST search contracts for WeChat platforms', async () => {
+  const requests = [];
+  const client = new TikHubClient({
+    apiKey: 'test-key',
+    fetchImpl: async (url, options) => {
+      requests.push({ url: String(url), options });
+      return jsonResponse({ code: 200, data: {} });
+    },
+  });
+
+  await client.searchContents({ platform: 'wechat_mp', keyword: '企业 AI' });
+  await client.searchContents({ platform: 'wechat_channels', keyword: '企业 AI' });
+
+  assert.match(requests[0].url, /wechat_search\/v2\/fetch_search$/);
+  assert.equal(requests[0].options.method, 'POST');
+  assert.deepEqual(JSON.parse(requests[0].options.body), { keyword: '企业 AI', business_type: 'article', offset: 0, raw: true });
+  assert.match(requests[1].url, /wechat_search\/v2\/fetch_search_videos$/);
+  assert.equal(requests[1].options.method, 'POST');
+  assert.deepEqual(JSON.parse(requests[1].options.body), { keyword: '企业 AI', offset: 0, raw: true });
+});
+
 test('TikHub response normalizers create stable content and comment records', () => {
   const content = normalizeTikHubContent({
     platform: 'douyin',
@@ -159,6 +180,60 @@ test('TikHub normalizers accept the real Douyin card array and aweme wrapper', a
   assert.equal(content.contentExternalId, 'dy-real-envelope-001');
   assert.equal(content.creatorExternalId, 'douyin-real-creator-001');
   assert.equal(content.metrics.commentCount, 3);
+});
+
+test('TikHub normalizers flatten WeChat search result groups', () => {
+  const page = extractTikHubPage({
+    keyword: '企业 AI 工作流',
+    results: {
+      data: [{
+        items: [{
+          docID: 'wechat-search-001',
+          title: '企业<em class="highlight">AI</em>工作流',
+          desc: '从真实流程开始。',
+          date: 1_784_041_200,
+          doc_url: 'https://mp.weixin.qq.com/s/example',
+          source: { title: '企业实践观察' },
+        }],
+      }],
+    },
+  });
+  const content = normalizeTikHubContent({ platform: 'wechat_mp', data: page.items[0] });
+
+  assert.equal(page.items.length, 1);
+  assert.equal(content.contentExternalId, 'wechat-search-001');
+  assert.equal(content.creatorName, '企业实践观察');
+  assert.equal(content.title, '企业AI工作流');
+  assert.equal(content.contentType, '文章');
+});
+
+test('TikHub normalizers flatten WeChat Channels search sub-boxes', () => {
+  const page = extractTikHubPage({
+    results: {
+      continue_flag: 1,
+      cursor: 'channels-next-page',
+      data: [{
+        subBoxes: [{
+          items: [{
+            docID: 'finder-object-001',
+            title: '企业<em class="highlight">AI</em>工作流',
+            pubTime: 1_784_041_200,
+            likeNum: '28',
+            source: { title: '视频号实践者' },
+          }],
+        }],
+      }],
+    },
+  });
+  const content = normalizeTikHubContent({ platform: 'wechat_channels', data: page.items[0] });
+
+  assert.equal(page.items.length, 1);
+  assert.equal(page.cursor, 'channels-next-page');
+  assert.equal(page.hasMore, true);
+  assert.equal(content.contentExternalId, 'finder-object-001');
+  assert.equal(content.creatorName, '视频号实践者');
+  assert.equal(content.title, '企业AI工作流');
+  assert.equal(content.metrics.likeCount, 28);
 });
 
 test('TikHub content normalizer removes URL query parameters before storage', () => {

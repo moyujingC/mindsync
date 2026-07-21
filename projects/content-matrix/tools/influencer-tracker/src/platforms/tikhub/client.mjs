@@ -16,10 +16,13 @@ export class TikHubClient {
   }
 
   async searchContents({ platform, keyword, cursor = null }) {
+    const isWechatSearch = platform === 'wechat_mp' || platform === 'wechat_channels';
     return this.request(searchRoute(platform), {
-      method: platform === 'douyin' ? 'POST' : 'GET',
-      params: platform === 'douyin' ? null : { keyword, cursor },
-      body: platform === 'douyin' ? { keyword, cursor } : null,
+      method: platform === 'douyin' || isWechatSearch ? 'POST' : 'GET',
+      params: platform === 'douyin' || isWechatSearch ? null : { keyword, cursor },
+      body: platform === 'douyin'
+        ? { keyword, cursor }
+        : wechatSearchBody(platform, keyword, cursor),
     });
   }
 
@@ -104,9 +107,19 @@ function searchRoute(platform) {
     xiaohongshu: '/api/v1/xiaohongshu/app_v2/search_notes',
     douyin: '/api/v1/douyin/search/fetch_general_search_v1',
     wechat_mp: '/api/v1/wechat_search/v2/fetch_search',
-    wechat_channels: '/api/v1/wechat_search/v2/fetch_search',
+    wechat_channels: '/api/v1/wechat_search/v2/fetch_search_videos',
   };
   return requiredRoute(routes, platform, 'search');
+}
+
+function wechatSearchBody(platform, keyword, cursor) {
+  if (platform === 'wechat_mp') {
+    return { keyword, business_type: 'article', cursor, offset: 0, raw: true };
+  }
+  if (platform === 'wechat_channels') {
+    return { keyword, cursor, offset: 0, raw: true };
+  }
+  return null;
 }
 
 function creatorRoute(platform) {

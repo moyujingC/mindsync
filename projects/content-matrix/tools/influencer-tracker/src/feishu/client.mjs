@@ -201,7 +201,7 @@ export function mapContentToFeishuFields(content, fieldMap) {
     [fieldMap.description]: content.description,
     [fieldMap.publishedAt]: content.publishedAt,
     [fieldMap.collectedAt]: new Date().toISOString(),
-    [fieldMap.contentType]: content.contentType,
+    [fieldMap.contentType]: toFeishuContentType(content.contentType),
     [fieldMap.tags]: content.tags,
     [fieldMap.likeCount]: metrics.likeCount,
     [fieldMap.commentCount]: metrics.commentCount,
@@ -213,6 +213,11 @@ export function mapContentToFeishuFields(content, fieldMap) {
 
 export function toFeishuPlatform(platform) {
   return platformLabel(platform);
+}
+
+function toFeishuContentType(contentType) {
+  // The existing Bitable uses 图文 for long-form articles and image-text posts.
+  return contentType === '文章' ? '图文' : contentType;
 }
 
 export function mapCommentToFeishuFields(comment, fieldMap) {

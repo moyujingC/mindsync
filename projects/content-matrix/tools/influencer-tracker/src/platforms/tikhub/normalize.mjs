@@ -3,24 +3,24 @@ import { normalizePlatformId } from '../platform-id.mjs';
 export function normalizeTikHubContent({ platform, data }) {
   platform = normalizePlatformId(platform, 'TikHub content platform');
   const source = unwrapContent(data);
-  const externalId = requiredString(first(source.aweme_id, source.note_id, source.id, source.item_id, source.object_id, source.url), 'TikHub content ID');
+  const externalId = requiredString(first(source.aweme_id, source.note_id, source.docID, source.doc_id, source.id, source.item_id, source.object_id, source.url), 'TikHub content ID');
   const creator = first(source.author, source.user, source.user_info, {});
   const metrics = first(source.statistics, source.interact_info, source.interaction, {});
-  const description = first(source.desc, source.description, source.content, source.note_desc) ?? '';
+  const description = stripMarkup(first(source.desc, source.description, source.content, source.note_desc) ?? '');
   return {
     uniqueKey: `${platform}:${externalId}`,
     platform,
-    creatorName: first(creator.nickname, creator.name, creator.user_name, source.author_name, '未知博主'),
+    creatorName: first(creator.nickname, creator.name, creator.user_name, source.source?.title, source.author_name, '未知博主'),
     creatorExternalId: first(creator.sec_uid, creator.user_id, creator.uid, creator.id, null),
     contentExternalId: externalId,
     url: sanitizeContentUrl(first(source.share_url, source.url, source.note_url, source.link, null)),
-    title: first(source.title, source.note_title, description.slice(0, 60), `${platform} 内容 ${externalId}`),
+    title: stripMarkup(first(source.title, source.note_title, description.slice(0, 60), `${platform} 内容 ${externalId}`)),
     description,
-    publishedAt: normalizeTimestamp(first(source.create_time, source.time, source.publish_time, source.publish_date, null)),
+    publishedAt: normalizeTimestamp(first(source.create_time, source.time, source.publish_time, source.publish_date, source.pubTime, source.date, null)),
     contentType: normalizeContentType(platform, source),
     tags: normalizeTags(first(source.tags, source.tag_list, [])),
     metrics: {
-      likeCount: toNumber(first(metrics.digg_count, metrics.liked_count, metrics.like_count, source.liked_count, source.like_count, 0)),
+      likeCount: toNumber(first(metrics.digg_count, metrics.liked_count, metrics.like_count, source.liked_count, source.like_count, source.likeNum, 0)),
       commentCount: toNumber(first(metrics.comment_count, metrics.comments_count, source.comments_count, source.comment_count, 0)),
       favoriteCount: toNumber(first(metrics.collect_count, metrics.collected_count, metrics.favorite_count, source.collected_count, source.favorite_count, 0)),
       shareCount: toNumber(first(metrics.share_count, source.shared_count, source.share_count, 0)),
@@ -58,7 +58,7 @@ export function extractTikHubItems(data) {
 export function extractTikHubPage(data) {
   const envelope = data ?? {};
   const source = envelope.data ?? envelope;
-  const items = Array.isArray(source) ? source : unwrapItems(first(
+  const items = flattenSearchItems(Array.isArray(source) ? source : unwrapItems(first(
     source.comments,
     source.items,
     source.list,
@@ -66,18 +66,20 @@ export function extractTikHubPage(data) {
     source.aweme_list,
     source.article_list,
     source.video_list,
+    source.results?.data,
     source.data,
     [],
-  ));
+  )));
   const cursor = [
     source.next_cursor, source.nextCursor, source.cursor, source.max_cursor, source.maxCursor, source.next_page,
+    source.results?.cursor, source.results?.next_cursor, source.results?.nextCursor,
     envelope.next_cursor, envelope.nextCursor, envelope.cursor, envelope.max_cursor, envelope.maxCursor, envelope.next_page,
   ]
     .find((value) => value !== undefined && value !== null && value !== '');
   return {
     items,
     cursor: cursor === undefined ? null : String(cursor),
-    hasMore: normalizeHasMore(first(source.has_more, source.hasMore, source.more, envelope.has_more, envelope.hasMore, envelope.more, false)),
+    hasMore: normalizeHasMore(first(source.has_more, source.hasMore, source.more, source.results?.continue_flag, source.results?.continueFlag, envelope.has_more, envelope.hasMore, envelope.more, false)),
   };
 }
 
@@ -100,6 +102,18 @@ function unwrapContent(data) {
 
 function unwrapItems(items) {
   return Array.isArray(items) ? items : first(items?.comments, items?.items, items?.data, []);
+}
+
+function flattenSearchItems(items) {
+  return items.flatMap((item) => {
+    if (Array.isArray(item?.items)) {
+      return flattenSearchItems(item.items);
+    }
+    if (Array.isArray(item?.subBoxes)) {
+      return flattenSearchItems(item.subBoxes);
+    }
+    return [item];
+  });
 }
 
 function first(...values) {
@@ -160,4 +174,8 @@ function sanitizeContentUrl(value) {
   } catch {
     return value;
   }
+}
+
+function stripMarkup(value) {
+  return typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : value;
 }

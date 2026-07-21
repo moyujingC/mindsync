@@ -218,6 +218,19 @@ test('mapContentToFeishuFields maps normalized content to table fields', () => {
   assert.equal(fieldsForWrite['点赞数'], 1);
 });
 
+test('mapContentToFeishuFields maps articles to the existing image-text option', () => {
+  const fieldsForWrite = mapContentToFeishuFields({
+    uniqueKey: 'wechat_mp:article-001',
+    platform: 'wechat_mp',
+    creatorName: '公众号样例',
+    contentExternalId: 'article-001',
+    contentType: '文章',
+    metrics: {},
+  }, contentFields);
+
+  assert.equal(fieldsForWrite['内容类型'], '图文');
+});
+
 test('mapCommentToFeishuFields maps normalized comment fields', () => {
   const fieldsForWrite = mapCommentToFeishuFields({
     commentUniqueKey: 'bilibili:bilibili:BV1sample001:1001',
