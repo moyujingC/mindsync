@@ -26,6 +26,8 @@ test('publication feedback marks an approved research candidate published and pr
     assert.equal(result.request.candidates[0].publicationFeedback.serviceSignals.consultationIntent, '是');
     assert.equal(result.request.candidates[0].publicationFeedback.researchAdjustment.changed, '是');
     assert.equal(result.request.candidates[0].publicationFeedback.researchAdjustment.type, '关键词');
+    const recordedFeedback = await readFile(feedbackPath, 'utf8');
+    assert.match(recordedFeedback, /^> 状态：已回写$/m);
     const brief = await readFile(request.outputPath, 'utf8');
     assert.match(brief, /当前状态：已发布/);
     assert.match(brief, /选题状态：已发布/);

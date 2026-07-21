@@ -18,6 +18,12 @@ export async function promoteFeedbackToAiServiceStudio({
   if (feedback.needsAiServiceStudio !== '是') {
     throw new Error('Feedback record is not marked for ai-service-studio handoff');
   }
+  if (feedback.status !== '已回写') {
+    throw new Error('Feedback record must be successfully written back before ai-service-studio handoff');
+  }
+  if (!isHttpUrl(feedback.publishUrl)) {
+    throw new Error('Feedback record requires a valid 发布链接 before ai-service-studio handoff');
+  }
 
   const raw = await readFile(targetPath, 'utf8');
   const row = buildSampleConversationRow({
@@ -49,6 +55,7 @@ export async function promoteFeedbackToAiServiceStudio({
 
 export function parseFeedbackRecord(raw) {
   const title = raw.match(/^#\s+(.+)\s+发布反馈记录$/m)?.[1]?.trim() ?? 'untitled';
+  const status = raw.match(/^>\s*状态：(.+)$/m)?.[1]?.trim() ?? '';
   const account = raw.match(/^>\s*账号：(.+)$/m)?.[1]?.trim() ?? 'unknown';
   const date = raw.match(/^>\s*记录日期：(.+)$/m)?.[1]?.trim() ?? '';
   const sourceInsightRecordId = raw.match(/^>\s*研究候选：(.+)$/m)?.[1]?.trim() ?? '';
@@ -63,6 +70,7 @@ export function parseFeedbackRecord(raw) {
 
   return {
     title,
+    status,
     account,
     date,
     platform,
@@ -76,6 +84,15 @@ export function parseFeedbackRecord(raw) {
     sourceInsightRecordId,
     objectName: `${account} / ${title}`,
   };
+}
+
+function isHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
 }
 
 function buildSampleConversationRow({ feedback, serviceDirection, status, nextAction }) {

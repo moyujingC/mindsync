@@ -7,7 +7,7 @@ import { parseFeedbackRecord, promoteFeedbackToAiServiceStudio } from '../src/jo
 
 const feedbackMarkdown = `# 样例成稿 发布反馈记录
 
-> 状态：待补充
+> 状态：已回写
 > 账号：墨予镜
 > 对应成稿：/tmp/final.md
 > 研究候选：research:research-feedback-1:1
@@ -40,10 +40,33 @@ const recordMarkdown = `# 样本沟通记录
 test('parseFeedbackRecord extracts key values', () => {
   const result = parseFeedbackRecord(feedbackMarkdown);
   assert.equal(result.account, '墨予镜');
+  assert.equal(result.status, '已回写');
   assert.equal(result.needsAiServiceStudio, '是');
   assert.equal(result.sampleConversation, '是');
   assert.equal(result.sourceInsightRecordId, 'research:research-feedback-1:1');
   assert.equal(result.objections, '担心客户资料权限与试点范围。');
+});
+
+test('promoteFeedbackToAiServiceStudio requires a recorded feedback result and real publication link', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-promote-feedback-gate-'));
+  const feedbackPath = join(dir, 'feedback.md');
+  const targetPath = join(dir, '样本沟通记录.md');
+  await writeFile(targetPath, recordMarkdown, 'utf8');
+
+  try {
+    await writeFile(feedbackPath, feedbackMarkdown.replace('状态：已回写', '状态：待补充'), 'utf8');
+    await assert.rejects(
+      () => promoteFeedbackToAiServiceStudio({ feedbackPath, targetPath }),
+      /must be successfully written back/,
+    );
+    await writeFile(feedbackPath, feedbackMarkdown.replace('https://example.com/post', ''), 'utf8');
+    await assert.rejects(
+      () => promoteFeedbackToAiServiceStudio({ feedbackPath, targetPath }),
+      /requires a valid 发布链接/,
+    );
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
 });
 
 test('promoteFeedbackToAiServiceStudio appends row to sample conversation record', async () => {

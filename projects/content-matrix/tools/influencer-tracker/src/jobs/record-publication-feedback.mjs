@@ -64,7 +64,18 @@ export async function recordPublicationFeedback({ feedbackPath, ledgerPath, feis
     feishuClient,
     feishuConfig,
   });
+  await writeFile(feedbackPath, markFeedbackRecorded(await readFile(feedbackPath, 'utf8')), 'utf8');
   return { requestId: reference.requestId, candidateIndex: reference.candidateIndex, feedback, request: syncedRequest };
+}
+
+function markFeedbackRecorded(raw) {
+  if (/^>\s*状态：已回写$/m.test(raw)) {
+    return raw;
+  }
+  if (/^>\s*状态：.*$/m.test(raw)) {
+    return raw.replace(/^>\s*状态：.*$/m, '> 状态：已回写');
+  }
+  return raw.replace(/^#\s+.+$/m, (title) => `${title}\n\n> 状态：已回写`);
 }
 
 export function parsePublicationFeedback(raw) {
