@@ -1,8 +1,4 @@
-import { readFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
 import { readJsonFile, writeJsonFile } from '../utils/json-file.mjs';
-import { writeJobManifest } from '../utils/manifest.mjs';
-import { normalizeBilibiliComments } from './sync-bilibili-comments.mjs';
 
 const SERVICE_KEYWORDS = [
   ['AI 工作流诊断', ['流程', '工作流', '自动化', 'AI', 'agent', 'Agent', '服务']],
@@ -11,56 +7,21 @@ const SERVICE_KEYWORDS = [
   ['企业 AI 落地 / FDE', ['企业', '团队', '落地', '试点', '协作', '交付']],
 ];
 
-export async function enrichContentArtifact({
-  artifactDir,
-  commentsPath = null,
-}) {
-  const resolvedArtifactDir = resolve(artifactDir);
-  const metadata = await readJsonFile(join(resolvedArtifactDir, 'metadata.json'));
-  const transcript = await readOptionalText(join(resolvedArtifactDir, 'speech-clean.txt'));
-  const comments = commentsPath
-    ? normalizeBilibiliComments(await readJsonFile(resolve(commentsPath)))
-    : [];
-
+export async function enrichTikHubContent({ inputPath, outputPath }) {
+  const input = await readJsonFile(inputPath);
   const analysis = buildContentEnrichment({
-    metadata,
-    transcript,
-    comments,
+    metadata: input.content,
+    transcript: input.extractedText ?? '',
+    comments: input.comments ?? [],
   });
-
-  const outputPath = join(resolvedArtifactDir, 'enrichment.json');
-  const manifestPath = join(resolvedArtifactDir, 'enrich-manifest.json');
   await writeJsonFile(outputPath, analysis);
-  await writeJobManifest({
-    manifestPath,
-    job: 'enrich',
-    status: 'ok',
-    input: {
-      artifactDir: resolvedArtifactDir,
-      metadataPath: join(resolvedArtifactDir, 'metadata.json'),
-      transcriptPath: transcript ? join(resolvedArtifactDir, 'speech-clean.txt') : null,
-      commentsPath: commentsPath ? resolve(commentsPath) : null,
-    },
-    output: {
-      outputPath,
-      insightCount: analysis.insights.length,
-      topicCandidateCount: analysis.topicCandidates.length,
-      sourceCommentCount: comments.length,
-    },
-  });
-
-  return {
-    outputPath,
-    manifestPath,
-    analysis,
-  };
+  return { outputPath, analysis };
 }
 
 export function buildContentEnrichment({ metadata, transcript = '', comments = [] }) {
+  const refinedText = refineContentText([metadata.title, metadata.description, transcript].filter(Boolean).join('\n'));
   const text = [
-    metadata.title,
-    metadata.description,
-    transcript,
+    refinedText,
     ...comments.map((comment) => comment.commentText),
   ].filter(Boolean).join('\n');
   const serviceDirections = inferServiceDirections(text);
@@ -87,6 +48,7 @@ export function buildContentEnrichment({ metadata, transcript = '', comments = [
     insights: buildInsights({ metadata, primaryDirection, userProblems, demandSignals }),
     topicCandidates: buildTopicCandidates({ metadata, primaryDirection, userProblems, demandSignals }),
     evidence: {
+      refinedText,
       transcriptExcerpt: truncateText(transcript, 240),
       commentCount: comments.length,
       topComments: comments.slice(0, 5).map((comment) => ({
@@ -98,6 +60,17 @@ export function buildContentEnrichment({ metadata, transcript = '', comments = [
     },
     reviewStatus: '待人工审核',
   };
+}
+
+export function refineContentText(text) {
+  return String(text ?? '')
+    .replace(/\r/g, '')
+    .replace(/[ \t]+/g, ' ')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join('\n')
+    .trim();
 }
 
 function inferServiceDirections(text) {
@@ -174,17 +147,6 @@ function buildTopicCandidates({ metadata, primaryDirection, userProblems, demand
     nextAction: '先写成问题拆解型内容，不直接做服务承诺。',
     status: '待人工审核',
   }];
-}
-
-async function readOptionalText(filePath) {
-  try {
-    return (await readFile(filePath, 'utf8')).trim();
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return '';
-    }
-    throw error;
-  }
 }
 
 function truncateText(text, maxLength) {

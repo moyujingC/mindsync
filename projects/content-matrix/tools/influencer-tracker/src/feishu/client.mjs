@@ -190,7 +190,7 @@ export function mapContentToFeishuFields(content, fieldMap) {
   const metrics = content.metrics ?? {};
   return compactObject({
     [fieldMap.uniqueKey]: content.uniqueKey,
-    [fieldMap.platform]: content.platform,
+    [fieldMap.platform]: toFeishuPlatform(content.platform),
     [fieldMap.creator]: content.creatorName,
     [fieldMap.externalId]: content.contentExternalId,
     [fieldMap.url]: content.url ? { link: content.url, text: content.url } : undefined,
@@ -206,6 +206,15 @@ export function mapContentToFeishuFields(content, fieldMap) {
     [fieldMap.shareCount]: metrics.shareCount,
     [fieldMap.analysisStatus]: '待分析',
   });
+}
+
+export function toFeishuPlatform(platform) {
+  return {
+    xiaohongshu: '小红书',
+    douyin: '抖音',
+    wechat_mp: '公众号',
+    wechat_channels: '视频号',
+  }[platform] ?? platform;
 }
 
 export function mapCommentToFeishuFields(comment, fieldMap) {

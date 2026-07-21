@@ -16,7 +16,7 @@ export const FEISHU_TABLE_SCHEMAS = {
       platform: {
         field_name: '平台',
         type: FEISHU_FIELD_TYPES.singleSelect,
-        property: { options: optionNames(['抖音', '小红书', 'B站', 'bilibili']) },
+        property: { options: optionNames(['抖音', '小红书', '公众号', '视频号', 'douyin', 'xiaohongshu', 'wechat_mp', 'wechat_channels']) },
       },
       externalId: { field_name: '平台账号ID', type: FEISHU_FIELD_TYPES.text },
       homepageUrl: { field_name: '主页链接', type: FEISHU_FIELD_TYPES.url },
@@ -73,7 +73,7 @@ export const FEISHU_TABLE_SCHEMAS = {
       platform: {
         field_name: '平台',
         type: FEISHU_FIELD_TYPES.singleSelect,
-        property: { options: optionNames(['抖音', '小红书', 'B站', 'bilibili']) },
+        property: { options: optionNames(['抖音', '小红书', '公众号', '视频号', 'douyin', 'xiaohongshu', 'wechat_mp', 'wechat_channels']) },
       },
       creator: { field_name: '博主', type: FEISHU_FIELD_TYPES.text },
       externalId: { field_name: '内容ID', type: FEISHU_FIELD_TYPES.text },

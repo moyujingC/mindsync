@@ -1,7 +1,0 @@
-{
-  "artifactDir": "fixtures/bilibili-artifact.example",
-  "metadataPath": "fixtures/bilibili-artifact.example/metadata.json",
-  "descriptionPath": "fixtures/bilibili-artifact.example/description.txt",
-  "videoPath": null,
-  "downloadStatus": "metadata-only"
-}

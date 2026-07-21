@@ -3,13 +3,10 @@
   "appSecret": "xxx",
   "baseAppToken": "bascn_xxx",
   "platforms": {
-    "bilibili": {
-      "rsshubBaseUrls": [
-        "https://rsshub.app"
-      ],
-      "ytDlpFallback": false,
-      "ytDlpLimit": 5,
-      "ytDlpBin": "yt-dlp"
+    "tikhub": {
+      "apiKeyEnv": "TIKHUB_API_KEY",
+      "defaultSampleLimit": 10,
+      "cacheTtlHours": 24
     }
   },
   "tables": {

@@ -106,37 +106,33 @@ test('mapFeishuCreatorRecord normalizes single-select-like fields', () => {
     record_id: 'rec_1',
     fields: {
       博主名称: '测试账号',
-      平台: { text: 'bilibili' },
-      平台账号ID: '2',
-      主页链接: { link: 'https://space.bilibili.com/2' },
+      平台: { text: '小红书' },
+      平台账号ID: 'xhs-user-001',
+      主页链接: { link: 'https://www.xiaohongshu.com/user/profile/xhs-user-001' },
       启用状态: { text: '启用' },
       检查频率: { text: '每日' },
-      数据源类型: 'rss-file',
-      数据源地址: 'fixtures/bilibili-rss.example.xml',
+      数据源类型: 'TikHub',
+      数据源地址: 'TikHub',
     },
   }, fields);
 
   assert.equal(creator.recordId, 'rec_1');
-  assert.equal(creator.platform, 'bilibili');
+  assert.equal(creator.platform, '小红书');
   assert.equal(creator.enabledStatus, '启用');
-  assert.equal(creator.homepageUrl, 'https://space.bilibili.com/2');
-  assert.deepEqual(creator.source, {
-    kind: 'rss-file',
-    path: 'fixtures/bilibili-rss.example.xml',
-  });
+  assert.equal(creator.homepageUrl, 'https://www.xiaohongshu.com/user/profile/xhs-user-001');
 });
 
 test('mapContentToFeishuFields maps normalized content to table fields', () => {
   const fieldsForWrite = mapContentToFeishuFields({
-    uniqueKey: 'bilibili:BV1',
-    platform: 'bilibili',
-    creatorName: 'B站样例账号',
-    contentExternalId: 'BV1',
-    url: 'https://www.bilibili.com/video/BV1',
+    uniqueKey: 'xiaohongshu:xhs-001',
+    platform: 'xiaohongshu',
+    creatorName: '小红书样例账号',
+    contentExternalId: 'xhs-001',
+    url: 'https://www.xiaohongshu.com/explore/xhs-001',
     title: '标题',
     description: '简介',
     publishedAt: '2026-07-15T01:00:00.000Z',
-    contentType: 'video',
+    contentType: '图文',
     tags: ['AI'],
     metrics: {
       likeCount: 1,
@@ -146,11 +142,12 @@ test('mapContentToFeishuFields maps normalized content to table fields', () => {
     },
   }, contentFields);
 
-  assert.equal(fieldsForWrite['内容唯一键'], 'bilibili:BV1');
-  assert.equal(fieldsForWrite['博主'], 'B站样例账号');
+  assert.equal(fieldsForWrite['内容唯一键'], 'xiaohongshu:xhs-001');
+  assert.equal(fieldsForWrite['平台'], '小红书');
+  assert.equal(fieldsForWrite['博主'], '小红书样例账号');
   assert.deepEqual(fieldsForWrite['内容链接'], {
-    link: 'https://www.bilibili.com/video/BV1',
-    text: 'https://www.bilibili.com/video/BV1',
+    link: 'https://www.xiaohongshu.com/explore/xhs-001',
+    text: 'https://www.xiaohongshu.com/explore/xhs-001',
   });
   assert.equal(fieldsForWrite['分析状态'], '待分析');
   assert.equal(fieldsForWrite['点赞数'], 1);

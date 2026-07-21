@@ -1,0 +1,220 @@
+import { ContentStore } from '../storage/content-store.mjs';
+import { extractFeishuTextField, mapCommentToFeishuFields, mapContentToFeishuFields, toFeishuPlatform } from '../feishu/client.mjs';
+import { extractTikHubItems, normalizeTikHubComments, normalizeTikHubContent } from '../platforms/tikhub/normalize.mjs';
+
+const DEFAULT_LIMIT = 10;
+
+export async function collectTikHubResearch({
+  request,
+  client,
+  feishuClient = null,
+  feishuConfig = null,
+  storePath,
+  dryRun = false,
+}) {
+  validateRequest(request);
+  const store = new ContentStore({ filePath: storePath });
+  await store.load();
+
+  const response = await fetchContents({ request, client });
+  const contents = response.items.map((item) => normalizeTikHubContent({ platform: request.platform, data: item }));
+  const remoteContentKeys = await loadRemoteKeys({ feishuClient, feishuConfig, tableName: 'contents', fieldKey: 'uniqueKey', dryRun });
+  const newContents = contents.filter((content) => !store.hasContent(content.uniqueKey) && !remoteContentKeys.has(content.uniqueKey));
+  const duplicateCount = contents.length - newContents.length;
+
+  const creatorResult = await syncCreators({
+    contents: newContents,
+    feishuClient,
+    feishuConfig,
+    dryRun,
+  });
+
+  if (!dryRun && feishuClient && newContents.length > 0) {
+    const fields = feishuConfig.tables.contents.fields;
+    await feishuClient.createRecords('contents', newContents.map((content) => mapContentToFeishuFields(content, fields)));
+  }
+  for (const content of newContents) {
+    store.addContent(content.uniqueKey);
+  }
+
+  const commentResult = await collectComments({
+    request,
+    client,
+    contents: newContents,
+    feishuClient,
+    feishuConfig,
+    dryRun,
+  });
+
+  const result = {
+    request: sanitizedRequest(request),
+    audit: {
+      source: 'tikhub',
+      requestCount: commentResult.audit?.requestCount ?? response.audit?.requestCount ?? 0,
+      cacheUrls: [...new Set([response.cacheUrl, commentResult.cacheUrl].filter(Boolean))],
+    },
+    creators: creatorResult,
+    contents: {
+      fetchedCount: contents.length,
+      createdCount: newContents.length,
+      duplicateCount,
+      items: newContents,
+    },
+    comments: commentResult,
+  };
+  store.addRun({ type: 'tikhub-collect', collectedAt: new Date().toISOString(), ...result });
+  if (!dryRun) {
+    await store.save();
+  }
+  return result;
+}
+
+async function syncCreators({ contents, feishuClient, feishuConfig, dryRun }) {
+  const candidates = uniqueCreators(contents);
+  if (candidates.length === 0) {
+    return { createdCount: 0, duplicateCount: 0, items: [] };
+  }
+  const existing = await loadExistingCreators({ feishuClient, feishuConfig, dryRun });
+  const newCreators = candidates.filter((creator) => !existing.has(`${toFeishuPlatform(creator.platform)}:${creator.externalId}`));
+  if (!dryRun && feishuClient && newCreators.length > 0) {
+    const fields = feishuConfig.tables.creators.fields;
+    await feishuClient.createRecords('creators', newCreators.map((creator) => ({
+      [fields.name]: creator.name,
+      [fields.platform]: toFeishuPlatform(creator.platform),
+      [fields.externalId]: creator.externalId,
+      [fields.homepageUrl]: creator.homepageUrl,
+      [fields.sourceLink]: creator.homepageUrl,
+      [fields.linkType]: '博主主页',
+      [fields.enabledStatus]: '启用',
+      [fields.checkFrequency]: '手动',
+      [fields.sourceKind]: 'TikHub',
+      [fields.sourcePath]: 'TikHub',
+      [fields.lastStatus]: '正常',
+    })));
+  }
+  return { createdCount: newCreators.length, duplicateCount: candidates.length - newCreators.length, items: newCreators };
+}
+
+async function fetchContents({ request, client }) {
+  if (request.mode === 'detail') {
+    const response = await client.getContentDetail({
+      platform: request.platform,
+      shareUrl: request.shareUrl,
+      contentId: request.contentId,
+    });
+    return { ...response, items: [response.data] };
+  }
+  if (request.mode === 'search') {
+    const response = await client.searchContents({ platform: request.platform, keyword: request.keyword });
+    return { ...response, items: extractTikHubItems(response.data).slice(0, request.limit ?? DEFAULT_LIMIT) };
+  }
+  const response = await client.getCreatorContents({
+    platform: request.platform,
+    creatorId: request.creatorId,
+    limit: request.limit ?? DEFAULT_LIMIT,
+  });
+  return { ...response, items: extractTikHubItems(response.data).slice(0, request.limit ?? DEFAULT_LIMIT) };
+}
+
+async function collectComments({ request, client, contents, feishuClient, feishuConfig, dryRun }) {
+  if (!request.includeComments || contents.length === 0) {
+    return { fetchedCount: 0, createdCount: 0, duplicateCount: 0, items: [], cacheUrl: null, audit: null };
+  }
+  const existingKeys = await loadRemoteKeys({ feishuClient, feishuConfig, tableName: 'comments', fieldKey: 'commentKey', dryRun });
+  const comments = [];
+  let cacheUrl = null;
+  let audit = null;
+  for (const content of contents) {
+    const response = await client.getComments({ platform: request.platform, contentId: content.contentExternalId });
+    cacheUrl = response.cacheUrl ?? cacheUrl;
+    audit = response.audit ?? audit;
+    comments.push(...normalizeTikHubComments({
+      platform: request.platform,
+      contentUniqueKey: content.uniqueKey,
+      items: extractTikHubItems(response.data),
+    }));
+  }
+  const newComments = comments.filter((comment) => !existingKeys.has(comment.commentUniqueKey));
+  if (!dryRun && feishuClient && newComments.length > 0) {
+    const fields = feishuConfig.tables.comments.fields;
+    await feishuClient.createRecords('comments', newComments.map((comment) => mapCommentToFeishuFields(comment, fields)));
+  }
+  return {
+    fetchedCount: comments.length,
+    createdCount: newComments.length,
+    duplicateCount: comments.length - newComments.length,
+    items: newComments,
+    cacheUrl,
+    audit,
+  };
+}
+
+async function loadRemoteKeys({ feishuClient, feishuConfig, tableName, fieldKey, dryRun }) {
+  if (dryRun || !feishuClient || !feishuConfig) {
+    return new Set();
+  }
+  const fieldName = feishuConfig.tables[tableName].fields[fieldKey];
+  const records = await feishuClient.listRecords(tableName);
+  return new Set(records.map((record) => extractFeishuTextField(record, fieldName)).filter(Boolean));
+}
+
+async function loadExistingCreators({ feishuClient, feishuConfig, dryRun }) {
+  if (dryRun || !feishuClient || !feishuConfig) {
+    return new Set();
+  }
+  const fields = feishuConfig.tables.creators.fields;
+  const records = await feishuClient.listRecords('creators');
+  return new Set(records.map((record) => [
+    extractFeishuTextField(record, fields.platform),
+    extractFeishuTextField(record, fields.externalId),
+  ].join(':')).filter((value) => value !== ':'));
+}
+
+function uniqueCreators(contents) {
+  const creators = new Map();
+  for (const content of contents) {
+    if (!content.creatorExternalId) {
+      continue;
+    }
+    const key = `${toFeishuPlatform(content.platform)}:${content.creatorExternalId}`;
+    if (!creators.has(key)) {
+      creators.set(key, {
+        name: content.creatorName,
+        platform: content.platform,
+        externalId: content.creatorExternalId,
+        homepageUrl: content.url,
+      });
+    }
+  }
+  return [...creators.values()];
+}
+
+function validateRequest(request) {
+  const allowedModes = new Set(['detail', 'search', 'creator']);
+  if (!allowedModes.has(request?.mode)) {
+    throw new Error('TikHub request mode must be detail, search, or creator');
+  }
+  if (!request.platform) {
+    throw new Error('TikHub request requires platform');
+  }
+  if (request.mode === 'detail' && !request.shareUrl && !request.contentId) {
+    throw new Error('TikHub detail request requires shareUrl or contentId');
+  }
+  if (request.mode === 'search' && !request.keyword) {
+    throw new Error('TikHub search request requires keyword');
+  }
+  if (request.mode === 'creator' && !request.creatorId) {
+    throw new Error('TikHub creator request requires creatorId');
+  }
+}
+
+function sanitizedRequest(request) {
+  return {
+    mode: request.mode,
+    platform: request.platform,
+    keyword: request.keyword ?? null,
+    creatorId: request.creatorId ?? null,
+    includeComments: Boolean(request.includeComments),
+    limit: request.limit ?? DEFAULT_LIMIT,
+  };
+}
