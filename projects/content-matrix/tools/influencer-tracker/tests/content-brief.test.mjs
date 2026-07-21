@@ -16,7 +16,7 @@ test('buildContentBriefFromInsight creates a handoff-ready brief', () => {
     recordId: 'rec_1',
     title: '从「AI 服务样例」看 AI 工作流诊断的真实需求',
     insightType: '选题',
-    targetAccounts: ['知行AI服务'],
+    targetAccounts: ['墨予镜'],
     evidenceSummary: '来源账号发布了相关内容。',
     nextAction: '人工查看原内容和评论区。\n用户问题：重复流程多，但不知道从哪里开始。\nCTA：拿一个小样本判断。',
   }, {
@@ -39,7 +39,7 @@ test('buildDraftSeedFromBrief creates a draft handoff seed', () => {
     recordId: 'rec_1',
     title: '从「AI 服务样例」看 AI 工作流诊断的真实需求',
     insightType: '选题',
-    targetAccounts: ['知行AI服务'],
+    targetAccounts: ['墨予镜'],
     evidenceSummary: '来源账号发布了相关内容。',
     nextAction: '人工查看原内容和评论区。\n用户问题：重复流程多，但不知道从哪里开始。\nCTA：拿一个小样本判断。',
   });
@@ -71,7 +71,7 @@ console.log(JSON.stringify({
         'douyin:dy-001',
         '',
         '选题',
-        ['知行AI服务'],
+        ['墨予镜'],
         '样例证据',
         '人工查看原内容。\\n用户问题：资料散，难复用。\\nCTA：拿一个小样本判断。',
         '已转选题'
@@ -81,7 +81,7 @@ console.log(JSON.stringify({
         'douyin:dy-002',
         '',
         '选题',
-        ['知行AI服务'],
+        ['墨予镜'],
         '样例证据',
         '人工查看原内容。',
         '待处理'
@@ -141,7 +141,7 @@ if (process.argv.includes('+record-list')) {
         'douyin:dy-001',
         '',
         '选题',
-        ['知行AI服务'],
+        ['墨予镜'],
         '样例证据',
         '人工查看原内容。\\\\n用户问题：资料散，难复用。\\\\nCTA：拿一个小样本判断。',
         '已转选题'

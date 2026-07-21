@@ -4,7 +4,7 @@ const TEMPLATES = {
     name: '企业 AI 服务市场调研',
     purpose: '评论挖需求',
     serviceDirection: '企业 AI 服务',
-    targetAccount: '知行AI服务',
+    targetAccount: '墨予镜',
     sampleLimit: 10,
     includeComments: true,
     outputFocus: '服务假设',

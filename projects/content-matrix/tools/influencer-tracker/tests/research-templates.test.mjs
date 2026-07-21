@@ -20,7 +20,8 @@ test('enterprise AI service template sets market-research defaults without repla
   });
 
   assert.equal(request.purpose, '评论挖需求');
-  assert.equal(request.targetAccount, '知行AI服务');
+  assert.equal(request.serviceDirection, '企业 AI 服务');
+  assert.equal(request.targetAccount, '墨予镜');
   assert.equal(request.collect.limit, 3);
   assert.equal(request.collect.includeComments, true);
   assert.equal(request.orchestration.outputFocus, '服务假设');

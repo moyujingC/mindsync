@@ -29,6 +29,13 @@ test('creator schema accepts the active collection sources, not retired RSS sour
   assert.deepEqual(options, ['TikHub', '手工']);
 });
 
+test('insight schema only lists registered content accounts', () => {
+  const options = FEISHU_TABLE_SCHEMAS.insights.fields.targetAccounts.property.options
+    .map((option) => option.name);
+
+  assert.deepEqual(options, ['墨予镜', '一镜一梳']);
+});
+
 test('bootstrap schema can produce tracker config field maps', () => {
   const config = {
     appId: 'cli_xxx',

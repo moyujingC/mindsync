@@ -53,7 +53,7 @@ test('buildInsightCandidatesFromEnrichment builds user-demand and topic candidat
   assert.equal(candidates[0].source.contentUniqueKey, 'douyin:dy-sample-001');
   assert.deepEqual(candidates[0].source.commentUniqueKeys, ['douyin:douyin:dy-sample-001:1002']);
   assert.equal(candidates[1].insightType, '选题');
-  assert.deepEqual(candidates[1].targetAccounts, ['知行AI服务']);
+  assert.deepEqual(candidates[1].targetAccounts, ['墨予镜']);
 });
 
 test('writeEnrichmentInsightsToFeishu returns candidates when Feishu is disabled', async () => {

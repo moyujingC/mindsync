@@ -141,7 +141,7 @@ export const FEISHU_TABLE_SCHEMAS = {
       targetAccounts: {
         field_name: '适用账号',
         type: FEISHU_FIELD_TYPES.multiSelect,
-        property: { options: optionNames(['墨予镜', '一镜一梳', '知行AI服务']) },
+        property: { options: optionNames(['墨予镜', '一镜一梳']) },
       },
       evidenceSummary: { field_name: '证据摘要', type: FEISHU_FIELD_TYPES.text },
       nextAction: { field_name: '建议动作', type: FEISHU_FIELD_TYPES.text },

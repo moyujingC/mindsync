@@ -31,7 +31,7 @@ test('mapTopicCandidateToFeishuFields maps candidate to insights table fields', 
   assert.equal(fields.洞察标题, '从内容看 AI 工作流诊断需求');
   assert.equal(fields.来源内容, 'douyin:dy-001');
   assert.equal(fields.洞察类型, '选题');
-  assert.deepEqual(fields.适用账号, ['知行AI服务']);
+  assert.deepEqual(fields.适用账号, ['墨予镜']);
   assert.equal(fields.状态, '待处理');
   assert.match(fields.建议动作, /用户问题/);
 });

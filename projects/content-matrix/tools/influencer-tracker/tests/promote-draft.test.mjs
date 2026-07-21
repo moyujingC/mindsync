@@ -14,7 +14,7 @@ const draftSeedMarkdown = `# 从「AI 服务样例」看 AI 工作流诊断的�
 
 ## 发布账号候选
 
-- 知行AI服务
+- 墨予镜
 
 ## 开头草稿
 
@@ -90,10 +90,10 @@ test('promoteDraftSeed refuses an unregistered account', async () => {
       promoteDraftSeed({
         draftPath,
         accountsRoot: join(dir, 'accounts'),
-        account: '知行AI服务',
+        account: '墨予镜',
         date: '2026-07-21',
       }),
-      /Unknown account: 知行AI服务/,
+      /Unknown account: 墨予镜/,
     );
   } finally {
     await rm(dir, { recursive: true, force: true });

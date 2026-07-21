@@ -371,7 +371,7 @@ function targetAccountsForDirection(direction) {
     '企业 AI 落地 / FDE',
     '内容生产系统',
   ].includes(direction)) {
-    return ['知行AI服务'];
+    return ['墨予镜'];
   }
   return ['墨予镜'];
 }

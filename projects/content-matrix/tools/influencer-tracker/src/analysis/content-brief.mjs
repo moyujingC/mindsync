@@ -135,14 +135,11 @@ export function renderDraftSeedMarkdown(draftSeed) {
 }
 
 function inferTargetAudience(insight) {
-  if (insight.targetAccounts.includes('知行AI服务')) {
-    return '有真实业务流程、资料整理或内容生产压力的小团队 / 个人专业服务者。';
-  }
   if (insight.targetAccounts.includes('一镜一梳')) {
     return '关注疗愈、整理、日常秩序和自我照顾的女性用户。';
   }
   if (insight.targetAccounts.includes('墨予镜')) {
-    return '关注 AI、个体生产力、内容表达和一人公司实践的读者。';
+    return '有真实业务流程、资料整理或内容生产压力的小团队 / 个人专业服务者，以及关注 AI、内容表达和一人公司实践的读者。';
   }
   return '待人工判断。';
 }
