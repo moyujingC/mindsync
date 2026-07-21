@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join } from 'node:path';
+import { requireExistingAccountDirectory } from '../utils/account-directory.mjs';
 
 export async function scaffoldFinalDraft({
   editPackagePath,
@@ -17,7 +18,7 @@ export async function scaffoldFinalDraft({
 
   const raw = await readFile(editPackagePath, 'utf8');
   const editPackage = parseEditPackageMarkdown(raw);
-  const accountDir = resolve(accountsRoot, account);
+  const accountDir = await requireExistingAccountDirectory({ accountsRoot, account });
   const outputPath = join(accountDir, `${date}-${sanitizeFilename(editPackage.title)}-成稿.md`);
   const content = renderFinalSkeleton({ editPackage, account, editPackagePath });
 

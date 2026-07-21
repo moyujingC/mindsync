@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { recordPublicationFeedback } from '../src/jobs/record-publication-feedback.mjs';
@@ -85,6 +85,7 @@ test('research candidate reference survives draft, edit, final, and feedback pre
   try {
     const accountsRoot = join(dir, 'accounts');
     const draftPath = join(dir, 'draft.md');
+    await mkdir(join(accountsRoot, '墨予镜'), { recursive: true });
     await writeFile(draftPath, `# 可追溯草稿
 
 > 状态：草稿

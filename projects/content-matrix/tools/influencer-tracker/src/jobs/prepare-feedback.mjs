@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
+import { requireExistingAccountDirectory } from '../utils/account-directory.mjs';
 
 export async function prepareFeedbackRecord({
   finalDraftPath,
@@ -18,7 +19,7 @@ export async function prepareFeedbackRecord({
 
   const raw = await readFile(finalDraftPath, 'utf8');
   const finalDraft = parseFinalDraftMarkdown(raw);
-  const accountDir = resolve(accountsRoot, account);
+  const accountDir = await requireExistingAccountDirectory({ accountsRoot, account });
   const outputPath = join(
     outputDir ?? join(accountDir, 'feedback'),
     `${date}-${sanitizeFilename(finalDraft.title)}-发布反馈.md`,

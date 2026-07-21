@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseDraftSeedMarkdown, promoteDraftSeed } from '../src/jobs/promote-draft.mjs';
@@ -56,6 +56,7 @@ test('promoteDraftSeed writes account draft without publishing', async () => {
   const draftPath = join(dir, 'seed.md');
   const accountsRoot = join(dir, 'accounts');
   await writeFile(draftPath, draftSeedMarkdown, 'utf8');
+  await mkdir(join(accountsRoot, '墨予镜'), { recursive: true });
 
   try {
     const result = await promoteDraftSeed({
@@ -74,6 +75,26 @@ test('promoteDraftSeed writes account draft without publishing', async () => {
     assert.match(output, /^> 状态：草稿/m);
     assert.match(output, /## 待扩写正文/);
     assert.match(output, /待人工基于上方结构扩写/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('promoteDraftSeed refuses an unregistered account', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-promote-draft-'));
+  const draftPath = join(dir, 'seed.md');
+  await writeFile(draftPath, draftSeedMarkdown, 'utf8');
+
+  try {
+    await assert.rejects(
+      promoteDraftSeed({
+        draftPath,
+        accountsRoot: join(dir, 'accounts'),
+        account: '知行AI服务',
+        date: '2026-07-21',
+      }),
+      /Unknown account: 知行AI服务/,
+    );
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

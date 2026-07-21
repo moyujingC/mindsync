@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseFinalDraftMarkdown, prepareFeedbackRecord } from '../src/jobs/prepare-feedback.mjs';
@@ -26,6 +26,7 @@ test('prepareFeedbackRecord writes feedback template', async () => {
   const finalDraftPath = join(dir, 'final.md');
   const accountsRoot = join(dir, 'accounts');
   await writeFile(finalDraftPath, finalDraftMarkdown, 'utf8');
+  await mkdir(join(accountsRoot, '墨予镜'), { recursive: true });
 
   try {
     const result = await prepareFeedbackRecord({

@@ -278,10 +278,22 @@ npm run research:handoff -- \
   --request-id 'research-2026-07-21T...' \
   --candidate 1
 
-# 3. 审阅后，才显式指定账号写入草稿目录
+# 3. 审阅后，才显式指定已登记的发布账号写入草稿目录
 npm run promote:draft -- \
   --draft logs/research-handoffs/research-...-candidate-1-draft.md \
   --account 墨予镜
+```
+
+`--account` 必须对应 `projects/content-matrix/accounts/` 下已存在的账号目录。研究请求中的“目标账号”是业务标签，不会自动创建或认定为发布账号；例如当前 `知行AI服务` 是服务项目，不可直接当作内容账号目录使用。新账号应先由负责人确定定位、发布阵地和归档归属，再建立账号目录。
+
+如果人工决定将一条已存在的研究请求改投到另一个账号，必须显式更新台账、研究简报和飞书摘要，再重新生成交接包：
+
+```bash
+npm run research:target-account -- \
+  --feishu config/feishu.local.json \
+  --request-id 'research-2026-07-21T...' \
+  --target-account 墨予镜 \
+  --decision-note '企业 AI 服务内容发布到墨予镜。'
 ```
 
 `client_project` 模板例外：`research:handoff` 只生成内部研究包（样本证据、待确认问题和交接边界），不生成草稿种子，也不能进入 `promote:draft`。客户项目是否形成正式交付、报价或试点，由项目负责人基于授权材料另行确认。

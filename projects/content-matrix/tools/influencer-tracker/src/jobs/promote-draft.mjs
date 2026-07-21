@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join } from 'node:path';
+import { requireExistingAccountDirectory } from '../utils/account-directory.mjs';
 
 export async function promoteDraftSeed({
   draftPath,
@@ -17,7 +18,7 @@ export async function promoteDraftSeed({
 
   const raw = await readFile(draftPath, 'utf8');
   const draftSeed = parseDraftSeedMarkdown(raw);
-  const accountDir = resolve(accountsRoot, account);
+  const accountDir = await requireExistingAccountDirectory({ accountsRoot, account });
   const outputPath = join(accountDir, `${date}-${sanitizeFilename(draftSeed.title)}-草稿.md`);
   const content = renderAccountDraft({ draftSeed, account, sourcePath: draftPath });
 

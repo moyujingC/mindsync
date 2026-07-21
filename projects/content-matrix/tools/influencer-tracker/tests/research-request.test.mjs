@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import {
   confirmResearchCandidate,
   runResearchRequest,
+  setResearchRequestTargetAccount,
 } from '../src/jobs/research-request.mjs';
 import { ResearchRequestStore } from '../src/storage/research-request-store.mjs';
 
@@ -230,6 +231,46 @@ test('confirmResearchCandidate requires human verification evidence before marki
     assert.equal(verified.candidates[0].conclusionLevel, '已验证');
     assert.equal(verified.candidates[0].verificationEvidence, '2026-07-21 样本沟通记录：两名目标用户确认流程诊断需求。');
     assert.ok(verified.candidates[0].verifiedAt);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('setResearchRequestTargetAccount updates the request, candidates, brief, and Feishu summary', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-request-target-account-'));
+  try {
+    const storePath = join(dir, 'research-requests.json');
+    await runResearchRequest({
+      request: {
+        requestId: 'research-target-account-1',
+        purpose: '评论挖需求',
+        serviceDirection: '企业 AI 服务',
+        targetAccount: '知行AI服务',
+        collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/note' },
+      },
+      collect: async () => collectionFixture(),
+      outputDir: join(dir, 'briefs'),
+      ledgerPath: storePath,
+    });
+    const updates = [];
+    const updated = await setResearchRequestTargetAccount({
+      ledgerPath: storePath,
+      requestId: 'research-target-account-1',
+      targetAccount: '墨予镜',
+      decisionNote: '企业 AI 服务内容发布到墨予镜。',
+      feishuConfig: { tables: { researchRequests: { fields: researchRequestFields() } } },
+      feishuClient: {
+        async listRecords() { return [{ record_id: 'rec_target_account', fields: { 请求ID: 'research-target-account-1' } }]; },
+        async updateRecord(tableName, recordId, fields) { updates.push({ tableName, recordId, fields }); },
+      },
+    });
+
+    assert.equal(updated.targetAccount, '墨予镜');
+    assert.equal(updated.candidates[0].targetAccount, '墨予镜');
+    assert.equal(updated.decisions.at(-1).action, '变更目标账号');
+    assert.equal(updates[0].fields['目标账号'], '墨予镜');
+    const brief = await readFile(updated.outputPath, 'utf8');
+    assert.match(brief, /目标账号：墨予镜/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

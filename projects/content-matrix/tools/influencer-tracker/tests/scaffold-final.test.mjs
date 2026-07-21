@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseEditPackageMarkdown, scaffoldFinalDraft } from '../src/jobs/scaffold-final.mjs';
@@ -40,6 +40,7 @@ test('scaffoldFinalDraft writes a final draft skeleton', async () => {
   const editPackagePath = join(dir, 'edit-package.md');
   const accountsRoot = join(dir, 'accounts');
   await writeFile(editPackagePath, editPackageMarkdown, 'utf8');
+  await mkdir(join(accountsRoot, '墨予镜'), { recursive: true });
 
   try {
     const result = await scaffoldFinalDraft({

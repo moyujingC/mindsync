@@ -6,6 +6,7 @@
   "scripts": {
     "research:run": "node src/cli/research-request.mjs",
     "research:confirm": "node src/cli/confirm-research-request.mjs",
+    "research:target-account": "node src/cli/set-research-target-account.mjs",
     "research:handoff": "node src/cli/handoff-research-candidate.mjs",
     "research:manual": "node src/cli/manual-research.mjs",
     "preflight:readiness": "node src/cli/preflight-readiness.mjs",

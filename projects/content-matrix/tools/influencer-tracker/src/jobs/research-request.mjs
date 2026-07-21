@@ -111,6 +111,50 @@ export async function confirmResearchCandidate({
   return syncResearchRequestToFeishu({ request: updated, feishuClient, feishuConfig });
 }
 
+export async function setResearchRequestTargetAccount({
+  ledgerPath = 'logs/research-requests.json',
+  requestId,
+  targetAccount,
+  decisionNote,
+  feishuClient = null,
+  feishuConfig = null,
+}) {
+  if (!requestId) {
+    throw new Error('Missing requestId');
+  }
+  if (!targetAccount?.trim()) {
+    throw new Error('Missing targetAccount');
+  }
+  if (!decisionNote?.trim()) {
+    throw new Error('decisionNote is required when changing targetAccount');
+  }
+
+  const store = new ResearchRequestStore({ filePath: ledgerPath });
+  await store.load();
+  const updated = store.update(requestId, (request) => {
+    const now = new Date().toISOString();
+    const normalizedTargetAccount = targetAccount.trim();
+    return {
+      ...request,
+      targetAccount: normalizedTargetAccount,
+      candidates: (request.candidates ?? []).map((candidate) => ({
+        ...candidate,
+        targetAccount: normalizedTargetAccount,
+      })),
+      updatedAt: now,
+      decisions: [...(request.decisions ?? []), {
+        action: '变更目标账号',
+        targetAccount: normalizedTargetAccount,
+        decisionNote: decisionNote.trim(),
+        decidedAt: now,
+      }],
+    };
+  });
+  await store.save();
+  await writeFile(updated.outputPath, renderResearchBrief(updated), 'utf8');
+  return syncResearchRequestToFeishu({ request: updated, feishuClient, feishuConfig });
+}
+
 function validateResearchRequest(request) {
   if (!request?.purpose || !request?.serviceDirection) {
     throw new Error('Research request requires purpose and serviceDirection');
