@@ -21,7 +21,12 @@ export async function collectTikHubResearch({
   const response = await fetchContents({ request, client });
   const contents = uniqueByKey(response.items.map((item) => normalizeTikHubContent({ platform: request.platform, data: item })), 'uniqueKey');
   const remoteContentKeys = await loadRemoteKeys({ feishuClient, feishuConfig, tableName: 'contents', fieldKey: 'uniqueKey', dryRun });
-  const newContents = contents.filter((content) => !hasKnownContent({ store, remoteContentKeys, content }));
+  const newContents = [];
+  for (const content of contents) {
+    if (!await hasKnownContent({ store, remoteContentKeys, content })) {
+      newContents.push(content);
+    }
+  }
   const duplicateCount = contents.length - newContents.length;
 
   const creatorResult = await syncCreators({
@@ -79,9 +84,13 @@ function normalizeRequestPlatform(request) {
   return { ...request, platform: normalizePlatformId(request?.platform, 'TikHub request platform') };
 }
 
-function hasKnownContent({ store, remoteContentKeys, content }) {
-  return [...contentKeyAliases({ platform: content.platform, externalId: content.contentExternalId })]
-    .some((key) => store.hasContent(key) || remoteContentKeys.has(key));
+async function hasKnownContent({ store, remoteContentKeys, content }) {
+  for (const key of contentKeyAliases({ platform: content.platform, externalId: content.contentExternalId })) {
+    if (store.hasContent(key) || await remoteContentKeys.has(key)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 async function syncCreators({ contents, feishuClient, feishuConfig, dryRun }) {
@@ -164,7 +173,12 @@ async function collectComments({ request, client, contents, feishuClient, feishu
     }));
   }
   const uniqueComments = uniqueByKey(comments, 'commentUniqueKey');
-  const newComments = uniqueComments.filter((comment) => !existingKeys.has(comment.commentUniqueKey));
+  const newComments = [];
+  for (const comment of uniqueComments) {
+    if (!await existingKeys.has(comment.commentUniqueKey)) {
+      newComments.push(comment);
+    }
+  }
   if (!dryRun && feishuClient && newComments.length > 0) {
     const fields = feishuConfig.tables.comments.fields;
     await feishuClient.createRecords('comments', newComments.map((comment) => mapCommentToFeishuFields(comment, fields)));
@@ -223,11 +237,20 @@ async function collectPages({ limit, maxPages = 10, getPage }) {
 
 async function loadRemoteKeys({ feishuClient, feishuConfig, tableName, fieldKey, dryRun }) {
   if (dryRun || !feishuClient || !feishuConfig) {
-    return new Set();
+    return { has: async () => false };
   }
   const fieldName = feishuConfig.tables[tableName].fields[fieldKey];
+  if (typeof feishuClient.listRecordsByField === 'function') {
+    return {
+      has: async (key) => {
+        const records = await feishuClient.listRecordsByField(tableName, fieldName, key, [fieldName]);
+        return records.some((record) => extractFeishuTextField(record, fieldName) === key);
+      },
+    };
+  }
   const records = await feishuClient.listRecords(tableName);
-  return new Set(records.map((record) => extractFeishuTextField(record, fieldName)).filter(Boolean));
+  const keys = new Set(records.map((record) => extractFeishuTextField(record, fieldName)).filter(Boolean));
+  return { has: async (key) => keys.has(key) };
 }
 
 async function loadExistingCreators({ feishuClient, feishuConfig, dryRun }) {

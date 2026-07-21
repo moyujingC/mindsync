@@ -63,6 +63,31 @@ test('collectTikHubResearch limits keyword results and skips previously stored c
   });
 });
 
+test('collectTikHubResearch skips a content key found by a filtered Feishu lookup', async () => {
+  const writes = [];
+  const lookups = [];
+  const feishuClient = fakeFeishuClient(writes);
+  feishuClient.listRecordsByField = async (tableName, fieldName, value) => {
+    lookups.push({ tableName, fieldName, value });
+    return tableName === 'contents' && value === 'douyin:dy-001'
+      ? [{ record_id: 'rec_existing', fields: { [fieldName]: value } }]
+      : [];
+  };
+
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: { mode: 'search', platform: 'douyin', keyword: '企业 AI', limit: 1 },
+    client: fakeClient(),
+    feishuClient,
+    feishuConfig,
+    storePath,
+  }));
+
+  assert.equal(result.contents.createdCount, 0);
+  assert.equal(result.contents.duplicateCount, 1);
+  assert.deepEqual(lookups, [{ tableName: 'contents', fieldName: '内容唯一键', value: 'douyin:dy-001' }]);
+  assert.deepEqual(writes, []);
+});
+
 test('collectTikHubResearch follows content cursors until the requested total sample limit', async () => {
   const calls = [];
   const client = {

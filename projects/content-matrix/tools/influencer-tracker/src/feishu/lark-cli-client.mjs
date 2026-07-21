@@ -14,7 +14,23 @@ export class LarkCliBitableClient {
   }
 
   async listRecords(tableName) {
+    return this.listRecordsByFilter(tableName);
+  }
+
+  async listRecordsByField(tableName, fieldName, value, selectedFields = []) {
+    return this.listRecordsByFilter(tableName, {
+      filter: {
+        logic: 'and',
+        conditions: [[fieldName, '==', value]],
+      },
+      selectedFields,
+    });
+  }
+
+  async listRecordsByFilter(tableName, { filter = null, selectedFields = [] } = {}) {
     const table = this.getTable(tableName);
+    const fieldArgs = selectedFields.flatMap((fieldName) => ['--field-id', fieldName]);
+    const filterArgs = filter ? ['--filter-json', JSON.stringify(filter)] : [];
     const json = await this.run([
       ...this.baseArgs,
       'base',
@@ -25,6 +41,8 @@ export class LarkCliBitableClient {
       this.config.baseAppToken,
       '--table-id',
       table.tableId,
+      ...fieldArgs,
+      ...filterArgs,
       '--format',
       'json',
     ]);

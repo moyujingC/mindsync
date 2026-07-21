@@ -306,6 +306,39 @@ test('confirmResearchCandidate updates an existing Feishu research request recor
   }
 });
 
+test('research request sync uses an exact Feishu request ID lookup when available', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-request-feishu-filter-'));
+  try {
+    const calls = [];
+    const result = await runResearchRequest({
+      request: {
+        requestId: 'research-feishu-filter-1',
+        purpose: '评论挖需求',
+        serviceDirection: '企业 AI 服务',
+        collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/note' },
+      },
+      collect: async () => collectionFixture(),
+      outputDir: join(dir, 'briefs'),
+      ledgerPath: join(dir, 'research-requests.json'),
+      feishuConfig: { tables: { researchRequests: { fields: researchRequestFields() } } },
+      feishuClient: {
+        async listRecordsByField(tableName, fieldName, value, selectedFields) {
+          calls.push({ tableName, fieldName, value, selectedFields });
+          return [{ record_id: 'rec_research_3', fields: { 请求ID: value } }];
+        },
+        async updateRecord() {},
+      },
+    });
+
+    assert.deepEqual(result.feishu, { synced: true, action: 'updated', recordId: 'rec_research_3' });
+    assert.deepEqual(calls, [{
+      tableName: 'researchRequests', fieldName: '请求ID', value: 'research-feishu-filter-1', selectedFields: ['请求ID'],
+    }]);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 function collectionFixture() {
   return {
     request: { mode: 'detail', platform: 'xiaohongshu', includeComments: true, limit: 10 },

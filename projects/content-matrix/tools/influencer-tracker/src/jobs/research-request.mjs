@@ -183,7 +183,9 @@ export async function syncResearchRequestToFeishu({ request, feishuClient, feish
     return { ...request, feishu: { synced: false, reason: 'not-configured' } };
   }
   const fields = feishuConfig.tables.researchRequests.fields;
-  const records = await feishuClient.listRecords('researchRequests');
+  const records = typeof feishuClient.listRecordsByField === 'function'
+    ? await feishuClient.listRecordsByField('researchRequests', fields.requestId, request.requestId, [fields.requestId])
+    : await feishuClient.listRecords('researchRequests');
   const existing = records.find((record) => extractFeishuTextField(record, fields.requestId) === request.requestId);
   const mappedFields = mapResearchRequestToFeishuFields(request, fields);
   if (existing?.record_id) {
