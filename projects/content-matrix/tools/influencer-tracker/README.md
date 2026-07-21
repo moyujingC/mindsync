@@ -135,6 +135,31 @@ npm run research:run -- \
 
 命令中显式提供的 `--purpose`、`--service-direction`、`--target-account`、`--limit` 和 `--include-comments` 优先于模板默认值。
 
+## 研究到内容的人工交接
+
+候选必须先经人工确认并进入“已转选题”，才可生成交接包。交接包包含可追溯的内容简报和草稿种子，不会写入账号目录、更不会自动发布。
+
+```bash
+# 1. 人工确认候选进入选题池
+npm run research:confirm -- \
+  --request-id 'research-2026-07-21T...' \
+  --candidate 1 \
+  --action 转选题 \
+  --decision-note '用于下一轮内容选题。'
+
+# 2. 生成简报和草稿种子，默认输出到 logs/research-handoffs/
+npm run research:handoff -- \
+  --request-id 'research-2026-07-21T...' \
+  --candidate 1
+
+# 3. 审阅后，才显式指定账号写入草稿目录
+npm run promote:draft -- \
+  --draft logs/research-handoffs/research-...-candidate-1-draft.md \
+  --account 墨予镜
+```
+
+进入正式草稿后，仍沿用 `prepare:edit`、`scaffold:final` 和 `prepare:feedback`。这些步骤均不发布内容；发布链接、互动和服务信号只能在真实发生后由人工填写到发布反馈记录。
+
 ## 组件调试入口
 
 仅在调试采集组件时，才直接使用下列命令：

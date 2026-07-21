@@ -6,6 +6,7 @@
   "scripts": {
     "research:run": "node src/cli/research-request.mjs",
     "research:confirm": "node src/cli/confirm-research-request.mjs",
+    "research:handoff": "node src/cli/handoff-research-candidate.mjs",
     "media:refine": "node src/cli/refine-media.mjs",
     "collect:tikhub": "node src/cli/tikhub-collect.mjs",
     "build:briefs": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json",
