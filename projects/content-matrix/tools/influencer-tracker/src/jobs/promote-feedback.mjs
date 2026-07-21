@@ -27,7 +27,10 @@ export async function promoteFeedbackToAiServiceStudio({
     nextAction,
   });
 
-  if (raw.includes(`| ${feedback.date} | ${feedback.objectName} |`)) {
+  const duplicateMarker = feedback.sourceInsightRecordId
+    ? `研究候选：${feedback.sourceInsightRecordId}`
+    : `| ${feedback.date} | ${feedback.objectName} |`;
+  if (raw.includes(duplicateMarker)) {
     return {
       appended: false,
       reason: 'duplicate',
@@ -48,11 +51,15 @@ export function parseFeedbackRecord(raw) {
   const title = raw.match(/^#\s+(.+)\s+发布反馈记录$/m)?.[1]?.trim() ?? 'untitled';
   const account = raw.match(/^>\s*账号：(.+)$/m)?.[1]?.trim() ?? 'unknown';
   const date = raw.match(/^>\s*记录日期：(.+)$/m)?.[1]?.trim() ?? '';
+  const sourceInsightRecordId = raw.match(/^>\s*研究候选：(.+)$/m)?.[1]?.trim() ?? '';
   const platform = extractBulletValue(raw, '发布平台');
   const publishUrl = extractBulletValue(raw, '发布链接');
   const sampleConversation = extractBulletValue(raw, '是否进入样本沟通');
   const needsAiServiceStudio = extractBulletValue(raw, '是否需要转入 ai-service-studio 记录');
   const consultationIntent = extractBulletValue(raw, '是否出现咨询意向');
+  const realProblem = extractBulletValue(raw, '是否出现真实问题');
+  const sampleWillingness = extractBulletValue(raw, '是否出现资料样本意愿');
+  const objections = extractBulletValue(raw, '反对意见或疑虑');
 
   return {
     title,
@@ -63,6 +70,10 @@ export function parseFeedbackRecord(raw) {
     sampleConversation,
     needsAiServiceStudio,
     consultationIntent,
+    realProblem,
+    sampleWillingness,
+    objections,
+    sourceInsightRecordId,
     objectName: `${account} / ${title}`,
   };
 }
@@ -71,11 +82,20 @@ function buildSampleConversationRow({ feedback, serviceDirection, status, nextAc
   const noteParts = [
     feedback.platform ? `平台：${feedback.platform}` : '',
     feedback.publishUrl ? `链接：${feedback.publishUrl}` : '',
+    feedback.sourceInsightRecordId ? `研究候选：${feedback.sourceInsightRecordId}` : '',
     feedback.consultationIntent === '是' ? '已有咨询意向' : '',
+    feedback.realProblem === '是' ? '出现真实问题' : '',
+    feedback.sampleWillingness === '是' ? '愿意提供资料样本' : '',
     feedback.sampleConversation === '是' ? '内容反馈已进入样本沟通' : '内容反馈待进入样本沟通',
+    feedback.objections ? `反对意见：${truncateText(feedback.objections, 120)}` : '',
   ].filter(Boolean);
 
   return `| ${feedback.date} | ${feedback.objectName} | 内容反馈 | 待判断 | 内容咨询 | ${serviceDirection} | ${status} | ${nextAction} | ${noteParts.join('；')} |`;
+}
+
+function truncateText(value, maxLength) {
+  const text = String(value ?? '').replace(/\s+/g, ' ').trim();
+  return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 }
 
 function appendTableRow(raw, row) {
