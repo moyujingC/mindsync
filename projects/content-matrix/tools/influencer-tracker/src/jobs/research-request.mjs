@@ -1,8 +1,16 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { buildContentEnrichment } from './enrich-content.mjs';
+import { ResearchRequestStore } from '../storage/research-request-store.mjs';
 
-export async function runResearchRequest({ request, collect, outputDir = 'logs/research-briefs' }) {
+const CANDIDATE_STATUSES = new Set(['待人工审核', '已转选题', '已发布', '已结束']);
+
+export async function runResearchRequest({
+  request,
+  collect,
+  outputDir = 'logs/research-briefs',
+  ledgerPath = 'logs/research-requests.json',
+}) {
   validateResearchRequest(request);
   const collection = await collect(request.collect);
   const candidates = buildCandidates({ request, collection });
@@ -21,7 +29,55 @@ export async function runResearchRequest({ request, collect, outputDir = 'logs/r
   const outputPath = resolve(outputDir, `${result.requestId}.md`);
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, renderResearchBrief(result), 'utf8');
-  return { ...result, outputPath };
+  const savedResult = { ...result, outputPath };
+  const store = new ResearchRequestStore({ filePath: ledgerPath });
+  await store.load();
+  store.add(savedResult);
+  await store.save();
+  return savedResult;
+}
+
+export async function confirmResearchCandidate({
+  ledgerPath = 'logs/research-requests.json',
+  requestId,
+  candidateIndex,
+  action,
+  decisionNote,
+  verificationEvidence,
+}) {
+  if (!requestId) {
+    throw new Error('Missing requestId');
+  }
+  if (!Number.isInteger(candidateIndex) || candidateIndex < 1) {
+    throw new Error('candidateIndex must be a positive integer');
+  }
+
+  const store = new ResearchRequestStore({ filePath: ledgerPath });
+  await store.load();
+  const updated = store.update(requestId, (request) => {
+    const candidate = request.candidates?.[candidateIndex - 1];
+    if (!candidate) {
+      throw new Error(`Research candidate not found: ${candidateIndex}`);
+    }
+    applyCandidateDecision({ candidate, action, decisionNote, verificationEvidence });
+    const now = new Date().toISOString();
+    const status = deriveRequestStatus(request.candidates);
+    return {
+      ...request,
+      status,
+      updatedAt: now,
+      decisions: [...(request.decisions ?? []), {
+        candidateIndex,
+        action,
+        decisionNote: decisionNote ?? null,
+        verificationEvidence: verificationEvidence ?? null,
+        decidedAt: now,
+      }],
+    };
+  });
+  await store.save();
+  await writeFile(updated.outputPath, renderResearchBrief(updated), 'utf8');
+  return updated;
 }
 
 function validateResearchRequest(request) {
@@ -50,6 +106,7 @@ function buildCandidates({ request, collection }) {
         commentUniqueKeys: relatedComments.map((comment) => comment.commentUniqueKey),
       },
       evidenceLevel: evidenceLevelFor({ content, comments: relatedComments }),
+      conclusionLevel: '假设',
       researchPurpose: request.purpose,
       serviceDirection: request.serviceDirection,
       targetAccount: request.targetAccount ?? null,
@@ -67,10 +124,10 @@ function evidenceLevelFor({ content, comments }) {
   if (comments.length >= 2) {
     return '观察';
   }
-  if (content.description) {
+  if (content.title || content.description) {
     return '线索';
   }
-  return '待补充';
+  return '线索';
 }
 
 function summarizeCollection(collection) {
@@ -107,6 +164,8 @@ function renderResearchBrief(result) {
     lines.push(`### ${index + 1}. ${candidate.topicTitle}`);
     lines.push('');
     lines.push(`- 证据等级：${candidate.evidenceLevel}`);
+    lines.push(`- 结论等级：${candidate.conclusionLevel}`);
+    lines.push(`- 选题状态：${candidate.status}`);
     lines.push(`- 来源：${candidate.source.title}`);
     lines.push(`- 链接：${candidate.source.url ?? '未提供'}`);
     lines.push(`- 用户问题：${candidate.userProblem}`);
@@ -127,4 +186,57 @@ function renderResearchBrief(result) {
 
 function createRequestId() {
   return `research-${new Date().toISOString().replace(/[:.]/g, '-')}`;
+}
+
+function applyCandidateDecision({ candidate, action, decisionNote, verificationEvidence }) {
+  if (!action) {
+    throw new Error('Missing action');
+  }
+  if (!CANDIDATE_STATUSES.has(candidate.status)) {
+    throw new Error(`Unsupported candidate status: ${candidate.status}`);
+  }
+
+  const now = new Date().toISOString();
+  if (action === '验证') {
+    if (!verificationEvidence?.trim()) {
+      throw new Error('verificationEvidence is required before a conclusion can be marked 已验证');
+    }
+    candidate.conclusionLevel = '已验证';
+    candidate.verificationEvidence = verificationEvidence.trim();
+    candidate.verifiedAt = now;
+    return;
+  }
+
+  const transitions = {
+    转选题: { from: ['待人工审核'], to: '已转选题' },
+    已发布: { from: ['已转选题'], to: '已发布' },
+    结束: { from: ['待人工审核', '已转选题', '已发布'], to: '已结束' },
+  };
+  const transition = transitions[action];
+  if (!transition) {
+    throw new Error(`Unsupported decision action: ${action}`);
+  }
+  if (!transition.from.includes(candidate.status)) {
+    throw new Error(`Research candidate cannot move directly from ${candidate.status} to ${transition.to}`);
+  }
+  if (!decisionNote?.trim()) {
+    throw new Error(`decisionNote is required when action is ${action}`);
+  }
+  candidate.status = transition.to;
+  candidate.decisionNote = decisionNote.trim();
+  candidate.decidedAt = now;
+}
+
+function deriveRequestStatus(candidates) {
+  const statuses = candidates.map((candidate) => candidate.status);
+  if (statuses.length > 0 && statuses.every((status) => status === '已结束')) {
+    return '已结束';
+  }
+  if (statuses.includes('已发布')) {
+    return '已发布';
+  }
+  if (statuses.includes('已转选题')) {
+    return '已转选题';
+  }
+  return '待人工确认';
 }

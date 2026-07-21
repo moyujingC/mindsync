@@ -42,7 +42,7 @@ export TIKHUB_API_KEY='你的 TikHub API Key'
 
 ## 研究请求：日常唯一入口
 
-研究请求会把采集、证据整理和候选选题串成一次可交接的 Workflow。它不会自动发布或联系任何人，结果状态始终是“待人工确认”。
+研究请求会把采集、证据整理和候选选题串成一次可交接的 Workflow。它不会自动发布或联系任何人。每次运行同时生成研究简报和本地台账 `logs/research-requests.json`；台账记录请求范围、调用摘要、候选状态、人工决定和验证依据。
 
 ```bash
 npm run research:run -- \
@@ -57,6 +57,34 @@ npm run research:run -- \
 ```
 
 输出在 `logs/research-briefs/`：包含研究目的、服务方向、样本与调用量、评论证据、最多 3 个候选选题，以及明确的人工确认点。
+
+### 人工确认与证据等级
+
+候选项同时有两组独立字段，不能混用：
+
+- `证据等级`：`线索` 表示内容样本；`观察` 表示至少两条相关评论。采集程序不会自动给出“已验证”。
+- `结论等级`：自动生成的洞察一律为 `假设`；只有人工提供外部反馈或样本沟通依据，才可改为 `已验证`。
+- `选题状态`：`待人工审核 -> 已转选题 -> 已发布`，也可从任意未结束状态标为 `已结束`。每次流转必须填写人工决定说明。
+
+研究简报和台账会在确认时同步更新。以下命令只更新台账和简报，不会创建草稿、发布内容或联系用户：
+
+```bash
+# 让第 1 个候选进入选题池
+npm run research:confirm -- \
+  --request-id 'research-2026-07-21T...' \
+  --candidate 1 \
+  --action 转选题 \
+  --decision-note '用于下一轮企业 AI 服务选题。'
+
+# 只有已有可追溯人工证据时才标记为已验证
+npm run research:confirm -- \
+  --request-id 'research-2026-07-21T...' \
+  --candidate 1 \
+  --action 验证 \
+  --verification-evidence '2026-07-21 样本沟通记录：两名目标用户确认流程诊断需求。'
+```
+
+如需将台账存到其他目录，`research:run` 和 `research:confirm` 均支持 `--ledger path/to/research-requests.json`。
 
 当前 TikHub 账户调用会返回 HTTP 402，需先在 TikHub 后台确认余额与对应接口套餐权限。开通后先加 `--dry-run` 验证真实响应，再移除它写入飞书。
 

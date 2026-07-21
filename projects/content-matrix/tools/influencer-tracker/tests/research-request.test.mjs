@@ -3,7 +3,11 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { runResearchRequest } from '../src/jobs/research-request.mjs';
+import {
+  confirmResearchCandidate,
+  runResearchRequest,
+} from '../src/jobs/research-request.mjs';
+import { ResearchRequestStore } from '../src/storage/research-request-store.mjs';
 
 test('runResearchRequest produces an evidence-backed enterprise AI research brief', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'research-request-'));
@@ -41,3 +45,151 @@ test('runResearchRequest rejects a request without purpose or service direction'
     /requires purpose and serviceDirection/,
   );
 });
+
+test('runResearchRequest persists a request ledger with evidence and conclusion levels', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-request-ledger-'));
+  try {
+    const storePath = join(dir, 'research-requests.json');
+    const result = await runResearchRequest({
+      request: {
+        requestId: 'research-ledger-1',
+        purpose: '评论挖需求',
+        serviceDirection: '企业 AI 服务',
+        collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/note', includeComments: true },
+      },
+      collect: async () => collectionFixture(),
+      outputDir: join(dir, 'briefs'),
+      ledgerPath: storePath,
+    });
+
+    const store = new ResearchRequestStore({ filePath: storePath });
+    await store.load();
+    const saved = store.get(result.requestId);
+
+    assert.equal(saved.status, '待人工确认');
+    assert.equal(saved.candidates[0].evidenceLevel, '观察');
+    assert.equal(saved.candidates[0].conclusionLevel, '假设');
+    assert.equal(saved.candidates[0].status, '待人工审核');
+    assert.equal(saved.outputPath, result.outputPath);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('confirmResearchCandidate records human topic decision and rejects invalid state transitions', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-request-confirm-'));
+  try {
+    const storePath = join(dir, 'research-requests.json');
+    await runResearchRequest({
+      request: {
+        requestId: 'research-confirm-1',
+        purpose: '评论挖需求',
+        serviceDirection: '企业 AI 服务',
+        collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/note', includeComments: true },
+      },
+      collect: async () => collectionFixture(),
+      outputDir: join(dir, 'briefs'),
+      ledgerPath: storePath,
+    });
+
+    await assert.rejects(
+      () => confirmResearchCandidate({
+        ledgerPath: storePath,
+        requestId: 'research-confirm-1',
+        candidateIndex: 1,
+        action: '已发布',
+        decisionNote: '不应跳过选题人工确认。',
+      }),
+      /cannot move directly from 待人工审核 to 已发布/,
+    );
+
+    const confirmed = await confirmResearchCandidate({
+      ledgerPath: storePath,
+      requestId: 'research-confirm-1',
+      candidateIndex: 1,
+      action: '转选题',
+      decisionNote: '用于下一轮企业 AI 服务选题。',
+    });
+
+    assert.equal(confirmed.status, '已转选题');
+    assert.equal(confirmed.candidates[0].status, '已转选题');
+    assert.equal(confirmed.candidates[0].conclusionLevel, '假设');
+    const brief = await readFile(confirmed.outputPath, 'utf8');
+    assert.match(brief, /当前状态：已转选题/);
+    assert.match(brief, /选题状态：已转选题/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('confirmResearchCandidate requires human verification evidence before marking a conclusion verified', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-request-verify-'));
+  try {
+    const storePath = join(dir, 'research-requests.json');
+    await runResearchRequest({
+      request: {
+        requestId: 'research-verify-1',
+        purpose: '评论挖需求',
+        serviceDirection: '企业 AI 服务',
+        collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/note', includeComments: true },
+      },
+      collect: async () => collectionFixture(),
+      outputDir: join(dir, 'briefs'),
+      ledgerPath: storePath,
+    });
+
+    await assert.rejects(
+      () => confirmResearchCandidate({
+        ledgerPath: storePath,
+        requestId: 'research-verify-1',
+        candidateIndex: 1,
+        action: '验证',
+      }),
+      /verificationEvidence/,
+    );
+
+    const verified = await confirmResearchCandidate({
+      ledgerPath: storePath,
+      requestId: 'research-verify-1',
+      candidateIndex: 1,
+      action: '验证',
+      verificationEvidence: '2026-07-21 样本沟通记录：两名目标用户确认流程诊断需求。',
+    });
+
+    assert.equal(verified.candidates[0].conclusionLevel, '已验证');
+    assert.equal(verified.candidates[0].verificationEvidence, '2026-07-21 样本沟通记录：两名目标用户确认流程诊断需求。');
+    assert.ok(verified.candidates[0].verifiedAt);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+function collectionFixture() {
+  return {
+    request: { mode: 'detail', platform: 'xiaohongshu', includeComments: true, limit: 10 },
+    audit: { source: 'tikhub', requestCount: 2, cacheUrls: ['https://cache.example/note'] },
+    contents: {
+      fetchedCount: 1,
+      createdCount: 1,
+      duplicateCount: 0,
+      items: [{
+        uniqueKey: 'xiaohongshu:note-1',
+        platform: 'xiaohongshu',
+        creatorName: 'AI 实践者',
+        contentExternalId: 'note-1',
+        title: '企业 AI 先从一个流程试点',
+        description: '先找到重复、可验收的流程。',
+        url: 'https://example.com/note',
+      }],
+    },
+    comments: {
+      fetchedCount: 2,
+      createdCount: 2,
+      duplicateCount: 0,
+      items: [
+        { commentUniqueKey: 'xiaohongshu:x:1', commentText: '怎么判断先做哪个流程？', demandType: ['问题咨询'], likeCount: 5 },
+        { commentUniqueKey: 'xiaohongshu:x:2', commentText: '能不能先做低成本试点？', demandType: ['购买意向'], likeCount: 3 },
+      ],
+    },
+  };
+}

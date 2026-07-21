@@ -19,6 +19,7 @@ try {
     : null;
   const result = await runResearchRequest({
     request: {
+      requestId: args.requestId,
       purpose: args.purpose,
       serviceDirection: args.serviceDirection,
       targetAccount: args.targetAccount,
@@ -41,6 +42,7 @@ try {
       dryRun: Boolean(args.dryRun),
     }),
     outputDir: resolve(cwd, args.outputDir ?? 'logs/research-briefs'),
+    ledgerPath: resolve(cwd, args.ledger ?? 'logs/research-requests.json'),
   });
   console.log(JSON.stringify({ ok: true, ...result }, null, 2));
 } catch (error) {
