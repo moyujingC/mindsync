@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { TikHubClient } from '../src/platforms/tikhub/client.mjs';
+import { parseTikHubJson, TikHubClient } from '../src/platforms/tikhub/client.mjs';
 import { extractTikHubPage, normalizeTikHubComments, normalizeTikHubContent } from '../src/platforms/tikhub/normalize.mjs';
 
 test('TikHubClient fetches Xiaohongshu detail from a share link and records cache metadata', async () => {
@@ -55,6 +55,15 @@ test('TikHubClient refuses to make a request without an API key', async () => {
   assert.equal(called, false);
 });
 
+test('parseTikHubJson preserves large video identifiers as exact strings', () => {
+  const payload = parseTikHubJson('{"code":200,"data":{"id":14529719893133756789,"small":123,"ratio":12.14529719893133756789,"scientific":1e20}}');
+
+  assert.equal(payload.data.id, '14529719893133756789');
+  assert.equal(payload.data.small, 123);
+  assert.equal(payload.data.ratio, Number('12.14529719893133756789'));
+  assert.equal(payload.data.scientific, 1e20);
+});
+
 test('TikHubClient explains a 402 response as a TikHub account entitlement issue', async () => {
   const client = new TikHubClient({
     apiKey: 'test-key',
@@ -86,6 +95,7 @@ test('TikHubClient uses each platform detail identifier contract', async () => {
   await client.getContentDetail({ platform: 'douyin', shareUrl: 'https://v.douyin.com/example' });
   await client.getContentDetail({ platform: 'wechat_mp', shareUrl: 'https://mp.weixin.qq.com/s/example' });
   await client.getContentDetail({ platform: 'wechat_channels', shareUrl: 'https://weixin.qq.com/sph/example' });
+  await client.getContentDetail({ platform: 'wechat_channels', contentId: 'export/short-lived-id' });
 
   assert.match(requests[0].url, /share_url=/);
   assert.match(requests[1].url, /wechat_mp\/v2\/fetch_article_detail$/);
@@ -94,6 +104,7 @@ test('TikHubClient uses each platform detail identifier contract', async () => {
   assert.match(requests[2].url, /wechat_channels\/v2\/fetch_video_detail$/);
   assert.equal(requests[2].options.method, 'POST');
   assert.deepEqual(JSON.parse(requests[2].options.body), { share_url: 'https://weixin.qq.com/sph/example', raw: true });
+  assert.deepEqual(JSON.parse(requests[3].options.body), { export_id: 'export/short-lived-id', raw: true });
 });
 
 test('TikHubClient uses documented creator and comment contracts for WeChat platforms', async () => {
@@ -159,7 +170,7 @@ test('TikHubClient rejects incomplete WeChat detail and comment identifiers', as
   const client = new TikHubClient({ apiKey: 'test-key' });
 
   await assert.rejects(() => client.getContentDetail({ platform: 'wechat_mp' }), /requires an article shareUrl/);
-  await assert.rejects(() => client.getContentDetail({ platform: 'wechat_channels', contentId: 'finder-object' }), /requires a shareUrl or numeric object_id/);
+  await assert.rejects(() => client.getContentDetail({ platform: 'wechat_channels', contentId: 'finder-object' }), /requires a shareUrl, numeric object_id, or export_id/);
   await assert.rejects(() => client.getComments({ platform: 'wechat_mp', contentId: 'article' }), /require an article shareUrl/);
   await assert.rejects(() => client.getComments({ platform: 'wechat_channels', contentId: 'finder-object' }), /require a numeric object_id/);
 });
@@ -442,6 +453,67 @@ test('TikHub normalizers flatten WeChat Channels search sub-boxes', () => {
   assert.equal(content.creatorName, '视频号实践者');
   assert.equal(content.title, '企业AI工作流');
   assert.equal(content.metrics.likeCount, 28);
+});
+
+test('TikHub WeChat Channels normalizer reads a detail object returned by export ID', () => {
+  const content = normalizeTikHubContent({
+    platform: 'wechat_channels',
+    data: {
+      objects: [{
+        id: 123456789,
+        nickname: '视频号实践者',
+        username: 'finder_username',
+        likeCount: 12,
+        commentCount: 3,
+        createtime: 1_784_041_200,
+        objectDesc: { description: '企业 AI 工作流实践。', shortTitle: 'AI 工作流' },
+      }],
+    },
+  });
+
+  assert.equal(content.contentExternalId, '123456789');
+  assert.equal(content.creatorExternalId, 'finder_username');
+  assert.equal(content.creatorName, '视频号实践者');
+  assert.equal(content.title, 'AI 工作流');
+  assert.equal(content.metrics.commentCount, 3);
+});
+
+test('TikHub page parser reads WeChat Channels account and comment containers', () => {
+  const accountPage = extractTikHubPage({
+    object: [{ id: 123, nickname: '视频号实践者', username: 'finder_username', objectDesc: { description: '企业 AI 工作流。' } }],
+    continueFlag: 1,
+    lastBuffer: 'account-next',
+  });
+  const commentPage = extractTikHubPage({
+    commentInfo: [{ id: 456, content: '如何开始试点？' }],
+    downContinueFlag: 1,
+    last_buffer: 'comment-next',
+  });
+
+  assert.equal(accountPage.items.length, 1);
+  assert.equal(accountPage.cursor, 'account-next');
+  assert.equal(accountPage.hasMore, true);
+  assert.equal(commentPage.items.length, 1);
+  assert.equal(commentPage.cursor, 'comment-next');
+  assert.equal(commentPage.hasMore, true);
+});
+
+test('TikHub WeChat Channels comment normalizer uses commentId and authorContact fields', () => {
+  const comments = normalizeTikHubComments({
+    platform: 'wechat_channels',
+    contentUniqueKey: 'wechat_channels:14529719893133756529',
+    items: [{
+      commentId: '14530339571865487635',
+      content: '如何判断需求？',
+      createtime: 1_784_041_200,
+      likeCount: 56,
+      authorContact: { nickname: '提问者' },
+    }],
+  });
+
+  assert.equal(comments[0].commentUniqueKey, 'wechat_channels:wechat_channels:14529719893133756529:14530339571865487635');
+  assert.equal(comments[0].likeCount, 56);
+  assert.equal(comments[0].userHandle, '提问者');
 });
 
 test('TikHub content normalizer removes URL query parameters before storage', () => {

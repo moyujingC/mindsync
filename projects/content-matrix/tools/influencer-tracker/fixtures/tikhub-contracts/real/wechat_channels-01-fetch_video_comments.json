@@ -1,0 +1,87 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T15:17:26.862Z",
+  "request": {
+    "path": "/api/v1/wechat_channels/v2/fetch_video_comments",
+    "method": "POST",
+    "params": {},
+    "body": {
+      "object_id": "[redacted-object_id]",
+      "last_buffer": null,
+      "raw": true
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 08:17:52",
+      "time_stamp": 1784647072,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/a9a5e9c5-6a79-4d81-9eee-d031cd689401",
+      "router": "/api/v1/wechat_channels/v2/fetch_video_comments",
+      "params": {
+        "object_id": "[redacted-object_id]",
+        "last_buffer": "",
+        "comment_id": "[redacted-comment_id]",
+        "raw": true
+      },
+      "data": {
+        "monotonicData": {
+          "thankChatroomPushFlag": null,
+          "commentInfo": null,
+          "thumbUpFlag": null,
+          "pbRequestMsgInfo": null,
+          "chatroomPushCount": null,
+          "liveIndependentData": null,
+          "globalFavFlag": null,
+          "chatroomPushFlag": null,
+          "globalFavCount": null,
+          "commentCount": {
+            "commentCount": 197,
+            "imageCommentCount": 0,
+            "versionData": {
+              "pbRequestMsgInfo": null,
+              "overwrite": false,
+              "dataVersion": 1784614265
+            },
+            "pbRequestMsgInfo": null
+          },
+          "followPostCount": null,
+          "thumbUpCount": null
+        },
+        "commentInfo": [
+          {
+            "content": "[redacted-content]"
+          }
+        ],
+        "descComments": [],
+        "baseResponse": {
+          "ret": 0,
+          "errMsg": {
+            "string": "",
+            "pbRequestMsgInfo": null
+          },
+          "pbRequestMsgInfo": null
+        },
+        "optionFlag": 0,
+        "downContinueFlag": 1,
+        "pbRequestMsgInfo": null,
+        "descComment": {
+          "content": "[redacted-content]"
+        },
+        "requestId": "7485352351241804621",
+        "promptInfo": null,
+        "lastBuffer": "CqsCCP///////////wEYk5LgtrDbiNPJARiJtLCOgtXYzM8BGICx/NqTrI7TyQEY0JC4qpzGitPJARjFk5yMutvj6skBGIWQlPGao6LSyQEYvZG87tXYjtLJARidocCSrffN0skBGJCxnKfsvunWyQEYzbHMjMysmIzKARigkIDlz4Ou1skBGMCzoKe71LPTyQEYupCg0sjYhtPJARj9sqjpzJWw1skBGKqS1LqhrbDUyQEYzJCYwc3ghdLJARijs/Da5cHB08kBGO+i1NqG3J7TyQEYpJHUv52omdLJARj2ssC0jsaP08kBGNGQhL2vsJ7TyQEYqZS4j72G59PJARiusfDc6JmE0skBGI2Q8N7th7jTyQEYuJDUlvKrjNLJATABOP///////////wE=",
+        "productCommentinfo": null
+      }
+    }
+  }
+}

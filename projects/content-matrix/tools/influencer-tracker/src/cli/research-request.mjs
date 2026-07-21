@@ -34,6 +34,7 @@ try {
         mode: args.mode,
         platform: args.platform,
         shareUrl: args.shareUrl,
+        contentId: args.contentId,
         keyword: args.keyword,
         creatorId: args.creatorId,
         // Omit this key unless explicitly requested so a research template can supply its default.

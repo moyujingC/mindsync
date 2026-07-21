@@ -52,17 +52,47 @@ test('captureTikHubContract saves a redacted dry-run response without Feishu wri
   }
 });
 
+test('captureTikHubContract captures a standalone comment page by content ID', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'tikhub-comment-contract-'));
+  try {
+    const client = new TikHubClient({
+      apiKey: 'secret-api-key',
+      fetchImpl: async () => jsonResponse({
+        code: 200,
+        data: { commentInfo: [{ id: 42, content: '私密评论', nick_name: '用户甲' }], last_buffer: 'next' },
+      }),
+    });
+    const result = await captureTikHubContract({
+      request: { mode: 'comments', platform: 'wechat_channels', contentId: '14529719893133756529' },
+      client,
+      outputDir: dir,
+    });
+
+    assert.equal(result.collection.commentCount, 1);
+    assert.deepEqual(result.collection.pagination, {
+      comments: { itemCount: 1, hasMore: false, cursorPresent: true },
+    });
+    assert.match(result.files[0], /fetch_video_comments\.json$/);
+    const captured = JSON.parse(await readFile(result.files[0], 'utf8'));
+    assert.equal(captured.request.body.object_id, '[redacted-object_id]');
+    assert.equal(captured.response.body.data.commentInfo[0].content, '[redacted-content]');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('sanitizeTikHubResponse redacts credentials, identifiers, text, and URL query strings', () => {
   const sanitized = sanitizeTikHubResponse({
     path: '/api/v1/example',
     method: 'POST',
     params: { token: 'secret', keyword: '企业 AI' },
-    body: { creator_id: 'creator-001', content: 'private text' },
+    body: { creator_id: 'creator-001', export_id: 'short-lived-export-id', content: 'private text' },
     status: 200,
     response: { code: 200, data: { url: 'https://example.com/a?secret=1', uid: 'user-001', message: 'reply text' } },
   });
 
   assert.equal(sanitized.request.params.token, '[redacted-token]');
+  assert.equal(sanitized.request.body.export_id, '[redacted-export_id]');
   assert.equal(sanitized.request.body.content, '[redacted-content]');
   assert.equal(sanitized.response.body.data.uid, '[redacted-uid]');
   assert.equal(sanitized.response.body.data.message, '[redacted-message]');

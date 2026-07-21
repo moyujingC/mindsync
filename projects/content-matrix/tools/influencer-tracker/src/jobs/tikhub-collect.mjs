@@ -47,7 +47,8 @@ export async function collectTikHubResearch({
   const commentResult = await collectComments({
     request,
     client,
-    contents: newContents,
+    // Re-running a request must be able to add newly requested comments for already known content.
+    contents,
     feishuClient,
     feishuConfig,
     dryRun,
@@ -69,7 +70,8 @@ export async function collectTikHubResearch({
       fetchedCount: contents.length,
       createdCount: newContents.length,
       duplicateCount,
-      items: newContents,
+      // Research candidates need the sampled content even when only its comments are new.
+      items: contents,
     },
     comments: commentResult,
   };
@@ -187,7 +189,8 @@ async function collectComments({ request, client, contents, feishuClient, feishu
     fetchedCount: uniqueComments.length,
     createdCount: newComments.length,
     duplicateCount: uniqueComments.length - newComments.length,
-    items: newComments,
+    // Keep sampled comments available to research even when Feishu dedupe skips a repeat write.
+    items: uniqueComments,
     cacheUrls: [...new Set(cacheUrls)],
     audit,
     pagination,

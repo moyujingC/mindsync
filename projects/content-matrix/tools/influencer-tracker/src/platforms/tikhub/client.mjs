@@ -112,7 +112,7 @@ export class TikHubClient {
       },
       body: body ? JSON.stringify(removeEmpty(body)) : undefined,
     });
-    const json = await response.json().catch(() => ({}));
+    const json = await readTikHubJson(response);
     await this.onResponse?.({ path, method, params, body, status: response.status, response: json });
     if (response.status === 402) {
       throw new Error('TikHub returned 402: check account balance or endpoint entitlement');
@@ -129,6 +129,68 @@ export class TikHubClient {
       },
     };
   }
+}
+
+async function readTikHubJson(response) {
+  try {
+    if (typeof response.text === 'function') {
+      const text = await response.text();
+      return parseTikHubJson(text);
+    }
+    return await response.json();
+  } catch {
+    return {};
+  }
+}
+
+export function parseTikHubJson(text) {
+  // Video IDs can exceed Number.MAX_SAFE_INTEGER. Keep large integer tokens exact for later API calls.
+  return JSON.parse(quoteLargeIntegers(String(text)));
+}
+
+function quoteLargeIntegers(text) {
+  let output = '';
+  let inString = false;
+  let escaped = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    if (inString) {
+      output += char;
+      if (escaped) {
+        escaped = false;
+      } else if (char === '\\') {
+        escaped = true;
+      } else if (char === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (char === '"') {
+      inString = true;
+      output += char;
+      continue;
+    }
+    if (/[0-9]/.test(char)) {
+      const previous = text[index - 1] ?? '';
+      let end = index;
+      while (/[0-9]/.test(text[end + 1] ?? '')) {
+        end += 1;
+      }
+      const token = text.slice(index, end + 1);
+      const next = text[end + 1] ?? '';
+      const isIntegerStart = !/[.eE-]/.test(previous);
+      if (isIntegerStart && token.length >= 16 && !/[.eE]/.test(next)) {
+        output += `"${token}"`;
+      } else {
+        output += token;
+      }
+      index = end;
+      continue;
+    }
+    output += char;
+  }
+  return output;
 }
 
 function detailRoute(platform) {
@@ -155,10 +217,13 @@ function wechatChannelsDetailBody({ shareUrl, contentId }) {
   if (contentId && /^\d+$/.test(String(contentId))) {
     return { object_id: String(contentId), raw: true };
   }
+  if (contentId && /^export\//.test(String(contentId))) {
+    return { export_id: String(contentId), raw: true };
+  }
   if (shareUrl) {
     return { share_url: shareUrl, raw: true };
   }
-  throw new Error('TikHub WeChat Channels detail requires a shareUrl or numeric object_id');
+  throw new Error('TikHub WeChat Channels detail requires a shareUrl, numeric object_id, or export_id');
 }
 
 function searchRoute(platform) {

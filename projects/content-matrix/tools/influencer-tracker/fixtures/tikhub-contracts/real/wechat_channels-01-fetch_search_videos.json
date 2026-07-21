@@ -1,0 +1,71 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T15:17:31.250Z",
+  "request": {
+    "path": "/api/v1/wechat_search/v2/fetch_search_videos",
+    "method": "POST",
+    "params": {},
+    "body": {
+      "keyword": "企业 AI 工作流",
+      "cursor": null,
+      "offset": 0,
+      "raw": true
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 08:17:56",
+      "time_stamp": 1784647076,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/a430484e-b081-49f7-914b-21ef67de5380",
+      "router": "/api/v1/wechat_search/v2/fetch_search_videos",
+      "params": {
+        "keyword": "企业 AI 工作流",
+        "duration": "all",
+        "sort": "default",
+        "publish_time": "all",
+        "offset": 0,
+        "cursor": null,
+        "raw": true
+      },
+      "data": {
+        "keyword": "企业 AI 工作流",
+        "business_type": 7,
+        "results": {
+          "data": [
+            {
+              "subBoxes": [
+                {
+                  "count": 1,
+                  "items": [
+                    "[omitted-object]"
+                  ],
+                  "real_type": 18874368,
+                  "subType": 1,
+                  "totalCount": 220,
+                  "type": 84,
+                  "useNativeRender": false
+                }
+              ],
+              "type": 107
+            }
+          ]
+        },
+        "continue_flag": 1,
+        "offset": 10,
+        "cursor": "JgtV_a7B8-2afTiDF8pcv9SH9WAkqpFUFn807_MCf_Bj2SmfgVJJ6_Ouh1qEwnfwcpw9kE_6Mm9ibnqaGQL6L1sZXBlOkVEZXpB4xKyuQGXqYUB2-9tpb6Yb-hn246RIM1ORdEXy7LO8T1vSJ4O4_un3SoKcKl8bd8LPBLW93YTM6MWlDCugxG-MAIB-7FIBaYyTVWs25pD3Zr3vSxIRrcMpqCPcAZoNV_YZycF24Sm_1W6rvX7H9Hs26YT-Apj4VNx9WFaWtoig-Ug_ezbp9-7JieEyCJzK-cLbeHoMaJFYH0RVQtHm1bvP9d_jwsi3Aq10LjMqO7YMQveBBiIEinHD8NKw4oxH9Q_A3MTtx2re3natbRg-lcz3rFZP-55KG8yJfztKsGn0IqzfXsKXKXplCr43xolcT_klvJo3j27DkdxNNvcAvIZw2f-w8eBUmR8LIvyAghjbXLwawtkmK7vgOe-2BsC3fqbrZtAAFaKuOtH6hLqJmtZDE_F6P3NJCVCNOHbYRn2K8N3VgauGz8SRR4hFGqwXWGgyhBQ4r2emfKD9ACcJ3qhphe8xi7FlABsQiY4mUnLU0YDTCU7F17htZs9xqXcl80rlrGFvWxd47oNBzn7BC6tu8i77oPm1a6Zj7k-ELa-iX26g6gi2j5LCxgWIn2AaMvSrRn1FjsMdyi9yPw==",
+        "debug_id": "[redacted-debug_id]",
+        "debug_info": "[redacted-debug_info]"
+      }
+    }
+  }
+}

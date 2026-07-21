@@ -73,6 +73,25 @@ test('runResearchRequest dry-run leaves its ledger and brief directory untouched
   }
 });
 
+test('runResearchRequest preserves a numeric content ID for platform detail workflows', async () => {
+  let collectRequest = null;
+  await runResearchRequest({
+    request: {
+      requestId: 'research-content-id-1',
+      purpose: '选题调研',
+      serviceDirection: '企业 AI 服务',
+      collect: { mode: 'detail', platform: 'wechat_channels', contentId: '11403202356913418951' },
+    },
+    collect: async (request) => {
+      collectRequest = request;
+      return collectionFixture();
+    },
+    persist: false,
+  });
+
+  assert.equal(collectRequest.contentId, '11403202356913418951');
+});
+
 test('runResearchRequest persists a request ledger with evidence and conclusion levels', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'research-request-ledger-'));
   try {

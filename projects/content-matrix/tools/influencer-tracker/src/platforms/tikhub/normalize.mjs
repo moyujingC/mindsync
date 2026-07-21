@@ -4,24 +4,27 @@ export function normalizeTikHubContent({ platform, data }) {
   platform = normalizePlatformId(platform, 'TikHub content platform');
   const source = unwrapContent(data);
   const externalId = requiredString(first(source.aweme_id, source.note_id, source.docID, source.doc_id, source.msgId, source.id, source.item_id, source.object_id, source.comment_id, source.url), 'TikHub content ID');
-  const creator = first(source.author, source.user, source.user_info, {});
+  const creator = first(source.author, source.user, source.user_info, source.contact, {});
   const metrics = first(source.statistics, source.interact_info, source.interaction, {});
-  const description = stripMarkup(firstString(source.desc, source.description, source.content, source.note_desc) ?? '');
+  const description = stripMarkup(firstString(
+    source.desc, source.description, source.content, source.note_desc,
+    source.objectDesc?.description, source.objectDesc?.shortTitle, source.objectExtend?.feedTitle,
+  ) ?? '');
   return {
     uniqueKey: `${platform}:${externalId}`,
     platform,
-    creatorName: first(creator.nickname, creator.name, creator.user_name, source.nick_name, source.source?.title, source.author_name, '未知博主'),
-    creatorExternalId: first(creator.sec_uid, creator.user_id, creator.userid, creator.uid, creator.id, source.user_name, source._tikhubCreatorId, null),
+    creatorName: first(creator.nickname, creator.name, creator.user_name, source.nickname, source.nick_name, source.source?.title, source.author_name, '未知博主'),
+    creatorExternalId: first(creator.sec_uid, creator.user_id, creator.userid, creator.uid, creator.id, source.user_name, source.username, source._tikhubCreatorId, null),
     contentExternalId: externalId,
     url: sanitizeContentUrl(first(source.share_url, source.url, source.note_url, source.link, source.doc_url, null), platform),
-    title: stripMarkup(first(source.title, source.note_title, description.slice(0, 60), `${platform} 内容 ${externalId}`)),
+    title: stripMarkup(first(source.title, source.note_title, source.objectDesc?.shortTitle, source.objectExtend?.feedTitle, description.slice(0, 60), `${platform} 内容 ${externalId}`)),
     description,
-    publishedAt: normalizeTimestamp(first(source.create_time, source.time, source.publish_time, source.publish_date, source.pubTime, source.date, null)),
+    publishedAt: normalizeTimestamp(first(source.create_time, source.createtime, source.time, source.publish_time, source.publish_date, source.pubTime, source.date, null)),
     contentType: normalizeContentType(platform, source),
     tags: normalizeTags(first(source.tags, source.tag_list, [])),
     metrics: {
-      likeCount: toNumber(first(metrics.digg_count, metrics.liked_count, metrics.like_count, source.liked_count, source.like_count, source.likeNum, 0)),
-      commentCount: toNumber(first(metrics.comment_count, metrics.comments_count, source.comments_count, source.comment_count, 0)),
+      likeCount: toNumber(first(metrics.digg_count, metrics.liked_count, metrics.like_count, source.liked_count, source.like_count, source.likeCount, source.likeNum, 0)),
+      commentCount: toNumber(first(metrics.comment_count, metrics.comments_count, source.comments_count, source.comment_count, source.commentCount, 0)),
       favoriteCount: toNumber(first(metrics.collect_count, metrics.collected_count, metrics.favorite_count, source.collected_count, source.favorite_count, 0)),
       shareCount: toNumber(first(metrics.share_count, source.shared_count, source.share_count, 0)),
     },
@@ -32,17 +35,17 @@ export function normalizeTikHubContent({ platform, data }) {
 export function normalizeTikHubComments({ platform, contentUniqueKey, items }) {
   platform = normalizePlatformId(platform, 'TikHub comment platform');
   return unwrapItems(items).map((item, index) => {
-    const commentId = requiredString(String(first(item.cid, item.comment_id, item.id, item.rpid, `${index}`)), 'TikHub comment ID');
-    const user = first(item.user, item.user_info, item.member, {});
+    const commentId = requiredString(String(first(item.cid, item.comment_id, item.commentId, item.id, item.rpid, `${index}`)), 'TikHub comment ID');
+    const user = first(item.user, item.user_info, item.member, item.authorContact, {});
     return {
       platform,
       contentUniqueKey,
       commentUniqueKey: `${platform}:${contentUniqueKey}:${commentId}`,
       commentId,
       commentText: requiredString(first(item.text, item.content, item.message, item.content?.message, ''), 'TikHub comment text').trim(),
-      commentedAt: normalizeTimestamp(first(item.create_time, item.ctime, item.time, item.created_at, null)) ?? new Date().toISOString(),
-      likeCount: toNumber(first(item.digg_count, item.like_count, item.like_num, item.like, 0)),
-      userHandle: String(first(user.nickname, user.name, user.user_id, user.uid, item.nick_name, 'unknown')),
+      commentedAt: normalizeTimestamp(first(item.create_time, item.createtime, item.ctime, item.time, item.created_at, null)) ?? new Date().toISOString(),
+      likeCount: toNumber(first(item.digg_count, item.like_count, item.likeCount, item.like_num, item.like, 0)),
+      userHandle: String(first(user.nickname, user.name, user.user_id, user.uid, item.nickname, item.nick_name, 'unknown')),
       demandType: [],
       sentiment: '未判断',
       insightStatus: '待定',
@@ -67,6 +70,8 @@ export function extractTikHubPage(data) {
     source.article_list,
     source.articles,
     source.video_list,
+    source.object,
+    source.commentInfo,
     source.data?.[0]?.note_list,
     source.data?.notes,
     source.results?.data,
@@ -79,6 +84,7 @@ export function extractTikHubPage(data) {
   const cursor = [
     source.next_cursor, source.nextCursor, source.cursor, source.max_cursor, source.maxCursor, source.next_page,
     source.next_offset,
+    source.lastBuffer, source.last_buffer,
     source.data?.cursor, source.data?.next_cursor, source.data?.nextCursor,
     source.notes?.[0]?.cursor,
     source.results?.cursor, source.results?.next_cursor, source.results?.nextCursor,
@@ -89,13 +95,24 @@ export function extractTikHubPage(data) {
     items,
     cursor: cursor === undefined ? null : String(cursor),
     hasMore: normalizeHasMore(first(
-      source.has_more, source.hasMore, source.more, source.data?.has_more, source.data?.hasMore,
+      source.has_more, source.hasMore, source.more, source.continueFlag, source.upContinueFlag, source.downContinueFlag,
+      source.data?.has_more, source.data?.hasMore,
       source.results?.continue_flag, source.results?.continueFlag, envelope.has_more, envelope.hasMore, envelope.more,
     ) ?? (source.is_end === 0)),
   };
 }
 
 function unwrapContent(data) {
+  if (Array.isArray(data?.objects) && data.objects.length > 0) {
+    const object = data.objects[0];
+    return {
+      ...object,
+      author: object.contact,
+      username: first(object.username, object.contact?.username),
+      description: firstString(object.objectDesc?.description, object.objectDesc?.shortTitle, object.objectExtend?.feedTitle),
+      title: firstString(object.objectDesc?.shortTitle, object.objectExtend?.feedTitle, object.objectDesc?.description),
+    };
+  }
   if (data?.appMsg && typeof data.appMsg === 'object') {
     const detail = data.appMsg.detailInfo?.[0] ?? {};
     return {
@@ -130,7 +147,7 @@ function unwrapContent(data) {
 }
 
 function unwrapItems(items) {
-  return Array.isArray(items) ? items : first(items?.comments, items?.items, items?.articles, items?.data, []);
+  return Array.isArray(items) ? items : first(items?.comments, items?.commentInfo, items?.items, items?.articles, items?.object, items?.data, []);
 }
 
 function flattenSearchItems(items) {

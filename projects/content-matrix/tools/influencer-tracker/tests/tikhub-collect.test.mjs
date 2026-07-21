@@ -88,6 +88,28 @@ test('collectTikHubResearch skips a content key found by a filtered Feishu looku
   assert.deepEqual(writes, []);
 });
 
+test('collectTikHubResearch samples comments for content that already exists remotely', async () => {
+  const writes = [];
+  const feishuClient = fakeFeishuClient(writes);
+  feishuClient.listRecordsByField = async (tableName, fieldName, value) => tableName === 'contents' && value === 'douyin:dy-001'
+    ? [{ record_id: 'rec_existing', fields: { [fieldName]: value } }]
+    : [];
+
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: { mode: 'search', platform: 'douyin', keyword: '企业 AI', limit: 1, includeComments: true },
+    client: fakeClient(),
+    feishuClient,
+    feishuConfig,
+    storePath,
+  }));
+
+  assert.equal(result.contents.createdCount, 0);
+  assert.equal(result.comments.createdCount, 1);
+  assert.equal(result.contents.items.length, 1);
+  assert.equal(result.comments.items.length, 1);
+  assert.deepEqual(writes.map((write) => write.tableName), ['comments']);
+});
+
 test('collectTikHubResearch follows content cursors until the requested total sample limit', async () => {
   const calls = [];
   const client = {

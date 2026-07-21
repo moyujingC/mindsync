@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { collectTikHubResearch } from './tikhub-collect.mjs';
+import { extractTikHubPage } from '../platforms/tikhub/normalize.mjs';
 import { normalizePlatformId } from '../platforms/platform-id.mjs';
 
 export async function captureTikHubContract({ request, client, outputDir = 'fixtures/tikhub-contracts/real' }) {
@@ -13,37 +14,75 @@ export async function captureTikHubContract({ request, client, outputDir = 'fixt
   };
 
   try {
+    if (request.mode === 'comments') {
+      if (!request.contentId) {
+        throw new Error('TikHub comment contract capture requires contentId');
+      }
+      const response = await client.getComments({
+        platform,
+        contentId: request.contentId,
+        shareUrl: request.shareUrl ?? null,
+      });
+      return writeCapturedContracts({
+        platform,
+        responses,
+        outputDir,
+        collection: {
+          contentCount: 0,
+          commentCount: extractTikHubPage(response.data).items.length,
+          requestCount: response.audit?.requestCount ?? 1,
+          pagination: { comments: summarizePage(extractTikHubPage(response.data)) },
+        },
+      });
+    }
     const result = await collectTikHubResearch({
       request: { ...request, platform },
       client,
       storePath: resolve(outputDir, '.capture-store.json'),
       dryRun: true,
     });
-    const resolvedOutputDir = resolve(outputDir);
-    await mkdir(resolvedOutputDir, { recursive: true });
-    const files = [];
-    for (const [index, response] of responses.entries()) {
-      const fileName = `${platform}-${String(index + 1).padStart(2, '0')}-${routeLabel(response.request.path)}.json`;
-      const filePath = join(resolvedOutputDir, fileName);
-      await writeFile(filePath, `${JSON.stringify(response, null, 2)}\n`, 'utf8');
-      files.push(filePath);
-    }
-    return {
-      status: 'ok',
+    return writeCapturedContracts({
       platform,
-      files,
-      responseCount: responses.length,
+      responses,
+      outputDir,
       collection: {
         contentCount: result.contents.fetchedCount,
         commentCount: result.comments.fetchedCount,
         requestCount: result.audit.requestCount,
         pagination: result.audit.pagination,
       },
-      note: 'Captured responses are redacted contract fixtures. The run used dry-run and did not write Feishu or a research ledger.',
-    };
+    });
   } finally {
     client.onResponse = originalHandler;
   }
+}
+
+function summarizePage(page) {
+  return {
+    itemCount: page.items.length,
+    hasMore: page.hasMore,
+    cursorPresent: Boolean(page.cursor),
+  };
+}
+
+async function writeCapturedContracts({ platform, responses, outputDir, collection }) {
+  const resolvedOutputDir = resolve(outputDir);
+  await mkdir(resolvedOutputDir, { recursive: true });
+  const files = [];
+  for (const [index, response] of responses.entries()) {
+    const fileName = `${platform}-${String(index + 1).padStart(2, '0')}-${routeLabel(response.request.path)}.json`;
+    const filePath = join(resolvedOutputDir, fileName);
+    await writeFile(filePath, `${JSON.stringify(response, null, 2)}\n`, 'utf8');
+    files.push(filePath);
+  }
+  return {
+    status: 'ok',
+    platform,
+    files,
+    responseCount: responses.length,
+    collection,
+    note: 'Captured responses are redacted contract fixtures. The run used dry-run and did not write Feishu or a research ledger.',
+  };
 }
 
 export function sanitizeTikHubResponse(event) {
@@ -110,7 +149,7 @@ function selectContractEntries(value, depth) {
 }
 
 function shouldRedact(key) {
-  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|userid|uid|short_id|unique_id|id|red_id|author_?id|request_id|debug_id|fileid|trace_id|uri|(note|comment|object|doc|aweme)_?id|biz_?id|nickname|name|user_?name|author_?name|avatar.*|image|images|phone|email|text|content|desc|description|title|message|debug_info|widgets_context)$/i.test(key ?? '')
+  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|userid|uid|short_id|unique_id|id|red_id|author_?id|request_id|debug_id|fileid|trace_id|uri|export_id|(note|comment|object|doc|aweme)_?id|biz_?id|nickname|name|user_?name|author_?name|avatar.*|image|images|phone|email|text|content|desc|description|title|message|debug_info|widgets_context)$/i.test(key ?? '')
     || /(token|secret|signature)/i.test(key ?? '');
 }
 
