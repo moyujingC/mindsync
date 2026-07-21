@@ -1,6 +1,6 @@
 import { ContentStore } from '../storage/content-store.mjs';
 import { extractFeishuTextField, mapCommentToFeishuFields, mapContentToFeishuFields, toFeishuPlatform } from '../feishu/client.mjs';
-import { extractTikHubItems, normalizeTikHubComments, normalizeTikHubContent } from '../platforms/tikhub/normalize.mjs';
+import { extractTikHubPage, normalizeTikHubComments, normalizeTikHubContent } from '../platforms/tikhub/normalize.mjs';
 
 const DEFAULT_LIMIT = 10;
 
@@ -17,7 +17,7 @@ export async function collectTikHubResearch({
   await store.load();
 
   const response = await fetchContents({ request, client });
-  const contents = response.items.map((item) => normalizeTikHubContent({ platform: request.platform, data: item }));
+  const contents = uniqueByKey(response.items.map((item) => normalizeTikHubContent({ platform: request.platform, data: item })), 'uniqueKey');
   const remoteContentKeys = await loadRemoteKeys({ feishuClient, feishuConfig, tableName: 'contents', fieldKey: 'uniqueKey', dryRun });
   const newContents = contents.filter((content) => !store.hasContent(content.uniqueKey) && !remoteContentKeys.has(content.uniqueKey));
   const duplicateCount = contents.length - newContents.length;
@@ -51,7 +51,11 @@ export async function collectTikHubResearch({
     audit: {
       source: 'tikhub',
       requestCount: commentResult.audit?.requestCount ?? response.audit?.requestCount ?? 0,
-      cacheUrls: [...new Set([response.cacheUrl, commentResult.cacheUrl].filter(Boolean))],
+      cacheUrls: [...new Set([...response.cacheUrls, ...commentResult.cacheUrls])],
+      pagination: {
+        contents: response.pagination,
+        comments: commentResult.pagination,
+      },
     },
     creators: creatorResult,
     contents: {
@@ -102,50 +106,102 @@ async function fetchContents({ request, client }) {
       shareUrl: request.shareUrl,
       contentId: request.contentId,
     });
-    return { ...response, items: [response.data] };
+    return {
+      items: [response.data],
+      cacheUrls: response.cacheUrl ? [response.cacheUrl] : [],
+      audit: response.audit,
+      pagination: { pageCount: 1, stoppedReason: 'detail' },
+    };
   }
-  if (request.mode === 'search') {
-    const response = await client.searchContents({ platform: request.platform, keyword: request.keyword });
-    return { ...response, items: extractTikHubItems(response.data).slice(0, request.limit ?? DEFAULT_LIMIT) };
-  }
-  const response = await client.getCreatorContents({
-    platform: request.platform,
-    creatorId: request.creatorId,
-    limit: request.limit ?? DEFAULT_LIMIT,
+  const limit = request.limit ?? DEFAULT_LIMIT;
+  return collectPages({
+    limit,
+    maxPages: request.maxPages,
+    getPage: (cursor) => request.mode === 'search'
+      ? client.searchContents({ platform: request.platform, keyword: request.keyword, cursor })
+      : client.getCreatorContents({ platform: request.platform, creatorId: request.creatorId, cursor, limit }),
   });
-  return { ...response, items: extractTikHubItems(response.data).slice(0, request.limit ?? DEFAULT_LIMIT) };
 }
 
 async function collectComments({ request, client, contents, feishuClient, feishuConfig, dryRun }) {
   if (!request.includeComments || contents.length === 0) {
-    return { fetchedCount: 0, createdCount: 0, duplicateCount: 0, items: [], cacheUrl: null, audit: null };
+    return { fetchedCount: 0, createdCount: 0, duplicateCount: 0, items: [], cacheUrls: [], audit: null, pagination: { pageCount: 0, stoppedReason: 'disabled' } };
   }
   const existingKeys = await loadRemoteKeys({ feishuClient, feishuConfig, tableName: 'comments', fieldKey: 'commentKey', dryRun });
   const comments = [];
-  let cacheUrl = null;
+  const cacheUrls = [];
   let audit = null;
+  const pagination = [];
   for (const content of contents) {
-    const response = await client.getComments({ platform: request.platform, contentId: content.contentExternalId });
-    cacheUrl = response.cacheUrl ?? cacheUrl;
+    const response = await collectPages({
+      limit: request.commentLimit ?? DEFAULT_LIMIT,
+      maxPages: request.commentPages ?? 1,
+      getPage: (cursor) => client.getComments({ platform: request.platform, contentId: content.contentExternalId, cursor }),
+    });
+    cacheUrls.push(...response.cacheUrls);
     audit = response.audit ?? audit;
+    pagination.push({ contentUniqueKey: content.uniqueKey, ...response.pagination });
     comments.push(...normalizeTikHubComments({
       platform: request.platform,
       contentUniqueKey: content.uniqueKey,
-      items: extractTikHubItems(response.data),
+      items: response.items,
     }));
   }
-  const newComments = comments.filter((comment) => !existingKeys.has(comment.commentUniqueKey));
+  const uniqueComments = uniqueByKey(comments, 'commentUniqueKey');
+  const newComments = uniqueComments.filter((comment) => !existingKeys.has(comment.commentUniqueKey));
   if (!dryRun && feishuClient && newComments.length > 0) {
     const fields = feishuConfig.tables.comments.fields;
     await feishuClient.createRecords('comments', newComments.map((comment) => mapCommentToFeishuFields(comment, fields)));
   }
   return {
-    fetchedCount: comments.length,
+    fetchedCount: uniqueComments.length,
     createdCount: newComments.length,
-    duplicateCount: comments.length - newComments.length,
+    duplicateCount: uniqueComments.length - newComments.length,
     items: newComments,
-    cacheUrl,
+    cacheUrls: [...new Set(cacheUrls)],
     audit,
+    pagination,
+  };
+}
+
+async function collectPages({ limit, maxPages = 10, getPage }) {
+  const items = [];
+  const cacheUrls = [];
+  const seenCursors = new Set();
+  let cursor = null;
+  let pageCount = 0;
+  let audit = null;
+  let stoppedReason = 'limit-reached';
+
+  while (items.length < limit && pageCount < maxPages) {
+    const response = await getPage(cursor);
+    const page = extractTikHubPage(response.data);
+    items.push(...page.items);
+    if (response.cacheUrl) {
+      cacheUrls.push(response.cacheUrl);
+    }
+    audit = response.audit ?? audit;
+    pageCount += 1;
+
+    if (!page.hasMore) {
+      stoppedReason = 'source-exhausted';
+      break;
+    }
+    if (!page.cursor || seenCursors.has(page.cursor)) {
+      stoppedReason = 'invalid-or-repeated-cursor';
+      break;
+    }
+    seenCursors.add(page.cursor);
+    cursor = page.cursor;
+  }
+  if (pageCount >= maxPages && items.length < limit) {
+    stoppedReason = 'max-pages-reached';
+  }
+  return {
+    items: items.slice(0, limit),
+    cacheUrls,
+    audit,
+    pagination: { pageCount, stoppedReason },
   };
 }
 
@@ -216,5 +272,12 @@ function sanitizedRequest(request) {
     creatorId: request.creatorId ?? null,
     includeComments: Boolean(request.includeComments),
     limit: request.limit ?? DEFAULT_LIMIT,
+    maxPages: request.maxPages ?? 10,
+    commentLimit: request.commentLimit ?? DEFAULT_LIMIT,
+    commentPages: request.commentPages ?? 1,
   };
+}
+
+function uniqueByKey(items, key) {
+  return [...new Map(items.map((item) => [item[key], item])).values()];
 }

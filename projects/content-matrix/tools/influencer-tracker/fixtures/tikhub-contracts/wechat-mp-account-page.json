@@ -1,0 +1,17 @@
+{
+  "data": {
+    "article_list": [
+      {
+        "id": "mp-contract-001",
+        "title": "企业知识库先统一资料入口",
+        "content": "公众号文章正文。",
+        "author_name": "公众号 AI 观察",
+        "url": "https://mp.weixin.qq.com/s/mp-contract-001",
+        "publish_time": "2026-07-21 10:00:00",
+        "comment_count": 2
+      }
+    ],
+    "hasMore": true,
+    "nextCursor": "mp-next-page"
+  }
+}

@@ -118,6 +118,22 @@ npm run collect:tikhub -- \
   --dry-run
 ```
 
+搜索和账号采样会按 `--limit`（总条数）继续读取后续页，默认最多读取 10 页；可用 `--max-pages` 进一步收紧。评论默认只取第一页，避免一次研究请求意外扩大成本；只有显式传入 `--comment-pages` 和 `--comment-limit` 才会跨页。服务端缺少或重复下一页游标时，采集会安全停止并在返回结果的 `audit.pagination` 记录原因。
+
+```bash
+# 最多采 15 条内容，至多 3 页；每条内容最多采 20 条评论、2 页
+npm run collect:tikhub -- \
+  --mode search \
+  --platform xiaohongshu \
+  --keyword '企业 AI 工作流' \
+  --limit 15 \
+  --max-pages 3 \
+  --include-comments \
+  --comment-limit 20 \
+  --comment-pages 2 \
+  --dry-run
+```
+
 确认内容后，移除 `--dry-run` 并加入飞书配置：
 
 ```bash

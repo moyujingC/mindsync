@@ -1,0 +1,18 @@
+{
+  "data": {
+    "notes": [
+      {
+        "note_id": "xhs-contract-001",
+        "title": "企业 AI 试点从流程开始",
+        "desc": "先找稳定输入。",
+        "user": { "nickname": "小红书 AI 实践者", "user_id": "xhs-user-001" },
+        "interact_info": { "liked_count": 12, "comment_count": 3 },
+        "time": 1784041200,
+        "type": "normal",
+        "url": "https://www.xiaohongshu.com/explore/xhs-contract-001"
+      }
+    ],
+    "has_more": true,
+    "cursor": "xhs-next-page"
+  }
+}

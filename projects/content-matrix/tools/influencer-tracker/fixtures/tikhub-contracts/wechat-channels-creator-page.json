@@ -1,0 +1,16 @@
+{
+  "data": {
+    "video_list": [
+      {
+        "object_id": "channels-contract-001",
+        "description": "视频号里的企业 AI 工作流案例。",
+        "author": { "nickname": "视频号 AI 研究", "id": "channels-user-001" },
+        "interaction": { "like_count": 16, "comment_count": 3, "share_count": 1 },
+        "publish_date": "2026-07-21T10:00:00.000Z",
+        "link": "https://channels.weixin.qq.com/live/channels-contract-001"
+      }
+    ],
+    "more": "true",
+    "next_cursor": "channels-next-page"
+  }
+}

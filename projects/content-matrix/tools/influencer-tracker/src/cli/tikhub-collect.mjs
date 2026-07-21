@@ -41,5 +41,8 @@ function buildRequest(args) {
     creatorId: args.creatorId,
     includeComments: Boolean(args.includeComments),
     limit: args.limit ? Number(args.limit) : undefined,
+    maxPages: args.maxPages ? Number(args.maxPages) : undefined,
+    commentLimit: args.commentLimit ? Number(args.commentLimit) : undefined,
+    commentPages: args.commentPages ? Number(args.commentPages) : undefined,
   };
 }

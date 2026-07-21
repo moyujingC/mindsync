@@ -1,0 +1,16 @@
+{
+  "data": {
+    "aweme_list": [
+      {
+        "aweme_id": "dy-contract-001",
+        "desc": "企业 AI 应先做小范围验证。",
+        "author": { "nickname": "抖音 AI 顾问", "sec_uid": "dy-user-001" },
+        "statistics": { "digg_count": 30, "comment_count": 4, "collect_count": 5, "share_count": 2 },
+        "create_time": 1784041200,
+        "share_url": "https://www.douyin.com/video/dy-contract-001"
+      }
+    ],
+    "has_more": 1,
+    "max_cursor": 987654321
+  }
+}

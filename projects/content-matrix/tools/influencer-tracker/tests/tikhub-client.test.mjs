@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { TikHubClient } from '../src/platforms/tikhub/client.mjs';
-import { normalizeTikHubComments, normalizeTikHubContent } from '../src/platforms/tikhub/normalize.mjs';
+import { extractTikHubPage, normalizeTikHubComments, normalizeTikHubContent } from '../src/platforms/tikhub/normalize.mjs';
 
 test('TikHubClient fetches Xiaohongshu detail from a share link and records cache metadata', async () => {
   const requests = [];
@@ -114,6 +116,41 @@ test('TikHub response normalizers create stable content and comment records', ()
   assert.equal(comments[0].commentUniqueKey, 'douyin:douyin:dy-001:comment-001');
   assert.equal(comments[0].commentText, '怎么评估是否值得先做？');
 });
+
+test('TikHub contract fixtures normalize list envelopes from all four supported platforms', async () => {
+  const fixtures = [
+    ['xiaohongshu', 'xiaohongshu-search-page.json', 'xhs-contract-001', 'xhs-next-page'],
+    ['douyin', 'douyin-search-page.json', 'dy-contract-001', '987654321'],
+    ['wechat_mp', 'wechat-mp-account-page.json', 'mp-contract-001', 'mp-next-page'],
+    ['wechat_channels', 'wechat-channels-creator-page.json', 'channels-contract-001', 'channels-next-page'],
+  ];
+
+  for (const [platform, fileName, contentId, cursor] of fixtures) {
+    const fixture = await readFixture(fileName);
+    const page = extractTikHubPage(fixture);
+    const content = normalizeTikHubContent({ platform, data: page.items[0] });
+    assert.equal(page.hasMore, true);
+    assert.equal(page.cursor, cursor);
+    assert.equal(content.contentExternalId, contentId);
+  }
+});
+
+test('TikHub contract comment fixture exposes a next-page cursor', async () => {
+  const page = extractTikHubPage(await readFixture('comments-page.json'));
+  assert.equal(page.items.length, 1);
+  assert.equal(page.cursor, 'comments-next-page');
+  assert.equal(page.hasMore, true);
+});
+
+test('TikHub page parser leaves a missing cursor null', () => {
+  const page = extractTikHubPage({ data: { items: [], has_more: false } });
+  assert.equal(page.cursor, null);
+  assert.equal(page.hasMore, false);
+});
+
+async function readFixture(fileName) {
+  return JSON.parse(await readFile(fileURLToPath(new URL(`../fixtures/tikhub-contracts/${fileName}`, import.meta.url)), 'utf8'));
+}
 
 function jsonResponse(body) {
   return {

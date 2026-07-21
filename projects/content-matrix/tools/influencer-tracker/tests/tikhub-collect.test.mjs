@@ -63,6 +63,137 @@ test('collectTikHubResearch limits keyword results and skips previously stored c
   });
 });
 
+test('collectTikHubResearch follows content cursors until the requested total sample limit', async () => {
+  const calls = [];
+  const client = {
+    async searchContents({ cursor }) {
+      calls.push(cursor);
+      if (!cursor) {
+        return response({
+          items: [douyinContent()],
+          has_more: true,
+          cursor: 'page-2',
+        }, 1);
+      }
+      return response({
+        items: [{ ...douyinContent(), aweme_id: 'dy-002' }],
+        has_more: false,
+      }, 2);
+    },
+  };
+
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: { mode: 'search', platform: 'douyin', keyword: '企业 AI', limit: 2 },
+    client,
+    storePath,
+    dryRun: true,
+  }));
+
+  assert.deepEqual(calls, [null, 'page-2']);
+  assert.equal(result.contents.fetchedCount, 2);
+  assert.equal(result.audit.pagination.contents.pageCount, 2);
+  assert.equal(result.audit.pagination.contents.stoppedReason, 'source-exhausted');
+});
+
+test('collectTikHubResearch stops when TikHub repeats a cursor instead of looping', async () => {
+  let calls = 0;
+  const client = {
+    async getCreatorContents() {
+      calls += 1;
+      return response({
+        items: [{ ...douyinContent(), aweme_id: `dy-${calls}` }],
+        has_more: true,
+        cursor: 'same-cursor',
+      }, calls);
+    },
+  };
+
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: { mode: 'creator', platform: 'douyin', creatorId: 'creator-1', limit: 5 },
+    client,
+    storePath,
+    dryRun: true,
+  }));
+
+  assert.equal(calls, 2);
+  assert.equal(result.contents.fetchedCount, 2);
+  assert.equal(result.audit.pagination.contents.stoppedReason, 'invalid-or-repeated-cursor');
+});
+
+test('collectTikHubResearch expands comments only when an explicit comment page limit is set', async () => {
+  const cursors = [];
+  const client = {
+    async getContentDetail() {
+      return response(xhsContent(), 1);
+    },
+    async getComments({ cursor }) {
+      cursors.push(cursor);
+      if (!cursor) {
+        return response({
+          comments: [{ id: 'comment-001', content: '第一条评论' }],
+          has_more: true,
+          cursor: 'comment-page-2',
+        }, 2);
+      }
+      return response({
+        comments: [{ id: 'comment-002', content: '第二条评论' }],
+        has_more: false,
+      }, 3);
+    },
+  };
+
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: {
+      mode: 'detail',
+      platform: 'xiaohongshu',
+      shareUrl: 'https://example.com/xhs-001',
+      includeComments: true,
+      commentLimit: 2,
+      commentPages: 2,
+    },
+    client,
+    storePath,
+    dryRun: true,
+  }));
+
+  assert.deepEqual(cursors, [null, 'comment-page-2']);
+  assert.equal(result.comments.fetchedCount, 2);
+  assert.equal(result.audit.pagination.comments[0].pageCount, 2);
+});
+
+test('collectTikHubResearch keeps comments to one page by default', async () => {
+  const cursors = [];
+  const client = {
+    async getContentDetail() {
+      return response(xhsContent(), 1);
+    },
+    async getComments({ cursor }) {
+      cursors.push(cursor);
+      return response({
+        comments: [{ id: 'comment-001', content: '默认只采这一页' }],
+        has_more: true,
+        cursor: 'comment-page-2',
+      }, 2);
+    },
+  };
+
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: {
+      mode: 'detail',
+      platform: 'xiaohongshu',
+      shareUrl: 'https://example.com/xhs-001',
+      includeComments: true,
+    },
+    client,
+    storePath,
+    dryRun: true,
+  }));
+
+  assert.deepEqual(cursors, [null]);
+  assert.equal(result.comments.fetchedCount, 1);
+  assert.equal(result.audit.pagination.comments[0].stoppedReason, 'max-pages-reached');
+});
+
 function fakeClient() {
   return {
     async getContentDetail() {
@@ -77,6 +208,14 @@ function fakeClient() {
     async getCreatorContents() {
       return { data: { items: [douyinContent()] }, cacheUrl: 'https://cache.example/creator', audit: { requestCount: 1 } };
     },
+  };
+}
+
+function response(data, requestCount) {
+  return {
+    data,
+    cacheUrl: `https://cache.example/${requestCount}`,
+    audit: { requestCount },
   };
 }
 

@@ -48,8 +48,29 @@ export function normalizeTikHubComments({ platform, contentUniqueKey, items }) {
 }
 
 export function extractTikHubItems(data) {
+  return extractTikHubPage(data).items;
+}
+
+export function extractTikHubPage(data) {
   const source = data?.data ?? data ?? {};
-  return unwrapItems(first(source.comments, source.items, source.list, source.notes, source.aweme_list, source.data, []));
+  const items = unwrapItems(first(
+    source.comments,
+    source.items,
+    source.list,
+    source.notes,
+    source.aweme_list,
+    source.article_list,
+    source.video_list,
+    source.data,
+    [],
+  ));
+  const cursor = [source.next_cursor, source.nextCursor, source.cursor, source.max_cursor, source.maxCursor]
+    .find((value) => value !== undefined && value !== null && value !== '');
+  return {
+    items,
+    cursor: cursor === undefined ? null : String(cursor),
+    hasMore: normalizeHasMore(first(source.has_more, source.hasMore, source.more, false)),
+  };
 }
 
 function unwrapContent(data) {
@@ -95,6 +116,10 @@ function normalizeContentType(platform, source) {
     return '图文';
   }
   return '视频';
+}
+
+function normalizeHasMore(value) {
+  return value === true || value === 1 || value === '1' || value === 'true';
 }
 
 function normalizeTags(value) {
