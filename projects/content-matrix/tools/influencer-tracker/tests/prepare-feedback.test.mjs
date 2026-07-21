@@ -8,6 +8,7 @@ import { parseFinalDraftMarkdown, prepareFeedbackRecord } from '../src/jobs/prep
 const finalDraftMarkdown = `# 样例成稿
 
 > 状态：待人工编辑
+> source_insight_record_id：research:research-1:1
 
 ## 成稿正文
 
@@ -17,6 +18,7 @@ const finalDraftMarkdown = `# 样例成稿
 test('parseFinalDraftMarkdown extracts title', () => {
   const result = parseFinalDraftMarkdown(finalDraftMarkdown);
   assert.equal(result.title, '样例成稿');
+  assert.equal(result.sourceInsightRecordId, 'research:research-1:1');
 });
 
 test('prepareFeedbackRecord writes feedback template', async () => {
@@ -38,6 +40,7 @@ test('prepareFeedbackRecord writes feedback template', async () => {
     assert.match(output, /## 发布信息/);
     assert.match(output, /是否进入样本沟通：否/);
     assert.match(output, /是否需要转入 ai-service-studio 记录：否/);
+    assert.match(output, /研究候选：research:research-1:1/);
     assert.match(output, /样本沟通记录\.md/);
   } finally {
     await rm(dir, { recursive: true, force: true });

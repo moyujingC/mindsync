@@ -195,6 +195,29 @@ npm run promote:draft -- \
 
 进入正式草稿后，仍沿用 `prepare:edit`、`scaffold:final` 和 `prepare:feedback`。这些步骤均不发布内容；发布链接、互动和服务信号只能在真实发生后由人工填写到发布反馈记录。
 
+## 发布反馈与服务验证
+
+发布反馈是人工填写的 Workflow，不会调用任何平台发布接口。候选从研究请求交接进入草稿后，`source_insight_record_id` 会贯穿草稿、编辑包、成稿和反馈记录。填写真实发布链接与反馈后，再显式回写研究候选状态。
+
+```bash
+# 1. 为已人工完成的成稿创建反馈模板
+npm run prepare:feedback -- \
+  --final-draft ../../accounts/墨予镜/2026-07-21-某篇成稿.md \
+  --account 墨予镜
+
+# 2. 人工填入发布链接、互动、服务信号和反对意见后，才回写为“已发布”
+npm run feedback:record -- \
+  --feedback ../../accounts/墨予镜/feedback/2026-07-21-某篇成稿-发布反馈.md \
+  --feishu config/feishu.local.json
+
+# 3. 仅当反馈明确标记“需要转入 ai-service-studio 记录：是”时，才人工转入样本沟通记录
+npm run promote:feedback -- \
+  --feedback ../../accounts/墨予镜/feedback/2026-07-21-某篇成稿-发布反馈.md \
+  --service-direction 'AI 工作流诊断'
+```
+
+`feedback:record` 只有同时满足以下条件才更新研究台账：反馈文件带有 `research:<请求ID>:<候选编号>`、候选已“转选题”、发布链接为 `http` 或 `https` 地址。传入 `--feishu` 时会同步“研究请求”表的摘要状态；它只保存人工填写的事实和下一步，不会把点赞、评论或咨询意向自动判断为成交。
+
 ## 组件调试入口
 
 仅在调试采集组件时，才直接使用下列命令：

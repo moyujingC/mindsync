@@ -33,6 +33,7 @@ export async function prepareFeedbackRecord({
     account,
     title: finalDraft.title,
     finalDraftPath,
+    sourceInsightRecordId: finalDraft.sourceInsightRecordId,
     date,
   }), 'utf8');
 
@@ -45,16 +46,18 @@ export async function prepareFeedbackRecord({
 
 export function parseFinalDraftMarkdown(raw) {
   const title = raw.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? 'untitled';
-  return { title };
+  const sourceInsightRecordId = raw.match(/^>\s*source_insight_record_id：(.+)$/m)?.[1]?.trim() ?? null;
+  return { title, sourceInsightRecordId };
 }
 
-function renderFeedbackTemplate({ account, title, finalDraftPath, date }) {
+function renderFeedbackTemplate({ account, title, finalDraftPath, sourceInsightRecordId, date }) {
   return [
     `# ${title} 发布反馈记录`,
     '',
     `> 状态：待补充`,
     `> 账号：${account}`,
     `> 对应成稿：${finalDraftPath}`,
+    `> 研究候选：${sourceInsightRecordId ?? '待人工补充'}`,
     `> 记录日期：${date}`,
     '',
     '## 发布信息',
@@ -72,6 +75,7 @@ function renderFeedbackTemplate({ account, title, finalDraftPath, date }) {
     '- 评论：',
     '- 转发：',
     '- 私信：',
+    '- 其他有效互动：',
     '',
     '## 服务信号',
     '',
@@ -89,7 +93,7 @@ function renderFeedbackTemplate({ account, title, finalDraftPath, date }) {
     '',
     '## 下一步动作',
     '',
-    '- [ ] 回写飞书洞察 / 内容状态',
+    '- [ ] 如已真实发布，运行 `feedback:record` 回写研究候选状态',
     '- [ ] 如有服务信号，转入 `projects/ai-service-studio/records/样本沟通记录.md`',
     '- [ ] 更新后续选题或服务表达',
     '',

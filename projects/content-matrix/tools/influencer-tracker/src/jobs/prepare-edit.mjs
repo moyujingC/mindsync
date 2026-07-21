@@ -19,6 +19,7 @@ export async function prepareEditPackage({
 
   const draft = await readFile(draftPath, 'utf8');
   const title = extractTitle(draft);
+  const sourceInsightRecordId = extractSourceInsightRecordId(draft);
   const outputPath = join(outputDir, `${date}-${sanitizeFilename(title)}-成稿编辑任务包.md`);
   const content = renderEditPackage({
     title,
@@ -26,6 +27,7 @@ export async function prepareEditPackage({
     draftPath,
     skillPath,
     draft,
+    sourceInsightRecordId,
   });
 
   await mkdir(dirname(outputPath), { recursive: true });
@@ -38,13 +40,14 @@ export async function prepareEditPackage({
   };
 }
 
-function renderEditPackage({ title, account, draftPath, skillPath, draft }) {
+function renderEditPackage({ title, account, draftPath, skillPath, draft, sourceInsightRecordId }) {
   return [
     `# ${title} - 成稿编辑任务包`,
     '',
     `> 状态：待编辑`,
     `> 目标账号：${account}`,
     `> 草稿来源：${draftPath}`,
+    `> source_insight_record_id：${sourceInsightRecordId ?? '待补充'}`,
     `> 编辑规则：${skillPath}`,
     '',
     '## 任务目标',
@@ -120,6 +123,10 @@ function renderEditPackage({ title, account, draftPath, skillPath, draft }) {
 
 function extractTitle(markdown) {
   return markdown.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? 'untitled';
+}
+
+function extractSourceInsightRecordId(markdown) {
+  return markdown.match(/^>\s*source_insight_record_id：(.+)$/m)?.[1]?.trim() ?? null;
 }
 
 function sanitizeFilename(value) {

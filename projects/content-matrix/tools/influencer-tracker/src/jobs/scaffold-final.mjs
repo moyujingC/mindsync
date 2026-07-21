@@ -39,11 +39,13 @@ export function parseEditPackageMarkdown(raw) {
   const titleWithSuffix = raw.match(/^#\s+(.+)$/m)?.[1]?.trim();
   const title = titleWithSuffix?.replace(/\s+-\s+成稿编辑任务包$/, '') ?? 'untitled';
   const draftSource = raw.match(/^>\s*草稿来源：(.+)$/m)?.[1]?.trim();
+  const sourceInsightRecordId = raw.match(/^>\s*source_insight_record_id：(.+)$/m)?.[1]?.trim() ?? null;
   const originalDraft = extractSection(raw, '原始草稿');
 
   return {
     title,
     draftSource,
+    sourceInsightRecordId,
     originalDraft,
   };
 }
@@ -56,6 +58,7 @@ function renderFinalSkeleton({ editPackage, account, editPackagePath }) {
     `> 目标账号：${account}`,
     `> 成稿编辑任务包：${editPackagePath}`,
     `> 草稿来源：${editPackage.draftSource ?? '待补充'}`,
+    `> source_insight_record_id：${editPackage.sourceInsightRecordId ?? '待补充'}`,
     '',
     '## 编辑进度',
     '',

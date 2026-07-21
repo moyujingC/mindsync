@@ -170,7 +170,7 @@ function summarizeCollection(collection, requestCollect) {
   };
 }
 
-async function syncResearchRequestToFeishu({ request, feishuClient, feishuConfig }) {
+export async function syncResearchRequestToFeishu({ request, feishuClient, feishuConfig }) {
   if (!feishuClient || !feishuConfig?.tables?.researchRequests) {
     return { ...request, feishu: { synced: false, reason: 'not-configured' } };
   }
@@ -186,7 +186,7 @@ async function syncResearchRequestToFeishu({ request, feishuClient, feishuConfig
   return { ...request, feishu: { synced: true, action: 'created', recordId: recordIds[0] ?? null } };
 }
 
-function renderResearchBrief(result) {
+export function renderResearchBrief(result) {
   const lines = [
     `# 研究简报：${result.requestId}`,
     '',
