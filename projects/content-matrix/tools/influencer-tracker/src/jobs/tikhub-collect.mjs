@@ -2,6 +2,7 @@ import { ContentStore } from '../storage/content-store.mjs';
 import { extractFeishuTextField, mapCommentToFeishuFields, mapContentToFeishuFields, toFeishuPlatform } from '../feishu/client.mjs';
 import { extractTikHubPage, normalizeTikHubComments, normalizeTikHubContent } from '../platforms/tikhub/normalize.mjs';
 import { contentKeyAliases, normalizePlatformId } from '../platforms/platform-id.mjs';
+import { describeContentLink } from '../platforms/content-link.mjs';
 
 const DEFAULT_LIMIT = 10;
 
@@ -105,8 +106,12 @@ async function syncCreators({ request, contents, feishuClient, feishuConfig, dry
   if (candidates.length === 0) {
     return { createdCount: 0, duplicateCount: 0, items: [] };
   }
-  const existing = await loadExistingCreators({ feishuClient, feishuConfig, dryRun });
-  const newCreators = candidates.filter((creator) => !existing.has(`${toFeishuPlatform(creator.platform)}:${creator.externalId}`));
+  const newCreators = [];
+  for (const creator of candidates) {
+    if (!await hasExistingCreator({ creator, feishuClient, feishuConfig, dryRun })) {
+      newCreators.push(creator);
+    }
+  }
   if (!dryRun && feishuClient && newCreators.length > 0) {
     const fields = feishuConfig.tables.creators.fields;
     await feishuClient.createRecords('creators', newCreators.map((creator) => ({
@@ -261,16 +266,19 @@ async function loadRemoteKeys({ feishuClient, feishuConfig, tableName, fieldKey,
   return { has: async (key) => keys.has(key) };
 }
 
-async function loadExistingCreators({ feishuClient, feishuConfig, dryRun }) {
+async function hasExistingCreator({ creator, feishuClient, feishuConfig, dryRun }) {
   if (dryRun || !feishuClient || !feishuConfig) {
-    return new Set();
+    return false;
   }
   const fields = feishuConfig.tables.creators.fields;
-  const records = await feishuClient.listRecords('creators');
-  return new Set(records.map((record) => [
-    extractFeishuTextField(record, fields.platform),
-    extractFeishuTextField(record, fields.externalId),
-  ].join(':')).filter((value) => value !== ':'));
+  const records = typeof feishuClient.listRecordsByField === 'function'
+    ? await feishuClient.listRecordsByField('creators', fields.externalId, creator.externalId, [fields.platform, fields.externalId])
+    : await feishuClient.listRecords('creators');
+  const expectedPlatform = toFeishuPlatform(creator.platform);
+  return records.some((record) => (
+    extractFeishuTextField(record, fields.platform) === expectedPlatform
+    && extractFeishuTextField(record, fields.externalId) === creator.externalId
+  ));
 }
 
 function uniqueCreators({ contents, request }) {
@@ -301,6 +309,15 @@ function validateRequest(request) {
   }
   if (request.mode === 'creator' && (!request.creatorId || !request.creatorHomepageUrl)) {
     throw new Error('TikHub creator request requires creatorId and creatorHomepageUrl');
+  }
+  if (request.mode === 'creator') {
+    const homepage = describeContentLink({
+      originalUrl: request.creatorHomepageUrl,
+      finalUrl: request.creatorHomepageUrl,
+    });
+    if (homepage.platform !== request.platform || homepage.kind === 'content') {
+      throw new Error('TikHub creator homepage must be a non-content URL on the requested platform');
+    }
   }
 }
 

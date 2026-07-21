@@ -130,6 +130,56 @@ test('collectTikHubResearch rejects creator tracking without a confirmed homepag
   );
 });
 
+test('collectTikHubResearch rejects a creator homepage from another platform or a content page', async () => {
+  for (const creatorHomepageUrl of [
+    'https://www.xiaohongshu.com/user/profile/xhs-user-001',
+    'https://www.douyin.com/video/1234567890',
+  ]) {
+    await assert.rejects(
+      () => collectTikHubResearch({
+        request: { mode: 'creator', platform: 'douyin', creatorId: 'sec-invalid-homepage', creatorHomepageUrl },
+        client: fakeClient(),
+        storePath: join(tmpdir(), 'unused-creator-store.json'),
+        dryRun: true,
+      }),
+      /homepage must be a non-content URL on the requested platform/,
+    );
+  }
+});
+
+test('collectTikHubResearch checks creator dedupe by exact account ID before writing', async () => {
+  const writes = [];
+  const lookups = [];
+  const feishuClient = fakeFeishuClient(writes);
+  feishuClient.listRecordsByField = async (tableName, fieldName, value, selectedFields) => {
+    lookups.push({ tableName, fieldName, value, selectedFields });
+    return [{
+      record_id: 'rec_creator_existing',
+      fields: { 平台: '抖音', 平台账号ID: 'sec-confirmed' },
+    }];
+  };
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: {
+      mode: 'creator',
+      platform: 'douyin',
+      creatorId: 'sec-confirmed',
+      creatorHomepageUrl: 'https://www.douyin.com/user/confirmed',
+      limit: 1,
+    },
+    client: fakeClient(),
+    feishuClient,
+    feishuConfig,
+    storePath,
+  }));
+
+  assert.equal(result.creators.createdCount, 0);
+  assert.equal(result.creators.duplicateCount, 1);
+  assert.deepEqual(lookups.at(-1), {
+    tableName: 'creators', fieldName: '平台账号ID', value: 'sec-confirmed', selectedFields: ['平台', '平台账号ID'],
+  });
+  assert.deepEqual(writes.map((item) => item.tableName), ['contents']);
+});
+
 test('collectTikHubResearch limits keyword results and skips previously stored content', async () => {
   const writes = [];
   await withStore(async (storePath) => {
