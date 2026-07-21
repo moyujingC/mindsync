@@ -68,6 +68,7 @@ function renderFinalSkeleton({ editPackage, account, editPackagePath }) {
     '- [ ] 风格校准已完成',
     '- [ ] 待发检查已完成',
     '- [ ] 来源内容已人工复核',
+    '- [ ] 完成后将上方“状态”手动改为“待发布”，再生成发布反馈记录',
     '',
     '## 成稿正文',
     '',

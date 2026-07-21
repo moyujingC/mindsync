@@ -58,6 +58,7 @@ test('scaffoldFinalDraft writes a final draft skeleton', async () => {
     assert.match(output, /^> 状态：待人工编辑/m);
     assert.match(output, /source_insight_record_id：research:research-final-1:1/);
     assert.match(output, /- \[ \] 结构审稿已完成/);
+    assert.match(output, /将上方“状态”手动改为“待发布”/);
     assert.match(output, /## 成稿正文/);
     assert.match(output, /待人工基于下方原始草稿编辑/);
     assert.match(output, /## 原始草稿备份/);

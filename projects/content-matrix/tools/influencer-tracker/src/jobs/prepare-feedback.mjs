@@ -19,6 +19,9 @@ export async function prepareFeedbackRecord({
 
   const raw = await readFile(finalDraftPath, 'utf8');
   const finalDraft = parseFinalDraftMarkdown(raw);
+  if (!['待发布', '已发布'].includes(finalDraft.status)) {
+    throw new Error(`Final draft must be marked 待发布 or 已发布 before preparing feedback; current status: ${finalDraft.status ?? '未填写'}`);
+  }
   const accountDir = await requireExistingAccountDirectory({ accountsRoot, account });
   const outputPath = join(
     outputDir ?? join(accountDir, 'feedback'),
@@ -47,8 +50,9 @@ export async function prepareFeedbackRecord({
 
 export function parseFinalDraftMarkdown(raw) {
   const title = raw.match(/^#\s+(.+)$/m)?.[1]?.trim() ?? 'untitled';
+  const status = raw.match(/^>\s*状态：(.+)$/m)?.[1]?.trim() ?? null;
   const sourceInsightRecordId = raw.match(/^>\s*source_insight_record_id：(.+)$/m)?.[1]?.trim() ?? null;
-  return { title, sourceInsightRecordId };
+  return { title, status, sourceInsightRecordId };
 }
 
 function renderFeedbackTemplate({ account, title, finalDraftPath, sourceInsightRecordId, date }) {

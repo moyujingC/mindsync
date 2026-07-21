@@ -107,6 +107,8 @@ test('research candidate reference survives draft, edit, final, and feedback pre
       accountsRoot,
       date: '2026-07-21',
     });
+    const finalDraft = await readFile(final.outputPath, 'utf8');
+    await writeFile(final.outputPath, finalDraft.replace('> 状态：待人工编辑', '> 状态：待发布'), 'utf8');
     const feedback = await prepareFeedbackRecord({
       finalDraftPath: final.outputPath,
       account: '墨予镜',
