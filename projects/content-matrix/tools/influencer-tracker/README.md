@@ -90,6 +90,51 @@ npm run research:confirm -- \
 
 当前 TikHub 账户调用会返回 HTTP 402，需先在 TikHub 后台确认余额与对应接口套餐权限。开通后先加 `--dry-run` 验证真实响应，再移除它写入飞书。
 
+## 业务研究模板
+
+同一套研究请求、采集、飞书写入和证据台账可以服务不同业务。模板只补齐研究目的、默认样本量、交付重点和安全约束，不会创建新的采集器、飞书表或自动发布链路。
+
+```bash
+# 查看模板 ID、默认参数与交付重点
+npm run research:run -- --list-templates
+```
+
+| 模板 ID | 适用场景 | 默认输出 | 特殊边界 |
+| --- | --- | --- | --- |
+| `enterprise_ai_service` | 企业 AI 服务市场调研 | 服务假设 | 线索不等于成交证据 |
+| `moyujing` | 墨予镜内容研究 | 内容角度 | 保留原文依据，人工判断是否成稿 |
+| `yijing_yishu` | 一镜一梳内容研究 | 匿名内容观察 | 不记录可识别信息，不输出心理诊断或疗效判断 |
+| `client_project` | 客户项目调研 | 样本包与问题清单 | 必须使用内部项目代号，不上传客户非公开材料 |
+
+```bash
+# 企业 AI 服务：默认采样 10 条，并采集评论
+npm run research:run -- \
+  --template enterprise_ai_service \
+  --mode search \
+  --platform xiaohongshu \
+  --keyword '企业 AI 工作流' \
+  --dry-run
+
+# 一镜一梳：默认采样 5 条，不默认采集评论
+npm run research:run -- \
+  --template yijing_yishu \
+  --mode detail \
+  --platform xiaohongshu \
+  --share-url '公开内容链接' \
+  --dry-run
+
+# 客户项目：项目代号只用于内部台账和简报
+npm run research:run -- \
+  --template client_project \
+  --project-name 'client-2026-retail-pilot' \
+  --mode search \
+  --platform douyin \
+  --keyword '门店 AI' \
+  --dry-run
+```
+
+命令中显式提供的 `--purpose`、`--service-direction`、`--target-account`、`--limit` 和 `--include-comments` 优先于模板默认值。
+
 ## 组件调试入口
 
 仅在调试采集组件时，才直接使用下列命令：

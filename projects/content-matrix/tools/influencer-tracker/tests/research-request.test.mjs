@@ -76,6 +76,31 @@ test('runResearchRequest persists a request ledger with evidence and conclusion 
   }
 });
 
+test('runResearchRequest writes the selected orchestration template and constraints into its brief', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-request-template-'));
+  try {
+    const result = await runResearchRequest({
+      request: {
+        requestId: 'research-template-yijing-1',
+        templateId: 'yijing_yishu',
+        collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/note' },
+      },
+      collect: async () => collectionFixture(),
+      outputDir: join(dir, 'briefs'),
+      ledgerPath: join(dir, 'research-requests.json'),
+    });
+
+    const brief = await readFile(result.outputPath, 'utf8');
+    assert.equal(result.targetAccount, '一镜一梳');
+    assert.equal(result.collection.sampleLimit, 5);
+    assert.match(brief, /研究模板：一镜一梳内容研究/);
+    assert.match(brief, /不输出心理诊断/);
+    assert.equal((brief.match(/内容样本：/g) ?? []).length, 1);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('confirmResearchCandidate records human topic decision and rejects invalid state transitions', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'research-request-confirm-'));
   try {

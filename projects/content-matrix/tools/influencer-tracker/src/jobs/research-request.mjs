@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { buildContentEnrichment } from './enrich-content.mjs';
 import { ResearchRequestStore } from '../storage/research-request-store.mjs';
 import { extractFeishuTextField, mapResearchRequestToFeishuFields } from '../feishu/client.mjs';
+import { applyResearchTemplate } from '../orchestration/research-templates.mjs';
 
 const CANDIDATE_STATUSES = new Set(['待人工审核', '已转选题', '已发布', '已结束']);
 
@@ -14,6 +15,11 @@ export async function runResearchRequest({
   feishuClient = null,
   feishuConfig = null,
 }) {
+  request = applyResearchTemplate({
+    templateId: request?.templateId,
+    request,
+    projectName: request?.projectName,
+  });
   validateResearchRequest(request);
   const requestId = request.requestId ?? createRequestId();
   const store = new ResearchRequestStore({ filePath: ledgerPath });
@@ -31,8 +37,9 @@ export async function runResearchRequest({
     purpose: request.purpose,
     serviceDirection: request.serviceDirection,
     targetAccount: request.targetAccount ?? null,
+    orchestration: request.orchestration ?? null,
     status: '待人工确认',
-    collection: summarizeCollection(collection),
+    collection: summarizeCollection(collection, request.collect),
     candidates,
     nextAction: '人工确认后再进入选题、发布或样本沟通。',
   };
@@ -140,7 +147,7 @@ function evidenceLevelFor({ content, comments }) {
   return '线索';
 }
 
-function summarizeCollection(collection) {
+function summarizeCollection(collection, requestCollect) {
   return {
     mode: collection.request?.mode,
     platform: collection.request?.platform,
@@ -148,7 +155,7 @@ function summarizeCollection(collection) {
     commentCount: collection.comments?.fetchedCount ?? 0,
     requestCount: collection.audit?.requestCount ?? 0,
     cacheUrls: collection.audit?.cacheUrls ?? [],
-    sampleLimit: collection.request?.limit ?? null,
+    sampleLimit: requestCollect?.limit ?? collection.request?.limit ?? null,
   };
 }
 
@@ -177,13 +184,29 @@ function renderResearchBrief(result) {
     `- 服务方向：${result.serviceDirection}`,
     `- 目标账号：${result.targetAccount ?? '未指定'}`,
     `- 当前状态：${result.status}`,
+  ];
+  if (result.orchestration) {
+    lines.push(`- 研究模板：${result.orchestration.templateName}`);
+    if (result.orchestration.projectName) {
+      lines.push(`- 项目代号：${result.orchestration.projectName}`);
+    }
+    lines.push(`- 交付重点：${result.orchestration.outputFocus}`);
+    if (result.orchestration.followUpWorkflow) {
+      lines.push(`- 后续工作流：${result.orchestration.followUpWorkflow}`);
+    }
+  }
+  lines.push(
     `- 内容样本：${result.collection.contentCount}`,
     `- 评论样本：${result.collection.commentCount}`,
     `- TikHub 调用：${result.collection.requestCount}`,
     '',
-    '## 候选选题',
-    '',
-  ];
+  );
+  if (result.orchestration?.constraints?.length) {
+    lines.push('## 研究约束', '');
+    result.orchestration.constraints.forEach((constraint) => lines.push(`- ${constraint}`));
+    lines.push('');
+  }
+  lines.push('## 候选选题', '');
   if (result.candidates.length === 0) {
     lines.push('本轮没有新增内容样本，需调整研究请求或检查去重结果。');
   }

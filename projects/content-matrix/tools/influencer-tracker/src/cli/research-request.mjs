@@ -7,11 +7,16 @@ import { FeishuBitableClient } from '../feishu/client.mjs';
 import { LarkCliBitableClient } from '../feishu/lark-cli-client.mjs';
 import { collectTikHubResearch } from '../jobs/tikhub-collect.mjs';
 import { runResearchRequest } from '../jobs/research-request.mjs';
+import { listResearchTemplates } from '../orchestration/research-templates.mjs';
 
 const args = parseArgs(process.argv.slice(2));
 const cwd = process.cwd();
 
 try {
+  if (args.listTemplates) {
+    console.log(JSON.stringify({ ok: true, templates: listResearchTemplates() }, null, 2));
+    process.exit(0);
+  }
   const feishuPath = args.feishu ? resolve(cwd, args.feishu) : null;
   const feishuConfig = feishuPath ? await readJsonFile(feishuPath) : null;
   const feishuClient = feishuConfig
@@ -20,6 +25,8 @@ try {
   const result = await runResearchRequest({
     request: {
       requestId: args.requestId,
+      templateId: args.template,
+      projectName: args.projectName,
       purpose: args.purpose,
       serviceDirection: args.serviceDirection,
       targetAccount: args.targetAccount,
