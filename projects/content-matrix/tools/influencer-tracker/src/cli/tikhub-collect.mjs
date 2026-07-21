@@ -41,6 +41,7 @@ async function buildRequest(args) {
     contentId: args.contentId,
     keyword: args.keyword,
     creatorId: args.creatorId,
+    creatorHomepageUrl: args.creatorHomepageUrl,
     includeComments: Boolean(args.includeComments),
     limit: args.limit ? Number(args.limit) : undefined,
     maxPages: args.maxPages ? Number(args.maxPages) : undefined,

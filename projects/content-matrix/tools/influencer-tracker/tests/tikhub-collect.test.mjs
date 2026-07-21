@@ -29,14 +29,37 @@ test('collectTikHubResearch imports one Xiaohongshu link and its comments into F
   }));
 
   assert.equal(result.contents.createdCount, 1);
-  assert.equal(result.creators.createdCount, 1);
+  assert.equal(result.creators.createdCount, 0);
   assert.equal(result.comments.createdCount, 1);
   assert.equal(result.audit.requestCount, 2);
-  assert.deepEqual(writes.map((item) => item.tableName), ['creators', 'contents', 'comments']);
+  assert.equal(result.creators.reason, 'content-research-does-not-create-creators');
+  assert.deepEqual(writes.map((item) => item.tableName), ['contents', 'comments']);
+  assert.equal(writes[0].records[0]['内容唯一键'], 'xiaohongshu:xhs-001');
   assert.equal(writes[0].records[0]['平台'], '小红书');
   assert.equal(writes[1].records[0]['内容唯一键'], 'xiaohongshu:xhs-001');
-  assert.equal(writes[1].records[0]['平台'], '小红书');
-  assert.equal(writes[2].records[0]['内容唯一键'], 'xiaohongshu:xhs-001');
+});
+
+test('collectTikHubResearch only creates a creator from an explicit creator request', async () => {
+  const writes = [];
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: {
+      mode: 'creator',
+      platform: 'douyin',
+      creatorId: 'sec-001',
+      creatorHomepageUrl: 'https://www.douyin.com/user/example',
+      limit: 1,
+    },
+    client: fakeClient(),
+    feishuClient: fakeFeishuClient(writes),
+    feishuConfig,
+    storePath,
+  }));
+
+  assert.equal(result.creators.createdCount, 1);
+  assert.equal(result.creators.items[0].homepageUrl, 'https://www.douyin.com/user/example');
+  assert.deepEqual(writes.map((item) => item.tableName), ['creators', 'contents']);
+  assert.equal(writes[0].records[0]['主页链接'], 'https://www.douyin.com/user/example');
+  assert.equal(writes[0].records[0]['来源链接'], 'https://www.douyin.com/user/example');
 });
 
 test('collectTikHubResearch limits keyword results and skips previously stored content', async () => {

@@ -38,6 +38,7 @@ try {
         contentId: args.contentId,
         keyword: args.keyword,
         creatorId: args.creatorId,
+        creatorHomepageUrl: args.creatorHomepageUrl,
         // Omit this key unless explicitly requested so a research template can supply its default.
         includeComments: typeof args.includeComments === 'boolean' ? args.includeComments : undefined,
         limit: args.limit ? Number(args.limit) : undefined,

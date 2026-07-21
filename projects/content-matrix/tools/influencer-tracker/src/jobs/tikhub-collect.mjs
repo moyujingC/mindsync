@@ -30,7 +30,8 @@ export async function collectTikHubResearch({
   const duplicateCount = contents.length - newContents.length;
 
   const creatorResult = await syncCreators({
-    contents: newContents,
+    request,
+    contents,
     feishuClient,
     feishuConfig,
     dryRun,
@@ -95,8 +96,12 @@ async function hasKnownContent({ store, remoteContentKeys, content }) {
   return false;
 }
 
-async function syncCreators({ contents, feishuClient, feishuConfig, dryRun }) {
-  const candidates = uniqueCreators(contents);
+async function syncCreators({ request, contents, feishuClient, feishuConfig, dryRun }) {
+  // Content authors remain content metadata until a human explicitly tracks an account.
+  if (request.mode !== 'creator') {
+    return { createdCount: 0, duplicateCount: 0, items: [], reason: 'content-research-does-not-create-creators' };
+  }
+  const candidates = uniqueCreators({ contents, request });
   if (candidates.length === 0) {
     return { createdCount: 0, duplicateCount: 0, items: [] };
   }
@@ -268,7 +273,7 @@ async function loadExistingCreators({ feishuClient, feishuConfig, dryRun }) {
   ].join(':')).filter((value) => value !== ':'));
 }
 
-function uniqueCreators(contents) {
+function uniqueCreators({ contents, request }) {
   const creators = new Map();
   for (const content of contents) {
     if (!content.creatorExternalId) {
@@ -280,7 +285,7 @@ function uniqueCreators(contents) {
         name: content.creatorName,
         platform: content.platform,
         externalId: content.creatorExternalId,
-        homepageUrl: content.url,
+        homepageUrl: request.creatorHomepageUrl ?? null,
       });
     }
   }
@@ -312,6 +317,7 @@ function sanitizedRequest(request) {
     platform: request.platform,
     keyword: request.keyword ?? null,
     creatorId: request.creatorId ?? null,
+    creatorHomepageUrl: request.creatorHomepageUrl ?? null,
     includeComments: Boolean(request.includeComments),
     limit: request.limit ?? DEFAULT_LIMIT,
     maxPages: request.maxPages ?? 10,

@@ -115,6 +115,20 @@ npm run validate:tikhub-contracts -- \
 
 详情采集可直接粘贴四个平台的公开长链接或官方短链接。系统会以不跟随的 HTTP 跳转逐步展开短链接，再识别最终的平台与内容标识；只允许小红书、抖音、公众号和视频号的已知官方域名，拒绝未知、本机和内网地址。解析为博主主页时会停止，不会把主页误作内容详情，也不会自动创建追踪任务。
 
+内容详情和关键词研究只写内容、评论与研究请求，不会把内容作者自动写成“博主账号”。只有显式使用 `--mode creator --creator-id ...` 的账号拆解请求才会创建博主记录；如需保存主页，必须一并人工提供 `--creator-homepage-url`，系统不会从单条内容链接猜测主页。
+
+```bash
+# 账号拆解：明确提供平台账号 ID 和已核实的主页，才会写入“博主账号”表。
+npm run research:run -- \
+  --template enterprise_ai_service \
+  --mode creator \
+  --platform 抖音 \
+  --creator-id '已核实的平台账号ID' \
+  --creator-homepage-url 'https://www.douyin.com/user/...' \
+  --limit 5 \
+  --dry-run
+```
+
 ```bash
 npm run research:run -- \
   --purpose 评论挖需求 \
