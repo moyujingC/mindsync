@@ -72,6 +72,35 @@ test('handoffResearchCandidate preserves yijing yishu non-diagnostic constraints
   }
 });
 
+test('handoffResearchCandidate gives client projects an internal research pack instead of a public draft seed', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-handoff-client-'));
+  try {
+    await writeLedger(dir, requestFixture({
+      candidateStatus: '已转选题',
+      templateId: 'client_project',
+      targetAccount: 'client-2026-retail-pilot',
+      projectName: 'client-2026-retail-pilot',
+      constraints: ['不上传客户非公开资料；仅使用获授权的公开内容和脱敏聚合结论。'],
+    }));
+    const result = await handoffResearchCandidate({
+      ledgerPath: join(dir, 'research-requests.json'),
+      requestId: 'research-handoff-1',
+      candidateIndex: 1,
+      outputDir: join(dir, 'handoffs'),
+    });
+
+    const researchPack = await readFile(result.researchPackPath, 'utf8');
+    assert.equal(result.draftSeedPath, null);
+    assert.match(result.researchPackPath, /-research-pack\.md$/);
+    assert.match(researchPack, /项目代号：client-2026-retail-pilot/);
+    assert.match(researchPack, /待确认问题/);
+    assert.match(researchPack, /不自动生成公开内容草稿/);
+    assert.match(result.nextAction, /不得自动生成公开草稿/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 async function writeLedger(dir, request) {
   await writeFile(join(dir, 'research-requests.json'), `${JSON.stringify({
     schema: 'content-matrix/research-request-ledger/v1',
@@ -83,6 +112,7 @@ function requestFixture({
   candidateStatus,
   templateId = 'enterprise_ai_service',
   targetAccount = '知行AI服务',
+  projectName = null,
   constraints = [],
 }) {
   return {
@@ -90,7 +120,7 @@ function requestFixture({
     purpose: '评论挖需求',
     serviceDirection: '企业 AI 服务',
     targetAccount,
-    orchestration: { templateId, constraints },
+    orchestration: { templateId, projectName, constraints },
     candidates: [{
       status: candidateStatus,
       evidenceLevel: '观察',

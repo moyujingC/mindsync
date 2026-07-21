@@ -257,6 +257,8 @@ npm run promote:draft -- \
   --account 墨予镜
 ```
 
+`client_project` 模板例外：`research:handoff` 只生成内部研究包（样本证据、待确认问题和交接边界），不生成草稿种子，也不能进入 `promote:draft`。客户项目是否形成正式交付、报价或试点，由项目负责人基于授权材料另行确认。
+
 进入正式草稿后，仍沿用 `prepare:edit`、`scaffold:final` 和 `prepare:feedback`。这些步骤均不发布内容；发布链接、互动和服务信号只能在真实发生后由人工填写到发布反馈记录。
 
 ## 发布反馈与服务验证

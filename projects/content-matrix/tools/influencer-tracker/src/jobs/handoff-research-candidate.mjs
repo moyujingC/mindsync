@@ -35,13 +35,26 @@ export async function handoffResearchCandidate({
   }
 
   const brief = buildBriefFromResearchCandidate({ request, candidate, candidateIndex });
-  const draftSeed = buildDraftSeedFromBrief(brief);
   const baseName = `${sanitizeFilename(request.requestId)}-candidate-${candidateIndex}`;
   const resolvedOutputDir = resolve(outputDir);
-  const briefPath = join(resolvedOutputDir, `${baseName}-brief.md`);
-  const draftSeedPath = join(resolvedOutputDir, `${baseName}-draft.md`);
+  const isClientProject = request.orchestration?.templateId === 'client_project';
+  const briefPath = join(resolvedOutputDir, `${baseName}-${isClientProject ? 'research-pack' : 'brief'}.md`);
 
   await mkdir(dirname(briefPath), { recursive: true });
+  if (isClientProject) {
+    await writeFile(briefPath, `${renderClientResearchPack({ request, candidate, candidateIndex })}\n`, 'utf8');
+    return {
+      requestId,
+      candidateIndex,
+      title: candidate.topicTitle,
+      researchPackPath: briefPath,
+      draftSeedPath: null,
+      nextAction: '项目负责人审阅内部样本包与问题清单后，决定是否进入客户交付；不得自动生成公开草稿、发布、报价或联系客户。',
+    };
+  }
+
+  const draftSeed = buildDraftSeedFromBrief(brief);
+  const draftSeedPath = join(resolvedOutputDir, `${baseName}-draft.md`);
   await writeFile(briefPath, `${renderContentBriefMarkdown(brief)}\n`, 'utf8');
   await writeFile(draftSeedPath, `${renderDraftSeedMarkdown(draftSeed)}\n`, 'utf8');
 
@@ -53,6 +66,40 @@ export async function handoffResearchCandidate({
     draftSeedPath,
     nextAction: '人工审阅交接包后，显式运行 promote:draft 选择账号写入草稿；不得自动发布。',
   };
+}
+
+export function renderClientResearchPack({ request, candidate, candidateIndex }) {
+  const lines = [
+    `# 客户项目内部研究包：${request.requestId} / 候选 ${candidateIndex}`,
+    '',
+    `- 项目代号：${request.orchestration?.projectName ?? request.targetAccount ?? '未提供'}`,
+    `- 研究目的：${request.purpose}`,
+    `- 服务方向：${request.serviceDirection}`,
+    `- 证据等级：${candidate.evidenceLevel}`,
+    `- 结论等级：${candidate.conclusionLevel}`,
+    `- 候选状态：${candidate.status}`,
+    '',
+    '## 样本证据',
+    '',
+    `- 来源内容：${candidate.source.contentUniqueKey ?? '未提供'} / ${candidate.source.title ?? '未提供'}`,
+    candidate.source.url ? `- 来源链接：${candidate.source.url}` : '- 来源链接：未提供',
+    candidate.source.commentUniqueKeys?.length ? `- 来源评论：${candidate.source.commentUniqueKeys.join(', ')}` : '- 来源评论：未提供',
+    `- 证据摘要：${candidate.evidenceSummary}`,
+    '',
+    '## 待确认问题',
+    '',
+    `1. ${candidate.userProblem}`,
+    '2. 该问题是否出现在客户实际流程中？若出现，现有材料、角色和系统边界是什么？',
+    '3. 是否具备获授权的最小样本，可用于验证一个可回滚的小实验？',
+    '',
+    '## 交接边界',
+    '',
+    '- 此文件仅供内部项目负责人审阅，不构成客户结论、报价或交付承诺。',
+    '- 不上传客户非公开资料；需要补充材料时，先取得明确授权并做最小化、脱敏处理。',
+    '- 不自动生成公开内容草稿，不自动发布、私信、报价或联系客户。',
+    ...(request.orchestration?.constraints ?? []).map((constraint) => `- ${constraint}`),
+  ];
+  return lines.join('\n');
 }
 
 export function buildBriefFromResearchCandidate({ request, candidate, candidateIndex }) {
