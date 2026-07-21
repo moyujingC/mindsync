@@ -108,6 +108,23 @@ npm run research:manual -- \
 
 输入中的 `comments` 只有在请求明确 `includeComments: true` 或命令附加 `--include-comments` 时才会解析和写入。请只保存公开内容、经授权的材料或脱敏聚合评论；不要录入客户非公开资料和可识别个人信息。
 
+手工研究项可选填 `refinedTextPath`，引用已由 `media:refine` 输出的本地清理稿。相对路径以手工研究 JSON 文件所在目录为准。研究时会使用清理稿辅助生成候选，并在本地台账和简报保留路径、字符数及有限片段；逐字稿正文不会写入飞书。
+
+```bash
+# 1. 先提纯字幕或逐字稿
+npm run media:refine -- \
+  --input path/to/source.srt \
+  --output-dir logs/media-refinement
+
+# 2. 在手工研究 JSON 的内容项中填写：
+# "refinedTextPath": "../logs/media-refinement/source.refined.txt"
+
+# 3. 先确认输入和候选，不产生写入
+npm run research:manual -- \
+  --input fixtures/manual-research.example.json \
+  --dry-run
+```
+
 ## 业务研究模板
 
 同一套研究请求、采集、飞书写入和证据台账可以服务不同业务。模板只补齐研究目的、默认样本量、交付重点和安全约束，不会创建新的采集器、飞书表或自动发布链路。
@@ -265,7 +282,7 @@ node src/cli/enrich-content.mjs \
 
 ## 媒体提纯组件
 
-字幕、人工逐字稿或其他文本先独立进入媒体提纯 Workflow，再作为原文证据提供给研究和洞察组件。当前支持 `.srt`、`.vtt`、`.txt`：保留原始副本、清理字幕时间轴和空行，并生成 manifest（运行清单）。
+字幕、人工逐字稿或其他文本先独立进入媒体提纯 Workflow，再作为原文证据提供给研究和洞察组件。当前支持 `.srt`、`.vtt`、`.txt`：保留原始副本、清理字幕时间轴和空行，并生成 manifest（运行清单）。手工研究入口可通过 `refinedTextPath` 消费该清理稿；飞书不保存逐字稿正文。
 
 ```bash
 npm run media:refine -- \

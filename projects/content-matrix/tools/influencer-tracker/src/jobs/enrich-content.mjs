@@ -108,16 +108,27 @@ function inferUserProblems({ transcript, comments, primaryDirection }) {
     return questions.slice(0, 3);
   }
 
+  if (transcript) {
+    return [extractTranscriptProblem(transcript)];
+  }
   if (primaryDirection === '内容生产系统') {
     return ['内容生产链路需要从评论区需求回到选题库。'];
   }
   if (primaryDirection === 'AI 工作流诊断') {
     return ['用户对 AI 服务如何落到具体流程仍需要更清晰的拆解。'];
   }
-  if (transcript) {
-    return ['需要人工复核转写稿，判断是否存在可服务的具体问题。'];
-  }
   return ['需要人工补充用户问题。'];
+}
+
+function extractTranscriptProblem(transcript) {
+  const sentence = String(transcript)
+    .replace(/\s+/g, ' ')
+    .split(/[。！？!?\n]/)
+    .map((item) => item.trim())
+    .find(Boolean);
+  return sentence
+    ? `转写稿线索：${sentence}`
+    : '需要人工复核转写稿，判断是否存在可服务的具体问题。';
 }
 
 function buildInsights({ metadata, primaryDirection, userProblems, demandSignals }) {

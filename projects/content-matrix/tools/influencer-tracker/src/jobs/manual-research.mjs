@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { dirname, isAbsolute, resolve } from 'node:path';
 import { extractFeishuTextField, mapCommentToFeishuFields } from '../feishu/client.mjs';
 import { importManualContentItems, normalizeManualInput } from './manual-import.mjs';
 import { runResearchRequest } from './research-request.mjs';
@@ -14,7 +16,10 @@ export async function runManualResearchRequest({
   dryRun = false,
   inputPath = null,
 }) {
-  const normalizedContents = normalizeManualInput({ items });
+  const normalizedContents = await attachRefinedTextEvidence({
+    contents: normalizeManualInput({ items }),
+    inputPath,
+  });
   if (dryRun) {
     return runResearchRequest({
       request,
@@ -72,6 +77,50 @@ export async function runManualResearchRequest({
       }),
     }),
   });
+}
+
+async function attachRefinedTextEvidence({ contents, inputPath }) {
+  return Promise.all(contents.map(async (content) => {
+    const configuredPath = content.raw?.refinedTextPath;
+    if (!configuredPath) {
+      return content;
+    }
+    if (typeof configuredPath !== 'string' || !configuredPath.trim()) {
+      throw new Error(`refinedTextPath must be a non-empty string for ${content.uniqueKey}`);
+    }
+    const refinedTextPath = resolveRefinedTextPath(configuredPath, inputPath);
+    let refinedText;
+    try {
+      refinedText = await readFile(refinedTextPath, 'utf8');
+    } catch (error) {
+      if (error?.code === 'ENOENT') {
+        throw new Error(`Refined text file not found for ${content.uniqueKey}: ${refinedTextPath}`);
+      }
+      throw error;
+    }
+    const text = refinedText.trim();
+    if (!text) {
+      throw new Error(`Refined text file is empty for ${content.uniqueKey}: ${refinedTextPath}`);
+    }
+    return {
+      ...content,
+      researchEvidence: {
+        refinedTextPath,
+        characterCount: text.length,
+      },
+      refinedText: text,
+    };
+  }));
+}
+
+function resolveRefinedTextPath(configuredPath, inputPath) {
+  if (isAbsolute(configuredPath)) {
+    return resolve(configuredPath);
+  }
+  if (!inputPath) {
+    throw new Error(`Relative refinedTextPath requires inputPath: ${configuredPath}`);
+  }
+  return resolve(dirname(inputPath), configuredPath);
 }
 
 async function buildManualCollection({ collectRequest, normalizedContents, contentResult, syncComments = null }) {

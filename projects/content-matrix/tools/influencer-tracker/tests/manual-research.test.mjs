@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { access, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { access, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runManualResearchRequest } from '../src/jobs/manual-research.mjs';
@@ -131,6 +131,64 @@ test('manual research dry-run returns candidates without writing a ledger, brief
     assert.deepEqual(writes, []);
     await assert.rejects(access(join(dir, 'content-store.json')), /ENOENT/);
     await assert.rejects(access(join(dir, 'research-requests.json')), /ENOENT/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('manual research uses a refined transcript as local evidence without sending its body to Feishu', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'manual-research-transcript-'));
+  try {
+    const transcriptPath = join(dir, 'sample.refined.txt');
+    const transcript = '企业资料散落在多个系统，团队想先梳理一个可验收的知识库试点。';
+    await writeFile(transcriptPath, transcript, 'utf8');
+    const writes = [];
+    const result = await runManualResearchRequest({
+      request: {
+        requestId: 'manual-research-transcript-1',
+        templateId: 'enterprise_ai_service',
+        collect: { mode: 'manual', platform: '小红书', includeComments: false },
+      },
+      items: [manualItem({ description: '', comments: [], refinedTextPath: transcriptPath })],
+      storePath: join(dir, 'content-store.json'),
+      ledgerPath: join(dir, 'research-requests.json'),
+      outputDir: join(dir, 'briefs'),
+      feishuConfig: feishuConfig(),
+      feishuClient: fakeFeishu(writes),
+    });
+
+    assert.match(result.candidates[0].userProblem, /资料散落/);
+    assert.equal(result.candidates[0].source.refinedText.path, transcriptPath);
+    assert.equal(result.candidates[0].evidence.transcriptExcerpt, transcript);
+    const serializedWrites = JSON.stringify(writes);
+    assert.doesNotMatch(serializedWrites, new RegExp(transcript));
+    const brief = await readFile(result.outputPath, 'utf8');
+    assert.match(brief, /提纯文本：/);
+    assert.match(brief, /提纯片段：企业资料散落/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('manual research reports a missing refined transcript path clearly', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'manual-research-missing-transcript-'));
+  try {
+    await assert.rejects(
+      () => runManualResearchRequest({
+        request: {
+          requestId: 'manual-research-missing-transcript-1',
+          purpose: '收藏整理',
+          serviceDirection: '墨予镜',
+          collect: { mode: 'manual', platform: '小红书', includeComments: false },
+        },
+        items: [manualItem({ refinedTextPath: 'missing.refined.txt' })],
+        inputPath: join(dir, 'input.json'),
+        storePath: join(dir, 'content-store.json'),
+        ledgerPath: join(dir, 'research-requests.json'),
+        outputDir: join(dir, 'briefs'),
+      }),
+      /Refined text file not found.*missing\.refined\.txt/,
+    );
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

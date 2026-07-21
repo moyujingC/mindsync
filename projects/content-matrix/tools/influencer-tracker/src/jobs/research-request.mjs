@@ -118,6 +118,7 @@ function buildCandidates({ request, collection }) {
       .filter((comment) => comment.contentUniqueKey === content.uniqueKey || !comment.contentUniqueKey);
     const enrichment = buildContentEnrichment({
       metadata: content,
+      transcript: content.refinedText ?? '',
       comments: relatedComments,
     });
     const candidate = enrichment.topicCandidates[0];
@@ -127,6 +128,10 @@ function buildCandidates({ request, collection }) {
         title: content.title,
         url: content.url,
         commentUniqueKeys: relatedComments.map((comment) => comment.commentUniqueKey),
+        refinedText: content.researchEvidence ? {
+          path: content.researchEvidence.refinedTextPath,
+          characterCount: content.researchEvidence.characterCount,
+        } : null,
       },
       evidenceLevel: evidenceLevelFor({ content, comments: relatedComments }),
       conclusionLevel: '假设',
@@ -227,6 +232,12 @@ function renderResearchBrief(result) {
     lines.push(`- 用户问题：${candidate.userProblem}`);
     lines.push(`- 证据摘要：${candidate.evidenceSummary}`);
     lines.push(`- 建议动作：${candidate.nextAction}`);
+    if (candidate.source.refinedText) {
+      lines.push(`- 提纯文本：${candidate.source.refinedText.path}（${candidate.source.refinedText.characterCount} 字）`);
+      if (candidate.evidence.transcriptExcerpt) {
+        lines.push(`- 提纯片段：${candidate.evidence.transcriptExcerpt}`);
+      }
+    }
     const comments = candidate.evidence.topComments ?? [];
     if (comments.length > 0) {
       lines.push('- 评论证据：');
