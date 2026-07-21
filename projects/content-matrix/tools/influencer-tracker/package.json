@@ -4,14 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "research:run": "node src/cli/research-request.mjs",
     "collect:tikhub": "node src/cli/tikhub-collect.mjs",
     "build:briefs": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json",
     "build:drafts": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json --draft-dir logs/drafts --mark-status 已验证",
-    "daily:summary": "node src/cli/daily-summary.mjs --date 2026-07-15",
-    "failure:review": "node src/cli/failure-review.mjs --date 2026-07-15",
-    "generate:topics": "node src/cli/generate-topic-candidates.mjs --report fixtures/run-report.example.json",
-    "insights:enrichment": "node src/cli/write-enrichment-insights.mjs --enrichment fixtures/enrichment.example.json",
-    "insights:enrichments": "node src/cli/write-enrichment-directory-insights.mjs --root-dir fixtures/enrichments.example --report logs/enrichment-writes/example.json",
     "manual:import": "node src/cli/manual-import.mjs --dry-run --input fixtures/manual-import.example.json",
     "reference:import": "node src/cli/manual-import.mjs --dry-run --input fixtures/reference-import.example.json --store logs/content-store.references.json",
     "prepare:feedback": "node src/cli/prepare-feedback.mjs --final-draft ../../accounts/墨予镜/2026-07-15-从AI服务第一条样例视频看AI工作流诊断的真实需求-成稿.md --account 墨予镜",
@@ -21,7 +17,6 @@
     "inspect:feishu": "node src/cli/inspect-feishu.mjs --feishu config/feishu.example.json",
     "weekly:review": "node src/cli/weekly-review.mjs --start-date 2026-07-09 --end-date 2026-07-15",
     "validate:feishu": "node src/cli/validate-config.mjs --feishu config/feishu.example.json",
-    "worker:feishu": "node src/cli/feishu-action-worker.mjs --feishu config/feishu.local.json",
     "test": "node --test tests/*.test.mjs"
   },
   "engines": {

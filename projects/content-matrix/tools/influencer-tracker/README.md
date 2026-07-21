@@ -40,9 +40,29 @@ export TIKHUB_API_KEY='你的 TikHub API Key'
 
 飞书配置使用本机忽略文件 `config/feishu.local.json`。示例结构见 `config/feishu.example.json`。
 
-## 运行方式
+## 研究请求：日常唯一入口
 
-先用不写入飞书的试运行确认请求：
+研究请求会把采集、证据整理和候选选题串成一次可交接的 Workflow。它不会自动发布或联系任何人，结果状态始终是“待人工确认”。
+
+```bash
+npm run research:run -- \
+  --purpose 评论挖需求 \
+  --service-direction '企业 AI 服务' \
+  --target-account 墨予镜 \
+  --mode detail \
+  --platform xiaohongshu \
+  --share-url '小红书分享链接' \
+  --include-comments \
+  --dry-run
+```
+
+输出在 `logs/research-briefs/`：包含研究目的、服务方向、样本与调用量、评论证据、最多 3 个候选选题，以及明确的人工确认点。
+
+当前 TikHub 账户调用会返回 HTTP 402，需先在 TikHub 后台确认余额与对应接口套餐权限。开通后先加 `--dry-run` 验证真实响应，再移除它写入飞书。
+
+## 组件调试入口
+
+仅在调试采集组件时，才直接使用下列命令：
 
 ```bash
 # 小红书或抖音等分享链接：详情加一页评论
