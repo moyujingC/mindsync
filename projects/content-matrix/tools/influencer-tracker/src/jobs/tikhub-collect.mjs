@@ -147,7 +147,12 @@ async function collectComments({ request, client, contents, feishuClient, feishu
     const response = await collectPages({
       limit: request.commentLimit ?? DEFAULT_LIMIT,
       maxPages: request.commentPages ?? 1,
-      getPage: (cursor) => client.getComments({ platform: request.platform, contentId: content.contentExternalId, cursor }),
+      getPage: (cursor) => client.getComments({
+        platform: request.platform,
+        contentId: content.contentExternalId,
+        shareUrl: content.url,
+        cursor,
+      }),
     });
     cacheUrls.push(...response.cacheUrls);
     audit = response.audit ?? audit;

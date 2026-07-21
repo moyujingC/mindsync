@@ -11,6 +11,18 @@ export class TikHubClient {
 
   async getContentDetail({ platform, shareUrl, contentId = null }) {
     const route = detailRoute(platform);
+    if (platform === 'wechat_mp') {
+      if (!shareUrl) {
+        throw new Error('TikHub WeChat MP detail requires an article shareUrl');
+      }
+      return this.request(route, { method: 'POST', body: { url: shareUrl, raw: true } });
+    }
+    if (platform === 'wechat_channels') {
+      return this.request(route, {
+        method: 'POST',
+        body: wechatChannelsDetailBody({ shareUrl, contentId }),
+      });
+    }
     const params = shareUrl ? detailParams(platform, shareUrl) : { content_id: contentId };
     return this.request(route, { params });
   }
@@ -27,6 +39,18 @@ export class TikHubClient {
   }
 
   async getCreatorContents({ platform, creatorId, cursor = null, limit = 10 }) {
+    if (platform === 'wechat_mp') {
+      return this.request(creatorRoute(platform), {
+        method: 'POST',
+        body: { username: creatorId, page_size: Math.min(20, Math.max(10, limit)), offset: cursor, raw: true },
+      });
+    }
+    if (platform === 'wechat_channels') {
+      return this.request(creatorRoute(platform), {
+        method: 'POST',
+        body: { username: creatorId, last_buffer: cursor, raw: true },
+      });
+    }
     return this.request(creatorRoute(platform), {
       method: platform === 'xiaohongshu' ? 'GET' : 'POST',
       params: platform === 'xiaohongshu' ? { user_id: creatorId, cursor } : null,
@@ -34,7 +58,25 @@ export class TikHubClient {
     });
   }
 
-  async getComments({ platform, contentId, cursor = null }) {
+  async getComments({ platform, contentId, shareUrl = null, cursor = null }) {
+    if (platform === 'wechat_mp') {
+      if (!shareUrl) {
+        throw new Error('TikHub WeChat MP comments require an article shareUrl');
+      }
+      return this.request(commentRoute(platform), {
+        method: 'POST',
+        body: { url: shareUrl, buffer: cursor, raw: true },
+      });
+    }
+    if (platform === 'wechat_channels') {
+      if (!/^\d+$/.test(String(contentId ?? ''))) {
+        throw new Error('TikHub WeChat Channels comments require a numeric object_id');
+      }
+      return this.request(commentRoute(platform), {
+        method: 'POST',
+        body: { object_id: String(contentId), last_buffer: cursor, raw: true },
+      });
+    }
     return this.request(commentRoute(platform), {
       method: platform === 'xiaohongshu' ? 'GET' : 'POST',
       params: platform === 'xiaohongshu' ? { note_id: contentId, cursor } : null,
@@ -100,6 +142,16 @@ function detailParams(platform, shareUrl) {
     return { url: shareUrl };
   }
   return { share_url: shareUrl };
+}
+
+function wechatChannelsDetailBody({ shareUrl, contentId }) {
+  if (contentId && /^\d+$/.test(String(contentId))) {
+    return { object_id: String(contentId), raw: true };
+  }
+  if (shareUrl) {
+    return { share_url: shareUrl, raw: true };
+  }
+  throw new Error('TikHub WeChat Channels detail requires a shareUrl or numeric object_id');
 }
 
 function searchRoute(platform) {

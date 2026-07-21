@@ -74,11 +74,11 @@ test('TikHubClient explains a 402 response as a TikHub account entitlement issue
 });
 
 test('TikHubClient uses each platform detail identifier contract', async () => {
-  const urls = [];
+  const requests = [];
   const client = new TikHubClient({
     apiKey: 'test-key',
-    fetchImpl: async (url) => {
-      urls.push(String(url));
+    fetchImpl: async (url, options) => {
+      requests.push({ url: String(url), options });
       return jsonResponse({ code: 200, data: {} });
     },
   });
@@ -87,9 +87,43 @@ test('TikHubClient uses each platform detail identifier contract', async () => {
   await client.getContentDetail({ platform: 'wechat_mp', shareUrl: 'https://mp.weixin.qq.com/s/example' });
   await client.getContentDetail({ platform: 'wechat_channels', shareUrl: 'https://weixin.qq.com/sph/example' });
 
-  assert.match(urls[0], /share_url=/);
-  assert.match(urls[1], /url=/);
-  assert.match(urls[2], /share_url=/);
+  assert.match(requests[0].url, /share_url=/);
+  assert.match(requests[1].url, /wechat_mp\/v2\/fetch_article_detail$/);
+  assert.equal(requests[1].options.method, 'POST');
+  assert.deepEqual(JSON.parse(requests[1].options.body), { url: 'https://mp.weixin.qq.com/s/example', raw: true });
+  assert.match(requests[2].url, /wechat_channels\/v2\/fetch_video_detail$/);
+  assert.equal(requests[2].options.method, 'POST');
+  assert.deepEqual(JSON.parse(requests[2].options.body), { share_url: 'https://weixin.qq.com/sph/example', raw: true });
+});
+
+test('TikHubClient uses documented creator and comment contracts for WeChat platforms', async () => {
+  const requests = [];
+  const client = new TikHubClient({
+    apiKey: 'test-key',
+    fetchImpl: async (url, options) => {
+      requests.push({ url: String(url), options });
+      return jsonResponse({ code: 200, data: {} });
+    },
+  });
+
+  await client.getCreatorContents({ platform: 'wechat_mp', creatorId: 'gh_example', cursor: 'next', limit: 4 });
+  await client.getCreatorContents({ platform: 'wechat_channels', creatorId: 'v2_abcdef@finder', cursor: 'next' });
+  await client.getComments({ platform: 'wechat_mp', contentId: 'ignored', shareUrl: 'https://mp.weixin.qq.com/s/example', cursor: 'next' });
+  await client.getComments({ platform: 'wechat_channels', contentId: '14941130915890399732', cursor: 'next' });
+
+  assert.deepEqual(JSON.parse(requests[0].options.body), { username: 'gh_example', page_size: 10, offset: 'next', raw: true });
+  assert.deepEqual(JSON.parse(requests[1].options.body), { username: 'v2_abcdef@finder', last_buffer: 'next', raw: true });
+  assert.deepEqual(JSON.parse(requests[2].options.body), { url: 'https://mp.weixin.qq.com/s/example', buffer: 'next', raw: true });
+  assert.deepEqual(JSON.parse(requests[3].options.body), { object_id: '14941130915890399732', last_buffer: 'next', raw: true });
+});
+
+test('TikHubClient rejects incomplete WeChat detail and comment identifiers', async () => {
+  const client = new TikHubClient({ apiKey: 'test-key' });
+
+  await assert.rejects(() => client.getContentDetail({ platform: 'wechat_mp' }), /requires an article shareUrl/);
+  await assert.rejects(() => client.getContentDetail({ platform: 'wechat_channels', contentId: 'finder-object' }), /requires a shareUrl or numeric object_id/);
+  await assert.rejects(() => client.getComments({ platform: 'wechat_mp', contentId: 'article' }), /require an article shareUrl/);
+  await assert.rejects(() => client.getComments({ platform: 'wechat_channels', contentId: 'finder-object' }), /require a numeric object_id/);
 });
 
 test('TikHubClient uses documented POST search contracts for WeChat platforms', async () => {
