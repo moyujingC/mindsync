@@ -14,18 +14,18 @@ test('buildTopicCandidatesFromRunReport creates one candidate per new content', 
     generatedAt: '2026-07-15T06:00:00.000Z',
     creators: [{
       creatorName: '样例账号',
-      platform: 'bilibili',
+      platform: 'douyin',
       newContents: [
         {
-          uniqueKey: 'bilibili:BV1',
+          uniqueKey: 'douyin:dy-001',
           title: '内容团队如何用 AI 拆选题和草稿',
-          url: 'https://www.bilibili.com/video/BV1',
+          url: 'https://www.douyin.com/video/dy-001',
           publishedAt: '2026-07-15T01:00:00.000Z',
         },
         {
-          uniqueKey: 'bilibili:BV2',
+          uniqueKey: 'douyin:dy-002',
           title: '企业 AI 落地为什么先选一条流程',
-          url: 'https://www.bilibili.com/video/BV2',
+          url: 'https://www.douyin.com/video/dy-002',
           publishedAt: '2026-07-15T02:00:00.000Z',
         },
       ],
@@ -42,12 +42,12 @@ test('buildTopicCandidate keeps unclear items for human review', () => {
   const candidate = buildTopicCandidate({
     creator: {
       creatorName: '样例账号',
-      platform: 'bilibili',
+      platform: 'douyin',
     },
     content: {
-      uniqueKey: 'bilibili:BV3',
+      uniqueKey: 'douyin:dy-003',
       title: '今天随便聊聊',
-      url: 'https://www.bilibili.com/video/BV3',
+      url: 'https://www.douyin.com/video/dy-003',
       publishedAt: '2026-07-15T03:00:00.000Z',
     },
     sourceReport: {

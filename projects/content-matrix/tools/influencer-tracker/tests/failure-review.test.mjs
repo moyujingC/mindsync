@@ -19,9 +19,9 @@ test('buildFailureReview flags creators with consecutive failures', async () => 
     creators: [{
       creatorId: 'rec_fail',
       creatorName: '失败账号',
-      platform: 'bilibili',
+      platform: 'douyin',
       failed: true,
-      error: 'rss failed 1',
+      error: 'tikhub failed 1',
     }],
   }), 'utf8');
 
@@ -30,9 +30,9 @@ test('buildFailureReview flags creators with consecutive failures', async () => 
     creators: [{
       creatorId: 'rec_fail',
       creatorName: '失败账号',
-      platform: 'bilibili',
+      platform: 'douyin',
       failed: true,
-      error: 'rss failed 2',
+      error: 'tikhub failed 2',
     }],
   }), 'utf8');
 
@@ -41,9 +41,9 @@ test('buildFailureReview flags creators with consecutive failures', async () => 
     creators: [{
       creatorId: 'rec_fail',
       creatorName: '失败账号',
-      platform: 'bilibili',
+      platform: 'douyin',
       failed: true,
-      error: 'rss failed 3',
+      error: 'tikhub failed 3',
     }],
   }), 'utf8');
 
@@ -61,7 +61,7 @@ test('buildFailureReview flags creators with consecutive failures', async () => 
 
     const markdown = await readFile(outputPath, 'utf8');
     assert.match(markdown, /待人工处理账号数：1/);
-    assert.match(markdown, /失败账号 \| 平台 bilibili \| 连续失败 3 次/);
+    assert.match(markdown, /失败账号 \| 平台 douyin \| 连续失败 3 次/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -78,9 +78,9 @@ test('buildFailureReview can write back manual-review status to Feishu client', 
     creators: [{
       creatorId: 'rec_fail',
       creatorName: '失败账号',
-      platform: 'bilibili',
+      platform: 'douyin',
       failed: true,
-      error: 'rss failed',
+      error: 'tikhub failed',
     }],
   }), 'utf8');
 

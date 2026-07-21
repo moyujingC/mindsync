@@ -68,7 +68,7 @@ console.log(JSON.stringify({
     data: [
       [
         '已审核选题',
-        'bilibili:BV1',
+        'douyin:dy-001',
         '',
         '选题',
         ['知行AI服务'],
@@ -78,7 +78,7 @@ console.log(JSON.stringify({
       ],
       [
         '未审核选题',
-        'bilibili:BV2',
+        'douyin:dy-002',
         '',
         '选题',
         ['知行AI服务'],
@@ -138,7 +138,7 @@ if (process.argv.includes('+record-list')) {
       fields: ['洞察标题', '来源内容', '来源评论', '洞察类型', '适用账号', '证据摘要', '建议动作', '状态'],
       data: [[
         '已审核选题',
-        'bilibili:BV1',
+        'douyin:dy-001',
         '',
         '选题',
         ['知行AI服务'],

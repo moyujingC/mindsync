@@ -17,16 +17,16 @@ test('buildRunReport creates auditable summary', () => {
     creatorResults: [{
       creatorId: 'creator-1',
       creatorName: '测试账号',
-      platform: 'bilibili',
+      platform: 'douyin',
       fetchedCount: 1,
       createdCount: 1,
       duplicateCount: 0,
       failed: false,
       error: null,
       contents: [{
-        uniqueKey: 'bilibili:BV1',
+        uniqueKey: 'douyin:dy-001',
         title: '标题',
-        url: 'https://www.bilibili.com/video/BV1',
+        url: 'https://www.douyin.com/video/dy-001',
         publishedAt: '2026-07-15T00:00:00.000Z',
       }],
     }],
@@ -37,7 +37,7 @@ test('buildRunReport creates auditable summary', () => {
   assert.equal(report.schema, 'content-matrix/influencer-tracker-run/v1');
   assert.equal(report.meta.mode, 'daily');
   assert.equal(report.summary.createdCount, 1);
-  assert.equal(report.creators[0].newContents[0].uniqueKey, 'bilibili:BV1');
+  assert.equal(report.creators[0].newContents[0].uniqueKey, 'douyin:dy-001');
 });
 
 test('writeRunReport writes date-partitioned JSON report', async () => {

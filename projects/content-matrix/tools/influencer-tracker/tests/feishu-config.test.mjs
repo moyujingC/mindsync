@@ -233,8 +233,8 @@ test('mapContentToFeishuFields maps articles to the existing image-text option',
 
 test('mapCommentToFeishuFields maps normalized comment fields', () => {
   const fieldsForWrite = mapCommentToFeishuFields({
-    commentUniqueKey: 'bilibili:bilibili:BV1sample001:1001',
-    contentUniqueKey: 'bilibili:BV1sample001',
+    commentUniqueKey: 'douyin:douyin:dy-sample-001:1001',
+    contentUniqueKey: 'douyin:dy-sample-001',
     commentText: '测试评论',
     commentedAt: '2026-07-15T01:10:00.000Z',
     likeCount: 2,
@@ -244,8 +244,8 @@ test('mapCommentToFeishuFields maps normalized comment fields', () => {
     insightStatus: '待定',
   }, commentFields);
 
-  assert.equal(fieldsForWrite['评论唯一键'], 'bilibili:bilibili:BV1sample001:1001');
-  assert.equal(fieldsForWrite['内容唯一键'], 'bilibili:BV1sample001');
+  assert.equal(fieldsForWrite['评论唯一键'], 'douyin:douyin:dy-sample-001:1001');
+  assert.equal(fieldsForWrite['内容唯一键'], 'douyin:dy-sample-001');
   assert.deepEqual(fieldsForWrite['需求类型'], ['问题咨询']);
 });
 

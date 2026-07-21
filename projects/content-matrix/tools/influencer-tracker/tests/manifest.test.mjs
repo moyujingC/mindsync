@@ -14,7 +14,7 @@ test('writeJobManifest writes a unified manifest structure', async () => {
       manifestPath,
       job: 'download',
       status: 'ok',
-      input: { contentExternalId: 'BV1sample001' },
+      input: { contentExternalId: 'dy-sample-001' },
       output: { videoPath: null },
     });
 
@@ -23,7 +23,7 @@ test('writeJobManifest writes a unified manifest structure', async () => {
     assert.equal(saved.version, 1);
     assert.equal(saved.job, 'download');
     assert.equal(saved.status, 'ok');
-    assert.equal(saved.input.contentExternalId, 'BV1sample001');
+    assert.equal(saved.input.contentExternalId, 'dy-sample-001');
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -31,7 +31,7 @@ test('writeJobManifest writes a unified manifest structure', async () => {
 
 test('summarizeManifestCoverage counts artifact manifests', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-manifest-coverage-'));
-  const artifactDir = join(dir, 'B站样例账号', 'BV1sample001');
+  const artifactDir = join(dir, '抖音样例账号', 'dy-sample-001');
 
   try {
     await mkdir(artifactDir, { recursive: true });

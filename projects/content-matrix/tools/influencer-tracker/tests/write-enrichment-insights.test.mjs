@@ -16,11 +16,11 @@ import {
 const enrichment = {
   schema: 'content-matrix/content-enrichment/v1',
   source: {
-    platform: 'bilibili',
-    creatorName: 'B站样例账号',
-    contentExternalId: 'BV1sample001',
+    platform: 'douyin',
+    creatorName: '抖音样例账号',
+    contentExternalId: 'dy-sample-001',
     title: 'AI 服务第一条样例视频',
-    url: 'https://www.bilibili.com/video/BV1sample001',
+    url: 'https://www.douyin.com/video/dy-sample-001',
   },
   primaryDirection: 'AI 工作流诊断',
   userProblems: ['能不能讲讲评论区需求怎么整理进选题库？'],
@@ -39,7 +39,7 @@ const enrichment = {
   }],
   evidence: {
     topComments: [{
-      commentUniqueKey: 'bilibili:bilibili:BV1sample001:1002',
+      commentUniqueKey: 'douyin:douyin:dy-sample-001:1002',
       commentText: '能不能讲讲评论区需求怎么整理进选题库？',
     }],
   },
@@ -50,8 +50,8 @@ test('buildInsightCandidatesFromEnrichment builds user-demand and topic candidat
 
   assert.equal(candidates.length, 2);
   assert.equal(candidates[0].insightType, '用户需求');
-  assert.equal(candidates[0].source.contentUniqueKey, 'bilibili:BV1sample001');
-  assert.deepEqual(candidates[0].source.commentUniqueKeys, ['bilibili:bilibili:BV1sample001:1002']);
+  assert.equal(candidates[0].source.contentUniqueKey, 'douyin:dy-sample-001');
+  assert.deepEqual(candidates[0].source.commentUniqueKeys, ['douyin:douyin:dy-sample-001:1002']);
   assert.equal(candidates[1].insightType, '选题');
   assert.deepEqual(candidates[1].targetAccounts, ['知行AI服务']);
 });
@@ -87,7 +87,7 @@ if (process.argv.includes('+record-list')) {
   console.log(JSON.stringify({
     data: {
       fields: ['来源内容', '洞察类型'],
-      data: [['bilibili:BV1sample001', '用户需求']],
+      data: [['douyin:dy-sample-001', '用户需求']],
       record_id_list: ['rec_existing']
     }
   }));
@@ -148,25 +148,25 @@ test('findEnrichmentFiles scans nested artifact directories', async () => {
 
 test('filterEnrichmentPaths narrows by date and creator path segments', () => {
   const files = [
-    '/downloads/bilibili/2026-07-16/B站样例账号/BV1a/enrichment.json',
-    '/downloads/bilibili/2026-07-16/其他账号/BV1b/enrichment.json',
-    '/downloads/bilibili/2026-07-15/B站样例账号/BV1c/enrichment.json',
+    '/downloads/douyin/2026-07-16/抖音样例账号/dy-a/enrichment.json',
+    '/downloads/douyin/2026-07-16/其他账号/dy-b/enrichment.json',
+    '/downloads/douyin/2026-07-15/抖音样例账号/dy-c/enrichment.json',
   ];
 
   assert.deepEqual(filterEnrichmentPaths(files, {
     date: '2026-07-16',
-    creator: 'B站样例账号',
+    creator: '抖音样例账号',
   }), [
-    '/downloads/bilibili/2026-07-16/B站样例账号/BV1a/enrichment.json',
+    '/downloads/douyin/2026-07-16/抖音样例账号/dy-a/enrichment.json',
   ]);
 });
 
 test('writeEnrichmentDirectoryInsightsToFeishu filters enrichment files by date and creator', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-filter-'));
   const rootDir = join(dir, 'downloads');
-  const targetDir = join(rootDir, 'bilibili', '2026-07-16', 'B站样例账号', 'BV1target');
-  const otherCreatorDir = join(rootDir, 'bilibili', '2026-07-16', '其他账号', 'BV1other');
-  const otherDateDir = join(rootDir, 'bilibili', '2026-07-15', 'B站样例账号', 'BV1old');
+  const targetDir = join(rootDir, 'douyin', '2026-07-16', '抖音样例账号', 'dy-target');
+  const otherCreatorDir = join(rootDir, 'douyin', '2026-07-16', '其他账号', 'dy-other');
+  const otherDateDir = join(rootDir, 'douyin', '2026-07-15', '抖音样例账号', 'dy-old');
   const reportPath = join(dir, 'reports', 'filtered.json');
 
   await mkdir(targetDir, { recursive: true });
@@ -182,16 +182,16 @@ test('writeEnrichmentDirectoryInsightsToFeishu filters enrichment files by date 
       feishuPath: null,
       reportPath,
       date: '2026-07-16',
-      creator: 'B站样例账号',
+      creator: '抖音样例账号',
     });
     const report = JSON.parse(await readFile(reportPath, 'utf8'));
 
     assert.equal(result.enrichmentCount, 1);
     assert.equal(result.enrichmentPaths.length, 1);
-    assert.match(result.enrichmentPaths[0], /BV1target\/enrichment\.json$/);
+    assert.match(result.enrichmentPaths[0], /dy-target\/enrichment\.json$/);
     assert.deepEqual(report.filters, {
       date: '2026-07-16',
-      creator: 'B站样例账号',
+      creator: '抖音样例账号',
     });
   } finally {
     await rm(dir, { recursive: true, force: true });
@@ -201,7 +201,7 @@ test('writeEnrichmentDirectoryInsightsToFeishu filters enrichment files by date 
 test('writeEnrichmentDirectoryInsightsToFeishu batches candidates from directory', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-batch-'));
   const rootDir = join(dir, 'downloads');
-  const artifactDir = join(rootDir, 'B站样例账号', 'BV1sample001');
+  const artifactDir = join(rootDir, '抖音样例账号', 'dy-sample-001');
   const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
   const feishuPath = join(dir, 'feishu.json');
 
@@ -249,7 +249,7 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
 test('writeEnrichmentDirectoryInsightsToFeishu writes report and marks enrichment files', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-report-'));
   const rootDir = join(dir, 'downloads');
-  const artifactDir = join(rootDir, 'B站样例账号', 'BV1sample001');
+  const artifactDir = join(rootDir, '抖音样例账号', 'dy-sample-001');
   const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
   const feishuPath = join(dir, 'feishu.json');
   const reportPath = join(dir, 'reports', 'enrichment-write.json');
@@ -303,7 +303,7 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
 test('writeEnrichmentDirectoryInsightsToFeishu marks report as disabled without Feishu', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-report-disabled-'));
   const rootDir = join(dir, 'downloads');
-  const artifactDir = join(rootDir, 'B站样例账号', 'BV1sample001');
+  const artifactDir = join(rootDir, '抖音样例账号', 'dy-sample-001');
   const reportPath = join(dir, 'reports', 'enrichment-write.json');
 
   await mkdir(artifactDir, { recursive: true });
@@ -327,8 +327,8 @@ test('writeEnrichmentDirectoryInsightsToFeishu marks report as disabled without 
 test('writeEnrichmentDirectoryInsightsToFeishu isolates invalid enrichment files', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-isolate-'));
   const rootDir = join(dir, 'downloads');
-  const goodDir = join(rootDir, 'B站样例账号', 'BV1sample001');
-  const badDir = join(rootDir, 'B站样例账号', 'bad');
+  const goodDir = join(rootDir, '抖音样例账号', 'dy-sample-001');
+  const badDir = join(rootDir, '抖音样例账号', 'bad');
   const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
   const feishuPath = join(dir, 'feishu.json');
   const reportPath = join(dir, 'reports', 'enrichment-write.json');
@@ -381,8 +381,8 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
 test('writeFailedEnrichmentInsightsToFeishu retries only failed report items', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-retry-'));
   const rootDir = join(dir, 'downloads');
-  const failedDir = join(rootDir, 'B站样例账号', 'failed');
-  const skippedDir = join(rootDir, 'B站样例账号', 'skipped');
+  const failedDir = join(rootDir, '抖音样例账号', 'failed');
+  const skippedDir = join(rootDir, '抖音样例账号', 'skipped');
   const failedEnrichmentPath = join(failedDir, 'enrichment.json');
   const skippedEnrichmentPath = join(skippedDir, 'enrichment.json');
   const sourceReportPath = join(dir, 'reports', 'source.json');
@@ -451,7 +451,7 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
     assert.equal(retryReport.retrySourceReportPath, sourceReportPath);
     assert.equal(retryReport.items.length, 1);
     assert.equal(retryReport.items[0].enrichmentPath, failedEnrichmentPath);
-    assert.match(retryReport.items[0].source?.contentUniqueKey ?? result.candidates[0].source.contentUniqueKey, /BV1sample001/);
+    assert.match(retryReport.items[0].source?.contentUniqueKey ?? result.candidates[0].source.contentUniqueKey, /dy-sample-001/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
@@ -494,8 +494,8 @@ test('writeFailedEnrichmentInsightsToFeishu skips Feishu write when report has n
 test('writeEnrichmentDirectoryInsightsToFeishu isolates Feishu write failures by enrichment', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-feishu-isolate-'));
   const rootDir = join(dir, 'downloads');
-  const goodDir = join(rootDir, 'B站样例账号', 'good');
-  const badDir = join(rootDir, 'B站样例账号', 'bad-write');
+  const goodDir = join(rootDir, '抖音样例账号', 'good');
+  const badDir = join(rootDir, '抖音样例账号', 'bad-write');
   const fakeCliPath = join(dir, 'fake-lark-cli.mjs');
   const feishuPath = join(dir, 'feishu.json');
   const reportPath = join(dir, 'reports', 'enrichment-write.json');
@@ -567,7 +567,7 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
 test('writeEnrichmentDirectoryInsightsToFeishu writes markdown failure report', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-enrichment-markdown-report-'));
   const rootDir = join(dir, 'downloads');
-  const badDir = join(rootDir, 'B站样例账号', 'bad');
+  const badDir = join(rootDir, '抖音样例账号', 'bad');
   const reportPath = join(dir, 'reports', 'enrichment-write.json');
   const markdownReportPath = join(dir, 'reports', 'enrichment-write.md');
 

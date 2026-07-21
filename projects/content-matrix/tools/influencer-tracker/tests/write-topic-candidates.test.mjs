@@ -15,7 +15,7 @@ test('mapTopicCandidateToFeishuFields maps candidate to insights table fields', 
     nextAction: '人工查看原内容和评论区。',
     cta: '拿一个小样本判断适不适合做 AI 小实验。',
     source: {
-      contentUniqueKey: 'bilibili:BV1',
+      contentUniqueKey: 'douyin:dy-001',
     },
   }, {
     title: '洞察标题',
@@ -29,7 +29,7 @@ test('mapTopicCandidateToFeishuFields maps candidate to insights table fields', 
   });
 
   assert.equal(fields.洞察标题, '从内容看 AI 工作流诊断需求');
-  assert.equal(fields.来源内容, 'bilibili:BV1');
+  assert.equal(fields.来源内容, 'douyin:dy-001');
   assert.equal(fields.洞察类型, '选题');
   assert.deepEqual(fields.适用账号, ['知行AI服务']);
   assert.equal(fields.状态, '待处理');
@@ -93,7 +93,7 @@ console.log(JSON.stringify({ data: { record_id_list: payload.rows.map((_, index)
         evidenceSummary: '样例证据',
         nextAction: '人工审核',
         source: {
-          contentUniqueKey: 'bilibili:BV1',
+          contentUniqueKey: 'douyin:dy-001',
         },
       }],
     });
@@ -116,7 +116,7 @@ if (process.argv.includes('+record-list')) {
   console.log(JSON.stringify({
     data: {
       fields: ['来源内容', '洞察类型'],
-      data: [['bilibili:BV1', '选题']],
+      data: [['douyin:dy-001', '选题']],
       record_id_list: ['rec_existing']
     }
   }));
@@ -148,7 +148,7 @@ if (process.argv.includes('+record-batch-create')) {
         evidenceSummary: '样例证据',
         nextAction: '人工审核',
         source: {
-          contentUniqueKey: 'bilibili:BV1',
+          contentUniqueKey: 'douyin:dy-001',
         },
       }],
     });

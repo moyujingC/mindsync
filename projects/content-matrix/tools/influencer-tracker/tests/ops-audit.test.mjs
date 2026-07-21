@@ -8,15 +8,15 @@ import { buildOpsAudit } from '../src/jobs/ops-audit.mjs';
 test('buildOpsAudit reports missing days in a 7-day window', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-ops-audit-'));
   const runsDir = join(dir, 'runs');
-  const downloadsDir = join(dir, 'downloads', 'bilibili');
+  const downloadsDir = join(dir, 'downloads', 'douyin');
   const outputPath = join(dir, 'ops-audits', '2026-07-15.md');
 
   await mkdir(join(runsDir, '2026-07-15'), { recursive: true });
-  await mkdir(join(downloadsDir, 'B站样例账号', 'BV1sample001'), { recursive: true });
+  await mkdir(join(downloadsDir, '抖音样例账号', 'dy-sample-001'), { recursive: true });
   await writeFile(join(runsDir, '2026-07-15', 'run.json'), JSON.stringify({
     generatedAt: '2026-07-15T10:00:00.000Z',
   }), 'utf8');
-  await writeFile(join(downloadsDir, 'B站样例账号', 'BV1sample001', 'download-manifest.json'), JSON.stringify({
+  await writeFile(join(downloadsDir, '抖音样例账号', 'dy-sample-001', 'download-manifest.json'), JSON.stringify({
     job: 'download',
     status: 'ok',
   }), 'utf8');
