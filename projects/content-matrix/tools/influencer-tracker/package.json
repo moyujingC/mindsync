@@ -14,6 +14,7 @@
     "media:refine": "node src/cli/refine-media.mjs",
     "media:process": "node src/cli/process-media.mjs",
     "collect:tikhub": "node src/cli/tikhub-collect.mjs",
+    "capture:tikhub-contract": "node src/cli/capture-tikhub-contract.mjs",
     "build:briefs": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json",
     "build:drafts": "node src/cli/build-briefs.mjs --feishu config/feishu.local.json --draft-dir logs/drafts --mark-status 已验证",
     "manual:import": "node src/cli/manual-import.mjs --dry-run --input fixtures/manual-import.example.json",

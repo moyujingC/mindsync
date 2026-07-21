@@ -84,6 +84,21 @@ npm run preflight:readiness -- \
 
 输出 `safeToRunWriteMode: true` 仅表示 Key 与飞书配置在本地检查中通过，不能替代真实响应、人工审核或业务成交验证。
 
+权限恢复后，每个平台的首个真实接口响应还应捕获为脱敏合同样本。该命令固定使用 `dry-run` 采集，不写飞书或研究台账；会删除授权信息、Cookie、用户标识、正文/评论文本，并去掉 URL 查询参数。不要提交未审阅的原始响应。
+
+```bash
+npm run capture:tikhub-contract -- \
+  --mode detail \
+  --platform xiaohongshu \
+  --share-url '公开内容链接' \
+  --include-comments \
+  --limit 1 \
+  --comment-limit 1 \
+  --output-dir fixtures/tikhub-contracts/real
+```
+
+真实验收时，对每个平台至少分别捕获详情、搜索、账号列表和评论列表响应，再人工复核其中的详情字段、分页游标、二级评论字段与 `cache_url`。只保留经审阅的脱敏合同样本；真实用户文本和可识别信息留在受控本地运行产物，不进入仓库。
+
 ## 研究请求：日常唯一入口
 
 研究请求会把采集、证据整理和候选选题串成一次可交接的 Workflow。它不会自动发布或联系任何人。每次运行同时生成研究简报和本地台账 `logs/research-requests.json`；台账记录请求范围、调用摘要、候选状态、人工决定和验证依据。

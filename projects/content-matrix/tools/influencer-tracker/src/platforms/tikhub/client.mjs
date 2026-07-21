@@ -1,10 +1,11 @@
 const API_BASE = 'https://api.tikhub.io';
 
 export class TikHubClient {
-  constructor({ apiKey = process.env.TIKHUB_API_KEY, baseUrl = API_BASE, fetchImpl = globalThis.fetch } = {}) {
+  constructor({ apiKey = process.env.TIKHUB_API_KEY, baseUrl = API_BASE, fetchImpl = globalThis.fetch, onResponse = null } = {}) {
     this.apiKey = apiKey?.trim();
     this.baseUrl = baseUrl.replace(/\/$/, '');
     this.fetchImpl = fetchImpl;
+    this.onResponse = onResponse;
     this.requestCount = 0;
   }
 
@@ -60,6 +61,7 @@ export class TikHubClient {
       body: body ? JSON.stringify(removeEmpty(body)) : undefined,
     });
     const json = await response.json().catch(() => ({}));
+    await this.onResponse?.({ path, method, params, body, status: response.status, response: json });
     if (response.status === 402) {
       throw new Error('TikHub returned 402: check account balance or endpoint entitlement');
     }
