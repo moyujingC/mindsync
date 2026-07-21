@@ -164,6 +164,96 @@ test('confirmResearchCandidate requires human verification evidence before marki
   }
 });
 
+test('runResearchRequest retries Feishu sync for an existing request without recollecting samples', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-request-feishu-retry-'));
+  try {
+    const storePath = join(dir, 'research-requests.json');
+    let collectCalls = 0;
+    const first = await runResearchRequest({
+      request: {
+        requestId: 'research-feishu-retry-1',
+        purpose: '评论挖需求',
+        serviceDirection: '企业 AI 服务',
+        collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/note' },
+      },
+      collect: async () => {
+        collectCalls += 1;
+        return collectionFixture();
+      },
+      outputDir: join(dir, 'briefs'),
+      ledgerPath: storePath,
+    });
+    const calls = [];
+    const retry = await runResearchRequest({
+      request: {
+        requestId: 'research-feishu-retry-1',
+        purpose: 'ignored',
+        serviceDirection: 'ignored',
+        collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/ignored' },
+      },
+      collect: async () => {
+        collectCalls += 1;
+        return collectionFixture();
+      },
+      outputDir: join(dir, 'briefs'),
+      ledgerPath: storePath,
+      feishuConfig: { tables: { researchRequests: { fields: researchRequestFields() } } },
+      feishuClient: {
+        async listRecords() { return []; },
+        async createRecords(tableName, records) {
+          calls.push({ tableName, records });
+          return ['rec_research_1'];
+        },
+      },
+    });
+
+    assert.equal(collectCalls, 1);
+    assert.equal(retry.outputPath, first.outputPath);
+    assert.deepEqual(retry.feishu, { synced: true, action: 'created', recordId: 'rec_research_1' });
+    assert.equal(calls[0].records[0]['请求ID'], 'research-feishu-retry-1');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('confirmResearchCandidate updates an existing Feishu research request record', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-request-feishu-update-'));
+  try {
+    const storePath = join(dir, 'research-requests.json');
+    await runResearchRequest({
+      request: {
+        requestId: 'research-feishu-update-1',
+        purpose: '评论挖需求',
+        serviceDirection: '企业 AI 服务',
+        collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/note' },
+      },
+      collect: async () => collectionFixture(),
+      outputDir: join(dir, 'briefs'),
+      ledgerPath: storePath,
+    });
+    const updates = [];
+    const confirmed = await confirmResearchCandidate({
+      ledgerPath: storePath,
+      requestId: 'research-feishu-update-1',
+      candidateIndex: 1,
+      action: '转选题',
+      decisionNote: '进入选题池。',
+      feishuConfig: { tables: { researchRequests: { fields: researchRequestFields() } } },
+      feishuClient: {
+        async listRecords() { return [{ record_id: 'rec_research_2', fields: { 请求ID: 'research-feishu-update-1' } }]; },
+        async updateRecord(tableName, recordId, fields) {
+          updates.push({ tableName, recordId, fields });
+        },
+      },
+    });
+
+    assert.deepEqual(confirmed.feishu, { synced: true, action: 'updated', recordId: 'rec_research_2' });
+    assert.equal(updates[0].fields.状态, '已转选题');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 function collectionFixture() {
   return {
     request: { mode: 'detail', platform: 'xiaohongshu', includeComments: true, limit: 10 },
@@ -191,5 +281,25 @@ function collectionFixture() {
         { commentUniqueKey: 'xiaohongshu:x:2', commentText: '能不能先做低成本试点？', demandType: ['购买意向'], likeCount: 3 },
       ],
     },
+  };
+}
+
+function researchRequestFields() {
+  return {
+    requestId: '请求ID',
+    purpose: '研究目的',
+    serviceDirection: '服务方向',
+    targetAccount: '目标账号',
+    collectMode: '采集方式',
+    platform: '平台',
+    sampleLimit: '样本上限',
+    contentCount: '内容样本数',
+    commentCount: '评论样本数',
+    requestCount: 'TikHub调用数',
+    status: '状态',
+    nextAction: '下一步',
+    briefPath: '研究简报路径',
+    createdAt: '创建时间',
+    updatedAt: '更新时间',
   };
 }

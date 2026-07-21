@@ -46,6 +46,8 @@ try {
     }),
     outputDir: resolve(cwd, args.outputDir ?? 'logs/research-briefs'),
     ledgerPath: resolve(cwd, args.ledger ?? 'logs/research-requests.json'),
+    feishuClient,
+    feishuConfig,
   });
   console.log(JSON.stringify({ ok: true, ...result }, null, 2));
 } catch (error) {

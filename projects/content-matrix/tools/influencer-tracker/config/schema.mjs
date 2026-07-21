@@ -152,6 +152,39 @@ export const FEISHU_TABLE_SCHEMAS = {
       },
     },
   },
+  researchRequests: {
+    tableName: '研究请求',
+    defaultViewName: '全部请求',
+    fields: {
+      requestId: { field_name: '请求ID', type: FEISHU_FIELD_TYPES.text },
+      purpose: { field_name: '研究目的', type: FEISHU_FIELD_TYPES.text },
+      serviceDirection: { field_name: '服务方向', type: FEISHU_FIELD_TYPES.text },
+      targetAccount: { field_name: '目标账号', type: FEISHU_FIELD_TYPES.text },
+      collectMode: {
+        field_name: '采集方式',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['详情', '关键词搜索', '账号采样']) },
+      },
+      platform: {
+        field_name: '平台',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['抖音', '小红书', '公众号', '视频号']) },
+      },
+      sampleLimit: { field_name: '样本上限', type: FEISHU_FIELD_TYPES.number },
+      contentCount: { field_name: '内容样本数', type: FEISHU_FIELD_TYPES.number },
+      commentCount: { field_name: '评论样本数', type: FEISHU_FIELD_TYPES.number },
+      requestCount: { field_name: 'TikHub调用数', type: FEISHU_FIELD_TYPES.number },
+      status: {
+        field_name: '状态',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['待人工确认', '已转选题', '已发布', '已结束']) },
+      },
+      nextAction: { field_name: '下一步', type: FEISHU_FIELD_TYPES.text },
+      briefPath: { field_name: '研究简报路径', type: FEISHU_FIELD_TYPES.text },
+      createdAt: { field_name: '创建时间', type: FEISHU_FIELD_TYPES.date },
+      updatedAt: { field_name: '更新时间', type: FEISHU_FIELD_TYPES.date },
+    },
+  },
 };
 
 export function buildFieldNameMap(schema) {

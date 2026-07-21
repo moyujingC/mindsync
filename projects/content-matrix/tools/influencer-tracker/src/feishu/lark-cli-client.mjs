@@ -214,5 +214,24 @@ function orderedFieldsForTable(tableName, fields) {
       fields.insightStatus,
     ].filter(Boolean);
   }
+  if (tableName === 'researchRequests') {
+    return [
+      fields.requestId,
+      fields.purpose,
+      fields.serviceDirection,
+      fields.targetAccount,
+      fields.collectMode,
+      fields.platform,
+      fields.sampleLimit,
+      fields.contentCount,
+      fields.commentCount,
+      fields.requestCount,
+      fields.status,
+      fields.nextAction,
+      fields.briefPath,
+      fields.createdAt,
+      fields.updatedAt,
+    ].filter(Boolean);
+  }
   return Object.values(fields);
 }

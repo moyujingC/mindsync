@@ -9,6 +9,7 @@ test('FEISHU_TABLE_SCHEMAS includes all MVP tables', () => {
     'contents',
     'comments',
     'insights',
+    'researchRequests',
   ]);
 });
 
@@ -42,6 +43,10 @@ test('bootstrap schema can produce tracker config field maps', () => {
       insights: {
         tableId: 'tbl_insights',
         fields: buildFieldNameMap(FEISHU_TABLE_SCHEMAS.insights),
+      },
+      researchRequests: {
+        tableId: 'tbl_research_requests',
+        fields: buildFieldNameMap(FEISHU_TABLE_SCHEMAS.researchRequests),
       },
     },
   };

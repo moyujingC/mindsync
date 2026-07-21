@@ -81,6 +81,26 @@
         "nextAction": "建议动作",
         "status": "状态"
       }
+    },
+    "researchRequests": {
+      "tableId": "tbl_xxx",
+      "fields": {
+        "requestId": "请求ID",
+        "purpose": "研究目的",
+        "serviceDirection": "服务方向",
+        "targetAccount": "目标账号",
+        "collectMode": "采集方式",
+        "platform": "平台",
+        "sampleLimit": "样本上限",
+        "contentCount": "内容样本数",
+        "commentCount": "评论样本数",
+        "requestCount": "TikHub调用数",
+        "status": "状态",
+        "nextAction": "下一步",
+        "briefPath": "研究简报路径",
+        "createdAt": "创建时间",
+        "updatedAt": "更新时间"
+      }
     }
   }
 }

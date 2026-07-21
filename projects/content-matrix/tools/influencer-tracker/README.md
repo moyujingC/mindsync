@@ -86,6 +86,8 @@ npm run research:confirm -- \
 
 如需将台账存到其他目录，`research:run` 和 `research:confirm` 均支持 `--ledger path/to/research-requests.json`。
 
+传入 `--feishu config/feishu.local.json` 后，研究请求会按 `请求ID` 写入或更新飞书“研究请求”表。飞书仅保存请求元数据、状态和项目内的相对简报路径；候选详情、评论原文和 API 原始响应继续保留在本地台账与简报中。
+
 当前 TikHub 账户调用会返回 HTTP 402，需先在 TikHub 后台确认余额与对应接口套餐权限。开通后先加 `--dry-run` 验证真实响应，再移除它写入飞书。
 
 ## 组件调试入口

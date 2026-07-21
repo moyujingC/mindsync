@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { buildContentEnrichment } from './enrich-content.mjs';
 import { ResearchRequestStore } from '../storage/research-request-store.mjs';
+import { extractFeishuTextField, mapResearchRequestToFeishuFields } from '../feishu/client.mjs';
 
 const CANDIDATE_STATUSES = new Set(['待人工审核', '已转选题', '已发布', '已结束']);
 
@@ -10,13 +11,22 @@ export async function runResearchRequest({
   collect,
   outputDir = 'logs/research-briefs',
   ledgerPath = 'logs/research-requests.json',
+  feishuClient = null,
+  feishuConfig = null,
 }) {
   validateResearchRequest(request);
+  const requestId = request.requestId ?? createRequestId();
+  const store = new ResearchRequestStore({ filePath: ledgerPath });
+  await store.load();
+  const existing = store.get(requestId);
+  if (existing) {
+    return syncResearchRequestToFeishu({ request: existing, feishuClient, feishuConfig });
+  }
   const collection = await collect(request.collect);
   const candidates = buildCandidates({ request, collection });
   const result = {
     schema: 'content-matrix/research-request/v1',
-    requestId: request.requestId ?? createRequestId(),
+    requestId,
     generatedAt: new Date().toISOString(),
     purpose: request.purpose,
     serviceDirection: request.serviceDirection,
@@ -30,11 +40,9 @@ export async function runResearchRequest({
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, renderResearchBrief(result), 'utf8');
   const savedResult = { ...result, outputPath };
-  const store = new ResearchRequestStore({ filePath: ledgerPath });
-  await store.load();
   store.add(savedResult);
   await store.save();
-  return savedResult;
+  return syncResearchRequestToFeishu({ request: savedResult, feishuClient, feishuConfig });
 }
 
 export async function confirmResearchCandidate({
@@ -44,6 +52,8 @@ export async function confirmResearchCandidate({
   action,
   decisionNote,
   verificationEvidence,
+  feishuClient = null,
+  feishuConfig = null,
 }) {
   if (!requestId) {
     throw new Error('Missing requestId');
@@ -77,7 +87,7 @@ export async function confirmResearchCandidate({
   });
   await store.save();
   await writeFile(updated.outputPath, renderResearchBrief(updated), 'utf8');
-  return updated;
+  return syncResearchRequestToFeishu({ request: updated, feishuClient, feishuConfig });
 }
 
 function validateResearchRequest(request) {
@@ -138,7 +148,24 @@ function summarizeCollection(collection) {
     commentCount: collection.comments?.fetchedCount ?? 0,
     requestCount: collection.audit?.requestCount ?? 0,
     cacheUrls: collection.audit?.cacheUrls ?? [],
+    sampleLimit: collection.request?.limit ?? null,
   };
+}
+
+async function syncResearchRequestToFeishu({ request, feishuClient, feishuConfig }) {
+  if (!feishuClient || !feishuConfig?.tables?.researchRequests) {
+    return { ...request, feishu: { synced: false, reason: 'not-configured' } };
+  }
+  const fields = feishuConfig.tables.researchRequests.fields;
+  const records = await feishuClient.listRecords('researchRequests');
+  const existing = records.find((record) => extractFeishuTextField(record, fields.requestId) === request.requestId);
+  const mappedFields = mapResearchRequestToFeishuFields(request, fields);
+  if (existing?.record_id) {
+    await feishuClient.updateRecord('researchRequests', existing.record_id, mappedFields);
+    return { ...request, feishu: { synced: true, action: 'updated', recordId: existing.record_id } };
+  }
+  const recordIds = await feishuClient.createRecords('researchRequests', [mappedFields]);
+  return { ...request, feishu: { synced: true, action: 'created', recordId: recordIds[0] ?? null } };
 }
 
 function renderResearchBrief(result) {

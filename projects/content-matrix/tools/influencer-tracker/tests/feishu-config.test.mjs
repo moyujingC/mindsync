@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateFeishuConfig, validateFeishuTableFields } from '../src/feishu/config.mjs';
-import { mapCommentToFeishuFields, mapContentToFeishuFields, mapFeishuCreatorRecord } from '../src/feishu/client.mjs';
+import { mapCommentToFeishuFields, mapContentToFeishuFields, mapFeishuCreatorRecord, mapResearchRequestToFeishuFields } from '../src/feishu/client.mjs';
 
 const fields = {
   name: '博主名称',
@@ -60,6 +60,24 @@ const commentFields = {
   insightStatus: '是否进入洞察',
 };
 
+const researchRequestFields = {
+  requestId: '请求ID',
+  purpose: '研究目的',
+  serviceDirection: '服务方向',
+  targetAccount: '目标账号',
+  collectMode: '采集方式',
+  platform: '平台',
+  sampleLimit: '样本上限',
+  contentCount: '内容样本数',
+  commentCount: '评论样本数',
+  requestCount: 'TikHub调用数',
+  status: '状态',
+  nextAction: '下一步',
+  briefPath: '研究简报路径',
+  createdAt: '创建时间',
+  updatedAt: '更新时间',
+};
+
 test('validateFeishuConfig reports missing values', () => {
   const result = validateFeishuConfig({
     appId: 'cli_xxx',
@@ -95,10 +113,57 @@ test('validateFeishuConfig accepts complete config shape', () => {
         tableId: 'tbl_insights',
         fields: insightFields,
       },
+      researchRequests: {
+        tableId: 'tbl_research_requests',
+        fields: researchRequestFields,
+      },
     },
   });
 
   assert.equal(result.ok, true);
+});
+
+test('mapResearchRequestToFeishuFields maps the ledger contract to the request table', () => {
+  const fieldsForWrite = mapResearchRequestToFeishuFields({
+    requestId: 'research-001',
+    purpose: '评论挖需求',
+    serviceDirection: '企业 AI 服务',
+    targetAccount: '墨予镜',
+    collection: {
+      mode: 'search',
+      platform: 'xiaohongshu',
+      sampleLimit: 10,
+      contentCount: 3,
+      commentCount: 5,
+      requestCount: 2,
+    },
+    status: '待人工确认',
+    nextAction: '人工确认后再进入选题。',
+    outputPath: '/tmp/research-001.md',
+    generatedAt: '2026-07-21T10:00:00.000Z',
+  }, researchRequestFields);
+
+  assert.equal(fieldsForWrite['请求ID'], 'research-001');
+  assert.equal(fieldsForWrite['采集方式'], '关键词搜索');
+  assert.equal(fieldsForWrite['平台'], '小红书');
+  assert.equal(fieldsForWrite['评论样本数'], 5);
+  assert.equal(fieldsForWrite['状态'], '待人工确认');
+  assert.equal(fieldsForWrite['研究简报路径'], undefined);
+});
+
+test('mapResearchRequestToFeishuFields keeps project-local brief paths relative', () => {
+  const fieldsForWrite = mapResearchRequestToFeishuFields({
+    requestId: 'research-local-path',
+    purpose: '收藏整理',
+    serviceDirection: '墨予镜',
+    collection: { mode: 'detail', platform: 'xiaohongshu' },
+    status: '待人工确认',
+    nextAction: '人工确认。',
+    outputPath: `${process.cwd()}/logs/research-briefs/research-local-path.md`,
+    generatedAt: '2026-07-21T10:00:00.000Z',
+  }, researchRequestFields);
+
+  assert.equal(fieldsForWrite['研究简报路径'], 'logs/research-briefs/research-local-path.md');
 });
 
 test('mapFeishuCreatorRecord normalizes single-select-like fields', () => {
@@ -193,6 +258,10 @@ test('validateFeishuTableFields checks mapped field names against live schema su
         tableId: 'tbl_insights',
         fields: insightFields,
       },
+      researchRequests: {
+        tableId: 'tbl_research_requests',
+        fields: researchRequestFields,
+      },
     },
   };
   const actualFieldsByTable = {
@@ -202,6 +271,7 @@ test('validateFeishuTableFields checks mapped field names against live schema su
       .map((fieldName) => ({ fieldName })),
     comments: Object.values(commentFields).map((fieldName) => ({ fieldName })),
     insights: Object.values(insightFields).map((fieldName) => ({ fieldName })),
+    researchRequests: Object.values(researchRequestFields).map((fieldName) => ({ fieldName })),
   };
 
   const result = validateFeishuTableFields(config, actualFieldsByTable);

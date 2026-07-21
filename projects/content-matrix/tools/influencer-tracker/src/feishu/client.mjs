@@ -1,3 +1,5 @@
+import { isAbsolute, relative } from 'node:path';
+
 const FEISHU_BASE_URL = 'https://open.feishu.cn/open-apis';
 
 export class FeishuBitableClient {
@@ -248,6 +250,26 @@ export function mapTopicCandidateToFeishuFields(candidate, fieldMap) {
   });
 }
 
+export function mapResearchRequestToFeishuFields(request, fieldMap) {
+  return compactObject({
+    [fieldMap.requestId]: request.requestId,
+    [fieldMap.purpose]: request.purpose,
+    [fieldMap.serviceDirection]: request.serviceDirection,
+    [fieldMap.targetAccount]: request.targetAccount ?? '未指定',
+    [fieldMap.collectMode]: toFeishuCollectMode(request.collection?.mode),
+    [fieldMap.platform]: toFeishuPlatform(request.collection?.platform),
+    [fieldMap.sampleLimit]: request.collection?.sampleLimit,
+    [fieldMap.contentCount]: request.collection?.contentCount ?? 0,
+    [fieldMap.commentCount]: request.collection?.commentCount ?? 0,
+    [fieldMap.requestCount]: request.collection?.requestCount ?? 0,
+    [fieldMap.status]: request.status,
+    [fieldMap.nextAction]: request.nextAction,
+    [fieldMap.briefPath]: toWorkspaceRelativePath(request.outputPath),
+    [fieldMap.createdAt]: request.generatedAt,
+    [fieldMap.updatedAt]: request.updatedAt ?? request.generatedAt,
+  });
+}
+
 export function mapFeishuCommentRecord(record, fieldMap) {
   const fields = record.fields ?? {};
   const value = (key) => fields[fieldMap[key]];
@@ -326,6 +348,27 @@ function targetAccountsForServiceDirection(serviceDirection) {
     return ['知行AI服务'];
   }
   return ['墨予镜'];
+}
+
+function toFeishuCollectMode(mode) {
+  return {
+    detail: '详情',
+    search: '关键词搜索',
+    creator: '账号采样',
+  }[mode] ?? mode;
+}
+
+function toWorkspaceRelativePath(filePath) {
+  if (!filePath) {
+    return undefined;
+  }
+  if (!isAbsolute(filePath)) {
+    return filePath;
+  }
+  const relativePath = relative(process.cwd(), filePath);
+  return relativePath && !relativePath.startsWith('..') && !isAbsolute(relativePath)
+    ? relativePath
+    : undefined;
 }
 
 function extractTextValue(value) {

@@ -53,6 +53,26 @@ const REQUIRED_TABLES = {
   ],
 };
 
+const OPTIONAL_TABLES = {
+  researchRequests: [
+    'requestId',
+    'purpose',
+    'serviceDirection',
+    'targetAccount',
+    'collectMode',
+    'platform',
+    'sampleLimit',
+    'contentCount',
+    'commentCount',
+    'requestCount',
+    'status',
+    'nextAction',
+    'briefPath',
+    'createdAt',
+    'updatedAt',
+  ],
+};
+
 const OPTIONAL_TABLE_FIELDS = {
   creators: [
     'sourceLink',
@@ -77,6 +97,20 @@ export function validateFeishuConfig(config) {
     const table = config.tables?.[tableName];
     if (!table) {
       errors.push(`Missing table config: ${tableName}`);
+      continue;
+    }
+    requireString(table, `tables.${tableName}.tableId`, errors, 'tableId');
+    for (const field of requiredFields) {
+      const fieldValue = table.fields?.[field];
+      if (!fieldValue || typeof fieldValue !== 'string') {
+        errors.push(`Missing field mapping: tables.${tableName}.fields.${field}`);
+      }
+    }
+  }
+
+  for (const [tableName, requiredFields] of Object.entries(OPTIONAL_TABLES)) {
+    const table = config.tables?.[tableName];
+    if (!table) {
       continue;
     }
     requireString(table, `tables.${tableName}.tableId`, errors, 'tableId');
@@ -120,6 +154,23 @@ export function validateFeishuTableFields(config, actualFieldsByTable) {
     }
   }
 
+  for (const [tableName, requiredFields] of Object.entries(OPTIONAL_TABLES)) {
+    if (!config.tables?.[tableName]) {
+      continue;
+    }
+    const mappedFields = config.tables[tableName].fields ?? {};
+    const actualFields = actualFieldsByTable[tableName] ?? [];
+    const actualNames = new Set(actualFields.map((field) => field.fieldName));
+    for (const fieldKey of requiredFields) {
+      const mappedName = mappedFields[fieldKey];
+      if (!mappedName) {
+        errors.push(`Missing field mapping: tables.${tableName}.fields.${fieldKey}`);
+      } else if (!actualNames.has(mappedName)) {
+        errors.push(`Mapped field not found in Feishu table: ${tableName}.${fieldKey} -> ${mappedName}`);
+      }
+    }
+  }
+
   return {
     ok: errors.length === 0,
     errors,
@@ -135,3 +186,4 @@ function requireString(object, displayPath, errors, key = displayPath) {
 
 export { REQUIRED_TABLES };
 export { OPTIONAL_TABLE_FIELDS };
+export { OPTIONAL_TABLES };
