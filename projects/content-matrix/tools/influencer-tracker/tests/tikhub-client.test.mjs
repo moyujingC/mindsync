@@ -135,6 +135,19 @@ test('TikHub contract fixtures normalize list envelopes from all four supported 
   }
 });
 
+test('TikHub normalizers accept the real Xiaohongshu search envelope and note wrapper', async () => {
+  const fixture = await readFixture('xiaohongshu-real-envelope-search.json');
+  const page = extractTikHubPage(fixture);
+  const content = normalizeTikHubContent({ platform: 'xiaohongshu', data: page.items[0] });
+
+  assert.equal(page.items.length, 1);
+  assert.equal(page.cursor, '2');
+  assert.equal(page.hasMore, true);
+  assert.equal(content.contentExternalId, 'xhs-real-envelope-001');
+  assert.equal(content.creatorExternalId, 'creator-real-001');
+  assert.equal(content.metrics.commentCount, 3);
+});
+
 test('TikHub contract comment fixture exposes a next-page cursor', async () => {
   const page = extractTikHubPage(await readFixture('comments-page.json'));
   assert.equal(page.items.length, 1);

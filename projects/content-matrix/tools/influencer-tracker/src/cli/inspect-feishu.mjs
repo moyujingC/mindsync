@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { parseArgs } from '../utils/args.mjs';
 import { readJsonFile } from '../utils/json-file.mjs';
 import { FeishuBitableClient, summarizeFeishuField } from '../feishu/client.mjs';
+import { LarkCliBitableClient } from '../feishu/lark-cli-client.mjs';
 import { validateFeishuConfig, validateFeishuTableFields } from '../feishu/config.mjs';
 
 const args = parseArgs(process.argv.slice(2));
@@ -19,7 +20,9 @@ try {
     throw new Error(`Invalid Feishu config: ${configValidation.errors.join('; ')}`);
   }
 
-  const client = new FeishuBitableClient(config);
+  const client = config.mode === 'lark-cli'
+    ? new LarkCliBitableClient(config)
+    : new FeishuBitableClient(config);
   const actualFieldsByTable = {};
 
   for (const tableName of Object.keys(config.tables)) {

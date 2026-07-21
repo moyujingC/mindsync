@@ -36,7 +36,8 @@ try {
         shareUrl: args.shareUrl,
         keyword: args.keyword,
         creatorId: args.creatorId,
-        includeComments: Boolean(args.includeComments),
+        // Omit this key unless explicitly requested so a research template can supply its default.
+        includeComments: args.includeComments ? true : undefined,
         limit: args.limit ? Number(args.limit) : undefined,
         maxPages: args.maxPages ? Number(args.maxPages) : undefined,
         commentLimit: args.commentLimit ? Number(args.commentLimit) : undefined,
@@ -55,6 +56,8 @@ try {
     ledgerPath: resolve(cwd, args.ledger ?? 'logs/research-requests.json'),
     feishuClient,
     feishuConfig,
+    // A dry run must leave both source collection and orchestration state untouched.
+    persist: !args.dryRun,
   });
   console.log(JSON.stringify({ ok: true, ...result }, null, 2));
 } catch (error) {

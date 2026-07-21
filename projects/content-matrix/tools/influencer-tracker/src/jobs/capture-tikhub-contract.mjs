@@ -23,7 +23,7 @@ export async function captureTikHubContract({ request, client, outputDir = 'fixt
     await mkdir(resolvedOutputDir, { recursive: true });
     const files = [];
     for (const [index, response] of responses.entries()) {
-      const fileName = `${platform}-${String(index + 1).padStart(2, '0')}-${routeLabel(response.path)}.json`;
+      const fileName = `${platform}-${String(index + 1).padStart(2, '0')}-${routeLabel(response.request.path)}.json`;
       const filePath = join(resolvedOutputDir, fileName);
       await writeFile(filePath, `${JSON.stringify(response, null, 2)}\n`, 'utf8');
       files.push(filePath);
@@ -86,7 +86,8 @@ function sanitizeValue(value, key) {
 }
 
 function shouldRedact(key) {
-  return /^(authorization|token|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|uid|nickname|user_?name|author_?name|avatar|phone|email|text|content|desc|description|message)$/i.test(key ?? '');
+  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|uid|nickname|user_?name|author_?name|avatar|phone|email|text|content|desc|description|message|debug_info)$/i.test(key ?? '')
+    || /(token|secret|signature)/i.test(key ?? '');
 }
 
 function looksLikeUrl(value) {

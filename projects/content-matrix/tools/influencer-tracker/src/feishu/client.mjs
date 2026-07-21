@@ -182,8 +182,8 @@ export function mapCreatorTaskFields(fields, fieldMap) {
 
 export function summarizeFeishuField(field) {
   return {
-    fieldId: field.field_id,
-    fieldName: field.field_name,
+    fieldId: field.field_id ?? field.id,
+    fieldName: field.field_name ?? field.name,
     type: field.type,
     isPrimary: Boolean(field.is_primary),
   };

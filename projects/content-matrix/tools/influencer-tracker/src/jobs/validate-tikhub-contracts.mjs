@@ -87,7 +87,8 @@ function findUnsafeValues(value, key = null, path = '$') {
 }
 
 function isSensitiveKey(key) {
-  return /^(authorization|token|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|uid|nickname|user_?name|author_?name|avatar|phone|email|text|content|desc|description|message)$/i.test(key ?? '');
+  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|uid|nickname|user_?name|author_?name|avatar|phone|email|text|content|desc|description|message|debug_info)$/i.test(key ?? '')
+    || /(token|secret|signature)/i.test(key ?? '');
 }
 
 function classifyRoute(path) {

@@ -46,6 +46,33 @@ test('runResearchRequest rejects a request without purpose or service direction'
   );
 });
 
+test('runResearchRequest dry-run leaves its ledger and brief directory untouched', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'research-request-dry-run-'));
+  try {
+    const ledgerPath = join(dir, 'research-requests.json');
+    const outputDir = join(dir, 'briefs');
+    const result = await runResearchRequest({
+      request: {
+        requestId: 'research-dry-run-1',
+        purpose: '选题调研',
+        serviceDirection: '企业 AI 服务',
+        collect: { mode: 'search', platform: 'xiaohongshu', keyword: '企业 AI' },
+      },
+      collect: async () => collectionFixture(),
+      outputDir,
+      ledgerPath,
+      persist: false,
+    });
+
+    assert.equal(result.outputPath, null);
+    assert.deepEqual(result.feishu, { synced: false, reason: 'dry-run' });
+    await assert.rejects(() => readFile(ledgerPath, 'utf8'));
+    await assert.rejects(() => readFile(join(outputDir, 'research-dry-run-1.md'), 'utf8'));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('runResearchRequest persists a request ledger with evidence and conclusion levels', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'research-request-ledger-'));
   try {

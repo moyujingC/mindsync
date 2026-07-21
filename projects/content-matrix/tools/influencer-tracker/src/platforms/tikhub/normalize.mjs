@@ -20,10 +20,10 @@ export function normalizeTikHubContent({ platform, data }) {
     contentType: normalizeContentType(platform, source),
     tags: normalizeTags(first(source.tags, source.tag_list, [])),
     metrics: {
-      likeCount: toNumber(first(metrics.digg_count, metrics.liked_count, metrics.like_count, source.like_count, 0)),
-      commentCount: toNumber(first(metrics.comment_count, source.comment_count, 0)),
-      favoriteCount: toNumber(first(metrics.collect_count, metrics.collected_count, metrics.favorite_count, source.favorite_count, 0)),
-      shareCount: toNumber(first(metrics.share_count, source.share_count, 0)),
+      likeCount: toNumber(first(metrics.digg_count, metrics.liked_count, metrics.like_count, source.liked_count, source.like_count, 0)),
+      commentCount: toNumber(first(metrics.comment_count, metrics.comments_count, source.comments_count, source.comment_count, 0)),
+      favoriteCount: toNumber(first(metrics.collect_count, metrics.collected_count, metrics.favorite_count, source.collected_count, source.favorite_count, 0)),
+      shareCount: toNumber(first(metrics.share_count, source.shared_count, source.share_count, 0)),
     },
     raw: source,
   };
@@ -56,7 +56,8 @@ export function extractTikHubItems(data) {
 }
 
 export function extractTikHubPage(data) {
-  const source = data?.data ?? data ?? {};
+  const envelope = data ?? {};
+  const source = envelope.data ?? envelope;
   const items = unwrapItems(first(
     source.comments,
     source.items,
@@ -68,17 +69,32 @@ export function extractTikHubPage(data) {
     source.data,
     [],
   ));
-  const cursor = [source.next_cursor, source.nextCursor, source.cursor, source.max_cursor, source.maxCursor]
+  const cursor = [
+    source.next_cursor, source.nextCursor, source.cursor, source.max_cursor, source.maxCursor, source.next_page,
+    envelope.next_cursor, envelope.nextCursor, envelope.cursor, envelope.max_cursor, envelope.maxCursor, envelope.next_page,
+  ]
     .find((value) => value !== undefined && value !== null && value !== '');
   return {
     items,
     cursor: cursor === undefined ? null : String(cursor),
-    hasMore: normalizeHasMore(first(source.has_more, source.hasMore, source.more, false)),
+    hasMore: normalizeHasMore(first(source.has_more, source.hasMore, source.more, envelope.has_more, envelope.hasMore, envelope.more, false)),
   };
 }
 
 function unwrapContent(data) {
-  return data?.data ?? data?.note ?? data?.aweme_detail ?? data?.aweme ?? data?.article ?? data?.object ?? data ?? {};
+  return data?.data?.note
+    ?? data?.note
+    ?? data?.data?.aweme_detail
+    ?? data?.data?.aweme
+    ?? data?.data?.article
+    ?? data?.data?.object
+    ?? data?.data
+    ?? data?.aweme_detail
+    ?? data?.aweme
+    ?? data?.article
+    ?? data?.object
+    ?? data
+    ?? {};
 }
 
 function unwrapItems(items) {

@@ -1,0 +1,30 @@
+{
+  "code": 0,
+  "success": true,
+  "msg": "success",
+  "page": 1,
+  "next_page": 2,
+  "data": {
+    "items": [
+      {
+        "model_type": "note",
+        "note": {
+          "id": "xhs-real-envelope-001",
+          "title": "企业 AI 工作流样本",
+          "desc": "从一个真实流程开始。",
+          "timestamp": 1784041200,
+          "type": "normal",
+          "user": {
+            "nickname": "AI 实践者",
+            "user_id": "creator-real-001"
+          },
+          "liked_count": 12,
+          "comments_count": 3,
+          "collected_count": 4,
+          "shared_count": 1
+        }
+      }
+    ],
+    "has_more": true
+  }
+}

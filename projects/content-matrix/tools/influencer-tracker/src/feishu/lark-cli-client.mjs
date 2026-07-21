@@ -31,6 +31,24 @@ export class LarkCliBitableClient {
     return normalizeRecordList(json);
   }
 
+  async listFields(tableName) {
+    const table = this.getTable(tableName);
+    const json = await this.run([
+      ...this.baseArgs,
+      'base',
+      '+field-list',
+      '--as',
+      this.as,
+      '--base-token',
+      this.config.baseAppToken,
+      '--table-id',
+      table.tableId,
+      '--format',
+      'json',
+    ]);
+    return json.data?.items ?? json.data?.fields ?? json.data ?? [];
+  }
+
   async createRecords(tableName, records) {
     if (records.length === 0) {
       return [];
