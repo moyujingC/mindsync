@@ -99,6 +99,14 @@ npm run capture:tikhub-contract -- \
 
 真实验收时，对每个平台至少分别捕获详情、搜索、账号列表和评论列表响应，再人工复核其中的详情字段、分页游标、二级评论字段与 `cache_url`。只保留经审阅的脱敏合同样本；真实用户文本和可识别信息留在受控本地运行产物，不进入仓库。
 
+捕获完成后运行只读校验。它检查文件结构、脱敏安全，以及指定平台是否已有详情、搜索、账号列表和评论四类成功响应；通过不代表已完成飞书写入或业务验证。
+
+```bash
+npm run validate:tikhub-contracts -- \
+  --fixture-dir fixtures/tikhub-contracts/real \
+  --platform xiaohongshu
+```
+
 ## 研究请求：日常唯一入口
 
 研究请求会把采集、证据整理和候选选题串成一次可交接的 Workflow。它不会自动发布或联系任何人。每次运行同时生成研究简报和本地台账 `logs/research-requests.json`；台账记录请求范围、调用摘要、候选状态、人工决定和验证依据。
