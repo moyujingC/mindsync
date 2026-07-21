@@ -21,6 +21,17 @@ TikHub 多平台采集
 - `Agent`：基于内容和评论生成待人工审核的需求洞察与选题。
 - `Agent Loop`：在已有多轮真实研究和发布反馈后再启用，不作为当前日常入口。
 
+旧的 `daily-summary`、`ops-audit` 和 `weekly-review` 只保留作历史运行审计，不会生成研究请求、选题、发布或服务决策。`weekly-review` 已移出 npm 默认脚本；如需审计历史文件，必须显式传入日期范围和 `--historical-summary`：
+
+```bash
+node src/cli/weekly-review.mjs \
+  --historical-summary \
+  --start-date 2026-07-09 \
+  --end-date 2026-07-15
+```
+
+不要将上述汇总误作 Agent Loop。只有已有 3-5 轮真实“研究 -> 发布 -> 外部反馈”记录，并证明反馈会改变下一轮关键词、样本或 CTA，才可设计每周循环。
+
 ## 操作规范 Skills
 
 以下 Skills 是跨组件的操作规范，可供不同业务研究模板、Workflow（固定工作流）或 Agent（智能代理）复用：

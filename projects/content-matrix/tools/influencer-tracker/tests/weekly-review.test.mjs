@@ -75,10 +75,11 @@ test('buildWeeklyReview aggregates one week of reports and artifacts', async () 
     assert.equal(result.summary.feedbackCount, 1);
 
     const markdown = await readFile(outputPath, 'utf8');
-    assert.match(markdown, /# AI 营销获客系统周复盘（2026-07-09 ~ 2026-07-15）/);
+    assert.match(markdown, /# 历史运行汇总（2026-07-09 ~ 2026-07-15）/);
     assert.match(markdown, /新增内容数：5/);
     assert.match(markdown, /失败账号 \| rss failed/);
     assert.match(markdown, /发布反馈记录数：1/);
+    assert.match(markdown, /不生成下一轮研究请求、选题或服务决策/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

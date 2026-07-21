@@ -21,7 +21,6 @@
     "promote:feedback": "node src/cli/promote-feedback.mjs",
     "scaffold:final": "node src/cli/scaffold-final.mjs",
     "inspect:feishu": "node src/cli/inspect-feishu.mjs --feishu config/feishu.example.json",
-    "weekly:review": "node src/cli/weekly-review.mjs --start-date 2026-07-09 --end-date 2026-07-15",
     "validate:feishu": "node src/cli/validate-config.mjs --feishu config/feishu.example.json",
     "test": "node --test tests/*.test.mjs"
   },

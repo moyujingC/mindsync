@@ -137,7 +137,7 @@ async function loadFeedbackStats({ feedbackRoot, dates }) {
 
 function renderWeeklyReviewMarkdown({ summary, runReports, topicBatches, accountArtifacts, feedbackStats }) {
   return [
-    `# AI 营销获客系统周复盘（${summary.startDate} ~ ${summary.endDate}）`,
+    `# 历史运行汇总（${summary.startDate} ~ ${summary.endDate}）`,
     '',
     '## 总览',
     '',
@@ -196,6 +196,7 @@ function renderWeeklyReviewMarkdown({ summary, runReports, topicBatches, account
     '- 哪些选题已经进入 brief / 草稿 / 成稿？',
     '- 哪些失败账号需要人工修复数据源？',
     '- 哪些信号真正推进了知行AI服务的内容获客？',
+    '- 本文件只汇总历史运行，不生成下一轮研究请求、选题或服务决策。',
     '',
   ].join('\n');
 }
