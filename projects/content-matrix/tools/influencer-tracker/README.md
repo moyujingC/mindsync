@@ -21,6 +21,15 @@ TikHub 多平台采集
 - `Agent`：基于内容和评论生成待人工审核的需求洞察与选题。
 - `Agent Loop`：在已有多轮真实研究和发布反馈后再启用，不作为当前日常入口。
 
+## 操作规范 Skills
+
+以下 Skills 是跨组件的操作规范，可供不同业务研究模板、Workflow（固定工作流）或 Agent（智能代理）复用：
+
+- [内容入库规范](./skills/content-ingestion/SKILL.md)
+- [市场调研规范](./skills/market-research/SKILL.md)
+- [需求洞察规范](./skills/demand-insight/SKILL.md)
+- [发布反馈规范](./skills/publishing-feedback/SKILL.md)
+
 ## 支持平台
 
 | 平台 | 账号追踪 | 关键词搜索 | 单篇详情 | 评论与回复 |
