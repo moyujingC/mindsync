@@ -22,6 +22,13 @@ test('buildFieldNameMap converts internal keys to Feishu field names', () => {
   assert.equal(fieldMap.sourcePath, '数据源地址');
 });
 
+test('creator schema accepts the active collection sources, not retired RSS sources', () => {
+  const options = FEISHU_TABLE_SCHEMAS.creators.fields.sourceKind.property.options
+    .map((option) => option.name);
+
+  assert.deepEqual(options, ['TikHub', '手工']);
+});
+
 test('bootstrap schema can produce tracker config field maps', () => {
   const config = {
     appId: 'cli_xxx',

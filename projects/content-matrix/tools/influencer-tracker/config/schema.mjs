@@ -47,7 +47,7 @@ export const FEISHU_TABLE_SCHEMAS = {
       sourceKind: {
         field_name: '数据源类型',
         type: FEISHU_FIELD_TYPES.singleSelect,
-        property: { options: optionNames(['rss', 'rss-file']) },
+        property: { options: optionNames(['TikHub', '手工']) },
       },
       sourcePath: { field_name: '数据源地址', type: FEISHU_FIELD_TYPES.text },
       collectAction: {
