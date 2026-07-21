@@ -1,0 +1,84 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T14:43:21.142Z",
+  "request": {
+    "path": "/api/v1/wechat_search/v2/fetch_search",
+    "method": "POST",
+    "params": {},
+    "body": {
+      "keyword": "企业 AI 工作流",
+      "business_type": "article",
+      "cursor": null,
+      "offset": 0,
+      "raw": true
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 07:43:46",
+      "time_stamp": 1784645026,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/d6f08541-6c27-4413-a3c2-47e4ea285ea1",
+      "router": "/api/v1/wechat_search/v2/fetch_search",
+      "params": {
+        "keyword": "企业 AI 工作流",
+        "business_type": "article",
+        "sort": "default",
+        "publish_time": "all",
+        "offset": 0,
+        "cursor": null,
+        "raw": true
+      },
+      "data": {
+        "keyword": "企业 AI 工作流",
+        "business_type": 2,
+        "results": {
+          "data": [
+            {
+              "count": 19,
+              "items": [
+                {
+                  "date": 1784247938,
+                  "desc": "[redacted-desc]",
+                  "docID": "[redacted-docID]",
+                  "docType": 0,
+                  "doc_url": "http://mp.weixin.qq.com/s",
+                  "itemShowType": 0,
+                  "mpScene": 7,
+                  "source": {
+                    "dateTime": "[omitted-value]",
+                    "title": "[redacted-title]"
+                  },
+                  "src_type": 49,
+                  "thumbUrl": "https://mmbiz.qpic.cn/mmbiz_jpg/ibgUl01TcF3PUe8KgpeZGy5iaVicy9Hj35uvuDUcFd7rXLo0oQibUQaxfdiaUcicf8WuzUrdkib8f74PuJvftrDicuicAYwZRRMfHg2x1h1wnkrbper4/0",
+                  "timestamp": 1784247938,
+                  "title": "[redacted-title]"
+                }
+              ],
+              "real_type": 2,
+              "resultType": 0,
+              "subType": 0,
+              "totalCount": 277,
+              "type": 2,
+              "useNativeRender": false
+            }
+          ]
+        },
+        "continue_flag": 1,
+        "offset": 20,
+        "cursor": "fOj9kJ9QcjP62helJsPSMy4SbWdBxKAqeqvWYYqDrVQaWt14BBuDdk084Ovgf8mJH3VzUd-JGT8voNZLbyd8K3IpjCZIx_x8g7MN0Q8fR77ywL3hzx87nBSWWDjQd55W6Ja8T6-p_gdOgCE9xmzuztyzZDO0Xd0o9MKtD_bc6w8K7AgQvOxYno_KG3mCaEhf8v0ngfAZFG58dggf3hAnYqC2YbvmDzgEcFytzTBQ2YbFFrbe5r2QKIChDKtA_bah18TK1fUVcdB3LVKLy3e0q3ZlFJQ53GAwBcThtA55i_9armSULXXbOITgtKawpncooAX89HfX_8d5p1s9wSLuqPp4UmTaBXduAQoaNfBPM93AkywsF6GUZSCqNoB1hihyWWBZsIZeFv9tZTAz6aWf6Q92l9JM8TF17XGCprZiH5_C5cOaRg6d9iAhAgeIpkQeCldTHo4BHZjQPD22Qzsy5502jI4iXo0ee4vstazfD5baoTcyRKQBuyGE07_6kEFCV1u5OLturiEQ6V4ywQJXeBnqsjKljTs-XQv7kugNpt0rvnsLaODybUBGRfk9orZQQ6qVmXlpeglCTa25I1cFh9rQPyqG1yIUudyP0TTfE2407qh5a0LHIcZULICV8vBLUz1iBmTibyRMqeGIWgr0e0Qb6GLwnCftc3YP0u8mfMFK8g0uNktFN8fvRsBQAXCSMoXUu_8hCM21KoLzEVmbO8e8KfMmuv35IGuo4_Yh2kiWKoUf4OAOtlF9cPpv0P4miuj1_an7HZGncBbZe-uL9x4UpXqOON8ke46TeTh5y-qSxzCdWWnYnOuziboJ3Yar_fvmsrkpkLgqVGkvaXgA8q9Rb6UGj-O6nhGlnsPc_ePphE-cbFMXYHPayox80ks8Fiaylh-4A6Au1upAmW8y1ADgTJG-WX2CvmZQrkHYGz3Sc8teTi06mzODOFaSjBCMHg89vfa7AiriDBSmF6WGdVicbJhL5mwp4waSqw1CIU2wNXlIFFfIrHMZ3PVs9d5bxZB2qGfIjnfSaNwc_1Yp9AJ85LgRUfGnYr0kA3EqBNW_eue6CpzfPxMAXBgXpSn_a8xrODwwk2T5LIj2poYy2rB8QuwvMD_XRRdYcXUy5NN2I8Bj8J11hErrXNAXMSj8uVTLLdpFeI_bomNpnpJ9GB4dqyMX6FnuXaImgEpmrFxCuQn19dC1dv3fvh1S3Szccr-TGAp8Iu6ghm7aSCuRO7hA0H6CA04C1kjz-j88xilJaOcdBWBfLcIRUmVpySKnpX2sbQVXyu6UF5VNRAq9NS2sXgul8A==",
+        "debug_id": "[redacted-debug_id]",
+        "debug_info": "[redacted-debug_info]"
+      }
+    }
+  }
+}

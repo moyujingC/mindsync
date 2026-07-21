@@ -1,0 +1,100 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T14:43:00.106Z",
+  "request": {
+    "path": "/api/v1/wechat_mp/v2/fetch_account_articles",
+    "method": "POST",
+    "params": {},
+    "body": {
+      "username": "[redacted-username]",
+      "page_size": 10,
+      "offset": null,
+      "raw": true
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 07:43:25",
+      "time_stamp": 1784645005,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/df239d6d-b0ba-4b88-8dd6-be2b433d8426",
+      "router": "/api/v1/wechat_mp/v2/fetch_account_articles",
+      "params": {
+        "username": "[redacted-username]",
+        "page_size": 10,
+        "offset": "",
+        "item_show_type": null,
+        "raw": true
+      },
+      "data": {
+        "biz_username": "gh_ef3a76cf0dfd",
+        "is_end": 0,
+        "count": 10,
+        "next_offset": "WABgAGiBiuivj/rNmWpwAA==",
+        "articles": [
+          {
+            "appMsg": {
+              "baseInfo": {
+                "bigPic": 1,
+                "pbRequestMsgInfo": null,
+                "updateTime": 1784592942,
+                "hasExpanded": false,
+                "type": 9,
+                "createTime": 1784589969,
+                "appMsgId": 2247490128
+              },
+              "detailInfo": [
+                {
+                  "contentUrl": "http://mp.weixin.qq.com/s",
+                  "isModified": 0,
+                  "isPaySubscribe": 0,
+                  "authorDesc": "",
+                  "videoHeight": 0,
+                  "coverImgUrl169": "https://mmbiz.qpic.cn/sz_mmbiz_jpg/ibgUl01TcF3N9dNd8XiaicMzyljMibOEjGDJ06a9zXrDeqibeHSEFj2X7rBrCj0Y6VJ8FtFSaYHGPHUn9kXSDolj256cia7op6UXdd2ibYd3ktc73Q/640",
+                  "coverImgUrl": "https://mmbiz.qpic.cn/sz_mmbiz_jpg/ibgUl01TcF3N9dNd8XiaicMzyljMibOEjGDJ06a9zXrDeqibeHSEFj2X7rBrCj0Y6VJ8FtFSaYHGPHUn9kXSDolj256cia7op6UXdd2ibYd3ktc73Q/640",
+                  "finderFeedXml": "",
+                  "coverImgUrl11": "https://mmbiz.qpic.cn/sz_mmbiz_jpg/ibgUl01TcF3PmTFd4ChS5XLibs2UIFfmmvegTyGSB6I6fAChlS8Picj6wF7sdlH9icOX25cDu5qpURLM3HuwdFWyaFY2L4FFcib5Qrqam1qHjzD0/300",
+                  "preloadPictureInfo": {
+                    "cdnUrl": "[omitted-value]",
+                    "pbRequestMsgInfo": null
+                  },
+                  "picCount": 0,
+                  "videoDuration": 0
+                }
+              ],
+              "pbRequestMsgInfo": null
+            },
+            "featuredExposed": false,
+            "pbRequestMsgInfo": null,
+            "image": null,
+            "text": null,
+            "voice": null,
+            "baseInfo": {
+              "status": 0,
+              "virtualMsgType": 0,
+              "msgType": 49,
+              "funcFlag": 0,
+              "pbRequestMsgInfo": null,
+              "msgId": 2247490128,
+              "dateTime": 1784592780,
+              "uniqueId": "0_2247490128"
+            },
+            "video": null
+          }
+        ],
+        "pages": 1,
+        "debug_id": "[redacted-debug_id]",
+        "debug_info": "[redacted-debug_info]"
+      }
+    }
+  }
+}

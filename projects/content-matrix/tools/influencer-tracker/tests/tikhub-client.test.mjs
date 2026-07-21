@@ -339,6 +339,80 @@ test('TikHub normalizers flatten WeChat search result groups', () => {
   assert.equal(content.creatorName, '企业实践观察');
   assert.equal(content.title, '企业AI工作流');
   assert.equal(content.contentType, '文章');
+  assert.equal(content.url, 'https://mp.weixin.qq.com/s/example');
+});
+
+test('TikHub WeChat MP normalizer preserves article query parameters needed for later collection', () => {
+  const content = normalizeTikHubContent({
+    platform: 'wechat_mp',
+    data: {
+      docID: 'wechat-article-001',
+      doc_url: 'https://mp.weixin.qq.com/s?__biz=example&mid=123&idx=1&sn=signature#rd',
+    },
+  });
+
+  assert.equal(content.url, 'https://mp.weixin.qq.com/s?__biz=example&mid=123&idx=1&sn=signature');
+});
+
+test('TikHub WeChat MP normalizer merges detail metadata with root IDs and URLs', () => {
+  const content = normalizeTikHubContent({
+    platform: 'wechat_mp',
+    data: {
+      msgId: 123456,
+      url: 'https://mp.weixin.qq.com/s?__biz=example&mid=123&idx=1&sn=signature',
+      content: {
+        user_name: 'gh_example',
+        nick_name: '企业 AI 观察',
+        title: '从一个流程开始使用 AI',
+        desc: '',
+        create_time: '2026-07-21 10:00',
+      },
+    },
+  });
+
+  assert.equal(content.contentExternalId, '123456');
+  assert.equal(content.creatorExternalId, 'gh_example');
+  assert.equal(content.creatorName, '企业 AI 观察');
+  assert.equal(content.url, 'https://mp.weixin.qq.com/s?__biz=example&mid=123&idx=1&sn=signature');
+});
+
+test('TikHub normalizers read WeChat MP account article metadata and cursor', () => {
+  const page = extractTikHubPage({
+    biz_username: 'gh_example',
+    is_end: 0,
+    next_offset: 'next-page',
+    articles: [{
+      baseInfo: { msgId: 123456, dateTime: 1_784_041_200 },
+      appMsg: {
+        baseInfo: { appMsgId: 123456, createTime: 1_784_041_200 },
+        detailInfo: [{
+          contentUrl: 'https://mp.weixin.qq.com/s?__biz=example&mid=123&idx=1&sn=signature',
+          title: '企业 AI 实践',
+          digest: '从真实流程开始。',
+        }],
+      },
+    }],
+  });
+  const content = normalizeTikHubContent({ platform: 'wechat_mp', data: page.items[0] });
+
+  assert.equal(page.hasMore, true);
+  assert.equal(page.cursor, 'next-page');
+  assert.equal(content.contentExternalId, '123456');
+  assert.equal(content.creatorExternalId, 'gh_example');
+  assert.equal(content.title, '企业 AI 实践');
+  assert.equal(content.description, '从真实流程开始。');
+});
+
+test('TikHub WeChat MP comment normalizer uses actual comment IDs and fields', () => {
+  const comments = normalizeTikHubComments({
+    platform: 'wechat_mp',
+    contentUniqueKey: 'wechat_mp:123456',
+    items: [{ id: 42, content: '能否直接复用知识库？', create_time: 1_784_041_200, like_num: 3, nick_name: '读者' }],
+  });
+
+  assert.equal(comments[0].commentUniqueKey, 'wechat_mp:wechat_mp:123456:42');
+  assert.equal(comments[0].likeCount, 3);
+  assert.equal(comments[0].userHandle, '读者');
 });
 
 test('TikHub normalizers flatten WeChat Channels search sub-boxes', () => {
