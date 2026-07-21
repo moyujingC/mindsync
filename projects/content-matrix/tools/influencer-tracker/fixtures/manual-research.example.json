@@ -1,0 +1,31 @@
+{
+  "schema": "content-matrix/manual-research/v1",
+  "request": {
+    "templateId": "enterprise_ai_service",
+    "includeComments": true,
+    "platform": "小红书"
+  },
+  "items": [
+    {
+      "platform": "小红书",
+      "url": "https://www.xiaohongshu.com/explore/random-reference-note-001",
+      "title": "随机刷到的企业 AI 知识库治理案例",
+      "description": "手工保存的公开内容，作为企业 AI 服务研究样本。",
+      "contentType": "图文",
+      "comments": [
+        {
+          "id": "manual-comment-001",
+          "text": "怎么判断哪些资料可以先放进知识库？",
+          "demandType": ["问题咨询"],
+          "likeCount": 4
+        },
+        {
+          "id": "manual-comment-002",
+          "text": "我们团队资料太散，想先试一个小范围。",
+          "demandType": ["痛点抱怨"],
+          "likeCount": 2
+        }
+      ]
+    }
+  ]
+}

@@ -90,6 +90,24 @@ npm run research:confirm -- \
 
 当前 TikHub 账户调用会返回 HTTP 402，需先在 TikHub 后台确认余额与对应接口套餐权限。开通后先加 `--dry-run` 验证真实响应，再移除它写入飞书。
 
+### 手工内容研究
+
+TikHub 不可用时，随机刷到的公开内容、已获授权的手工摘录或人工整理的评论样本仍可进入同一研究台账。`research:manual` 不访问 TikHub；它会写入内容/评论样本、研究请求、简报和候选选题，后续确认与内容交接命令完全相同。
+
+```bash
+# 先用 --dry-run 检查输入和候选，不写飞书或本地去重库
+npm run research:manual -- \
+  --input fixtures/manual-research.example.json \
+  --dry-run
+
+# 确认后写入飞书内容、评论和研究请求表
+npm run research:manual -- \
+  --input fixtures/manual-research.example.json \
+  --feishu config/feishu.local.json
+```
+
+输入中的 `comments` 只有在请求明确 `includeComments: true` 或命令附加 `--include-comments` 时才会解析和写入。请只保存公开内容、经授权的材料或脱敏聚合评论；不要录入客户非公开资料和可识别个人信息。
+
 ## 业务研究模板
 
 同一套研究请求、采集、飞书写入和证据台账可以服务不同业务。模板只补齐研究目的、默认样本量、交付重点和安全约束，不会创建新的采集器、飞书表或自动发布链路。

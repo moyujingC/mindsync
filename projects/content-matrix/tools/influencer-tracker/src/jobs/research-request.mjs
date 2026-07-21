@@ -14,6 +14,7 @@ export async function runResearchRequest({
   ledgerPath = 'logs/research-requests.json',
   feishuClient = null,
   feishuConfig = null,
+  persist = true,
 }) {
   request = applyResearchTemplate({
     templateId: request?.templateId,
@@ -23,10 +24,12 @@ export async function runResearchRequest({
   validateResearchRequest(request);
   const requestId = request.requestId ?? createRequestId();
   const store = new ResearchRequestStore({ filePath: ledgerPath });
-  await store.load();
-  const existing = store.get(requestId);
-  if (existing) {
-    return syncResearchRequestToFeishu({ request: existing, feishuClient, feishuConfig });
+  if (persist) {
+    await store.load();
+    const existing = store.get(requestId);
+    if (existing) {
+      return syncResearchRequestToFeishu({ request: existing, feishuClient, feishuConfig });
+    }
   }
   const collection = await collect(request.collect);
   const candidates = buildCandidates({ request, collection });
@@ -43,6 +46,9 @@ export async function runResearchRequest({
     candidates,
     nextAction: '人工确认后再进入选题、发布或样本沟通。',
   };
+  if (!persist) {
+    return { ...result, outputPath: null, feishu: { synced: false, reason: 'dry-run' } };
+  }
   const outputPath = resolve(outputDir, `${result.requestId}.md`);
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, renderResearchBrief(result), 'utf8');
