@@ -129,6 +129,19 @@ node src/cli/enrich-content.mjs \
 
 它只产出“待人工审核”的洞察和候选选题，不自动发布，也不把样本直接写成市场结论。
 
+## 媒体提纯组件
+
+字幕、人工逐字稿或其他文本先独立进入媒体提纯 Workflow，再作为原文证据提供给研究和洞察组件。当前支持 `.srt`、`.vtt`、`.txt`：保留原始副本、清理字幕时间轴和空行，并生成 manifest（运行清单）。
+
+```bash
+npm run media:refine -- \
+  --input path/to/source.srt \
+  --source-label '访谈或视频名称' \
+  --output-dir logs/media-refinement
+```
+
+音频或视频的下载、转码和转写不绑定在本组件中；它们后续只需把输出逐字稿传给 `media:refine`。
+
 ## 验证
 
 ```bash
