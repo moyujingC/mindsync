@@ -155,7 +155,7 @@ npm run research:manual -- \
 手工研究项可选填 `refinedTextPath`，引用已由 `media:refine` 输出的本地清理稿。相对路径以手工研究 JSON 文件所在目录为准。研究时会使用清理稿辅助生成候选，并在本地台账和简报保留路径、字符数及有限片段；逐字稿正文不会写入飞书。
 
 ```bash
-# 1. 先提纯字幕或逐字稿
+# 1. 对已有字幕或逐字稿提纯
 npm run media:refine -- \
   --input path/to/source.srt \
   --output-dir logs/media-refinement
@@ -168,6 +168,26 @@ npm run research:manual -- \
   --input fixtures/manual-research.example.json \
   --dry-run
 ```
+
+对于你已合法取得的本地音频或视频，可先用本机的 `ffmpeg`（媒体处理工具）和 Whisper（语音转文字工具）生成 SRT 字幕，再自动提纯。该流程不下载、上传或写入飞书；媒体文件、字幕和清理稿仅保留在本地。首次使用前需已安装 `ffmpeg` 和 `whisper`，并有本地 Whisper 模型。
+
+```bash
+# 分步执行：本地媒体 -> WAV 音频 -> SRT 字幕
+npm run media:transcribe -- \
+  --input path/to/local-video.mp4 \
+  --output-dir logs/media-transcription \
+  --model base \
+  --language zh
+
+# 一步执行转写并提纯，输出中的 refinedTextPath 可填入手工研究 JSON
+npm run media:process -- \
+  --input path/to/local-video.mp4 \
+  --output-dir logs/media-transcription \
+  --model base \
+  --language zh
+```
+
+支持的本地媒体扩展名：`.mp4`、`.mov`、`.mkv`、`.webm`、`.mp3`、`.m4a`、`.wav`、`.aac`、`.flac`、`.ogg`、`.opus`、`.avi`。转写运行清单会记录输入、输出路径、模型和工具名；若需要迁移到其他电脑，只需重新安装工具和模型后重新执行，不应提交媒体文件或逐字稿。
 
 ## 业务研究模板
 
@@ -351,7 +371,7 @@ node src/cli/enrich-content.mjs \
 
 ## 媒体提纯组件
 
-字幕、人工逐字稿或其他文本先独立进入媒体提纯 Workflow，再作为原文证据提供给研究和洞察组件。当前支持 `.srt`、`.vtt`、`.txt`：保留原始副本、清理字幕时间轴和空行，并生成 manifest（运行清单）。手工研究入口可通过 `refinedTextPath` 消费该清理稿；飞书不保存逐字稿正文。
+字幕、人工逐字稿或其他文本先独立进入媒体提纯 Workflow，再作为原文证据提供给研究和洞察组件。`media:refine` 支持 `.srt`、`.vtt`、`.txt`：保留原始副本、清理字幕时间轴和空行，并生成 manifest（运行清单）。手工研究入口可通过 `refinedTextPath` 消费该清理稿；飞书不保存逐字稿正文。
 
 ```bash
 npm run media:refine -- \
@@ -360,7 +380,7 @@ npm run media:refine -- \
   --output-dir logs/media-refinement
 ```
 
-音频或视频的下载、转码和转写不绑定在本组件中；它们后续只需把输出逐字稿传给 `media:refine`。
+`media:transcribe` 和 `media:process` 只接收合法取得的本地音频或视频，使用本机 `ffmpeg` 和 Whisper 转写，不下载平台媒体、不上传文件，也不写飞书。`media:process` 会在转写后自动调用 `media:refine`，其 `refinedTextPath` 可直接填入手工研究输入。
 
 ## 验证
 
