@@ -20,7 +20,7 @@ test('captureTikHubContract saves a redacted dry-run response without Feishu wri
           desc: '不得写入合同样本的正文',
           share_url: 'https://www.xiaohongshu.com/explore/note-001?token=secret',
           xsec_token: 'sensitive-token',
-          user: { user_id: 'user-001', nickname: '用户甲', avatar: 'https://avatar.example/a.png' },
+          user: { user_id: 'user-001', userid: 'user-legacy-001', nickname: '用户甲', avatar: 'https://avatar.example/a.png' },
           comments: [{ id: 'comment-001', text: '不得写入的评论', user: { uid: 'commenter-001' } }],
         },
       }),
@@ -39,8 +39,10 @@ test('captureTikHubContract saves a redacted dry-run response without Feishu wri
     assert.equal(files.some((file) => file === '.capture-store.json'), false);
     const captured = JSON.parse(await readFile(result.files[0], 'utf8'));
     assert.equal(captured.request.params.share_text, 'https://www.xiaohongshu.com/explore/note-001');
+    assert.equal(captured.response.body.data.note_id, '[redacted-note_id]');
     assert.equal(captured.response.body.data.desc, '[redacted-desc]');
     assert.equal(captured.response.body.data.user.user_id, '[redacted-user_id]');
+    assert.equal(captured.response.body.data.user.userid, '[redacted-userid]');
     assert.equal(captured.response.body.data.user.nickname, '[redacted-nickname]');
     assert.equal(captured.response.body.data.xsec_token, '[redacted-xsec_token]');
     assert.equal(captured.response.body.data.share_url, 'https://www.xiaohongshu.com/explore/note-001');
@@ -65,6 +67,25 @@ test('sanitizeTikHubResponse redacts credentials, identifiers, text, and URL que
   assert.equal(sanitized.response.body.data.uid, '[redacted-uid]');
   assert.equal(sanitized.response.body.data.message, '[redacted-message]');
   assert.equal(sanitized.response.body.data.url, 'https://example.com/a');
+});
+
+test('sanitizeTikHubResponse bounds nested payloads and redacts generic identifiers', () => {
+  const sanitized = sanitizeTikHubResponse({
+    path: '/api/v1/example',
+    method: 'GET',
+    params: null,
+    body: null,
+    status: 200,
+    response: {
+      code: 200,
+      data: [{ id: 'platform-id', title: 'private title', nested: { one: { two: { three: { four: { five: 'payload' } } } } } }, { id: 'not-retained' }],
+    },
+  });
+
+  assert.equal(sanitized.response.body.data.length, 1);
+  assert.equal(sanitized.response.body.data[0].id, '[redacted-id]');
+  assert.equal(sanitized.response.body.data[0].title, '[redacted-title]');
+  assert.equal(sanitized.response.body.data[0].nested.one.two.three.four.five, '[omitted-value]');
 });
 
 function jsonResponse(body) {

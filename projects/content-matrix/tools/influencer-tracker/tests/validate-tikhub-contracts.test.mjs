@@ -50,7 +50,7 @@ test('validateFixture rejects a non-capture document and failed API response', (
   assert.match(result.errors.join('\n'), /Response status/);
 });
 
-async function writeFixture(dir, name, path, body = { data: { note_id: 'note-001', user_id: '[redacted-user_id]' } }) {
+async function writeFixture(dir, name, path, body = { data: { note_id: '[redacted-note_id]', user_id: '[redacted-user_id]' } }) {
   const fixture = {
     schema: 'content-matrix/tikhub-contract-capture/v1',
     capturedAt: '2026-07-21T00:00:00.000Z',

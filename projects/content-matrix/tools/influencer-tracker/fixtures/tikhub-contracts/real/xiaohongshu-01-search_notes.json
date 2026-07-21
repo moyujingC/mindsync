@@ -1,0 +1,177 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T13:12:33.709Z",
+  "request": {
+    "path": "/api/v1/xiaohongshu/app_v2/search_notes",
+    "method": "GET",
+    "params": {
+      "keyword": "企业 AI 工作流",
+      "cursor": null
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 06:12:59",
+      "time_stamp": 1784639579,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/1fb16085-68f2-4806-b8a5-dcca3c8a12f9",
+      "router": "/api/v1/xiaohongshu/app_v2/search_notes",
+      "params": {
+        "keyword": "企业 AI 工作流"
+      },
+      "data": {
+        "code": 0,
+        "success": true,
+        "data": {
+          "ai_mode_enable": false,
+          "cur_cut_number": 0,
+          "is_broad_query": true,
+          "can_cut": false,
+          "query_intent": {
+            "search_ask_intent": true,
+            "goodsIntent": 0,
+            "low_supply_intent": false
+          },
+          "request_dqa_instant": false,
+          "query_type": 0,
+          "strategy_info": {
+            "query_average_impression_count": 19,
+            "query_can_guide_to_feed": true
+          },
+          "search_dqa_new_page_exp": 1,
+          "search_pull_down_opt_exp": 1,
+          "service_status": "{\"filter\":\"not_required\",\"note\":\"success\",\"onebox\":\"not_required\",\"cost\":{\"all\":791,\"zone\":\"rcsh1\"}}",
+          "dqa_authorized_user_by_shared": false,
+          "show_single_col": false,
+          "request_dqa": 0,
+          "items": [
+            {
+              "mix_track_id": "NOTE__6a1eb66a0000000036033408__1db465bdfa904f4b__企业 AI 工作流",
+              "new_help_style": false,
+              "model_type": "note",
+              "note": {
+                "update_time": 1781446986000,
+                "corner_tag_info": [
+                  {
+                    "text_en": "[omitted-value]",
+                    "icon": "[omitted-value]",
+                    "style": "[omitted-value]",
+                    "type": "[omitted-value]",
+                    "location": "[omitted-value]",
+                    "text": "[redacted-text]"
+                  }
+                ],
+                "last_update_time": 0,
+                "id": "[redacted-id]",
+                "extract_text_enabled": 0,
+                "cover_image_index": 0,
+                "advanced_widgets_groups": {
+                  "groups": [
+                    "[omitted-object]"
+                  ]
+                },
+                "has_music": false,
+                "type": "video",
+                "tag_info": {
+                  "title": "[redacted-title]",
+                  "type": ""
+                },
+                "collected_count": 252,
+                "user": {
+                  "images": "[redacted-images]",
+                  "red_id": "[redacted-red_id]",
+                  "red_official_verified": false,
+                  "nickname": "[redacted-nickname]",
+                  "followed": false,
+                  "red_official_verify_type": 0,
+                  "show_red_official_verify_icon": false,
+                  "userid": "[redacted-userid]",
+                  "track_duration": 0
+                },
+                "niced": false,
+                "shared_count": 72,
+                "comments_count": 20,
+                "video_duration": "2:34",
+                "liked": false,
+                "widgets_context": "[redacted-widgets_context]",
+                "debug_info_str": "",
+                "nice_count": 0,
+                "note_attributes": [],
+                "video_info_v2": {
+                  "capa": {
+                    "is_user_select": "[omitted-value]",
+                    "is_upload": "[omitted-value]",
+                    "frame_ts": "[omitted-value]",
+                    "duration": "[omitted-value]"
+                  },
+                  "consumer": {
+                    "can_super_resolution": "[omitted-value]"
+                  },
+                  "image": "[redacted-image]",
+                  "media": {
+                    "user_level": "[omitted-value]",
+                    "audio_info": "[omitted-object]",
+                    "video": "[omitted-object]",
+                    "audio_stream": "[omitted-object]",
+                    "stream": "[omitted-object]",
+                    "video_id": "[omitted-value]"
+                  }
+                },
+                "result_from": "",
+                "collected": false,
+                "xsec_token": "[redacted-xsec_token]",
+                "click_score": 0.12360358983278275,
+                "liked_count": 362,
+                "desc": "[redacted-desc]",
+                "interaction_area": {
+                  "type": 1,
+                  "status": false,
+                  "text": "[redacted-text]"
+                },
+                "title": "[redacted-title]",
+                "images_list": [
+                  {
+                    "need_load_original_image": "[omitted-value]",
+                    "fileid": "[redacted-fileid]",
+                    "height": "[omitted-value]",
+                    "width": "[omitted-value]",
+                    "original": "[omitted-value]",
+                    "url_size_large": "[omitted-value]",
+                    "trace_id": "[redacted-trace_id]",
+                    "url": "[omitted-value]"
+                  }
+                ],
+                "geo_info": {
+                  "distance": ""
+                },
+                "timestamp": 1780397674
+              }
+            }
+          ],
+          "query_debug_info": {
+            "is_forbidden": false
+          },
+          "taxonomy1": "c00000000000000000000722",
+          "video_intent_grade_v3": 2
+        },
+        "msg": "成功",
+        "search_id": "1db465bdfa904f4b",
+        "search_session_id": "e0323177ebbe458b9e7857c425a459a1",
+        "page": 1,
+        "next_page": 2,
+        "debug_id": "[redacted-debug_id]",
+        "debug_info": "[redacted-debug_info]"
+      }
+    }
+  }
+}

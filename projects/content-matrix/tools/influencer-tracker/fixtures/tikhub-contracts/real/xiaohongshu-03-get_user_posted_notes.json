@@ -1,0 +1,108 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T13:12:29.605Z",
+  "request": {
+    "path": "/api/v1/xiaohongshu/app_v2/get_user_posted_notes",
+    "method": "GET",
+    "params": {
+      "user_id": "[redacted-user_id]",
+      "cursor": null
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 06:12:55",
+      "time_stamp": 1784639575,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/b253bd7d-34ea-43f1-8a57-a0e16a089ad3",
+      "router": "/api/v1/xiaohongshu/app_v2/get_user_posted_notes",
+      "params": {
+        "user_id": "[redacted-user_id]"
+      },
+      "data": {
+        "code": 0,
+        "success": true,
+        "data": {
+          "notes": [
+            {
+              "time_desc": "07-14",
+              "sticky": false,
+              "title": "[redacted-title]",
+              "likes": 756,
+              "create_time": 1784028890,
+              "display_title": "国产模型在落地上开始有优势了",
+              "collected_count": 318,
+              "comments_count": 84,
+              "nice_count": 0,
+              "cursor": "6a560dce000000000f007774",
+              "inlikes": false,
+              "niced": false,
+              "ats": [],
+              "type": "normal",
+              "images_list": [
+                {
+                  "fileid": "[redacted-fileid]",
+                  "height": 4032,
+                  "width": 3024,
+                  "original": "",
+                  "url_size_large": "https://sns-i11.rednotecdn.com/notes_uhdr/1040g3qo322jndn99mu005po3j7knc022k9nmmc0",
+                  "trace_id": "[redacted-trace_id]",
+                  "url": "https://sns-i11.rednotecdn.com/notes_uhdr/1040g3qo322jndn99mu005po3j7knc022k9nmmc0"
+                }
+              ],
+              "id": "[redacted-id]",
+              "user": {
+                "followed": false,
+                "userid": "[redacted-userid]",
+                "nickname": "[redacted-nickname]",
+                "fstatus": "none",
+                "images": "[redacted-images]",
+                "red_official_verify_type": 0
+              },
+              "share_count": 61,
+              "view_count": 0,
+              "recommend": {
+                "desc": "[redacted-desc]",
+                "target_id": "",
+                "icon": "",
+                "target_name": "",
+                "track_id": "",
+                "type": ""
+              },
+              "infavs": false,
+              "widgets_context": "[redacted-widgets_context]",
+              "is_goods_note": false,
+              "desc": "[redacted-desc]",
+              "price": 0,
+              "last_update_time": 0,
+              "advanced_widgets_groups": {
+                "groups": [
+                  {
+                    "mode": "[omitted-value]",
+                    "fetch_types": "[omitted-array]"
+                  }
+                ]
+              },
+              "has_music": false
+            }
+          ],
+          "tags": [],
+          "has_more": true
+        },
+        "msg": "success",
+        "debug_id": "[redacted-debug_id]",
+        "debug_info": "[redacted-debug_info]"
+      }
+    }
+  }
+}

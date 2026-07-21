@@ -1,0 +1,259 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T13:10:15.482Z",
+  "request": {
+    "path": "/api/v1/xiaohongshu/app_v2/get_image_note_detail",
+    "method": "GET",
+    "params": {
+      "share_text": "https://www.xiaohongshu.com/explore/6a0dcfd7000000003502553d"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 06:10:41",
+      "time_stamp": 1784639441,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/a0b51e83-a273-42d1-ab4b-f7ad3794d366",
+      "router": "/api/v1/xiaohongshu/app_v2/get_image_note_detail",
+      "params": {
+        "share_text": "https://www.xiaohongshu.com/explore/6a0dcfd7000000003502553d"
+      },
+      "data": {
+        "code": 0,
+        "success": true,
+        "data": [
+          {
+            "note_list": [
+              {
+                "ip_location": "Shanghai",
+                "user": {
+                  "id": "[redacted-id]",
+                  "red_official_verified": false,
+                  "fstatus": "none",
+                  "userid": "[redacted-userid]",
+                  "show_red_official_verify_icon": false,
+                  "red_official_verify_type": 0,
+                  "track_duration": 0,
+                  "level": {
+                    "image": "[redacted-image]"
+                  },
+                  "image": "[redacted-image]",
+                  "followed": false,
+                  "red_id": "[redacted-red_id]",
+                  "nickname": "[redacted-nickname]",
+                  "name": "[redacted-name]"
+                },
+                "feedback_info": {
+                  "dislike_status": 0
+                },
+                "pre_view_count": -1,
+                "id": "[redacted-id]",
+                "has_related_goods": false,
+                "comments_count": 98,
+                "last_update_time": 0,
+                "liked": false,
+                "foot_tags": [],
+                "collected": false,
+                "share_code_flag": 0,
+                "biz_map": {},
+                "liked_count": 1337,
+                "head_tags": [],
+                "title": "[redacted-title]",
+                "share_info": {
+                  "content": "[redacted-content]",
+                  "show_wechat_tag": false,
+                  "title": "[redacted-title]",
+                  "image": "[redacted-image]",
+                  "block_private_msg": false,
+                  "guide_audited": true,
+                  "link": "https://www.xiaohongshu.com/discovery/item/6a0dcfd7000000003502553d",
+                  "function_entries": [
+                    "[omitted-object]"
+                  ],
+                  "wechat_share_desc": "@还没想好's note\n348 Shares",
+                  "is_star": false
+                },
+                "note_statement": {
+                  "origin_info": {
+                    "origin_link": "[omitted-value]",
+                    "origin_text": "[omitted-value]"
+                  },
+                  "show_text": "Content comes from self-shooting",
+                  "pop_text": "Self-declared"
+                },
+                "sticky": false,
+                "seeded_count": 0,
+                "need_next_step": false,
+                "content_trans_info": {
+                  "strategy": 9
+                },
+                "hash_tag": [
+                  {
+                    "record_count": "[omitted-value]",
+                    "tag_hint": "[omitted-value]",
+                    "id": "[redacted-id]",
+                    "bizId": "[redacted-bizId]",
+                    "record_emoji": "[omitted-value]",
+                    "link": "[omitted-value]",
+                    "record_unit": "[omitted-value]",
+                    "type": "[omitted-value]",
+                    "name": "[redacted-name]",
+                    "current_score": "[omitted-value]"
+                  }
+                ],
+                "text_language_code": "zh-Hans",
+                "type": "normal",
+                "topics": [
+                  {
+                    "style": "[omitted-value]",
+                    "id": "[redacted-id]",
+                    "activity_online": "[omitted-value]",
+                    "image": "[redacted-image]",
+                    "link": "[omitted-value]",
+                    "business_type": "[omitted-value]",
+                    "discuss_num": "[omitted-value]",
+                    "name": "[redacted-name]"
+                  }
+                ],
+                "desc": "[redacted-desc]",
+                "countdown": 0,
+                "ats": [],
+                "widgets_groups": [
+                  [
+                    "[omitted-value]"
+                  ]
+                ],
+                "use_water_color": false,
+                "api_upgrade": -1,
+                "in_censor": false,
+                "enable_brand_lottery": false,
+                "mini_program_info": {
+                  "title": "[redacted-title]",
+                  "webpage_url": "https://www.xiaohongshu.com/discovery/item/6a0dcfd7000000003502553d",
+                  "thumb": "http://sns-img-bd.xhscdn.com/notes_pre_post/1040g3k0320d4jnt9lc105po3j7knc0227ot0co8",
+                  "share_title": "@还没想好 发了一篇笔记，快点来看吧！",
+                  "user_name": "[redacted-user_name]",
+                  "path": "pages/main/home/index?redirect_path=%2Fpages%2Fmain%2Fnote%2Findex%3Fxsec_source%3Dapp_share%26id%3D6a0dcfd7000000003502553d%26type%3Dnormal%26xsec_token%3DCB0_OIr5MzpKfmz_DwLWpoePDn7p-aerBpcupvTMNECik%3D",
+                  "desc": "[redacted-desc]"
+                },
+                "need_product_review": false,
+                "media_save_config": {
+                  "disable_save": false,
+                  "disable_weibo_cover": false,
+                  "disable_watermark": false
+                },
+                "enable_co_produce": false,
+                "red_envelope_note": false,
+                "shared_count": 348,
+                "images_list": [
+                  {
+                    "fileid": "[redacted-fileid]",
+                    "url_size_large": "[omitted-value]",
+                    "index": "[omitted-value]",
+                    "scale_to_large": "[omitted-value]",
+                    "longitude": "[omitted-value]",
+                    "width": "[omitted-value]",
+                    "latitude": "[omitted-value]",
+                    "url": "[omitted-value]",
+                    "original": "[omitted-value]",
+                    "url_multi_level": "[omitted-object]",
+                    "need_load_original_image": "[omitted-value]",
+                    "origin_img": "[omitted-object]",
+                    "height": "[omitted-value]",
+                    "trace_id": "[redacted-trace_id]",
+                    "text_intention": "[omitted-value]"
+                  }
+                ],
+                "comment_prompt_config": {
+                  "placeholder_short": "Say something...",
+                  "placeholder_long": "Say something...",
+                  "forbidden_cmt_type": 0
+                },
+                "may_have_red_packet": false,
+                "has_music": false,
+                "enable_fls_bridge_cards": false,
+                "model_type": "note",
+                "seeded": false,
+                "goods_info": {},
+                "view_count": 0,
+                "cooperate_binds": [],
+                "function_switch": [
+                  {
+                    "type": "[omitted-value]",
+                    "enable": "[omitted-value]",
+                    "reason": "[omitted-value]"
+                  }
+                ],
+                "time": 1779290071,
+                "has_co_produce": false,
+                "long_press_share_info": {
+                  "content": "[redacted-content]",
+                  "show_wechat_tag": false,
+                  "title": "[redacted-title]",
+                  "is_star": false,
+                  "block_private_msg": false,
+                  "function_entries": [
+                    "[omitted-object]"
+                  ],
+                  "guide_audited": false
+                },
+                "collected_count": 1653,
+                "note_text_press_options": [],
+                "privacy": {
+                  "type": 0,
+                  "show_tips": false,
+                  "nick_names": ""
+                },
+                "enable_fls_related_cards": false,
+                "qq_mini_program_info": {
+                  "share_title": "@还没想好 发了一篇超赞的笔记，快点来看！",
+                  "webpage_url": "https://www.xiaohongshu.com/discovery/item/6a0dcfd7000000003502553d",
+                  "thumb": "http://sns-img-bd.xhscdn.com/notes_pre_post/1040g3k0320d4jnt9lc105po3j7knc0227ot0co8",
+                  "title": "[redacted-title]",
+                  "user_name": "[redacted-user_name]",
+                  "path": "pages/main/note/index?xsec_source=app_share&id=6a0dcfd7000000003502553d&type=normal&xsec_token=CB0_OIr5MzpKfmz_DwLWpoePDn7p-aerBpcupvTMNECik=",
+                  "desc": "[redacted-desc]"
+                },
+                "widgets_context": "[redacted-widgets_context]",
+                "liked_users": []
+              }
+            ],
+            "comment_list": [],
+            "model_type": "note",
+            "track_id": "",
+            "user": {
+              "red_official_verified": false,
+              "id": "[redacted-id]",
+              "fstatus": "none",
+              "userid": "[redacted-userid]",
+              "show_red_official_verify_icon": false,
+              "red_official_verify_type": 0,
+              "track_duration": 0,
+              "level": {
+                "image": "[redacted-image]"
+              },
+              "image": "[redacted-image]",
+              "followed": false,
+              "nickname": "[redacted-nickname]",
+              "red_id": "[redacted-red_id]",
+              "name": "[redacted-name]"
+            }
+          }
+        ],
+        "msg": "成功",
+        "debug_id": "[redacted-debug_id]",
+        "debug_info": "[redacted-debug_info]"
+      }
+    }
+  }
+}

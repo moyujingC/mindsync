@@ -11,7 +11,7 @@ export function normalizeTikHubContent({ platform, data }) {
     uniqueKey: `${platform}:${externalId}`,
     platform,
     creatorName: first(creator.nickname, creator.name, creator.user_name, source.source?.title, source.author_name, '未知博主'),
-    creatorExternalId: first(creator.sec_uid, creator.user_id, creator.uid, creator.id, null),
+    creatorExternalId: first(creator.sec_uid, creator.user_id, creator.userid, creator.uid, creator.id, null),
     contentExternalId: externalId,
     url: sanitizeContentUrl(first(source.share_url, source.url, source.note_url, source.link, null)),
     title: stripMarkup(first(source.title, source.note_title, description.slice(0, 60), `${platform} 内容 ${externalId}`)),
@@ -66,12 +66,16 @@ export function extractTikHubPage(data) {
     source.aweme_list,
     source.article_list,
     source.video_list,
+    source.data?.[0]?.note_list,
+    source.data?.notes,
     source.results?.data,
     source.data,
     [],
   )));
   const cursor = [
     source.next_cursor, source.nextCursor, source.cursor, source.max_cursor, source.maxCursor, source.next_page,
+    source.data?.cursor, source.data?.next_cursor, source.data?.nextCursor,
+    source.notes?.[0]?.cursor,
     source.results?.cursor, source.results?.next_cursor, source.results?.nextCursor,
     envelope.next_cursor, envelope.nextCursor, envelope.cursor, envelope.max_cursor, envelope.maxCursor, envelope.next_page,
   ]
@@ -79,12 +83,13 @@ export function extractTikHubPage(data) {
   return {
     items,
     cursor: cursor === undefined ? null : String(cursor),
-    hasMore: normalizeHasMore(first(source.has_more, source.hasMore, source.more, source.results?.continue_flag, source.results?.continueFlag, envelope.has_more, envelope.hasMore, envelope.more, false)),
+    hasMore: normalizeHasMore(first(source.has_more, source.hasMore, source.more, source.data?.has_more, source.data?.hasMore, source.results?.continue_flag, source.results?.continueFlag, envelope.has_more, envelope.hasMore, envelope.more, false)),
   };
 }
 
 function unwrapContent(data) {
   return data?.aweme_info
+    ?? data?.data?.[0]?.note_list?.[0]
     ?? data?.data?.note
     ?? data?.note
     ?? data?.data?.aweme_detail

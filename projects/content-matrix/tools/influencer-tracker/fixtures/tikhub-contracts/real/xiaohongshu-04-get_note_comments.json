@@ -1,0 +1,102 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T13:10:16.816Z",
+  "request": {
+    "path": "/api/v1/xiaohongshu/app_v2/get_note_comments",
+    "method": "GET",
+    "params": {
+      "note_id": "[redacted-note_id]",
+      "cursor": null
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 06:10:42",
+      "time_stamp": 1784639442,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/6fea8d82-c686-4595-9153-d92b3c418370",
+      "router": "/api/v1/xiaohongshu/app_v2/get_note_comments",
+      "params": {
+        "note_id": "[redacted-note_id]"
+      },
+      "data": {
+        "code": 0,
+        "success": true,
+        "data": {
+          "comments": [
+            {
+              "liked": false,
+              "time": 1784627278,
+              "friend_liked_msg": "",
+              "status": 3,
+              "hidden": false,
+              "downvoted": false,
+              "show_type": "common",
+              "show_tags": [],
+              "note_id": "[redacted-note_id]",
+              "sub_comments": [],
+              "like_count": 0,
+              "score": 0,
+              "collected": false,
+              "translation_strategy": 9,
+              "comment_type": 0,
+              "user": {
+                "userid": "[redacted-userid]",
+                "red_id": "[redacted-red_id]",
+                "images": "[redacted-images]",
+                "nickname": "[redacted-nickname]",
+                "ai_agent": false,
+                "level": {
+                  "image": "[redacted-image]"
+                },
+                "current_user": "false",
+                "additional_tags": {}
+              },
+              "track_id": "interaction-service.local",
+              "share_strategy": 0,
+              "ip_location": "Hong Kong, China",
+              "id": "[redacted-id]",
+              "relatable_to_note": false,
+              "at_users": [],
+              "biz_label": {
+                "product_review": false,
+                "group_invite": "false",
+                "rich_text": "unknown"
+              },
+              "show_tags_v2": [],
+              "content": "[redacted-content]",
+              "sub_comment_count": 0
+            }
+          ],
+          "cursor": "{\"cursor\":\"6a333b96000000002b002148\",\"index\":2,\"pageArea\":\"UNFOLDED\"}",
+          "comment_count_l1": 50,
+          "all_sort_strategies": [
+            {
+              "optional_name": "Default",
+              "type": "default",
+              "suffix_name": ""
+            }
+          ],
+          "current_sort_strategy": "latest_v2",
+          "user_id": "[redacted-user_id]",
+          "comment_count": 98,
+          "page_context": "{\"highlight\":[\"中型公司决策链长\",\"中小型公司引入agent的业务\",\"lint\",\"Agent\"],\"support_folded\":true}",
+          "has_more": true
+        },
+        "msg": "",
+        "debug_id": "[redacted-debug_id]",
+        "debug_info": "[redacted-debug_info]"
+      }
+    }
+  }
+}

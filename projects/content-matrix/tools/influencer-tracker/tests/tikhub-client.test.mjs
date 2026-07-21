@@ -203,6 +203,52 @@ test('TikHub normalizers accept the real Xiaohongshu search envelope and note wr
   assert.equal(content.metrics.commentCount, 3);
 });
 
+test('TikHub normalizers accept the real Xiaohongshu detail and comment envelopes', () => {
+  const detail = {
+    data: [{
+      note_list: [{
+        id: 'xhs-detail-001',
+        title: '企业 AI 先梳理流程',
+        desc: '从真实任务开始。',
+        user: { userid: 'xhs-creator-001', nickname: 'AI 实践者' },
+        liked_count: 12,
+        comments_count: 3,
+        type: 'normal',
+      }],
+    }],
+  };
+  const comments = {
+    data: {
+      cursor: 'xhs-comment-next',
+      has_more: true,
+      comments: [{ id: 'xhs-comment-001', content: '如何判断先从哪个流程做？', user: { nickname: '提问者' }, time: 1_784_041_200 }],
+    },
+  };
+  const content = normalizeTikHubContent({ platform: 'xiaohongshu', data: detail });
+  const page = extractTikHubPage(comments);
+  const normalizedComments = normalizeTikHubComments({ platform: 'xiaohongshu', contentUniqueKey: content.uniqueKey, items: page.items });
+
+  assert.equal(content.contentExternalId, 'xhs-detail-001');
+  assert.equal(content.creatorExternalId, 'xhs-creator-001');
+  assert.equal(content.metrics.commentCount, 3);
+  assert.equal(page.cursor, 'xhs-comment-next');
+  assert.equal(page.hasMore, true);
+  assert.equal(normalizedComments[0].commentText, '如何判断先从哪个流程做？');
+});
+
+test('TikHub page parser reads Xiaohongshu creator cursors from note items', () => {
+  const page = extractTikHubPage({
+    data: {
+      has_more: true,
+      notes: [{ id: 'xhs-creator-note-001', cursor: 'xhs-creator-next' }],
+    },
+  });
+
+  assert.equal(page.items.length, 1);
+  assert.equal(page.cursor, 'xhs-creator-next');
+  assert.equal(page.hasMore, true);
+});
+
 test('TikHub normalizers accept the real Douyin card array and aweme wrapper', async () => {
   const fixture = await readFixture('douyin-real-envelope-search.json');
   const page = extractTikHubPage(fixture);

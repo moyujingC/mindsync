@@ -64,20 +64,28 @@ export function sanitizeTikHubResponse(event) {
 }
 
 function sanitizeValue(value, key) {
+  return sanitizeValueAtDepth(value, key, 0);
+}
+
+function sanitizeValueAtDepth(value, key, depth) {
   if (value === null || value === undefined) {
     return value;
   }
+  if (shouldRedact(key)) {
+    return `[redacted-${key}]`;
+  }
+  // Contract fixtures preserve response shape, not full platform payloads.
+  if (depth >= 8) {
+    return Array.isArray(value) ? '[omitted-array]' : typeof value === 'object' ? '[omitted-object]' : '[omitted-value]';
+  }
   if (Array.isArray(value)) {
-    return value.map((item) => sanitizeValue(item, key));
+    return value.slice(0, 1).map((item) => sanitizeValueAtDepth(item, key, depth + 1));
   }
   if (typeof value === 'object') {
     return Object.fromEntries(Object.entries(value).map(([entryKey, entryValue]) => [
       entryKey,
-      sanitizeValue(entryValue, entryKey),
+      sanitizeValueAtDepth(entryValue, entryKey, depth + 1),
     ]));
-  }
-  if (shouldRedact(key)) {
-    return `[redacted-${key}]`;
   }
   if (typeof value === 'string' && looksLikeUrl(value)) {
     return sanitizeUrl(value);
@@ -86,7 +94,7 @@ function sanitizeValue(value, key) {
 }
 
 function shouldRedact(key) {
-  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|uid|nickname|user_?name|author_?name|avatar|phone|email|text|content|desc|description|message|debug_info)$/i.test(key ?? '')
+  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|userid|uid|id|red_id|author_?id|request_id|debug_id|fileid|trace_id|(note|comment|object|doc)_?id|biz_?id|nickname|name|user_?name|author_?name|avatar|image|images|phone|email|text|content|desc|description|title|message|debug_info|widgets_context)$/i.test(key ?? '')
     || /(token|secret|signature)/i.test(key ?? '');
 }
 
