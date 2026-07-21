@@ -1,6 +1,7 @@
 import { ContentStore } from '../storage/content-store.mjs';
 import { extractFeishuTextField, mapCommentToFeishuFields, mapContentToFeishuFields, toFeishuPlatform } from '../feishu/client.mjs';
 import { extractTikHubPage, normalizeTikHubComments, normalizeTikHubContent } from '../platforms/tikhub/normalize.mjs';
+import { contentKeyAliases, normalizePlatformId } from '../platforms/platform-id.mjs';
 
 const DEFAULT_LIMIT = 10;
 
@@ -12,6 +13,7 @@ export async function collectTikHubResearch({
   storePath,
   dryRun = false,
 }) {
+  request = normalizeRequestPlatform(request);
   validateRequest(request);
   const store = new ContentStore({ filePath: storePath });
   await store.load();
@@ -19,7 +21,7 @@ export async function collectTikHubResearch({
   const response = await fetchContents({ request, client });
   const contents = uniqueByKey(response.items.map((item) => normalizeTikHubContent({ platform: request.platform, data: item })), 'uniqueKey');
   const remoteContentKeys = await loadRemoteKeys({ feishuClient, feishuConfig, tableName: 'contents', fieldKey: 'uniqueKey', dryRun });
-  const newContents = contents.filter((content) => !store.hasContent(content.uniqueKey) && !remoteContentKeys.has(content.uniqueKey));
+  const newContents = contents.filter((content) => !hasKnownContent({ store, remoteContentKeys, content }));
   const duplicateCount = contents.length - newContents.length;
 
   const creatorResult = await syncCreators({
@@ -71,6 +73,15 @@ export async function collectTikHubResearch({
     await store.save();
   }
   return result;
+}
+
+function normalizeRequestPlatform(request) {
+  return { ...request, platform: normalizePlatformId(request?.platform, 'TikHub request platform') };
+}
+
+function hasKnownContent({ store, remoteContentKeys, content }) {
+  return [...contentKeyAliases({ platform: content.platform, externalId: content.contentExternalId })]
+    .some((key) => store.hasContent(key) || remoteContentKeys.has(key));
 }
 
 async function syncCreators({ contents, feishuClient, feishuConfig, dryRun }) {

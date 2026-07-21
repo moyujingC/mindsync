@@ -1,5 +1,6 @@
 import { readJsonFile } from '../utils/json-file.mjs';
 import { validateFeishuConfig } from '../feishu/config.mjs';
+import { normalizePlatformId } from '../platforms/platform-id.mjs';
 
 export async function checkResearchReadiness({
   apiKey = process.env.TIKHUB_API_KEY,
@@ -48,18 +49,19 @@ export async function checkResearchReadiness({
 
   if (probe) {
     validateProbe(probe);
+    const platform = normalizePlatformId(probe.platform, 'TikHub probe platform');
     if (!checks.tikhubKey) {
       checks.probe = { attempted: false, reason: 'missing-api-key' };
     } else {
       try {
         const response = await tikhubClient.getContentDetail({
-          platform: probe.platform,
+          platform,
           shareUrl: probe.shareUrl,
         });
         checks.probe = {
           attempted: true,
           ok: true,
-          platform: probe.platform,
+          platform,
           cacheUrl: response.cacheUrl ?? null,
           requestCount: response.audit?.requestCount ?? null,
         };

@@ -15,6 +15,7 @@ description: 将公开链接、授权手工文本或结构化内容安全入库�
 - 建议：`creatorName`、`externalId`、`publishedAt`、`description`、`contentType`。
 - 评论只在研究目的明确需要时提供；不得把评论正文放入标题或简介字段。
 - 清理后的转写稿使用 `refinedTextPath` 引用本地文件，不写入飞书正文。
+- 中文平台名会规范化为 TikHub 内部 ID；唯一键使用内部 ID，但去重兼容历史中文唯一键。
 
 ## 执行规则
 

@@ -3,6 +3,7 @@ import { FeishuBitableClient, extractFeishuTextField, mapContentToFeishuFields }
 import { LarkCliBitableClient } from '../feishu/lark-cli-client.mjs';
 import { validateFeishuConfig } from '../feishu/config.mjs';
 import { readJsonFile } from '../utils/json-file.mjs';
+import { contentKeyAliases, normalizePlatformId } from '../platforms/platform-id.mjs';
 
 export async function importManualContents({
   inputPath,
@@ -49,7 +50,7 @@ export async function importManualContentItems({
   const newContents = [];
   let duplicateCount = 0;
   for (const content of contents) {
-    if (store.hasContent(content.uniqueKey) || remoteContentKeys.has(content.uniqueKey)) {
+    if (hasKnownContent({ store, remoteContentKeys, content })) {
       duplicateCount += 1;
       continue;
     }
@@ -96,7 +97,7 @@ export function normalizeManualInput(input) {
 }
 
 function normalizeManualItem(item, index) {
-  const platform = requiredString(item.platform, `items[${index}].platform`);
+  const platform = normalizePlatformId(requiredString(item.platform, `items[${index}].platform`), `items[${index}].platform`);
   const url = requiredString(item.url, `items[${index}].url`);
   const title = requiredString(item.title, `items[${index}].title`);
   const externalId = item.externalId ?? stableExternalIdFromUrl(url);
@@ -121,6 +122,11 @@ function normalizeManualItem(item, index) {
     },
     raw: item,
   };
+}
+
+function hasKnownContent({ store, remoteContentKeys, content }) {
+  return [...contentKeyAliases({ platform: content.platform, externalId: content.contentExternalId })]
+    .some((key) => store.hasContent(key) || remoteContentKeys.has(key));
 }
 
 function buildManualContentKey({ platform, externalId, url }) {

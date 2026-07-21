@@ -19,7 +19,8 @@ test('normalizeManualInput creates stable content keys for manual items', () => 
   });
 
   assert.equal(contents.length, 1);
-  assert.equal(contents[0].uniqueKey, '小红书:note-1');
+  assert.equal(contents[0].platform, 'xiaohongshu');
+  assert.equal(contents[0].uniqueKey, 'xiaohongshu:note-1');
   assert.equal(contents[0].contentExternalId, 'note-1');
   assert.equal(contents[0].metrics.likeCount, 12);
   assert.equal(contents[0].tags, undefined);
@@ -39,7 +40,7 @@ test('normalizeManualInput supports random reference items without tracked creat
   assert.equal(contents.length, 1);
   assert.equal(contents[0].creatorName, '随机发现');
   assert.equal(contents[0].contentExternalId, 'www.xiaohongshu.com/explore/random-note-001');
-  assert.equal(contents[0].uniqueKey, '小红书:www.xiaohongshu.com/explore/random-note-001');
+  assert.equal(contents[0].uniqueKey, 'xiaohongshu:www.xiaohongshu.com/explore/random-note-001');
   assert.equal(contents[0].raw.referenceReason, '选题参考');
 });
 
@@ -108,6 +109,22 @@ test('importManualContents writes new records and deduplicates local store', asy
     assert.equal(first.duplicateCount, 0);
     assert.equal(second.createdCount, 0);
     assert.equal(second.duplicateCount, 1);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('importManualContents recognizes legacy Chinese platform keys when deduplicating', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-tracker-manual-legacy-key-'));
+  const inputPath = join(dir, 'input.json');
+  const storePath = join(dir, 'store.json');
+  await writeFile(inputPath, JSON.stringify({ items: [manualItem('小红书', 'note-legacy-1')] }), 'utf8');
+  await writeFile(storePath, JSON.stringify({ contentKeys: ['小红书:note-legacy-1'], runs: [] }), 'utf8');
+
+  try {
+    const result = await importManualContents({ inputPath, storePath, dryRun: false });
+    assert.equal(result.createdCount, 0);
+    assert.equal(result.duplicateCount, 1);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

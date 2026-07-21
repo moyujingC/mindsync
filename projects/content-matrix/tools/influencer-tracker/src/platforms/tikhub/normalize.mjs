@@ -1,4 +1,7 @@
+import { normalizePlatformId } from '../platform-id.mjs';
+
 export function normalizeTikHubContent({ platform, data }) {
+  platform = normalizePlatformId(platform, 'TikHub content platform');
   const source = unwrapContent(data);
   const externalId = requiredString(first(source.aweme_id, source.note_id, source.id, source.item_id, source.object_id, source.url), 'TikHub content ID');
   const creator = first(source.author, source.user, source.user_info, {});
@@ -27,6 +30,7 @@ export function normalizeTikHubContent({ platform, data }) {
 }
 
 export function normalizeTikHubComments({ platform, contentUniqueKey, items }) {
+  platform = normalizePlatformId(platform, 'TikHub comment platform');
   return unwrapItems(items).map((item, index) => {
     const commentId = requiredString(String(first(item.cid, item.comment_id, item.id, item.rpid, `${index}`)), 'TikHub comment ID');
     const user = first(item.user, item.user_info, item.member, {});

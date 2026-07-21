@@ -24,10 +24,11 @@ test('manual research turns a random reference and pasted comments into a tracea
     });
 
     assert.equal(result.collection.requestCount, 0);
+    assert.equal(result.collection.platform, 'xiaohongshu');
     assert.equal(result.collection.contentCount, 1);
     assert.equal(result.collection.commentCount, 2);
     assert.equal(result.candidates[0].evidenceLevel, '观察');
-    assert.equal(result.candidates[0].source.contentUniqueKey, '小红书:www.xiaohongshu.com/explore/random-note-1');
+    assert.equal(result.candidates[0].source.contentUniqueKey, 'xiaohongshu:www.xiaohongshu.com/explore/random-note-1');
     assert.deepEqual(writes.map((write) => write.tableName), ['contents', 'comments', 'researchRequests']);
     const brief = await readFile(result.outputPath, 'utf8');
     assert.match(brief, /TikHub 调用：0/);

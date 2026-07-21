@@ -41,6 +41,10 @@ node src/cli/weekly-review.mjs \
 - [需求洞察规范](./skills/demand-insight/SKILL.md)
 - [发布反馈规范](./skills/publishing-feedback/SKILL.md)
 
+## 平台标识
+
+手工 JSON、命令参数和飞书展示可以填写中文平台名：`小红书`、`抖音`、`公众号`、`视频号`。进入内容唯一键、研究请求台账和 TikHub 调用前，系统统一转换为内部平台 ID：`xiaohongshu`、`douyin`、`wechat_mp`、`wechat_channels`；飞书仍展示中文名。已有中文唯一键在去重时继续识别，不会因迁移重复导入。
+
 ## 支持平台
 
 | 平台 | 账号追踪 | 关键词搜索 | 单篇详情 | 评论与回复 |

@@ -4,6 +4,7 @@ import { buildContentEnrichment } from './enrich-content.mjs';
 import { ResearchRequestStore } from '../storage/research-request-store.mjs';
 import { extractFeishuTextField, mapResearchRequestToFeishuFields } from '../feishu/client.mjs';
 import { applyResearchTemplate } from '../orchestration/research-templates.mjs';
+import { normalizePlatformId } from '../platforms/platform-id.mjs';
 
 const CANDIDATE_STATUSES = new Set(['待人工审核', '已转选题', '已发布', '已结束']);
 
@@ -22,6 +23,13 @@ export async function runResearchRequest({
     projectName: request?.projectName,
   });
   validateResearchRequest(request);
+  request = {
+    ...request,
+    collect: {
+      ...request.collect,
+      platform: normalizePlatformId(request.collect?.platform, 'research request platform'),
+    },
+  };
   const requestId = request.requestId ?? createRequestId();
   const store = new ResearchRequestStore({ filePath: ledgerPath });
   if (persist) {

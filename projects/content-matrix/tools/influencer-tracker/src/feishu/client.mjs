@@ -1,4 +1,5 @@
 import { isAbsolute, relative } from 'node:path';
+import { platformLabel } from '../platforms/platform-id.mjs';
 
 const FEISHU_BASE_URL = 'https://open.feishu.cn/open-apis';
 
@@ -211,12 +212,7 @@ export function mapContentToFeishuFields(content, fieldMap) {
 }
 
 export function toFeishuPlatform(platform) {
-  return {
-    xiaohongshu: '小红书',
-    douyin: '抖音',
-    wechat_mp: '公众号',
-    wechat_channels: '视频号',
-  }[platform] ?? platform;
+  return platformLabel(platform);
 }
 
 export function mapCommentToFeishuFields(comment, fieldMap) {
