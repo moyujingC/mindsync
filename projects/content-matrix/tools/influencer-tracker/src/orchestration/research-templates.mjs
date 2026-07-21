@@ -75,7 +75,13 @@ export function listResearchTemplates() {
 
 export function applyResearchTemplate({ templateId, request, projectName = null }) {
   if (!templateId) {
-    return request;
+    return {
+      ...request,
+      targetAccount: resolveTargetAccount({
+        serviceDirection: request?.serviceDirection,
+        requestedTargetAccount: request?.targetAccount,
+      }),
+    };
   }
   const template = TEMPLATES[templateId];
   if (!template) {
@@ -85,11 +91,18 @@ export function applyResearchTemplate({ templateId, request, projectName = null 
     throw new Error('client_project template requires projectName');
   }
 
+  const serviceDirection = request.serviceDirection ?? template.serviceDirection;
+  const targetAccount = resolveTargetAccount({
+    serviceDirection,
+    requestedTargetAccount: request.targetAccount ?? (templateId === 'client_project' ? projectName.trim() : template.targetAccount),
+  });
+
   return {
     ...request,
     purpose: request.purpose ?? template.purpose,
-    serviceDirection: request.serviceDirection ?? template.serviceDirection,
-    targetAccount: request.targetAccount ?? (templateId === 'client_project' ? projectName.trim() : template.targetAccount),
+    serviceDirection,
+    // 企业 AI 服务是墨予镜的内容方向，不存在独立发布账号。
+    targetAccount,
     collect: {
       ...request.collect,
       limit: request.collect?.limit ?? template.sampleLimit,
@@ -104,4 +117,12 @@ export function applyResearchTemplate({ templateId, request, projectName = null 
       constraints: template.constraints,
     },
   };
+}
+
+export function resolveTargetAccount({ serviceDirection, requestedTargetAccount }) {
+  // 企业 AI 服务是墨予镜的内容方向，不存在独立发布账号。
+  if (serviceDirection === '企业 AI 服务') {
+    return '墨予镜';
+  }
+  return requestedTargetAccount ?? null;
 }

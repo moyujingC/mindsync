@@ -111,7 +111,7 @@ async function writeLedger(dir, request) {
 function requestFixture({
   candidateStatus,
   templateId = 'enterprise_ai_service',
-  targetAccount = '知行AI服务',
+  targetAccount = '墨予镜',
   projectName = null,
   constraints = [],
 }) {

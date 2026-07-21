@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { buildContentEnrichment } from './enrich-content.mjs';
 import { ResearchRequestStore } from '../storage/research-request-store.mjs';
 import { extractFeishuTextField, mapResearchRequestToFeishuFields } from '../feishu/client.mjs';
-import { applyResearchTemplate } from '../orchestration/research-templates.mjs';
+import { applyResearchTemplate, resolveTargetAccount } from '../orchestration/research-templates.mjs';
 import { normalizePlatformId } from '../platforms/platform-id.mjs';
 
 const CANDIDATE_STATUSES = new Set(['待人工审核', '已转选题', '已发布', '已结束']);
@@ -133,7 +133,10 @@ export async function setResearchRequestTargetAccount({
   await store.load();
   const updated = store.update(requestId, (request) => {
     const now = new Date().toISOString();
-    const normalizedTargetAccount = targetAccount.trim();
+    const normalizedTargetAccount = resolveTargetAccount({
+      serviceDirection: request.serviceDirection,
+      requestedTargetAccount: targetAccount.trim(),
+    });
     return {
       ...request,
       targetAccount: normalizedTargetAccount,

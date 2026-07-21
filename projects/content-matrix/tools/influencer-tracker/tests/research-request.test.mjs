@@ -30,6 +30,7 @@ test('runResearchRequest produces an evidence-backed enterprise AI research brie
 
     const brief = await readFile(result.outputPath, 'utf8');
     assert.equal(result.status, '待人工确认');
+    assert.equal(result.targetAccount, '墨予镜');
     assert.equal(result.candidates.length, 1);
     assert.match(brief, /研究目的：评论挖需求/);
     assert.match(brief, /服务方向：企业 AI 服务/);
@@ -245,7 +246,7 @@ test('setResearchRequestTargetAccount updates the request, candidates, brief, an
         requestId: 'research-target-account-1',
         purpose: '评论挖需求',
         serviceDirection: '企业 AI 服务',
-        targetAccount: '知行AI服务',
+        targetAccount: '一镜一梳',
         collect: { mode: 'detail', platform: 'xiaohongshu', shareUrl: 'https://example.com/note' },
       },
       collect: async () => collectionFixture(),
@@ -274,6 +275,23 @@ test('setResearchRequestTargetAccount updates the request, candidates, brief, an
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
+});
+
+test('enterprise AI research always routes content to moyujing', async () => {
+  const result = await runResearchRequest({
+    request: {
+      requestId: 'research-enterprise-route-1',
+      templateId: 'enterprise_ai_service',
+      targetAccount: '任意旧账号',
+      collect: { mode: 'search', platform: 'xiaohongshu', keyword: '企业 AI' },
+    },
+    collect: async () => collectionFixture(),
+    persist: false,
+  });
+
+  assert.equal(result.serviceDirection, '企业 AI 服务');
+  assert.equal(result.targetAccount, '墨予镜');
+  assert.ok(result.candidates.every((candidate) => candidate.targetAccount === '墨予镜'));
 });
 
 test('runResearchRequest retries Feishu sync for an existing request without recollecting samples', async () => {
