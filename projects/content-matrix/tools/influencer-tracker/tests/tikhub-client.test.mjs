@@ -300,6 +300,22 @@ test('TikHub normalizers accept the real Douyin card array and aweme wrapper', a
   assert.equal(content.metrics.commentCount, 3);
 });
 
+test('TikHub normalizers accept the real Douyin comment envelope and cursor', async () => {
+  const fixture = await readRealFixture('douyin-04-fetch_video_comments.json');
+  const page = extractTikHubPage(fixture.response.body.data);
+  const comments = normalizeTikHubComments({
+    platform: 'douyin',
+    contentUniqueKey: 'douyin:sample',
+    items: page.items,
+  });
+
+  assert.equal(page.items.length, 1);
+  assert.equal(page.cursor, '20');
+  assert.equal(page.hasMore, true);
+  assert.equal(comments.length, 1);
+  assert.equal(comments[0].commentText, '[redacted-text]');
+});
+
 test('TikHub normalizers flatten WeChat search result groups', () => {
   const page = extractTikHubPage({
     keyword: '企业 AI 工作流',
@@ -377,6 +393,10 @@ test('TikHub page parser leaves a missing cursor null', () => {
 
 async function readFixture(fileName) {
   return JSON.parse(await readFile(fileURLToPath(new URL(`../fixtures/tikhub-contracts/${fileName}`, import.meta.url)), 'utf8'));
+}
+
+async function readRealFixture(fileName) {
+  return JSON.parse(await readFile(fileURLToPath(new URL(`../fixtures/tikhub-contracts/real/${fileName}`, import.meta.url)), 'utf8'));
 }
 
 function jsonResponse(body) {

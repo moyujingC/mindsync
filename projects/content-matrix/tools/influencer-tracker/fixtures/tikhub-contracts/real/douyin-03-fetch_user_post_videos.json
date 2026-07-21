@@ -1,11 +1,11 @@
 {
   "schema": "content-matrix/tikhub-contract-capture/v1",
-  "capturedAt": "2026-07-21T13:33:21.003Z",
+  "capturedAt": "2026-07-21T14:02:18.163Z",
   "request": {
     "path": "/api/v1/douyin/app/v3/fetch_user_post_videos",
     "method": "GET",
     "params": {
-      "sec_user_id": "MS4wLjABAAAA5Ti6HUkRMveXB26OvVqHGnnOTPcLCFqGp0xJkKShED4",
+      "sec_user_id": "MS4wLjABAAAAF4n-gcdigGM6oBZizo_wFOi9pMJUwMN9Mhgk5w8WwYt-QHwgFV5oEia8rVK87phm",
       "max_cursor": 0,
       "count": 10,
       "sort_type": 0
@@ -20,68 +20,61 @@
       "message": "[redacted-message]",
       "message_zh": "请求成功，本次请求将被计费。",
       "support": "Discord: https://discord.gg/aMEAS8Xsvz",
-      "time": "2026-07-21 06:33:46",
-      "time_stamp": 1784640826,
+      "time": "2026-07-21 07:02:43",
+      "time_stamp": 1784642563,
       "time_zone": "America/Los_Angeles",
       "docs": "https://api.tikhub.io/",
       "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
       "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
-      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/11aa5474-993a-49a8-8376-b3acb016733d",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/f6c48c7e-ef5a-46ff-b0cc-e8f3ec16ab66",
       "router": "/api/v1/douyin/app/v3/fetch_user_post_videos",
       "params": {
-        "sec_user_id": "MS4wLjABAAAA5Ti6HUkRMveXB26OvVqHGnnOTPcLCFqGp0xJkKShED4",
+        "sec_user_id": "MS4wLjABAAAAF4n-gcdigGM6oBZizo_wFOi9pMJUwMN9Mhgk5w8WwYt-QHwgFV5oEia8rVK87phm",
         "max_cursor": "0",
         "count": "10",
         "sort_type": "0"
       },
       "data": {
-        "has_more": 1,
-        "max_cursor": 1784082727000,
         "aweme_list": [
           {
+            "create_time": 1781258047,
             "author": {
-              "live_status": 0,
-              "story25_comment": 0,
-              "avatar_larger": {
-                "uri": "1080x1080/aweme-avatar/tos-cn-i-0813c000-ce_oEB4LAiaf8A3wEQUBSFfJEgXOevAugIW7ADzBN",
-                "url_list": [
-                  "https://p3.douyinpic.com/aweme/1080x1080/aweme-avatar/tos-cn-i-0813c000-ce_oEB4LAiaf8A3wEQUBSFfJEgXOevAugIW7ADzBN.heic"
-                ],
-                "height": 720,
-                "width": 720
-              },
-              "authority_status": 0,
-              "sec_uid": "[redacted-sec_uid]",
-              "story_count": 0,
+              "nickname": "[redacted-nickname]",
+              "follow_status": 0,
+              "cover_url": [
+                {
+                  "uri": "[redacted-uri]",
+                  "width": 720,
+                  "url_list": [
+                    "[omitted-value]"
+                  ],
+                  "height": 720
+                }
+              ],
               "original_musician": {
                 "music_count": 0,
                 "music_used_count": 0,
                 "digg_count": 0
               },
-              "custom_verify": "",
-              "signature": "[redacted-signature]",
-              "comment_setting": 0,
-              "short_id": "79454183491",
-              "story_interactive": 0
+              "story_ttl": 0,
+              "account_cert_info": "{}",
+              "risk_notice_text": "",
+              "is_star": false,
+              "short_id": "[redacted-short_id]",
+              "region": "CN",
+              "sync_to_toutiao": 0,
+              "download_setting": -1
             },
             "statistics": {
-              "play_count": 0,
-              "lose_comment_count": 0,
-              "digest": "",
-              "lose_count": 0,
-              "whatsapp_share_count": 0,
-              "collect_count": 1,
-              "download_count": 0,
-              "share_count": 0,
-              "admire_count": 0,
-              "recommend_count": 0,
-              "comment_count": 0,
-              "forward_count": 0
+              "digg_count": 6435,
+              "comment_count": 3331
             },
             "comment_list": null
           }
         ],
-        "status_code": 0
+        "max_cursor": 1783852200000,
+        "status_code": 0,
+        "has_more": 1
       }
     }
   }

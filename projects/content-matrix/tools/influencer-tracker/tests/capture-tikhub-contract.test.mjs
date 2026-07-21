@@ -99,6 +99,21 @@ test('sanitizeTikHubResponse keeps structural fields from wide payloads', () => 
   assert.equal(sanitized.response.body.data.aweme_list[0].aweme_id, '[redacted-aweme_id]');
 });
 
+test('sanitizeTikHubResponse redacts compact social-profile identifiers', () => {
+  const sanitized = sanitizeTikHubResponse({
+    path: '/api/v1/example',
+    method: 'GET',
+    params: null,
+    body: null,
+    status: 200,
+    response: { code: 200, data: { user: { short_id: '123', unique_id: 'handle', avatar_thumb: { uri: 'avatar-id' } } } },
+  });
+
+  assert.equal(sanitized.response.body.data.user.short_id, '[redacted-short_id]');
+  assert.equal(sanitized.response.body.data.user.unique_id, '[redacted-unique_id]');
+  assert.equal(sanitized.response.body.data.user.avatar_thumb, '[redacted-avatar_thumb]');
+});
+
 function jsonResponse(body) {
   return {
     ok: true,

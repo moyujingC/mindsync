@@ -103,13 +103,14 @@ function selectContractEntries(value, depth) {
     'data', 'items', 'list', 'notes', 'note_list', 'aweme_list', 'comments', 'comment_list', 'aweme_info',
     'has_more', 'hasMore', 'more', 'cursor', 'max_cursor', 'next_cursor', 'nextCursor', 'next_page',
     'code', 'success', 'status_code', 'total', 'user', 'author', 'statistics', 'interact_info', 'interaction',
+    'content', 'text', 'message', 'time', 'create_time', 'like_count', 'digg_count', 'comment_count',
   ]);
   const selected = entries.filter(([entryKey]) => structuralKeys.has(entryKey));
   return selected.length > 0 ? selected.slice(0, 12) : entries.slice(0, 12);
 }
 
 function shouldRedact(key) {
-  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|userid|uid|id|red_id|author_?id|request_id|debug_id|fileid|trace_id|(note|comment|object|doc|aweme)_?id|biz_?id|nickname|name|user_?name|author_?name|avatar|image|images|phone|email|text|content|desc|description|title|message|debug_info|widgets_context)$/i.test(key ?? '')
+  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|userid|uid|short_id|unique_id|id|red_id|author_?id|request_id|debug_id|fileid|trace_id|uri|(note|comment|object|doc|aweme)_?id|biz_?id|nickname|name|user_?name|author_?name|avatar.*|image|images|phone|email|text|content|desc|description|title|message|debug_info|widgets_context)$/i.test(key ?? '')
     || /(token|secret|signature)/i.test(key ?? '');
 }
 
