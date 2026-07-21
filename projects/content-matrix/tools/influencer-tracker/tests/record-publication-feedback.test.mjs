@@ -24,6 +24,8 @@ test('publication feedback marks an approved research candidate published and pr
     assert.equal(result.request.candidates[0].status, '已发布');
     assert.equal(result.request.candidates[0].publicationFeedback.publishUrl, 'https://example.com/published-post');
     assert.equal(result.request.candidates[0].publicationFeedback.serviceSignals.consultationIntent, '是');
+    assert.equal(result.request.candidates[0].publicationFeedback.researchAdjustment.changed, '是');
+    assert.equal(result.request.candidates[0].publicationFeedback.researchAdjustment.type, '关键词');
     const brief = await readFile(request.outputPath, 'utf8');
     assert.match(brief, /当前状态：已发布/);
     assert.match(brief, /选题状态：已发布/);
@@ -183,6 +185,12 @@ function feedbackMarkdown({ requestId, publishUrl = 'https://example.com/publish
 ## 下一步动作
 
 - [x] 安排样本沟通并确认资料权限边界
+
+## 下一轮研究调整
+
+- 是否改变下一轮研究：是
+- 调整类型：关键词
+- 调整说明：下一轮优先研究流程诊断与资料权限问题。
 `;
 }
 

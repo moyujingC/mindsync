@@ -305,6 +305,13 @@ npm run promote:feedback -- \
   --service-direction 'AI 工作流诊断'
 ```
 
+发布反馈中还应填写“下一轮研究调整”：只有真实发布链接存在，且人工记录本次反馈如何改变下一轮的关键词、样本范围或 CTA（行动号召）时，才算作 Agent Loop 的一轮有效证据。系统不会自动启用循环；只读评估器达到 3 个不同研究请求的有效循环后，才提示“可评估”。
+
+```bash
+npm run evaluate:agent-loop -- \
+  --ledger logs/research-requests.json
+```
+
 `feedback:record` 只有同时满足以下条件才更新研究台账：反馈文件带有 `research:<请求ID>:<候选编号>`、候选已“转选题”、发布链接为 `http` 或 `https` 地址。传入 `--feishu` 时会同步“研究请求”表的摘要状态；它只保存人工填写的事实和下一步，不会把点赞、评论或咨询意向自动判断为成交。
 
 `promote:feedback` 转入 `ai-service-studio` 时保留研究候选 ID、发布链接、服务信号和截断后的反对意见摘要，用研究候选 ID 去重；历史反馈没有该 ID 时，沿用“记录日期 + 对象”去重。它不会复制评论或私信全文。

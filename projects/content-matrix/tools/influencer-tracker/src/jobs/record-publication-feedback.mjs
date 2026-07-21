@@ -41,6 +41,7 @@ export async function recordPublicationFeedback({ feedbackPath, ledgerPath, feis
       representativeFeedback: feedback.representativeFeedback,
       objections: feedback.objections || null,
       nextAction: feedback.nextAction || null,
+      researchAdjustment: feedback.researchAdjustment,
     };
     return {
       ...request,
@@ -93,6 +94,11 @@ export function parsePublicationFeedback(raw) {
     representativeFeedback: [bullet('评论/私信 1'), bullet('评论/私信 2')].filter(Boolean),
     objections: bullet('反对意见或疑虑'),
     nextAction: extractFirstCheckedAction(raw),
+    researchAdjustment: {
+      changed: bullet('是否改变下一轮研究'),
+      type: bullet('调整类型'),
+      note: bullet('调整说明'),
+    },
   };
 }
 
