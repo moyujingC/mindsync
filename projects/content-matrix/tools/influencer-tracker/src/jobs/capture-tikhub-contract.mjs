@@ -82,7 +82,8 @@ function sanitizeValueAtDepth(value, key, depth) {
     return value.slice(0, 1).map((item) => sanitizeValueAtDepth(item, key, depth + 1));
   }
   if (typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value).map(([entryKey, entryValue]) => [
+    const entries = selectContractEntries(value, depth);
+    return Object.fromEntries(entries.map(([entryKey, entryValue]) => [
       entryKey,
       sanitizeValueAtDepth(entryValue, entryKey, depth + 1),
     ]));
@@ -93,8 +94,22 @@ function sanitizeValueAtDepth(value, key, depth) {
   return value;
 }
 
+function selectContractEntries(value, depth) {
+  const entries = Object.entries(value);
+  if (depth < 1 || entries.length <= 12) {
+    return entries;
+  }
+  const structuralKeys = new Set([
+    'data', 'items', 'list', 'notes', 'note_list', 'aweme_list', 'comments', 'comment_list', 'aweme_info',
+    'has_more', 'hasMore', 'more', 'cursor', 'max_cursor', 'next_cursor', 'nextCursor', 'next_page',
+    'code', 'success', 'status_code', 'total', 'user', 'author', 'statistics', 'interact_info', 'interaction',
+  ]);
+  const selected = entries.filter(([entryKey]) => structuralKeys.has(entryKey));
+  return selected.length > 0 ? selected.slice(0, 12) : entries.slice(0, 12);
+}
+
 function shouldRedact(key) {
-  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|userid|uid|id|red_id|author_?id|request_id|debug_id|fileid|trace_id|(note|comment|object|doc)_?id|biz_?id|nickname|name|user_?name|author_?name|avatar|image|images|phone|email|text|content|desc|description|title|message|debug_info|widgets_context)$/i.test(key ?? '')
+  return /^(authorization|api_?key|cookie|session|openid|open_id|unionid|union_id|sec_uid|user_?id|userid|uid|id|red_id|author_?id|request_id|debug_id|fileid|trace_id|(note|comment|object|doc|aweme)_?id|biz_?id|nickname|name|user_?name|author_?name|avatar|image|images|phone|email|text|content|desc|description|title|message|debug_info|widgets_context)$/i.test(key ?? '')
     || /(token|secret|signature)/i.test(key ?? '');
 }
 

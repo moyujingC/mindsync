@@ -51,10 +51,14 @@ export class TikHubClient {
         body: { username: creatorId, last_buffer: cursor, raw: true },
       });
     }
+    if (platform === 'douyin') {
+      return this.request(creatorRoute(platform), {
+        params: { sec_user_id: creatorId, max_cursor: cursor ?? 0, count: limit, sort_type: 0 },
+      });
+    }
     return this.request(creatorRoute(platform), {
-      method: platform === 'xiaohongshu' ? 'GET' : 'POST',
-      params: platform === 'xiaohongshu' ? { user_id: creatorId, cursor } : null,
-      body: platform === 'xiaohongshu' ? null : { creator_id: creatorId, cursor, count: limit },
+      method: 'GET',
+      params: { user_id: creatorId, cursor },
     });
   }
 
@@ -77,10 +81,13 @@ export class TikHubClient {
         body: { object_id: String(contentId), last_buffer: cursor, raw: true },
       });
     }
+    if (platform === 'douyin') {
+      return this.request(commentRoute(platform), {
+        params: { aweme_id: contentId, cursor: cursor ?? 0, count: 20 },
+      });
+    }
     return this.request(commentRoute(platform), {
-      method: platform === 'xiaohongshu' ? 'GET' : 'POST',
-      params: platform === 'xiaohongshu' ? { note_id: contentId, cursor } : null,
-      body: platform === 'xiaohongshu' ? null : { content_id: contentId, cursor },
+      params: { note_id: contentId, cursor },
     });
   }
 

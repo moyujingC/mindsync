@@ -117,6 +117,44 @@ test('TikHubClient uses documented creator and comment contracts for WeChat plat
   assert.deepEqual(JSON.parse(requests[3].options.body), { object_id: '14941130915890399732', last_buffer: 'next', raw: true });
 });
 
+test('TikHubClient uses documented GET creator and comment contracts for Douyin', async () => {
+  const requests = [];
+  const client = new TikHubClient({
+    apiKey: 'test-key',
+    fetchImpl: async (url, options) => {
+      requests.push({ url: String(url), options });
+      return jsonResponse({ code: 200, data: {} });
+    },
+  });
+
+  await client.getCreatorContents({ platform: 'douyin', creatorId: 'sec-user', cursor: '20', limit: 10 });
+  await client.getComments({ platform: 'douyin', contentId: 'aweme-001', cursor: '20' });
+
+  assert.match(requests[0].url, /fetch_user_post_videos\?sec_user_id=sec-user&max_cursor=20&count=10&sort_type=0/);
+  assert.equal(requests[0].options.method, 'GET');
+  assert.equal(requests[0].options.body, undefined);
+  assert.match(requests[1].url, /fetch_video_comments\?aweme_id=aweme-001&cursor=20&count=20/);
+  assert.equal(requests[1].options.method, 'GET');
+  assert.equal(requests[1].options.body, undefined);
+});
+
+test('TikHubClient sends zero as the initial Douyin cursor', async () => {
+  const urls = [];
+  const client = new TikHubClient({
+    apiKey: 'test-key',
+    fetchImpl: async (url) => {
+      urls.push(String(url));
+      return jsonResponse({ code: 200, data: {} });
+    },
+  });
+
+  await client.getCreatorContents({ platform: 'douyin', creatorId: 'sec-user' });
+  await client.getComments({ platform: 'douyin', contentId: 'aweme-001' });
+
+  assert.match(urls[0], /max_cursor=0/);
+  assert.match(urls[1], /cursor=0/);
+});
+
 test('TikHubClient rejects incomplete WeChat detail and comment identifiers', async () => {
   const client = new TikHubClient({ apiKey: 'test-key' });
 

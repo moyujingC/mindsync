@@ -88,6 +88,17 @@ test('sanitizeTikHubResponse bounds nested payloads and redacts generic identifi
   assert.equal(sanitized.response.body.data[0].nested.one.two.three.four.five, '[omitted-value]');
 });
 
+test('sanitizeTikHubResponse keeps structural fields from wide payloads', () => {
+  const response = { code: 200, data: { aweme_list: [{ aweme_id: 'video-001' }], has_more: 1, cursor: 20 } };
+  for (let index = 0; index < 30; index += 1) {
+    response.data[`noise_${index}`] = index;
+  }
+  const sanitized = sanitizeTikHubResponse({ path: '/api/v1/example', method: 'GET', params: null, body: null, status: 200, response });
+
+  assert.deepEqual(Object.keys(sanitized.response.body.data).sort(), ['aweme_list', 'cursor', 'has_more']);
+  assert.equal(sanitized.response.body.data.aweme_list[0].aweme_id, '[redacted-aweme_id]');
+});
+
 function jsonResponse(body) {
   return {
     ok: true,

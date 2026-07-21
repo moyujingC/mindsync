@@ -1,0 +1,44 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T13:30:29.819Z",
+  "request": {
+    "path": "/api/v1/douyin/app/v3/fetch_video_comments",
+    "method": "GET",
+    "params": {
+      "aweme_id": "[redacted-aweme_id]",
+      "cursor": 0,
+      "count": 20
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 06:30:55",
+      "time_stamp": 1784640655,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/1adba7f3-ce49-4092-9428-14acec89938b",
+      "router": "/api/v1/douyin/app/v3/fetch_video_comments",
+      "params": {
+        "aweme_id": "[redacted-aweme_id]",
+        "cursor": "0",
+        "count": "20"
+      },
+      "data": {
+        "status_code": 0,
+        "comments": null,
+        "cursor": 20,
+        "has_more": 0,
+        "total": 0
+      }
+    }
+  }
+}

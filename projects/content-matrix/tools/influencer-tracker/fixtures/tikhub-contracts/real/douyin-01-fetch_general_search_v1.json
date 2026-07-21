@@ -1,0 +1,139 @@
+{
+  "schema": "content-matrix/tikhub-contract-capture/v1",
+  "capturedAt": "2026-07-21T13:31:41.862Z",
+  "request": {
+    "path": "/api/v1/douyin/search/fetch_general_search_v1",
+    "method": "POST",
+    "params": {},
+    "body": {
+      "keyword": "企业 AI 工作流",
+      "cursor": null
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "code": 200,
+      "request_id": "[redacted-request_id]",
+      "message": "[redacted-message]",
+      "message_zh": "请求成功，本次请求将被计费。",
+      "support": "Discord: https://discord.gg/aMEAS8Xsvz",
+      "time": "2026-07-21 06:32:06",
+      "time_stamp": 1784640726,
+      "time_zone": "America/Los_Angeles",
+      "docs": "https://api.tikhub.io/",
+      "cache_message": "This response is cached and accessible via the URL below for 24 hours at no extra cost. The cache is for request tracing only — it doesn't affect the API's data freshness and won't be returned through the API again.",
+      "cache_message_zh": "本次响应已缓存，可通过下方 URL 直接查看，有效期 24 小时，访问缓存链接无额外费用。缓存仅用于请求溯源，不影响接口数据的时效性，也不会再次通过接口返回。",
+      "cache_url": "https://cache.tikhub.io/api/v1/cache/public/08025a68-2bf4-4912-bc79-ab5a7ebdc247",
+      "router": "/api/v1/douyin/search/fetch_general_search_v1",
+      "params": {
+        "keyword": "企业 AI 工作流",
+        "cursor": 0,
+        "sort_type": "0",
+        "publish_time": "0",
+        "filter_duration": "0",
+        "content_type": "0",
+        "search_id": "",
+        "backtrace": ""
+      },
+      "data": {
+        "status_code": 0,
+        "data": [
+          {
+            "aweme_info": {
+              "author": {
+                "uid": "[redacted-uid]",
+                "short_id": "31133705420",
+                "nickname": "[redacted-nickname]",
+                "gender": 1,
+                "signature": "[redacted-signature]",
+                "avatar_larger": {
+                  "uri": "1080x1080/aweme-avatar/tos-cn-avt-0015_8a16d3625879394c9f342fd1276a2d5a",
+                  "url_list": [
+                    "[omitted-value]"
+                  ],
+                  "width": 720,
+                  "height": 720
+                },
+                "avatar_thumb": {
+                  "uri": "100x100/aweme-avatar/tos-cn-avt-0015_8a16d3625879394c9f342fd1276a2d5a",
+                  "url_list": [
+                    "[omitted-value]"
+                  ],
+                  "width": 720,
+                  "height": 720
+                },
+                "avatar_medium": {
+                  "uri": "720x720/aweme-avatar/tos-cn-avt-0015_8a16d3625879394c9f342fd1276a2d5a",
+                  "url_list": [
+                    "[omitted-value]"
+                  ],
+                  "width": 720,
+                  "height": 720
+                },
+                "birthday": "",
+                "is_verified": true,
+                "follow_status": 0,
+                "aweme_count": 0
+              },
+              "statistics": {
+                "aweme_id": "[redacted-aweme_id]",
+                "comment_count": 28,
+                "digg_count": 2328,
+                "download_count": 15,
+                "play_count": 0,
+                "share_count": 489,
+                "forward_count": 0,
+                "lose_count": 0,
+                "lose_comment_count": 0,
+                "whatsapp_share_count": 0,
+                "digest": "",
+                "exposure_count": 0
+              },
+              "comment_list": null
+            },
+            "comment_list": [
+              {
+                "user": {
+                  "uid": "[redacted-uid]",
+                  "nickname": "[redacted-nickname]",
+                  "avatar_thumb": {
+                    "uri": "[omitted-value]",
+                    "url_list": "[omitted-array]",
+                    "width": "[omitted-value]",
+                    "height": "[omitted-value]"
+                  },
+                  "follow_status": 0,
+                  "unique_id": "144175779",
+                  "followers_detail": null,
+                  "platform_sync_info": null,
+                  "secret": "[redacted-secret]",
+                  "geofencing": null,
+                  "cover_url": null,
+                  "item_list": null,
+                  "new_story_cover": null
+                }
+              }
+            ],
+            "aweme_list": null,
+            "data": {
+              "card_tags": null,
+              "hotspot_tab_config": null,
+              "common_tab_config": null,
+              "recom_extra_info": {
+                "suggest_words_config": 3,
+                "suggest_words_params": {
+                  "product_id": "",
+                  "doc_type": "153",
+                  "item_id": "7592597588970557410"
+                }
+              }
+            }
+          }
+        ],
+        "cursor": 20,
+        "has_more": 1
+      }
+    }
+  }
+}
