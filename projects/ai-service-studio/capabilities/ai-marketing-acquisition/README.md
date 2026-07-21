@@ -5,7 +5,7 @@
 > owner：CEO / Orchestrator
 > last_updated：2026-07-15
 > source_of_truth：projects/ai-service-studio/capabilities/ai-marketing-acquisition/README.md
-> 关联内容系统：[AI 营销获客系统总定义](../../../content-matrix/specs/2026-07-15-AI营销获客系统总定义.md)
+> 关联内容系统：[AI 营销获客系统组件化重构方案](../../../content-matrix/specs/2026-07-21-AI营销获客系统组件化重构方案.md)
 
 ## 1. 能力定位
 

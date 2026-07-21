@@ -73,7 +73,7 @@
 
 ## 3.1 获客依据与内容系统
 
-`知行AI服务` 的公域内容和私域触达，应逐步接入 `内容矩阵` 下的 [AI 营销获客系统](../content-matrix/specs/2026-07-15-AI营销获客系统总定义.md)。
+`知行AI服务` 的公域内容和私域触达，应逐步接入 `内容矩阵` 下的 [AI 营销获客系统](../content-matrix/specs/2026-07-21-AI营销获客系统组件化重构方案.md)。
 
 这套系统把市场需求调研、博主 / 对标账号追踪、评论区需求归纳、选题、草稿、成稿、配图、排版、发布和反馈回流连成一条链路。
 
@@ -107,7 +107,7 @@
 - [AI 营销获客能力包](capabilities/ai-marketing-acquisition/README.md)
 - [行业方案包](industries/README.md)
 - [心理与疗愈行业方案包](industries/psychology-healing/README.md)
-- [AI 营销获客系统总定义](../content-matrix/specs/2026-07-15-AI营销获客系统总定义.md)
+- [AI 营销获客系统组件化重构方案](../content-matrix/specs/2026-07-21-AI营销获客系统组件化重构方案.md)
 - [AI 工作流诊断 SOP](sops/AI工作流诊断-SOP.md)
 - [AI 文档知识库整理 SOP](sops/AI文档知识库整理-SOP.md)
 - [低压力获客话术](outreach/低压力获客话术.md)
