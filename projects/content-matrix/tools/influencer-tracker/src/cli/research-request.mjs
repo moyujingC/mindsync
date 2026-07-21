@@ -8,6 +8,8 @@ import { LarkCliBitableClient } from '../feishu/lark-cli-client.mjs';
 import { collectTikHubResearch } from '../jobs/tikhub-collect.mjs';
 import { runResearchRequest } from '../jobs/research-request.mjs';
 import { listResearchTemplates } from '../orchestration/research-templates.mjs';
+import { resolveDetailContentLink } from '../platforms/content-link.mjs';
+import { normalizePlatformId } from '../platforms/platform-id.mjs';
 
 const args = parseArgs(process.argv.slice(2));
 const cwd = process.cwd();
@@ -22,8 +24,7 @@ try {
   const feishuClient = feishuConfig
     ? feishuConfig.mode === 'lark-cli' ? new LarkCliBitableClient(feishuConfig) : new FeishuBitableClient(feishuConfig)
     : null;
-  const result = await runResearchRequest({
-    request: {
+  const request = {
       requestId: args.requestId,
       templateId: args.template,
       projectName: args.projectName,
@@ -44,7 +45,21 @@ try {
         commentLimit: args.commentLimit ? Number(args.commentLimit) : undefined,
         commentPages: args.commentPages ? Number(args.commentPages) : undefined,
       },
-    },
+  };
+  if (request.collect.mode === 'detail' && request.collect.shareUrl) {
+    const resolved = await resolveDetailContentLink({ url: request.collect.shareUrl });
+    if (request.collect.platform) {
+      const providedPlatform = normalizePlatformId(request.collect.platform, 'provided platform');
+      if (providedPlatform !== resolved.platform) {
+        throw new Error(`Provided platform ${providedPlatform} does not match resolved link platform ${resolved.platform}`);
+      }
+    }
+    request.collect.platform = resolved.platform;
+    request.collect.shareUrl = resolved.finalUrl;
+    request.collect.contentId ??= resolved.contentId;
+  }
+  const result = await runResearchRequest({
+    request,
     collect: (collectRequest) => collectTikHubResearch({
       request: collectRequest,
       client: new TikHubClient(),
