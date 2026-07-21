@@ -35,6 +35,9 @@ description: 用小样本、可追溯证据和人工确认执行内容市场调�
 ## 当前命令
 
 ```bash
+# 真实联调前：只读检查 Key、飞书配置和闭环记录
+npm run preflight:readiness -- --feishu config/feishu.local.json
+
 # 真实数据源可用后使用 TikHub；先 dry-run 控制成本
 npm run research:run -- --template enterprise_ai_service --mode search --platform xiaohongshu --keyword '企业 AI 工作流' --dry-run
 
@@ -50,3 +53,4 @@ npm run research:confirm -- --request-id 'research-...' --candidate 1 --action �
 - 不把采集成功、报告数量或单条评论当作市场验证。
 - 不在没有真实反馈时启动每周 Agent Loop（代理循环）。
 - 不自动联络样本、报价或承诺服务结果。
+- 不跳过前检查就直接执行 TikHub 写入模式。

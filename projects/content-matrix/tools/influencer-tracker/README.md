@@ -60,6 +60,26 @@ export TIKHUB_API_KEY='你的 TikHub API Key'
 
 飞书配置使用本机忽略文件 `config/feishu.local.json`。示例结构见 `config/feishu.example.json`。
 
+## 真实联调前检查
+
+在启用真实 TikHub 采集前，先运行只读前检查。默认不请求 TikHub、不写飞书、不写研究台账；它检查 Key、可选飞书配置和已有真实发布反馈记录。
+
+```bash
+npm run preflight:readiness -- --feishu config/feishu.local.json
+```
+
+账户恢复后，才可显式加 `--probe` 访问一条公开链接，验证对应详情接口权限。探针不会写入内容、评论、博主、飞书或本地台账，但可能消耗一次 TikHub 调用。
+
+```bash
+npm run preflight:readiness -- \
+  --feishu config/feishu.local.json \
+  --probe \
+  --platform xiaohongshu \
+  --share-url '公开内容链接'
+```
+
+输出 `safeToRunWriteMode: true` 仅表示 Key 与飞书配置在本地检查中通过，不能替代真实响应、人工审核或业务成交验证。
+
 ## 研究请求：日常唯一入口
 
 研究请求会把采集、证据整理和候选选题串成一次可交接的 Workflow。它不会自动发布或联系任何人。每次运行同时生成研究简报和本地台账 `logs/research-requests.json`；台账记录请求范围、调用摘要、候选状态、人工决定和验证依据。

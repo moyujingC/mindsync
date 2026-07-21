@@ -8,6 +8,7 @@
     "research:confirm": "node src/cli/confirm-research-request.mjs",
     "research:handoff": "node src/cli/handoff-research-candidate.mjs",
     "research:manual": "node src/cli/manual-research.mjs",
+    "preflight:readiness": "node src/cli/preflight-readiness.mjs",
     "feedback:record": "node src/cli/record-publication-feedback.mjs",
     "media:refine": "node src/cli/refine-media.mjs",
     "collect:tikhub": "node src/cli/tikhub-collect.mjs",
