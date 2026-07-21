@@ -56,10 +56,78 @@ test('collectTikHubResearch only creates a creator from an explicit creator requ
   }));
 
   assert.equal(result.creators.createdCount, 1);
+  assert.equal(result.creators.items[0].externalId, 'sec-001');
   assert.equal(result.creators.items[0].homepageUrl, 'https://www.douyin.com/user/example');
   assert.deepEqual(writes.map((item) => item.tableName), ['creators', 'contents']);
   assert.equal(writes[0].records[0]['主页链接'], 'https://www.douyin.com/user/example');
   assert.equal(writes[0].records[0]['来源链接'], 'https://www.douyin.com/user/example');
+});
+
+test('collectTikHubResearch keeps the explicit creator ID when returned content names another author', async () => {
+  const writes = [];
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: {
+      mode: 'creator',
+      platform: 'douyin',
+      creatorId: 'sec-confirmed',
+      creatorHomepageUrl: 'https://www.douyin.com/user/confirmed',
+      creatorName: '人工确认账号',
+      limit: 1,
+    },
+    client: fakeClient(),
+    feishuClient: fakeFeishuClient(writes),
+    feishuConfig,
+    storePath,
+  }));
+
+  assert.equal(result.creators.createdCount, 1);
+  assert.deepEqual(result.creators.items[0], {
+    name: '人工确认账号',
+    platform: 'douyin',
+    externalId: 'sec-confirmed',
+    homepageUrl: 'https://www.douyin.com/user/confirmed',
+  });
+  assert.equal(writes[0].records[0]['平台账号ID'], 'sec-confirmed');
+});
+
+test('collectTikHubResearch creates an explicit creator when the account has no returned content', async () => {
+  const writes = [];
+  const client = {
+    async getCreatorContents() {
+      return response({ items: [] }, 1);
+    },
+  };
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: {
+      mode: 'creator',
+      platform: 'douyin',
+      creatorId: 'sec-empty',
+      creatorHomepageUrl: 'https://www.douyin.com/user/empty',
+      limit: 1,
+    },
+    client,
+    feishuClient: fakeFeishuClient(writes),
+    feishuConfig,
+    storePath,
+  }));
+
+  assert.equal(result.contents.fetchedCount, 0);
+  assert.equal(result.creators.createdCount, 1);
+  assert.equal(result.creators.items[0].name, '未命名账号');
+  assert.deepEqual(writes.map((item) => item.tableName), ['creators']);
+  assert.equal(writes[0].records[0]['启用状态'], '启用');
+});
+
+test('collectTikHubResearch rejects creator tracking without a confirmed homepage', async () => {
+  await assert.rejects(
+    () => collectTikHubResearch({
+      request: { mode: 'creator', platform: 'douyin', creatorId: 'sec-missing-homepage' },
+      client: fakeClient(),
+      storePath: join(tmpdir(), 'unused-creator-store.json'),
+      dryRun: true,
+    }),
+    /requires creatorId and creatorHomepageUrl/,
+  );
 });
 
 test('collectTikHubResearch limits keyword results and skips previously stored content', async () => {
@@ -179,7 +247,7 @@ test('collectTikHubResearch stops when TikHub repeats a cursor instead of loopin
   };
 
   const result = await withStore((storePath) => collectTikHubResearch({
-    request: { mode: 'creator', platform: 'douyin', creatorId: 'creator-1', limit: 5 },
+    request: { mode: 'creator', platform: 'douyin', creatorId: 'creator-1', creatorHomepageUrl: 'https://www.douyin.com/user/creator-1', limit: 5 },
     client,
     storePath,
     dryRun: true,

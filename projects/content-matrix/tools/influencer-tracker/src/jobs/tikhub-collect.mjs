@@ -274,22 +274,15 @@ async function loadExistingCreators({ feishuClient, feishuConfig, dryRun }) {
 }
 
 function uniqueCreators({ contents, request }) {
-  const creators = new Map();
-  for (const content of contents) {
-    if (!content.creatorExternalId) {
-      continue;
-    }
-    const key = `${toFeishuPlatform(content.platform)}:${content.creatorExternalId}`;
-    if (!creators.has(key)) {
-      creators.set(key, {
-        name: content.creatorName,
-        platform: content.platform,
-        externalId: content.creatorExternalId,
-        homepageUrl: request.creatorHomepageUrl ?? null,
-      });
-    }
-  }
-  return [...creators.values()];
+  // The caller explicitly confirmed this account; response author metadata may be stale or unrelated.
+  const matchingContent = contents.find((content) => content.creatorExternalId === request.creatorId);
+  const namedContent = matchingContent ?? contents.find((content) => content.creatorName?.trim());
+  return [{
+    name: request.creatorName?.trim() || namedContent?.creatorName?.trim() || '未命名账号',
+    platform: request.platform,
+    externalId: request.creatorId,
+    homepageUrl: request.creatorHomepageUrl,
+  }];
 }
 
 function validateRequest(request) {
@@ -306,8 +299,8 @@ function validateRequest(request) {
   if (request.mode === 'search' && !request.keyword) {
     throw new Error('TikHub search request requires keyword');
   }
-  if (request.mode === 'creator' && !request.creatorId) {
-    throw new Error('TikHub creator request requires creatorId');
+  if (request.mode === 'creator' && (!request.creatorId || !request.creatorHomepageUrl)) {
+    throw new Error('TikHub creator request requires creatorId and creatorHomepageUrl');
   }
 }
 
@@ -318,6 +311,7 @@ function sanitizedRequest(request) {
     keyword: request.keyword ?? null,
     creatorId: request.creatorId ?? null,
     creatorHomepageUrl: request.creatorHomepageUrl ?? null,
+    creatorName: request.creatorName ?? null,
     includeComments: Boolean(request.includeComments),
     limit: request.limit ?? DEFAULT_LIMIT,
     maxPages: request.maxPages ?? 10,
