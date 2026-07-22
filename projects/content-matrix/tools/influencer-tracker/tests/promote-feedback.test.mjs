@@ -96,6 +96,22 @@ test('promoteFeedbackToAiServiceStudio appends row to sample conversation record
   }
 });
 
+test('promoteFeedbackToAiServiceStudio retains affirmative signals with an operator note', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'influencer-promote-feedback-note-'));
+  const feedbackPath = join(dir, 'feedback.md');
+  const targetPath = join(dir, '样本沟通记录.md');
+  await writeFile(feedbackPath, feedbackMarkdown.replace('是否进入样本沟通：是', '是否进入样本沟通：是（模拟）'), 'utf8');
+  await writeFile(targetPath, recordMarkdown, 'utf8');
+
+  try {
+    await promoteFeedbackToAiServiceStudio({ feedbackPath, targetPath });
+    const output = await readFile(targetPath, 'utf8');
+    assert.match(output, /内容反馈已进入样本沟通/);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('promoteFeedbackToAiServiceStudio deduplicates by research candidate instead of record date', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'influencer-promote-feedback-dedupe-'));
   const feedbackPath = join(dir, 'feedback.md');

@@ -100,14 +100,18 @@ function buildSampleConversationRow({ feedback, serviceDirection, status, nextAc
     feedback.platform ? `平台：${feedback.platform}` : '',
     feedback.publishUrl ? `链接：${feedback.publishUrl}` : '',
     feedback.sourceInsightRecordId ? `研究候选：${feedback.sourceInsightRecordId}` : '',
-    feedback.consultationIntent === '是' ? '已有咨询意向' : '',
-    feedback.realProblem === '是' ? '出现真实问题' : '',
-    feedback.sampleWillingness === '是' ? '愿意提供资料样本' : '',
-    feedback.sampleConversation === '是' ? '内容反馈已进入样本沟通' : '内容反馈待进入样本沟通',
+    isYes(feedback.consultationIntent) ? '已有咨询意向' : '',
+    isYes(feedback.realProblem) ? '出现真实问题' : '',
+    isYes(feedback.sampleWillingness) ? '愿意提供资料样本' : '',
+    isYes(feedback.sampleConversation) ? '内容反馈已进入样本沟通' : '内容反馈待进入样本沟通',
     feedback.objections ? `反对意见：${truncateText(feedback.objections, 120)}` : '',
   ].filter(Boolean);
 
   return `| ${feedback.date} | ${feedback.objectName} | 内容反馈 | 待判断 | 内容咨询 | ${serviceDirection} | ${status} | ${nextAction} | ${noteParts.join('；')} |`;
+}
+
+function isYes(value) {
+  return String(value ?? '').trim().startsWith('是');
 }
 
 function truncateText(value, maxLength) {
