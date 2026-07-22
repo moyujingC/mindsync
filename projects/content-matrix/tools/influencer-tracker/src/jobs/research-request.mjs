@@ -330,10 +330,12 @@ function applyCandidateDecision({ candidate, action, decisionNote, verificationE
     candidate.verifiedAt = now;
     return;
   }
+  if (action === '已发布') {
+    throw new Error('Published status is only recorded by feedback:record after a real publication link is provided');
+  }
 
   const transitions = {
     转选题: { from: ['待人工审核'], to: '已转选题' },
-    已发布: { from: ['已转选题'], to: '已发布' },
     结束: { from: ['待人工审核', '已转选题', '已发布'], to: '已结束' },
   };
   const transition = transitions[action];

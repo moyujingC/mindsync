@@ -173,7 +173,7 @@ test('confirmResearchCandidate records human topic decision and rejects invalid 
         action: '已发布',
         decisionNote: '不应跳过选题人工确认。',
       }),
-      /cannot move directly from 待人工审核 to 已发布/,
+      /only recorded by feedback:record/,
     );
 
     const confirmed = await confirmResearchCandidate({
@@ -190,6 +190,17 @@ test('confirmResearchCandidate records human topic decision and rejects invalid 
     const brief = await readFile(confirmed.outputPath, 'utf8');
     assert.match(brief, /当前状态：已转选题/);
     assert.match(brief, /选题状态：已转选题/);
+
+    await assert.rejects(
+      () => confirmResearchCandidate({
+        ledgerPath: storePath,
+        requestId: 'research-confirm-1',
+        candidateIndex: 1,
+        action: '已发布',
+        decisionNote: '不能绕过真实发布链接。',
+      }),
+      /only recorded by feedback:record/,
+    );
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
