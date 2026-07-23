@@ -4,6 +4,25 @@ description: '馨冉求职 JD 数据库总索引。每次新增岗位时，同�
 
   '
 jobs:
+- job_id: 2026-07-23-anonymous-client-ai-forward-deployed-engineer-78121225-001
+  captured_at: '2026-07-23'
+  company: 某匿名客户（Manpower Services Hong Kong Limited 猎头代招）
+  role_title: AI 前线部署工程师（Forward Deployed Engineer, AI FDE）
+  city: 上海-嘉定区
+  source_platform: 猎聘
+  status: applied
+  applied_at: '2026-07-23'
+  primary_track: fde
+  match_score: 78
+  file: jobs/2026-07-23-某匿名客户-AI前线部署工程师-AI-FDE.md
+  keywords:
+  - AI FDE
+  - AI解决方案架构
+  - AI Coding
+  - Harness工程
+  - SDD
+  - CI/CD
+  - DevOps
 - job_id: 2026-07-20-anonymous-small-ai-company-product-technical-lead-001
   captured_at: '2026-07-20'
   company: 某小型人工智能公司（FuturX智音，需核实）
