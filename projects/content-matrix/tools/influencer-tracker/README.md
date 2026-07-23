@@ -66,6 +66,38 @@ export TIKHUB_API_KEY='你的 TikHub API Key'
 
 飞书配置使用本机忽略文件 `config/feishu.local.json`。示例结构见 `config/feishu.example.json`。
 
+## 手机链接收件箱
+
+“链接收件箱”用于保存手机上随机刷到的公开内容。它与“内容更新”分开：链接先可靠入箱，再由后台 Worker（后台处理器）异步采集，采集失败也不会丢失原始链接。
+
+```text
+内容 App 复制链接
+-> iPhone 背板双击快捷指令
+-> HTTPS 收件接口
+-> 飞书“链接收件箱” + 本地队列
+-> TikHub 详情和一页评论
+-> 内容更新 / 评论样本 / 研究请求 / 本地研究简报
+```
+
+收件服务只接受小红书、抖音、公众号和视频号的公开链接及官方短链。短链会安全展开；博主主页或无法识别的链接进入“需人工处理”，不会误触发内容采集。相同链接按最终链接去重。
+
+```bash
+# 常驻收件服务：只接收、解析和入队，不调用 TikHub。
+export INBOX_RECEIVER_TOKEN='随机生成的长 Token'
+npm run inbox:server -- --host 127.0.0.1 --port 8787
+
+# 单次消费一条待处理链接；可交给 systemd timer（定时器）每分钟运行。
+export TIKHUB_API_KEY='你的 TikHub API Key'
+npm run inbox:worker
+
+# 失败后，按飞书“链接收件箱”的收件 ID 显式重试。
+npm run inbox:worker -- --retry 'inbox-...'
+```
+
+可选设置 `FEISHU_GROUP_WEBHOOK_URL`，服务会向飞书群发送“已收件”“处理完成”或“处理失败”提示；通知失败不会影响入队和采集。完整的 iPhone 快捷指令与服务器部署步骤见 [链接收件箱部署说明](./docs/link-inbox-deployment.md)。
+
+收件 Worker 默认创建“墨予镜 / 收藏整理”的待人工确认研究请求，不会将随机内容自动判定为企业 AI 服务需求、自动成稿或自动发布。它采集公开内容元数据和评论并归档研究简报；视频转录仅接收你合法取得的本地媒体文件，再使用 `npm run media:process` 处理。
+
 ## 真实联调前检查
 
 在启用真实 TikHub 采集前，先运行只读前检查。默认不请求 TikHub、不写飞书、不写研究台账；它检查 Key、可选飞书配置和已有真实发布反馈记录。

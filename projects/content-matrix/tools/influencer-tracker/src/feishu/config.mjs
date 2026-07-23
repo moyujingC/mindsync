@@ -71,6 +71,19 @@ const OPTIONAL_TABLES = {
     'createdAt',
     'updatedAt',
   ],
+  linkInbox: [
+    'inboxId',
+    'originalUrl',
+    'finalUrl',
+    'platform',
+    'linkKind',
+    'receivedAt',
+    'source',
+    'status',
+    'result',
+    'retryCount',
+    'errorSummary',
+  ],
 };
 
 const OPTIONAL_TABLE_FIELDS = {

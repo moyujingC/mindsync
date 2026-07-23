@@ -271,6 +271,22 @@ export function mapResearchRequestToFeishuFields(request, fieldMap) {
   });
 }
 
+export function mapLinkInboxToFeishuFields(item, fieldMap) {
+  return compactObject({
+    [fieldMap.inboxId]: item.inboxId,
+    [fieldMap.originalUrl]: asFeishuUrl(item.originalUrl),
+    [fieldMap.finalUrl]: asFeishuUrl(item.finalUrl),
+    [fieldMap.platform]: toFeishuPlatform(item.platform),
+    [fieldMap.linkKind]: toFeishuLinkKind(item.linkKind),
+    [fieldMap.receivedAt]: item.receivedAt,
+    [fieldMap.source]: item.source,
+    [fieldMap.status]: item.status,
+    [fieldMap.result]: item.result ?? '',
+    [fieldMap.retryCount]: item.retryCount ?? 0,
+    [fieldMap.errorSummary]: item.errorSummary ?? '',
+  });
+}
+
 export function mapFeishuCommentRecord(record, fieldMap) {
   const fields = record.fields ?? {};
   const value = (key) => fields[fieldMap[key]];
@@ -357,6 +373,18 @@ function toFeishuCollectMode(mode) {
     search: '关键词搜索',
     creator: '账号采样',
   }[mode] ?? mode;
+}
+
+function asFeishuUrl(url) {
+  return url ? { link: url, text: url } : undefined;
+}
+
+function toFeishuLinkKind(kind) {
+  return {
+    content: '内容',
+    creator: '博主主页',
+    unknown: '未识别',
+  }[kind] ?? '未识别';
 }
 
 function toWorkspaceRelativePath(filePath) {

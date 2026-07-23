@@ -185,6 +185,35 @@ export const FEISHU_TABLE_SCHEMAS = {
       updatedAt: { field_name: '更新时间', type: FEISHU_FIELD_TYPES.date },
     },
   },
+  linkInbox: {
+    tableName: '链接收件箱',
+    defaultViewName: '全部收件',
+    fields: {
+      inboxId: { field_name: '收件ID', type: FEISHU_FIELD_TYPES.text },
+      originalUrl: { field_name: '原始链接', type: FEISHU_FIELD_TYPES.url },
+      finalUrl: { field_name: '最终链接', type: FEISHU_FIELD_TYPES.url },
+      platform: {
+        field_name: '平台',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['抖音', '小红书', '公众号', '视频号']) },
+      },
+      linkKind: {
+        field_name: '链接类型',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['内容', '博主主页', '未识别']) },
+      },
+      receivedAt: { field_name: '收件时间', type: FEISHU_FIELD_TYPES.date },
+      source: { field_name: '来源', type: FEISHU_FIELD_TYPES.text },
+      status: {
+        field_name: '状态',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['待处理', '处理中', '已完成', '失败', '需人工处理']) },
+      },
+      result: { field_name: '处理结果', type: FEISHU_FIELD_TYPES.text },
+      retryCount: { field_name: '重试次数', type: FEISHU_FIELD_TYPES.number },
+      errorSummary: { field_name: '错误摘要', type: FEISHU_FIELD_TYPES.text },
+    },
+  },
 };
 
 export function buildFieldNameMap(schema) {

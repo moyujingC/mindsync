@@ -53,6 +53,22 @@
         "nextAction": "建议动作",
         "status": "状态"
       }
+    },
+    "linkInbox": {
+      "tableId": "tbl_xxx",
+      "fields": {
+        "inboxId": "收件ID",
+        "originalUrl": "原始链接",
+        "finalUrl": "最终链接",
+        "platform": "平台",
+        "linkKind": "链接类型",
+        "receivedAt": "收件时间",
+        "source": "来源",
+        "status": "状态",
+        "result": "处理结果",
+        "retryCount": "重试次数",
+        "errorSummary": "错误摘要"
+      }
     }
   }
 }

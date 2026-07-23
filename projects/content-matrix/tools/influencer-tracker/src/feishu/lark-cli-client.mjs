@@ -269,5 +269,20 @@ function orderedFieldsForTable(tableName, fields) {
       fields.updatedAt,
     ].filter(Boolean);
   }
+  if (tableName === 'linkInbox') {
+    return [
+      fields.inboxId,
+      fields.originalUrl,
+      fields.finalUrl,
+      fields.platform,
+      fields.linkKind,
+      fields.receivedAt,
+      fields.source,
+      fields.status,
+      fields.result,
+      fields.retryCount,
+      fields.errorSummary,
+    ].filter(Boolean);
+  }
   return Object.values(fields);
 }

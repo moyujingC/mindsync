@@ -15,6 +15,8 @@
     "media:refine": "node src/cli/refine-media.mjs",
     "media:process": "node src/cli/process-media.mjs",
     "collect:tikhub": "node src/cli/tikhub-collect.mjs",
+    "inbox:server": "node src/cli/link-inbox-server.mjs --feishu config/feishu.local.json",
+    "inbox:worker": "node src/cli/link-inbox-worker.mjs --feishu config/feishu.local.json",
     "capture:tikhub-contract": "node src/cli/capture-tikhub-contract.mjs",
     "validate:tikhub-contracts": "node src/cli/validate-tikhub-contracts.mjs",
     "evaluate:agent-loop": "node src/cli/evaluate-agent-loop-readiness.mjs",

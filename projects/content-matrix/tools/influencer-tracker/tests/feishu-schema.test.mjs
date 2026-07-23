@@ -3,13 +3,14 @@ import assert from 'node:assert/strict';
 import { FEISHU_TABLE_SCHEMAS, buildFieldNameMap } from '../config/schema.mjs';
 import { validateFeishuConfig } from '../src/feishu/config.mjs';
 
-test('FEISHU_TABLE_SCHEMAS includes all MVP tables', () => {
+test('FEISHU_TABLE_SCHEMAS includes all content intelligence tables', () => {
   assert.deepEqual(Object.keys(FEISHU_TABLE_SCHEMAS), [
     'creators',
     'contents',
     'comments',
     'insights',
     'researchRequests',
+    'linkInbox',
   ]);
 });
 
@@ -34,6 +35,15 @@ test('insight schema only lists registered content accounts', () => {
     .map((option) => option.name);
 
   assert.deepEqual(options, ['墨予镜', '一镜一梳']);
+});
+
+test('link inbox schema separates received links from collected content', () => {
+  const fields = FEISHU_TABLE_SCHEMAS.linkInbox.fields;
+  assert.equal(fields.inboxId.field_name, '收件ID');
+  assert.deepEqual(
+    fields.status.property.options.map((option) => option.name),
+    ['待处理', '处理中', '已完成', '失败', '需人工处理'],
+  );
 });
 
 test('bootstrap schema can produce tracker config field maps', () => {
@@ -61,6 +71,10 @@ test('bootstrap schema can produce tracker config field maps', () => {
       researchRequests: {
         tableId: 'tbl_research_requests',
         fields: buildFieldNameMap(FEISHU_TABLE_SCHEMAS.researchRequests),
+      },
+      linkInbox: {
+        tableId: 'tbl_link_inbox',
+        fields: buildFieldNameMap(FEISHU_TABLE_SCHEMAS.linkInbox),
       },
     },
   };

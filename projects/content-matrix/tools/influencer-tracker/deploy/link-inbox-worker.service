@@ -1,0 +1,13 @@
+[Unit]
+Description=Content Matrix Link Inbox Worker
+After=network-online.target link-inbox.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/opt/mindsync/projects/content-matrix/tools/influencer-tracker
+EnvironmentFile=/etc/content-matrix-inbox.env
+ExecStart=/usr/bin/env npm run inbox:worker
+NoNewPrivileges=true
+PrivateTmp=true

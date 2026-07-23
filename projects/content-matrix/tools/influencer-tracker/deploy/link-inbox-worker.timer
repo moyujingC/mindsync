@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Content Matrix Link Inbox Worker Every Minute
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=60
+Persistent=true
+Unit=link-inbox-worker.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,18 @@
+[Unit]
+Description=Content Matrix Link Inbox HTTP Receiver
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/mindsync/projects/content-matrix/tools/influencer-tracker
+EnvironmentFile=/etc/content-matrix-inbox.env
+ExecStart=/usr/bin/env npm run inbox:server -- --host 127.0.0.1 --port 8787
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
