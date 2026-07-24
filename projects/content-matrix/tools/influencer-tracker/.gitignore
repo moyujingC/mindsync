@@ -1,2 +1,3 @@
 logs/
 config/feishu.local.json
+config/runtime.env

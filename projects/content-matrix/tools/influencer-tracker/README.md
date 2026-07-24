@@ -64,6 +64,8 @@ TikHub Key 只从环境变量读取，不写入仓库或飞书配置：
 export TIKHUB_API_KEY='你的 TikHub API Key'
 ```
 
+本机日常运行可将 Key 写入被 Git 忽略的 `config/runtime.env`（从 `config/runtime.env.example` 创建）。`research:run`、`collect:tikhub`、`preflight:readiness` 和 `inbox:worker` 会自动加载该文件；不要将它提交到仓库。
+
 飞书配置使用本机忽略文件 `config/feishu.local.json`。示例结构见 `config/feishu.example.json`。
 
 ## 手机链接收件箱
