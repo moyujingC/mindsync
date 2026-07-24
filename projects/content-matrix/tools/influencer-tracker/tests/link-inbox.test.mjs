@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { receiveLink } from '../src/inbox/link-inbox.mjs';
+import { ingestFeishuInboxRows, receiveLink } from '../src/inbox/link-inbox.mjs';
 import { processNextLinkInbox, retryLinkInbox } from '../src/inbox/link-inbox-worker.mjs';
 import { LinkInboxStore } from '../src/storage/link-inbox-store.mjs';
 
@@ -123,6 +123,63 @@ test('receiveLink keeps a local receipt when optional Feishu sync fails', async 
   });
 });
 
+test('worker imports a Feishu web row, completes it in place, and does not create a duplicate', async () => {
+  await withInbox(async (storePath) => {
+    const fields = inboxFields();
+    const updates = [];
+    const feishuClient = {
+      async listRecords() {
+        return [{
+          record_id: 'rec_web_001',
+          fields: {
+            原始链接: 'https://www.douyin.com/video/1234567890',
+            状态: '待处理',
+          },
+        }];
+      },
+      async updateRecord(tableName, recordId, update) {
+        updates.push({ tableName, recordId, update });
+      },
+    };
+    const result = await processNextLinkInbox({
+      storePath,
+      feishuClient,
+      feishuConfig: { tables: { linkInbox: { fields } } },
+      processItem: async () => ({ requestId: 'research-web-001' }),
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.feishu.import.importedCount, 1);
+    assert.equal(result.item.status, '已完成');
+    assert.deepEqual(updates.map((item) => item.recordId), ['rec_web_001', 'rec_web_001', 'rec_web_001']);
+    assert.equal(updates.at(-1).update.状态, '已完成');
+  });
+});
+
+test('Feishu web creator links are marked for manual review without entering the local queue', async () => {
+  await withInbox(async (storePath) => {
+    const store = new LinkInboxStore({ filePath: storePath });
+    await store.load();
+    const updates = [];
+    const result = await ingestFeishuInboxRows({
+      store,
+      feishuConfig: { tables: { linkInbox: { fields: inboxFields() } } },
+      feishuClient: {
+        async listRecords() {
+          return [{ record_id: 'rec_creator_001', fields: { 原始链接: 'https://www.douyin.com/user/example' } }];
+        },
+        async updateRecord(tableName, recordId, update) { updates.push({ tableName, recordId, update }); },
+      },
+      resolveLink: async () => ({ ...resolvedContent(), finalUrl: 'https://www.douyin.com/user/example', kind: 'creator', contentId: null }),
+    });
+
+    assert.equal(result.importedCount, 1);
+    assert.equal(result.manualReviewCount, 1);
+    assert.equal(store.claimNext(), null);
+    assert.equal(updates[0].update.状态, '需人工处理');
+  });
+});
+
 async function withInbox(run) {
   const dir = await mkdtemp(join(tmpdir(), 'link-inbox-'));
   try {
@@ -140,5 +197,21 @@ function resolvedContent() {
     platform: 'douyin',
     kind: 'content',
     contentId: '1234567890',
+  };
+}
+
+function inboxFields() {
+  return {
+    inboxId: '收件ID',
+    originalUrl: '原始链接',
+    finalUrl: '最终链接',
+    platform: '平台',
+    linkKind: '链接类型',
+    receivedAt: '收件时间',
+    source: '来源',
+    status: '状态',
+    result: '处理结果',
+    retryCount: '重试次数',
+    errorSummary: '错误摘要',
   };
 }

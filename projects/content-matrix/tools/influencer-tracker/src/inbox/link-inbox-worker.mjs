@@ -4,8 +4,9 @@ import { FeishuBitableClient } from '../feishu/client.mjs';
 import { collectTikHubResearch } from '../jobs/tikhub-collect.mjs';
 import { runResearchRequest } from '../jobs/research-request.mjs';
 import { TikHubClient } from '../platforms/tikhub/client.mjs';
+import { resolveContentLink } from '../platforms/content-link.mjs';
 import { LinkInboxStore } from '../storage/link-inbox-store.mjs';
-import { syncLinkInboxToFeishu } from './link-inbox.mjs';
+import { ingestFeishuInboxRows, syncLinkInboxToFeishu } from './link-inbox.mjs';
 
 export async function processNextLinkInbox({
   storePath,
@@ -19,8 +20,9 @@ export async function processNextLinkInbox({
 }) {
   const store = new LinkInboxStore({ filePath: storePath });
   await store.load();
+  const feishuImport = await ingestFeishuSafely({ store, feishuClient, feishuConfig });
   const claimed = store.claimNext();
-  if (!claimed) return { processed: false, reason: 'empty' };
+  if (!claimed) return { processed: false, reason: 'empty', feishuImport };
   await store.save();
   const claimSync = await syncSafely({ item: claimed, feishuClient, feishuConfig });
 
@@ -42,7 +44,7 @@ export async function processNextLinkInbox({
       title: '链接收件箱：处理完成',
       lines: [`收件ID：${completed.inboxId}`, completed.result],
     });
-    return { processed: true, ok: true, item: completed, result, feishu: { claim: claimSync, completion: completionSync } };
+    return { processed: true, ok: true, item: completed, result, feishu: { import: feishuImport, claim: claimSync, completion: completionSync } };
   } catch (error) {
     const failed = store.fail(claimed.inboxId, error);
     await store.save();
@@ -51,7 +53,7 @@ export async function processNextLinkInbox({
       title: '链接收件箱：处理失败',
       lines: [`收件ID：${failed.inboxId}`, `错误：${failed.errorSummary}`],
     });
-    return { processed: true, ok: false, item: failed, error: summarizeError(error), feishu: { claim: claimSync, failure: failureSync } };
+    return { processed: true, ok: false, item: failed, error: summarizeError(error), feishu: { import: feishuImport, claim: claimSync, failure: failureSync } };
   }
 }
 
@@ -103,6 +105,20 @@ async function syncSafely({ item, feishuClient, feishuConfig }) {
     return await syncLinkInboxToFeishu({ item, feishuClient, feishuConfig });
   } catch (error) {
     return { synced: false, reason: 'sync-failed', error: summarizeError(error) };
+  }
+}
+
+async function ingestFeishuSafely({ store, feishuClient, feishuConfig }) {
+  try {
+    return await ingestFeishuInboxRows({
+      store,
+      feishuClient,
+      feishuConfig,
+      resolveLink: resolveContentLink,
+    });
+  } catch (error) {
+    // Existing local queue items remain processable while Feishu is temporarily unavailable.
+    return { scannedCount: 0, importedCount: 0, duplicateCount: 0, manualReviewCount: 0, errorCount: 0, reason: 'sync-failed', error: summarizeError(error) };
   }
 }
 
