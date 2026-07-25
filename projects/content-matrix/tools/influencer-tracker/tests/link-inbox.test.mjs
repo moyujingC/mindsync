@@ -156,6 +156,36 @@ test('worker imports a Feishu web row, completes it in place, and does not creat
   });
 });
 
+test('worker accepts a Feishu Markdown-formatted pasted link', async () => {
+  await withInbox(async (storePath) => {
+    const fields = inboxFields();
+    const updates = [];
+    const result = await processNextLinkInbox({
+      storePath,
+      feishuClient: {
+        async listRecords() {
+          return [{
+            record_id: 'rec_web_markdown_001',
+            fields: { 原始链接: '[抖音链接](https://www.douyin.com/video/1234567890)', 状态: '待处理' },
+          }];
+        },
+        async updateRecord(tableName, recordId, update) { updates.push({ tableName, recordId, update }); },
+      },
+      feishuConfig: { tables: { linkInbox: { fields } } },
+      processItem: async () => ({ requestId: 'research-web-markdown-001' }),
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.feishu.import.importedCount, 1);
+    assert.equal(result.item.originalUrl, 'https://www.douyin.com/video/1234567890');
+    assert.deepEqual(updates.map((item) => item.recordId), [
+      'rec_web_markdown_001',
+      'rec_web_markdown_001',
+      'rec_web_markdown_001',
+    ]);
+  });
+});
+
 test('Feishu web creator links are marked for manual review without entering the local queue', async () => {
   await withInbox(async (storePath) => {
     const store = new LinkInboxStore({ filePath: storePath });

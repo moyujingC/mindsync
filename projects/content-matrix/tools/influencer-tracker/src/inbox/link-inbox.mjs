@@ -66,8 +66,7 @@ export async function ingestFeishuInboxRows({
   };
 
   for (const record of rows) {
-    const url = extractFeishuTextField(record, fields.originalUrl)
-      || extractFeishuTextField(record, fields.finalUrl);
+    const url = extractInboxUrl(record, fields);
     try {
       const resolved = await resolveLink({ url });
       const received = store.enqueue({
@@ -104,10 +103,19 @@ export async function ingestFeishuInboxRows({
 
 function isManualInboxRow({ record, fields }) {
   const inboxId = extractFeishuTextField(record, fields.inboxId);
-  const url = extractFeishuTextField(record, fields.originalUrl)
-    || extractFeishuTextField(record, fields.finalUrl);
+  const url = extractInboxUrl(record, fields);
   const status = extractFeishuTextField(record, fields.status);
   return !inboxId && Boolean(url) && (!status || status === '待处理');
+}
+
+function extractInboxUrl(record, fields) {
+  const value = extractFeishuTextField(record, fields.originalUrl)
+    || extractFeishuTextField(record, fields.finalUrl);
+  if (typeof value !== 'string') return value;
+
+  // Feishu may render a pasted URL as [label](URL) in text fields.
+  const markdownUrl = value.match(/\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/i)?.[1];
+  return (markdownUrl ?? value).trim();
 }
 
 function normalizeSource(source) {
