@@ -15,6 +15,7 @@
     "media:refine": "node src/cli/refine-media.mjs",
     "media:process": "node src/cli/process-media.mjs",
     "collect:tikhub": "node --env-file-if-exists=config/runtime.env src/cli/tikhub-collect.mjs",
+    "worker:feishu": "node --env-file-if-exists=config/runtime.env src/cli/feishu-creator-worker.mjs --feishu config/feishu.local.json",
     "inbox:server": "node --env-file-if-exists=config/runtime.env src/cli/link-inbox-server.mjs --feishu config/feishu.local.json",
     "inbox:worker": "node --env-file-if-exists=config/runtime.env src/cli/link-inbox-worker.mjs --feishu config/feishu.local.json",
     "capture:tikhub-contract": "node src/cli/capture-tikhub-contract.mjs",

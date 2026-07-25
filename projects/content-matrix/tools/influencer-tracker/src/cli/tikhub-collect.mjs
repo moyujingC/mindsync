@@ -41,6 +41,8 @@ async function buildRequest(args) {
     contentId: args.contentId,
     keyword: args.keyword,
     creatorId: args.creatorId,
+    creatorRecordId: args.creatorRecordId,
+    creatorSourceLink: args.creatorSourceLink,
     creatorHomepageUrl: args.creatorHomepageUrl,
     creatorName: args.creatorName,
     includeComments: Boolean(args.includeComments),

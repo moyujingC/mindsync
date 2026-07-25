@@ -66,12 +66,14 @@ function describePlatformPath({ platform, url }) {
   if (platform === 'xiaohongshu') {
     const contentId = path.match(/\/(?:explore|discovery\/item)\/([^/?#]+)/)?.[1];
     if (contentId) return { kind: 'content', contentId };
-    if (/\/user\/profile\//.test(path)) return { kind: 'creator', contentId: null };
+    const creatorId = path.match(/\/user\/profile\/([^/?#]+)/)?.[1] ?? null;
+    if (creatorId) return { kind: 'creator', contentId: null, creatorId };
   }
   if (platform === 'douyin') {
     const contentId = path.match(/\/(?:video|share\/video)\/(\d+)/)?.[1];
     if (contentId) return { kind: 'content', contentId };
-    if (/\/user\//.test(path)) return { kind: 'creator', contentId: null };
+    const creatorId = url.searchParams.get('sec_uid') ?? path.match(/\/user\/([^/?#]+)/)?.[1] ?? null;
+    if (creatorId) return { kind: 'creator', contentId: null, creatorId };
   }
   if (platform === 'wechat_mp') {
     if (path === '/s' && url.searchParams.has('__biz') && url.searchParams.has('mid')) {
@@ -81,7 +83,8 @@ function describePlatformPath({ platform, url }) {
   if (platform === 'wechat_channels') {
     const contentId = url.searchParams.get('object_id') ?? path.match(/\/(\d{8,})(?:\/)?$/)?.[1];
     if (contentId) return { kind: 'content', contentId };
-    if (/\/finder\//.test(path)) return { kind: 'creator', contentId: null };
+    const creatorId = url.searchParams.get('finder_username') ?? path.match(/\/finder\/([^/?#]+)/)?.[1] ?? null;
+    if (creatorId) return { kind: 'creator', contentId: null, creatorId };
   }
   return { kind: 'unknown', contentId: null };
 }

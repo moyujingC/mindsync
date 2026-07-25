@@ -31,6 +31,17 @@ test('describeContentLink identifies WeChat MP articles without a network reques
   assert.equal(result.contentId, '123');
 });
 
+test('describeContentLink extracts a Douyin sec_uid from a creator homepage', () => {
+  const result = describeContentLink({
+    originalUrl: 'https://www.douyin.com/user/dyo59example?sec_uid=MS4wLjABAAAA-sec-user',
+    finalUrl: 'https://www.douyin.com/user/dyo59example?sec_uid=MS4wLjABAAAA-sec-user',
+  });
+
+  assert.equal(result.kind, 'creator');
+  assert.equal(result.platform, 'douyin');
+  assert.equal(result.creatorId, 'MS4wLjABAAAA-sec-user');
+});
+
 test('resolveContentLink does not fetch an already recognized content URL', async () => {
   const result = await resolveContentLink({
     url: 'https://mp.weixin.qq.com/s?__biz=abc&mid=123&idx=1',

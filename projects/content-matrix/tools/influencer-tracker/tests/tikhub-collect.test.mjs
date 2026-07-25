@@ -63,6 +63,46 @@ test('collectTikHubResearch only creates a creator from an explicit creator requ
   assert.equal(writes[0].records[0]['来源链接'], 'https://www.douyin.com/user/example');
 });
 
+test('collectTikHubResearch updates an explicitly identified Feishu creator row instead of creating a duplicate', async () => {
+  const writes = [];
+  const updates = [];
+  const feishuClient = fakeFeishuClient(writes);
+  feishuClient.updateRecord = async (tableName, recordId, fields) => updates.push({ tableName, recordId, fields });
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: {
+      mode: 'creator',
+      platform: 'douyin',
+      creatorId: 'MS4wLjABAAAA-sec-user',
+      creatorHomepageUrl: 'https://www.douyin.com/user/dyo59example?sec_uid=MS4wLjABAAAA-sec-user',
+      creatorSourceLink: 'https://v.douyin.com/short-creator',
+      creatorRecordId: 'rec_manual_creator',
+      limit: 1,
+    },
+    client: fakeClient(),
+    feishuClient,
+    feishuConfig,
+    storePath,
+  }));
+
+  assert.equal(result.creators.createdCount, 0);
+  assert.equal(result.creators.updatedCount, 1);
+  assert.equal(result.creators.recordId, 'rec_manual_creator');
+  assert.deepEqual(updates, [{
+    tableName: 'creators',
+    recordId: 'rec_manual_creator',
+    fields: {
+      平台: '抖音',
+      平台账号ID: 'MS4wLjABAAAA-sec-user',
+      主页链接: 'https://www.douyin.com/user/dyo59example?sec_uid=MS4wLjABAAAA-sec-user',
+      来源链接: 'https://v.douyin.com/short-creator',
+      链接类型: '博主主页',
+      数据源类型: 'TikHub',
+      数据源地址: 'TikHub',
+    },
+  }]);
+  assert.deepEqual(writes.map((item) => item.tableName), ['contents']);
+});
+
 test('collectTikHubResearch keeps the explicit creator ID when returned content names another author', async () => {
   const writes = [];
   const result = await withStore((storePath) => collectTikHubResearch({

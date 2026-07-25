@@ -1,5 +1,5 @@
 import { ContentStore } from '../storage/content-store.mjs';
-import { extractFeishuTextField, mapCommentToFeishuFields, mapContentToFeishuFields, toFeishuPlatform } from '../feishu/client.mjs';
+import { extractFeishuTextField, mapCommentToFeishuFields, mapContentToFeishuFields, mapCreatorTaskFields, toFeishuPlatform } from '../feishu/client.mjs';
 import { extractTikHubPage, normalizeTikHubComments, normalizeTikHubContent } from '../platforms/tikhub/normalize.mjs';
 import { contentKeyAliases, normalizePlatformId } from '../platforms/platform-id.mjs';
 import { describeContentLink } from '../platforms/content-link.mjs';
@@ -105,6 +105,29 @@ async function syncCreators({ request, contents, feishuClient, feishuConfig, dry
   const candidates = uniqueCreators({ contents, request });
   if (candidates.length === 0) {
     return { createdCount: 0, duplicateCount: 0, items: [] };
+  }
+  if (request.creatorRecordId) {
+    const creator = candidates[0];
+    if (!dryRun && feishuClient) {
+      const fields = feishuConfig.tables.creators.fields;
+      await feishuClient.updateRecord('creators', request.creatorRecordId, mapCreatorTaskFields({
+        platform: toFeishuPlatform(creator.platform),
+        externalId: creator.externalId,
+        homepageUrl: creator.homepageUrl,
+        sourceLink: request.creatorSourceLink ?? creator.homepageUrl,
+        linkType: '博主主页',
+        sourceKind: 'TikHub',
+        sourcePath: 'TikHub',
+      }, fields));
+    }
+    return {
+      createdCount: 0,
+      updatedCount: 1,
+      duplicateCount: 0,
+      items: [creator],
+      recordId: request.creatorRecordId,
+      reason: 'updated-explicit-feishu-creator-record',
+    };
   }
   const newCreators = [];
   for (const creator of candidates) {
@@ -329,6 +352,8 @@ function sanitizedRequest(request) {
     creatorId: request.creatorId ?? null,
     creatorHomepageUrl: request.creatorHomepageUrl ?? null,
     creatorName: request.creatorName ?? null,
+    creatorRecordId: request.creatorRecordId ?? null,
+    creatorSourceLink: request.creatorSourceLink ?? null,
     includeComments: Boolean(request.includeComments),
     limit: request.limit ?? DEFAULT_LIMIT,
     maxPages: request.maxPages ?? 10,
