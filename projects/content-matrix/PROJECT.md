@@ -89,3 +89,4 @@
 - [iPhone 链接收件与飞书群编排规格](./specs/2026-07-23-iPhone链接收件与飞书群编排规格.md)
 - [iPhone 链接收件箱实现记录](./delivery/2026-07-23-iPhone链接收件箱实现记录.md)
 - [真实运行通路复核计划](./tasks/2026-07-25-AI营销获客系统真实运行通路复核计划.md)
+- [Hermes 与服务器 Worker 上线计划](./tasks/2026-07-25-Hermes与服务器Worker上线计划.md)
