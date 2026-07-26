@@ -8,6 +8,7 @@ test('FEISHU_TABLE_SCHEMAS includes all content intelligence tables', () => {
     'creators',
     'contents',
     'comments',
+    'engagementSnapshots',
     'insights',
     'researchRequests',
     'linkInbox',

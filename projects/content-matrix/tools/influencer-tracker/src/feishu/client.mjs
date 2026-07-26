@@ -234,6 +234,22 @@ export function mapCommentToFeishuFields(comment, fieldMap) {
   });
 }
 
+export function mapEngagementSnapshotToFeishuFields(snapshot, fieldMap) {
+  return compactObject({
+    [fieldMap.snapshotKey]: snapshot.snapshotKey,
+    [fieldMap.contentKey]: snapshot.contentUniqueKey,
+    [fieldMap.publishedAt]: snapshot.publishedAt,
+    [fieldMap.capturedAt]: snapshot.capturedAt,
+    [fieldMap.contentAgeDays]: snapshot.contentAgeDays,
+    [fieldMap.likeCount]: snapshot.metrics.likeCount,
+    [fieldMap.commentCount]: snapshot.metrics.commentCount,
+    [fieldMap.favoriteCount]: snapshot.metrics.favoriteCount,
+    [fieldMap.shareCount]: snapshot.metrics.shareCount,
+    [fieldMap.runId]: snapshot.runId,
+    [fieldMap.source]: snapshot.source,
+  });
+}
+
 export function mapTopicCandidateToFeishuFields(candidate, fieldMap) {
   return compactObject({
     [fieldMap.title]: candidate.topicTitle,

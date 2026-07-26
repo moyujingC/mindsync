@@ -126,6 +126,23 @@ export const FEISHU_TABLE_SCHEMAS = {
       },
     },
   },
+  engagementSnapshots: {
+    tableName: '互动快照',
+    defaultViewName: '全部快照',
+    fields: {
+      snapshotKey: { field_name: '快照唯一键', type: FEISHU_FIELD_TYPES.text },
+      contentKey: { field_name: '内容唯一键', type: FEISHU_FIELD_TYPES.text },
+      publishedAt: { field_name: '发布时间', type: FEISHU_FIELD_TYPES.date },
+      capturedAt: { field_name: '快照时间', type: FEISHU_FIELD_TYPES.date },
+      contentAgeDays: { field_name: '内容年龄（天）', type: FEISHU_FIELD_TYPES.number },
+      likeCount: { field_name: '点赞数', type: FEISHU_FIELD_TYPES.number },
+      commentCount: { field_name: '评论数', type: FEISHU_FIELD_TYPES.number },
+      favoriteCount: { field_name: '收藏数', type: FEISHU_FIELD_TYPES.number },
+      shareCount: { field_name: '转发/分享数', type: FEISHU_FIELD_TYPES.number },
+      runId: { field_name: '采集批次', type: FEISHU_FIELD_TYPES.text },
+      source: { field_name: '数据源', type: FEISHU_FIELD_TYPES.text },
+    },
+  },
   insights: {
     tableName: '洞察与选题',
     defaultViewName: '全部洞察',

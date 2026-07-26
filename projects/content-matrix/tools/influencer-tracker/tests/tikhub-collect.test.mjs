@@ -13,6 +13,57 @@ const feishuConfig = {
   },
 };
 
+test('collectTikHubResearch creates an immutable engagement snapshot for collected content', async () => {
+  const writes = [];
+  const config = {
+    ...feishuConfig,
+    tables: { ...feishuConfig.tables, engagementSnapshots: { fields: snapshotFields() } },
+  };
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: { mode: 'detail', platform: 'douyin', shareUrl: 'https://www.douyin.com/video/1', runId: 'backfill-001' },
+    client: fakeClient(), feishuClient: fakeFeishuClient(writes), feishuConfig: config, storePath,
+  }));
+
+  assert.equal(result.engagementSnapshots.createdCount, 1);
+  assert.equal(result.engagementSnapshots.items[0].runId, 'backfill-001');
+  assert.equal(writes.at(-1).tableName, 'engagementSnapshots');
+  assert.equal(writes.at(-1).records[0]['内容唯一键'], result.engagementSnapshots.items[0].contentUniqueKey);
+  assert.match(writes.at(-1).records[0]['快照唯一键'], new RegExp(`^${result.engagementSnapshots.items[0].contentUniqueKey}:`));
+});
+
+test('collectTikHubResearch filters creator results older than the requested backfill window', async () => {
+  const client = {
+    async getCreatorContents() {
+      return response({ aweme_list: [
+        { aweme_id: 'recent', desc: '近期', create_time: '2026-07-20T00:00:00.000Z', author: { nickname: '作者' } },
+        { aweme_id: 'old', desc: '过期', create_time: '2026-01-01T00:00:00.000Z', author: { nickname: '作者' } },
+      ] }, 1);
+    },
+  };
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: { mode: 'creator', platform: 'douyin', creatorId: 'creator-1', creatorHomepageUrl: 'https://www.douyin.com/user/example', limit: 10, publishedAfter: '2026-06-01T00:00:00.000Z' },
+    client, storePath, dryRun: true,
+  }));
+  assert.deepEqual(result.contents.items.map((item) => item.contentExternalId), ['recent']);
+});
+
+test('creator backfill stops paging after an entirely expired page', async () => {
+  let calls = 0;
+  const client = {
+    async getCreatorContents() {
+      calls += 1;
+      return response({ aweme_list: [{ aweme_id: `old-${calls}`, desc: '过期', create_time: '2026-01-01T00:00:00.000Z', author: { nickname: '作者' } }], has_more: true, cursor: String(calls) }, 1);
+    },
+  };
+  const result = await withStore((storePath) => collectTikHubResearch({
+    request: { mode: 'creator', platform: 'douyin', creatorId: 'creator-2', creatorHomepageUrl: 'https://www.douyin.com/user/example', limit: 100, publishedAfter: '2026-06-01T00:00:00.000Z' },
+    client, storePath, dryRun: true,
+  }));
+  assert.equal(calls, 1);
+  assert.equal(result.audit.pagination.contents.stoppedReason, 'published-window-reached');
+  assert.equal(result.contents.fetchedCount, 0);
+});
+
 test('collectTikHubResearch imports one Xiaohongshu link and its comments into Feishu', async () => {
   const writes = [];
   const result = await withStore(async (storePath) => collectTikHubResearch({
@@ -493,6 +544,13 @@ function creatorFields() {
 
 function commentFields() {
   return { commentKey: '评论唯一键', contentKey: '内容唯一键', commentText: '评论文本', commentedAt: '评论时间', likeCount: '点赞数', userHandle: '用户标识', demandType: '需求类型', sentiment: '情绪倾向', insightStatus: '是否进入洞察' };
+}
+
+function snapshotFields() {
+  return {
+    snapshotKey: '快照唯一键', contentKey: '内容唯一键', publishedAt: '发布时间', capturedAt: '快照时间', contentAgeDays: '内容年龄（天）',
+    likeCount: '点赞数', commentCount: '评论数', favoriteCount: '收藏数', shareCount: '转发/分享数', runId: '采集批次', source: '数据源',
+  };
 }
 
 async function withStore(run) {

@@ -84,6 +84,10 @@ const OPTIONAL_TABLES = {
     'retryCount',
     'errorSummary',
   ],
+  engagementSnapshots: [
+    'snapshotKey', 'contentKey', 'publishedAt', 'capturedAt', 'contentAgeDays',
+    'likeCount', 'commentCount', 'favoriteCount', 'shareCount', 'runId', 'source',
+  ],
 };
 
 const OPTIONAL_TABLE_FIELDS = {

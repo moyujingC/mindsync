@@ -37,10 +37,11 @@ test('Feishu creator worker resolves a short link and updates the same creator r
         originalUrl: 'https://v.douyin.com/short-creator',
         finalUrl: 'https://www.douyin.com/user/dyo59placeholder?sec_uid=MS4wLjABAAAA-sec-user',
       }),
-      collect: async ({ creator: prepared }) => {
+      collect: async ({ creator: prepared, backfillDays }) => {
         assert.equal(prepared.recordId, 'rec_manual_creator');
         assert.equal(prepared.externalId, 'MS4wLjABAAAA-sec-user');
-        return { contents: { createdCount: 2, duplicateCount: 0, items: [] } };
+        assert.equal(backfillDays, 90);
+        return { contents: { createdCount: 2, duplicateCount: 0, items: [] }, engagementSnapshots: { createdCount: 2 } };
       },
     });
 
@@ -54,6 +55,7 @@ test('Feishu creator worker resolves a short link and updates the same creator r
     assert.equal(updates[1].fields['平台账号ID'], 'MS4wLjABAAAA-sec-user');
     assert.equal(updates.at(-1).fields['任务状态'], '完成');
     assert.equal(updates.at(-1).fields['采集动作'], '无');
+    assert.match(updates.at(-1).fields['任务报告'], /互动快照 2 条/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

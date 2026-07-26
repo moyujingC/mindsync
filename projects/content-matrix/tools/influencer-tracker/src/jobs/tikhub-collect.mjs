@@ -1,5 +1,5 @@
 import { ContentStore } from '../storage/content-store.mjs';
-import { extractFeishuTextField, mapCommentToFeishuFields, mapContentToFeishuFields, mapCreatorTaskFields, toFeishuPlatform } from '../feishu/client.mjs';
+import { extractFeishuTextField, mapCommentToFeishuFields, mapContentToFeishuFields, mapCreatorTaskFields, mapEngagementSnapshotToFeishuFields, toFeishuPlatform } from '../feishu/client.mjs';
 import { extractTikHubPage, normalizeTikHubComments, normalizeTikHubContent } from '../platforms/tikhub/normalize.mjs';
 import { contentKeyAliases, normalizePlatformId } from '../platforms/platform-id.mjs';
 import { describeContentLink } from '../platforms/content-link.mjs';
@@ -20,7 +20,8 @@ export async function collectTikHubResearch({
   await store.load();
 
   const response = await fetchContents({ request, client });
-  const contents = uniqueByKey(response.items.map((item) => normalizeTikHubContent({ platform: request.platform, data: item })), 'uniqueKey');
+  const contents = uniqueByKey(response.items.map((item) => normalizeTikHubContent({ platform: request.platform, data: item })), 'uniqueKey')
+    .filter((content) => isWithinPublishedWindow(content, request.publishedAfter));
   const remoteContentKeys = await loadRemoteKeys({ feishuClient, feishuConfig, tableName: 'contents', fieldKey: 'uniqueKey', dryRun });
   const newContents = [];
   for (const content of contents) {
@@ -45,6 +46,10 @@ export async function collectTikHubResearch({
   for (const content of newContents) {
     store.addContent(content.uniqueKey);
   }
+
+  const snapshotResult = await syncEngagementSnapshots({
+    contents, request, feishuClient, feishuConfig, dryRun,
+  });
 
   const commentResult = await collectComments({
     request,
@@ -75,6 +80,7 @@ export async function collectTikHubResearch({
       // Research candidates need the sampled content even when only its comments are new.
       items: contents,
     },
+    engagementSnapshots: snapshotResult,
     comments: commentResult,
   };
   store.addRun({ type: 'tikhub-collect', collectedAt: new Date().toISOString(), ...result });
@@ -82,6 +88,46 @@ export async function collectTikHubResearch({
     await store.save();
   }
   return result;
+}
+
+async function syncEngagementSnapshots({ contents, request, feishuClient, feishuConfig, dryRun }) {
+  const capturedAt = new Date().toISOString();
+  const runId = request.runId ?? `run-${capturedAt}`;
+  const items = contents.map((content) => buildEngagementSnapshot({ content, capturedAt, runId }));
+  if (!dryRun && feishuClient && feishuConfig?.tables?.engagementSnapshots && items.length > 0) {
+    const fields = feishuConfig.tables.engagementSnapshots.fields;
+    await feishuClient.createRecords('engagementSnapshots', items.map((item) => mapEngagementSnapshotToFeishuFields(item, fields)));
+  }
+  return {
+    capturedAt, runId, createdCount: items.length, items,
+    reason: feishuConfig?.tables?.engagementSnapshots ? 'written-or-dry-run' : 'table-not-configured',
+  };
+}
+
+function buildEngagementSnapshot({ content, capturedAt, runId }) {
+  const publishedAt = content.publishedAt ?? null;
+  const contentAgeDays = publishedAt
+    ? Math.max(0, Math.floor((new Date(capturedAt).getTime() - new Date(publishedAt).getTime()) / 86_400_000))
+    : null;
+  return {
+    snapshotKey: `${content.uniqueKey}:${capturedAt}`,
+    contentUniqueKey: content.uniqueKey,
+    publishedAt,
+    capturedAt,
+    contentAgeDays,
+    metrics: content.metrics ?? {},
+    runId,
+    source: 'TikHub',
+  };
+}
+
+function isWithinPublishedWindow(content, publishedAfter) {
+  if (!publishedAfter) return true;
+  if (!content.publishedAt) return true;
+  const boundary = new Date(publishedAfter).getTime();
+  const published = new Date(content.publishedAt).getTime();
+  // Missing timestamps remain visible for manual review instead of being silently discarded.
+  return !Number.isFinite(published) || !Number.isFinite(boundary) || published >= boundary;
 }
 
 function normalizeRequestPlatform(request) {
@@ -172,6 +218,7 @@ async function fetchContents({ request, client }) {
   return collectPages({
     limit,
     maxPages: request.maxPages,
+    shouldStop: request.publishedAfter ? (items) => reachedPublishedBoundary({ items, platform: request.platform, publishedAfter: request.publishedAfter }) : null,
     getPage: (cursor) => request.mode === 'search'
       ? client.searchContents({ platform: request.platform, keyword: request.keyword, cursor })
       : client.getCreatorContents({ platform: request.platform, creatorId: request.creatorId, cursor, limit }),
@@ -230,7 +277,7 @@ async function collectComments({ request, client, contents, feishuClient, feishu
   };
 }
 
-async function collectPages({ limit, maxPages = 10, getPage }) {
+async function collectPages({ limit, maxPages = 10, getPage, shouldStop = null }) {
   const items = [];
   const cacheUrls = [];
   const seenCursors = new Set();
@@ -248,6 +295,11 @@ async function collectPages({ limit, maxPages = 10, getPage }) {
     }
     audit = response.audit ?? audit;
     pageCount += 1;
+
+    if (shouldStop?.(page.items)) {
+      stoppedReason = 'published-window-reached';
+      break;
+    }
 
     if (!page.hasMore) {
       stoppedReason = 'source-exhausted';
@@ -269,6 +321,15 @@ async function collectPages({ limit, maxPages = 10, getPage }) {
     audit,
     pagination: { pageCount, stoppedReason },
   };
+}
+
+function reachedPublishedBoundary({ items, platform, publishedAfter }) {
+  const boundary = new Date(publishedAfter).getTime();
+  if (!Number.isFinite(boundary) || items.length === 0) return false;
+  const timestamps = items.map((item) => new Date(normalizeTikHubContent({ platform, data: item }).publishedAt).getTime());
+  // Account lists are expected newest-first. Stop only when an entire page is
+  // dated and older than the window; undated records stay available for review.
+  return timestamps.length > 0 && timestamps.every((timestamp) => Number.isFinite(timestamp) && timestamp < boundary);
 }
 
 async function loadRemoteKeys({ feishuClient, feishuConfig, tableName, fieldKey, dryRun }) {
@@ -359,6 +420,8 @@ function sanitizedRequest(request) {
     maxPages: request.maxPages ?? 10,
     commentLimit: request.commentLimit ?? DEFAULT_LIMIT,
     commentPages: request.commentPages ?? 1,
+    publishedAfter: request.publishedAfter ?? null,
+    runId: request.runId ?? null,
   };
 }
 

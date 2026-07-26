@@ -12,6 +12,8 @@ try {
     feishuPath: resolve(cwd, args.feishu),
     storePath: resolve(cwd, args.store ?? 'logs/content-store.feishu-creator-worker.json'),
     limit: Number(args.limit ?? 10),
+    backfillDays: Number(args.backfillDays ?? 90),
+    backfillLimit: Number(args.backfillLimit ?? 100),
     dryRun: Boolean(args.dryRun),
     cwd,
   });

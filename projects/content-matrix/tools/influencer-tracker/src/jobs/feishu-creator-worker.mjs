@@ -12,6 +12,8 @@ export async function runFeishuCreatorWorker({
   loaded = null,
   storePath,
   limit = 10,
+  backfillDays = 90,
+  backfillLimit = 100,
   dryRun = false,
   cwd = process.cwd(),
   resolveLink = resolveContentLink,
@@ -41,6 +43,8 @@ export async function runFeishuCreatorWorker({
         source,
         storePath,
         limit,
+        backfillDays,
+        backfillLimit,
         dryRun,
       });
       const summary = buildSummary(result);
@@ -114,7 +118,11 @@ async function prepareCreator({ creator, resolveLink }) {
   };
 }
 
-async function collectCreatorContents({ creator, source, storePath, limit, dryRun }) {
+async function collectCreatorContents({ creator, source, storePath, limit, backfillDays, backfillLimit, dryRun }) {
+  const isBackfill = creator.collectAction === '待回溯';
+  const publishedAfter = isBackfill
+    ? resolveBackfillStart(creator.collectSince, backfillDays)
+    : null;
   return collectTikHubResearch({
     request: {
       mode: 'creator',
@@ -124,7 +132,9 @@ async function collectCreatorContents({ creator, source, storePath, limit, dryRu
       creatorName: creator.name,
       creatorRecordId: creator.recordId,
       creatorSourceLink: creator.sourceLink,
-      limit,
+      limit: isBackfill ? Math.max(limit, backfillLimit) : limit,
+      publishedAfter,
+      runId: `creator-${creator.recordId}-${new Date().toISOString()}`,
       includeComments: false,
     },
     client: new TikHubClient(),
@@ -150,7 +160,16 @@ async function updateCreator(source, recordId, fields) {
 }
 
 function buildSummary(result) {
-  return `账号采集完成：新增 ${result.contents?.createdCount ?? 0} 条，重复 ${result.contents?.duplicateCount ?? 0} 条。`;
+  const snapshots = result.engagementSnapshots?.createdCount ?? 0;
+  const stoppedReason = result.audit?.pagination?.contents?.stoppedReason;
+  return `账号采集完成：新增 ${result.contents?.createdCount ?? 0} 条，重复 ${result.contents?.duplicateCount ?? 0} 条，互动快照 ${snapshots} 条，停止原因：${stoppedReason ?? '未知'}。`;
+}
+
+function resolveBackfillStart(collectSince, backfillDays) {
+  const explicit = new Date(collectSince).getTime();
+  if (Number.isFinite(explicit)) return new Date(explicit).toISOString();
+  const days = Number.isFinite(backfillDays) && backfillDays > 0 ? backfillDays : 90;
+  return new Date(Date.now() - days * 86_400_000).toISOString();
 }
 
 function latestPublishedAt(contents) {
