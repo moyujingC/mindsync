@@ -1,7 +1,7 @@
 > 状态：working
-> 版本：0.1.0
+> 版本：0.2.0
 > owner：CEO / Engineering
-> last_updated：2026-07-25
+> last_updated：2026-07-26
 > source_of_truth：projects/content-matrix/tasks/2026-07-25-Hermes与服务器Worker上线计划.md
 > depends_on：2026-07-25-AI营销获客系统真实运行通路复核计划.md
 
@@ -24,14 +24,16 @@ Hermes 不直接替代 Worker，也不直接读取或写入另一套内容库。
 
 ## 2. 当前实机状态
 
-2026-07-25 已核查 release 服务器 `42.192.65.145`：
+2026-07-26 已在 release 服务器 `42.192.65.145` 完成首轮部署：
 
 - 资源可用：约 78 GB 磁盘空间、6.5 GiB 可用内存。
-- `hermes.jingshu.cc` 已解析到该服务器，但 HTTPS 证书不包含该域名；HTTP 返回 Nginx 404。
-- 服务器没有 Hermes CLI（命令行程序）、Hermes systemd 服务或对应 Nginx server block。
+- Hermes Agent `0.19.0` 已安装于独立 Python 3.12 环境 `/opt/content-matrix-inbox/hermes-venv`；`hermes-content-matrix.service` 已启用并只监听 `127.0.0.1:9119`。
+- Hermes 已使用 release 原有 DeepSeek 凭据和 `deepseek-v4-pro` 完成最小模型调用验证。服务密钥和模型配置保存在服务器私有文件，未写入仓库。
+- `hermes.jingshu.cc` 已解析到该服务器，但 HTTPS 证书和 Nginx 虚拟主机尚未配置；当前不对公网暴露 Hermes。
 - 服务器现有的 Node 进程监听 `4318/4319`，属于已有服务，不能复用端口或改动其进程。
 - 当前 release checkout 是脏工作区，且没有 `projects/content-matrix/tools/influencer-tracker`。内容系统必须部署到独立目录，不能在现有 checkout 中直接拉取或修改。
-- 链接收件 Worker 现有 unit 只需 Node 运行时、TikHub Key、飞书本地配置和 Lark CLI 用户授权；这些均应以独立私有配置部署。
+- Worker 源码已同步至独立目录 `/opt/content-matrix-inbox/app`。`link-inbox-worker.timer` 已启用，每分钟调用一次 Worker；首轮空队列检查成功，没有写入新内容。
+- Worker 使用服务器专用飞书 CLI 应用的 Bot 身份；已验证能读取“链接收件箱”。TikHub Key、飞书表配置和 Worker 环境文件均为服务器私有文件。
 
 ## 3. 目标运行边界
 
@@ -45,16 +47,16 @@ Hermes 不直接替代 Worker，也不直接读取或写入另一套内容库。
 
 ## 4. 上线顺序
 
-### P0：服务器独立部署基座
+### P0：服务器独立部署基座（已完成）
 
 1. 在 release 服务器建立独立目录，例如 `/opt/content-matrix-inbox/app`，不触碰现有 `/opt/aimandala-release/app/mindsync` 脏工作区。
 2. 部署当前已验证的 `influencer-tracker` 代码与 Node 运行环境。
 3. 创建仅服务器可读的 `/etc/content-matrix-inbox.env` 和 `config/feishu.local.json`；不得提交或打印其内容。
 4. 安装并验证 Lark CLI 的用户授权可读写现有飞书多维表格。
 
-验收：在服务器以 `--dry-run` 或只读前检查验证 Node、飞书配置、TikHub Key 和本地日志目录；不处理新的真实收件行。
+验收结果：独立目录、Node、TikHub Key、飞书 Bot 读权限与本地日志目录均已验证；首次 Worker 扫描 `0` 条待处理记录，未产生外部写入。
 
-### P1：Hermes Gateway
+### P1：Hermes Gateway（本机服务已完成，HTTPS 待完成）
 
 1. 使用独立 Python 虚拟环境安装 Hermes Agent，不改动已有 Node 服务。
 2. 创建 `/etc/hermes-content-matrix.env`，至少包含模型提供商配置和 `API_SERVER_KEY`（网关 API 密钥）。
@@ -62,16 +64,16 @@ Hermes 不直接替代 Worker，也不直接读取或写入另一套内容库。
 4. 为 `hermes.jingshu.cc` 添加独立 Nginx virtual host（虚拟主机），申请并验证该域名专属 TLS 证书。
 5. 验证 HTTPS、API 健康检查、带密钥的最小对话与日志脱敏。
 
-验收：`https://hermes.jingshu.cc` 证书匹配；未带 API 密钥的调用被拒绝；带密钥的健康检查和最小模型调用成功。仅“页面可打开”不算通过。
+当前验收：Hermes 服务 active，监听 `127.0.0.1:9119`；`/api/health` 未认证返回 `401`；DeepSeek 最小调用成功。待补 Nginx、TLS 和公网 HTTPS 验收。
 
-### P2：服务器 Link Inbox Worker
+### P2：服务器 Link Inbox Worker（定时 Worker 已完成，HTTP 收件待完成）
 
 1. 使用独立 systemd 服务和 timer 部署 `link-inbox.service`、`link-inbox-worker.service`、`link-inbox-worker.timer`。
 2. Nginx 仅将 `/health` 与 `POST /v1/inbox/links` 转发至 `127.0.0.1:8787`；不与 Hermes API 路由混用。
 3. 先以一条飞书网页手工行做受控真实验收：同一收件行完成回写，内容、评论、研究请求和本地简报可读回。
 4. 再配置 iPhone 快捷指令指向 HTTPS 收件接口。
 
-验收：timer 每分钟运行；Worker 只领取一条记录；失败保留原始链接和错误摘要；显式重试后才重新消耗 TikHub 调用。
+当前验收：timer 已启用，首轮执行成功；Worker 每轮只领取一条记录的代码合同已通过既有测试。下一步以一条飞书网页手工行验证服务器端真实采集、回写、内容去重和研究简报。
 
 ### P3：飞书对话入口
 
@@ -90,10 +92,10 @@ Hermes 不直接替代 Worker，也不直接读取或写入另一套内容库。
 
 | 配置 | 用途 | 当前状态 |
 | --- | --- | --- |
-| 模型提供商 API Key 与模型名 | Hermes 最小对话 | release 服务器尚未配置 |
-| Hermes Gateway API Server Key | Gateway 鉴权 | 需服务器生成 |
-| TikHub API Key | Worker 真实采集 | 本机可用；需安全迁移至服务器 |
-| 飞书 Lark CLI 用户授权 / 应用配置 | Worker 读写多维表格 | 本机可用；需在服务器完成授权 |
+| 模型提供商 API Key 与模型名 | Hermes 最小对话 | 已配置 DeepSeek `deepseek-v4-pro` 并通过最小调用 |
+| Hermes Gateway API Server Key | Gateway 鉴权 | Hermes 后端本机认证已启用；公网适配前再确定外部访问密钥策略 |
+| TikHub API Key | Worker 真实采集 | 已安全迁移至服务器私有环境文件 |
+| 飞书 Lark CLI 应用配置 | Worker 读写多维表格 | 服务器专用 Bot 应用已发布并验证表读取 |
 | 飞书应用回调凭据 | P3 飞书对话入口 | 尚未提供或配置 |
 | 收件接口 Bearer Token | iPhone/API 收件 | 需服务器生成 |
 
