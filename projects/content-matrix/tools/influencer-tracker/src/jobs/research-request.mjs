@@ -222,6 +222,7 @@ function summarizeCollection(collection, requestCollect) {
     requestCount: collection.audit?.requestCount ?? 0,
     cacheUrls: collection.audit?.cacheUrls ?? [],
     sampleLimit: requestCollect?.limit ?? collection.request?.limit ?? null,
+    media: collection.media ?? null,
   };
 }
 
@@ -269,6 +270,13 @@ export function renderResearchBrief(result) {
     `- TikHub 调用：${result.collection.requestCount}`,
     '',
   );
+  if (result.collection.media?.videoCount > 0) {
+    lines.push(
+      `- 视频文字稿：${result.collection.media.completedCount}/${result.collection.media.videoCount} 完成`,
+      `- 视频文字稿失败：${result.collection.media.failedCount}`,
+      '',
+    );
+  }
   if (result.orchestration?.constraints?.length) {
     lines.push('## 研究约束', '');
     result.orchestration.constraints.forEach((constraint) => lines.push(`- ${constraint}`));

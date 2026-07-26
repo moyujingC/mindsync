@@ -3,6 +3,7 @@ import { LarkCliBitableClient } from '../feishu/lark-cli-client.mjs';
 import { FeishuBitableClient } from '../feishu/client.mjs';
 import { collectTikHubResearch } from '../jobs/tikhub-collect.mjs';
 import { runResearchRequest } from '../jobs/research-request.mjs';
+import { enrichVideoTranscripts } from '../jobs/video-transcript.mjs';
 import { TikHubClient } from '../platforms/tikhub/client.mjs';
 import { resolveContentLink } from '../platforms/content-link.mjs';
 import { LinkInboxStore } from '../storage/link-inbox-store.mjs';
@@ -86,12 +87,15 @@ async function collectInboxItem({ item, feishuClient, feishuConfig, outputDir, l
         commentLimit: 10,
       },
     },
-    collect: (request) => collectTikHubResearch({
-      request,
-      client: new TikHubClient(),
-      feishuClient,
-      feishuConfig,
-      storePath: resolve(contentStorePath),
+    collect: async (request) => enrichVideoTranscripts({
+      collection: await collectTikHubResearch({
+        request,
+        client: new TikHubClient(),
+        feishuClient,
+        feishuConfig,
+        storePath: resolve(contentStorePath),
+      }),
+      outputDir: resolve('logs/media-evidence'),
     }),
     outputDir: resolve(outputDir),
     ledgerPath: resolve(ledgerPath),
@@ -126,6 +130,11 @@ function summarizeResult(result) {
   const parts = [result.requestId ? `研究请求：${result.requestId}` : null];
   const keys = result.collection?.contentKeys ?? result.contents?.items?.map((item) => item.uniqueKey) ?? [];
   if (keys.length > 0) parts.push(`内容：${keys.join(', ')}`);
+  const media = result.collection?.media;
+  if (media?.videoCount > 0) {
+    parts.push(`文字稿：${media.completedCount}/${media.videoCount} 完成`);
+    if (media.failedCount > 0) parts.push(`文字稿失败：${media.failedCount}`);
+  }
   return parts.filter(Boolean).join('\n');
 }
 
