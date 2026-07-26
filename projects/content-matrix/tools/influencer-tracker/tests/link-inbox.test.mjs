@@ -43,7 +43,7 @@ test('receiveLink sends creator links to manual review without queuing collectio
   });
 });
 
-test('worker completes one queued item and writes the research result trace', async () => {
+test('worker completes one queued item and writes the layered collection trace', async () => {
   await withInbox(async (storePath) => {
     const received = await receiveLink({
       url: 'https://www.douyin.com/video/1234567890',
@@ -54,15 +54,23 @@ test('worker completes one queued item and writes the research result trace', as
       storePath,
       processItem: async (item) => {
         assert.equal(item.status, '处理中');
-        return { requestId: 'research-inbox-001', collection: { contentKeys: ['douyin:1234567890'] } };
+        return {
+          collection: { contents: { items: [{ uniqueKey: 'douyin:1234567890' }] } },
+          layers: {
+            basicInfo: { status: '已完成' },
+            content: { status: '已完成' },
+            comments: { status: '未请求', count: 0 },
+          },
+        };
       },
     });
 
     assert.equal(result.ok, true);
     assert.equal(result.item.inboxId, received.item.inboxId);
     assert.equal(result.item.status, '已完成');
-    assert.match(result.item.result, /research-inbox-001/);
     assert.match(result.item.result, /douyin:1234567890/);
+    assert.match(result.item.result, /L1 基本信息：已完成/);
+    assert.match(result.item.result, /L3 评论：未请求/);
   });
 });
 
