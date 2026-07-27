@@ -127,8 +127,13 @@ export class LarkCliBitableClient {
   }
 
   async run(args) {
+    const env = { ...process.env };
+    // Hermes injects this into child commands. Newer lark-cli versions treat it
+    // as a separate agent context and hide the server's authorized user profile.
+    delete env.HERMES_HOME;
     const { stdout } = await execFileAsync(this.bin, args, {
       maxBuffer: 10 * 1024 * 1024,
+      env,
     });
     return parseJsonFromStdout(stdout);
   }

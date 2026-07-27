@@ -73,3 +73,17 @@ test('summarizeFeishuField supports lark-cli field names', () => {
     isPrimary: false,
   });
 });
+
+test('LarkCliBitableClient does not pass Hermes context to lark-cli', async () => {
+  const client = new LarkCliBitableClient({ mode: 'lark-cli', bin: process.execPath, tables: {} });
+  const originalHermesHome = process.env.HERMES_HOME;
+  process.env.HERMES_HOME = '/isolated/hermes-home';
+  try {
+    client.baseArgs = [];
+    const output = await client.run(['-e', 'process.stdout.write(JSON.stringify({ hermesHome: process.env.HERMES_HOME ?? null }))']);
+    assert.equal(output.hermesHome, null);
+  } finally {
+    if (originalHermesHome === undefined) delete process.env.HERMES_HOME;
+    else process.env.HERMES_HOME = originalHermesHome;
+  }
+});
