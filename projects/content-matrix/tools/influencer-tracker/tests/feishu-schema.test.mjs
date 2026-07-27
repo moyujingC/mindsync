@@ -12,6 +12,7 @@ test('FEISHU_TABLE_SCHEMAS includes all content intelligence tables', () => {
     'insights',
     'researchRequests',
     'linkInbox',
+    'contentProcessingTasks',
   ]);
 });
 

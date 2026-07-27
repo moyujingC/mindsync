@@ -13,21 +13,26 @@ test('screening creates missing fields, writes independent scores, and configure
   const updates = [];
   const fieldsCreated = [];
   const views = [];
+  const taskRecords = [];
   const client = {
     listFields: async () => [],
     createField: async (_table, field) => fieldsCreated.push(field.field_name),
-    listRecords: async () => records(),
+    listRecords: async (table) => table === 'contents' ? records() : taskRecords,
     updateRecord: async (_table, recordId, update) => updates.push({ recordId, update }),
     listViews: async () => [],
     createView: async (_table, view) => views.push(view.name),
     setViewFilter: async () => {}, setViewSort: async () => {}, setViewVisibleFields: async () => {},
+    createTable: async () => ({ table_id: 'tbl_tasks' }),
+    createRecords: async (_table, rows) => taskRecords.push(...rows.map((fields, index) => ({ record_id: `task_${index}`, fields }))),
   };
-  const result = await screenFeishuContents({ feishuClient: client, feishuConfig: { tables: { contents: { fields } } }, scoredAt: '2026-07-27T00:00:00Z' });
+  const config = { tables: { contents: { fields } } };
+  const result = await screenFeishuContents({ feishuClient: client, feishuConfig: config, scoredAt: '2026-07-27T00:00:00Z' });
   assert.equal(fieldsCreated.length, 7);
   assert.equal(updates.length, 5);
   assert.equal(result.scoreableCount, 5);
   assert.equal(result.topicCandidateCount, 2);
   assert.equal(result.l2CandidateCount, 2);
+  assert.equal(result.taskQueue.createdTable, true);
   assert.deepEqual(views, ['爆款选题候选', '建议深读（L2）']);
   assert.equal(updates.at(-1).update['爆款选题分'], 100);
   assert.equal(updates.at(-1).update['干货信号分'], 100);

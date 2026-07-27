@@ -145,6 +145,16 @@ export class LarkCliBitableClient {
     ]);
   }
 
+  async createTable(schema) {
+    const fields = Object.values(schema.fields).map(toCliField);
+    const json = await this.run([
+      ...this.baseArgs, 'base', '+table-create', '--as', this.as,
+      '--base-token', this.config.baseAppToken, '--name', schema.tableName,
+      '--fields', JSON.stringify(fields), '--format', 'json',
+    ]);
+    return json.data?.table ?? json.data;
+  }
+
   async setViewFilter(tableName, viewId, filter) {
     return this.setViewConfig(tableName, '+view-set-filter', viewId, filter);
   }

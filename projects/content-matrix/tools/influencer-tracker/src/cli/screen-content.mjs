@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { resolve } from 'node:path';
-import { readJsonFile } from '../utils/json-file.mjs';
+import { readJsonFile, writeJsonFile } from '../utils/json-file.mjs';
 import { parseArgs } from '../utils/args.mjs';
 import { LarkCliBitableClient } from '../feishu/lark-cli-client.mjs';
 import { FeishuBitableClient } from '../feishu/client.mjs';
@@ -17,6 +17,9 @@ try {
     dryRun: args.dryRun,
     scoredAt: args.scoredAt ?? new Date().toISOString(),
   });
+  // Persist a lazily created task table ID in the ignored local config so the
+  // independent processing Worker can resolve it on its next run.
+  if (!args.dryRun && result.taskQueue?.createdTable) await writeJsonFile(resolve(process.cwd(), args.feishu), config);
   console.log(JSON.stringify({ ok: true, ...result }, null, 2));
 } catch (error) {
   console.error(`[fatal] ${error.message}`);

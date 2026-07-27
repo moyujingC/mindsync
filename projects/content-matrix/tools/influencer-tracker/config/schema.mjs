@@ -250,6 +250,30 @@ export const FEISHU_TABLE_SCHEMAS = {
       errorSummary: { field_name: '错误摘要', type: FEISHU_FIELD_TYPES.text },
     },
   },
+  contentProcessingTasks: {
+    tableName: '内容加工任务',
+    defaultViewName: '全部任务',
+    fields: {
+      taskKey: { field_name: '任务唯一键', type: FEISHU_FIELD_TYPES.text },
+      contentKey: { field_name: '内容唯一键', type: FEISHU_FIELD_TYPES.text },
+      taskType: {
+        field_name: '任务类型', type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['L2 内容提纯', '选题洞察']) },
+      },
+      triggerReason: { field_name: '触发原因', type: FEISHU_FIELD_TYPES.text },
+      status: {
+        field_name: '状态', type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['待处理', '等待依赖', '执行中', '完成', '失败', '需人工处理']) },
+      },
+      priority: { field_name: '优先级', type: FEISHU_FIELD_TYPES.number },
+      targetAccount: { field_name: '目标账号', type: FEISHU_FIELD_TYPES.text },
+      dependencyTaskKey: { field_name: '依赖任务', type: FEISHU_FIELD_TYPES.text },
+      artifactPath: { field_name: '产物路径', type: FEISHU_FIELD_TYPES.text },
+      errorSummary: { field_name: '错误摘要', type: FEISHU_FIELD_TYPES.text },
+      createdAt: { field_name: '创建时间', type: FEISHU_FIELD_TYPES.date },
+      updatedAt: { field_name: '更新时间', type: FEISHU_FIELD_TYPES.date },
+    },
+  },
 };
 
 export function buildFieldNameMap(schema) {

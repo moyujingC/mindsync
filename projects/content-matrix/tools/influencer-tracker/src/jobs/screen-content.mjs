@@ -1,6 +1,6 @@
 import { FEISHU_TABLE_SCHEMAS } from '../../config/schema.mjs';
 import { scoreContentScreening } from '../analysis/content-screening-score.mjs';
-import { mapContentScreeningToFeishuFields, mapFeishuContentRecord } from '../feishu/client.mjs';
+import { mapContentScreeningToFeishuFields, mapFeishuContentRecord, mapFeishuProcessingTaskRecord, mapProcessingTaskToFeishuFields } from '../feishu/client.mjs';
 
 const VIEW_DEFINITIONS = [
   {
@@ -39,6 +39,7 @@ export async function screenFeishuContents({ feishuClient, feishuConfig, dryRun 
     results.push({ recordId: content.recordId, uniqueKey: content.uniqueKey, creator: content.creatorName, score });
   }
 
+  const taskQueue = await enqueueProcessingTasks({ feishuClient, feishuConfig, results, dryRun, createdAt: scoredAt });
   const views = await ensureScreeningViews({ feishuClient, dryRun });
   return {
     dryRun,
@@ -50,8 +51,44 @@ export async function screenFeishuContents({ feishuClient, feishuConfig, dryRun 
     observingCount: results.filter((result) => result.score.status === '观察中').length,
     topicCandidateCount: results.filter((result) => result.score.topicRecommendation === '爆款选题库候选').length,
     l2CandidateCount: results.filter((result) => result.score.substanceRecommendation === '建议申请 L2').length,
+    taskQueue,
     results,
   };
+}
+
+async function enqueueProcessingTasks({ feishuClient, feishuConfig, results, dryRun, createdAt }) {
+  const schema = FEISHU_TABLE_SCHEMAS.contentProcessingTasks;
+  let table = feishuConfig.tables.contentProcessingTasks;
+  let createdTable = false;
+  if (!table) {
+    if (dryRun) return { createdTable: true, createdCount: 0, tasks: [] };
+    const created = await feishuClient.createTable(schema);
+    table = { tableId: created.table_id ?? created.id, fields: Object.fromEntries(Object.entries(schema.fields).map(([key, field]) => [key, field.field_name])) };
+    feishuConfig.tables.contentProcessingTasks = table;
+    createdTable = true;
+  }
+  const existing = await feishuClient.listRecords('contentProcessingTasks');
+  const existingKeys = new Set(existing.map((record) => mapFeishuProcessingTaskRecord(record, table.fields).taskKey));
+  const tasks = results.flatMap((result) => buildTasks(result, createdAt))
+    .filter((task) => !existingKeys.has(task.taskKey));
+  if (!dryRun && tasks.length > 0) {
+    await feishuClient.createRecords('contentProcessingTasks', tasks.map((task) => mapProcessingTaskToFeishuFields(task, table.fields)));
+  }
+  return { createdTable, createdCount: tasks.length, tasks };
+}
+
+function buildTasks(result, createdAt) {
+  const { uniqueKey, score } = result;
+  const l2 = score.substanceRecommendation === '建议申请 L2';
+  const topic = score.topicRecommendation === '爆款选题库候选';
+  const tasks = [];
+  if (l2) tasks.push(task({ contentKey: uniqueKey, taskType: 'L2 内容提纯', priority: score.substanceSignalScore, triggerReason: `干货信号分 ${score.substanceSignalScore} >= 70`, status: '待处理', createdAt }));
+  if (topic) tasks.push(task({ contentKey: uniqueKey, taskType: '选题洞察', priority: score.topicPotentialScore, triggerReason: `爆款选题分 ${score.topicPotentialScore} >= 80`, status: l2 ? '等待依赖' : '待处理', dependencyTaskKey: l2 ? `${uniqueKey}::L2 内容提纯` : '', createdAt }));
+  return tasks;
+}
+
+function task({ contentKey, taskType, priority, triggerReason, status, dependencyTaskKey = '', createdAt }) {
+  return { taskKey: `${contentKey}::${taskType}`, contentKey, taskType, priority, triggerReason, status, targetAccount: '墨予镜', dependencyTaskKey, artifactPath: '', errorSummary: '', createdAt, updatedAt: createdAt };
 }
 
 async function ensureScreeningFields({ feishuClient, fieldMap, schemaFields, dryRun }) {

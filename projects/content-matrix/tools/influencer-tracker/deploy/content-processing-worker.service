@@ -1,0 +1,13 @@
+[Unit]
+Description=Content Matrix Content Processing Worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/opt/content-matrix-inbox/app
+EnvironmentFile=/etc/content-matrix-inbox.env
+ExecStart=/usr/bin/env npm run content:process
+NoNewPrivileges=true
+PrivateTmp=true

@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Content Matrix Processing Worker Every Minute
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=60
+Persistent=true
+Unit=content-processing-worker.service
+
+[Install]
+WantedBy=timers.target

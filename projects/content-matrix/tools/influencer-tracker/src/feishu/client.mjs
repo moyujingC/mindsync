@@ -220,6 +220,10 @@ export function mapFeishuContentRecord(record, fieldMap) {
     uniqueKey: extractTextValue(value('uniqueKey')),
     platform: normalizeSingleSelect(value('platform')),
     creatorName: extractTextValue(value('creator')),
+    url: extractLinkOrTextValue(value('url')),
+    title: extractTextValue(value('title')),
+    description: extractTextValue(value('description')),
+    contentType: normalizeSingleSelect(value('contentType')),
     publishedAt: extractTextValue(value('publishedAt')),
     metrics: {
       likeCount: numberOrNull(value('likeCount')),
@@ -227,6 +231,37 @@ export function mapFeishuContentRecord(record, fieldMap) {
       favoriteCount: numberOrNull(value('favoriteCount')),
       shareCount: numberOrNull(value('shareCount')),
     },
+  };
+}
+
+export function mapProcessingTaskToFeishuFields(task, fieldMap) {
+  return compactObject({
+    [fieldMap.taskKey]: task.taskKey,
+    [fieldMap.contentKey]: task.contentKey,
+    [fieldMap.taskType]: task.taskType,
+    [fieldMap.triggerReason]: task.triggerReason,
+    [fieldMap.status]: task.status,
+    [fieldMap.priority]: task.priority,
+    [fieldMap.targetAccount]: task.targetAccount,
+    [fieldMap.dependencyTaskKey]: task.dependencyTaskKey,
+    [fieldMap.artifactPath]: task.artifactPath,
+    [fieldMap.errorSummary]: task.errorSummary,
+    [fieldMap.createdAt]: task.createdAt,
+    [fieldMap.updatedAt]: task.updatedAt,
+  });
+}
+
+export function mapFeishuProcessingTaskRecord(record, fieldMap) {
+  const fields = record.fields ?? {};
+  const value = (key) => fields[fieldMap[key]];
+  return {
+    recordId: record.record_id,
+    taskKey: extractTextValue(value('taskKey')),
+    contentKey: extractTextValue(value('contentKey')),
+    taskType: normalizeSingleSelect(value('taskType')),
+    status: normalizeSingleSelect(value('status')),
+    priority: numberOrNull(value('priority')) ?? 0,
+    dependencyTaskKey: extractTextValue(value('dependencyTaskKey')),
   };
 }
 

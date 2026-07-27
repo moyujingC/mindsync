@@ -84,6 +84,10 @@ const OPTIONAL_TABLES = {
     'retryCount',
     'errorSummary',
   ],
+  contentProcessingTasks: [
+    'taskKey', 'contentKey', 'taskType', 'triggerReason', 'status', 'priority',
+    'targetAccount', 'dependencyTaskKey', 'artifactPath', 'errorSummary', 'createdAt', 'updatedAt',
+  ],
   engagementSnapshots: [
     'snapshotKey', 'contentKey', 'publishedAt', 'capturedAt', 'contentAgeDays',
     'likeCount', 'commentCount', 'favoriteCount', 'shareCount', 'runId', 'source',
