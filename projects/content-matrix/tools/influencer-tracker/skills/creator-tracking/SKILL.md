@@ -31,3 +31,17 @@ description: Use when a user asks in Feishu chat to track, modify, pause, or res
 - 不要在用户未确认前调用确认命令。
 - 缺少主题时，不要调用 `creator:tracking`，更不要传入空的 `--topics` 参数。
 - 命令报错时，不要调用无关的 `lark-cli config` 或自行创建飞书资源；只报告错误并回到缺失信息或人工处理步骤。
+
+## 唯一可执行命令
+
+只允许在项目目录执行下面两类命令。`npm` 之前必须先 `cd /opt/content-matrix-inbox/app`：
+
+```bash
+cd /opt/content-matrix-inbox/app && npm run creator:tracking -- --url '<主页链接>' --topics '<主题>' --frequency '<频率>'
+```
+
+```bash
+cd /opt/content-matrix-inbox/app && npm run creator:tracking -- --confirm '<确认 ID>'
+```
+
+严禁直接运行 `lark-cli`、`npx @larksuite/cli`、`lark-cli config bind`、`lark-cli auth` 或任何飞书应用配置命令。项目命令会使用服务器已经授权的个人飞书身份读写多维表格；聊天机器人 App ID 与这个流程无关。

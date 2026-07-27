@@ -17,9 +17,9 @@
 1. 若缺少主题：只询问“你希望围绕什么主题追踪这个博主？例如：企业 AI 落地、FDE、AI 工作流。”此时禁止调用任何终端命令。
 2. 主题齐全后，询问频率；默认“手动”。首次回溯范围默认近 90 天，可让用户选择近 60 天、近 90 天或不回溯。
 3. 信息齐全后，且仅此时，调用项目命令准备确认卡：
-   `npm run creator:tracking -- --url '<主页链接>' --topics '<主题>' --frequency '<频率>'`
+   `cd /opt/content-matrix-inbox/app && npm run creator:tracking -- --url '<主页链接>' --topics '<主题>' --frequency '<频率>'`
 4. 发送命令返回的确认卡。用户必须明确回复“确认”后，才调用：
-   `npm run creator:tracking -- --confirm '<确认 ID>'`
+   `cd /opt/content-matrix-inbox/app && npm run creator:tracking -- --confirm '<确认 ID>'`
 5. 命令失败时，不要尝试 `lark-cli config`、不要自行创建飞书表。报告错误摘要并保留用户输入，必要时请用户补充信息。
 
 单条视频、图文或文章链接不能被当作博主主页；应提示用户“这是单条内容，可采集；若要追踪作者，请明确说追踪并提供主页链接”。
@@ -29,3 +29,9 @@
 - 未附范围：只执行 L1 基本信息和 L2 内容/文字稿；不默认采评论，不创建研究、洞察或选题。
 - 用户明确说“采评论”“评论挖需求”时才执行 L3。
 - 视频先使用平台字幕；没有字幕才使用语音转写。内容、评论、研究和选题是不同阶段。
+
+## 命令安全边界
+
+- 不得直接执行 `lark-cli`、`npx @larksuite/cli`、`lark-cli config bind` 或 `lark-cli auth`。
+- 不得询问或记录飞书 App ID、App Secret、`user-default`、`bot-only` 等底层配置。它们不是聊天用户需要提供的信息。
+- 若项目命令报告授权问题，只回复“服务器侧飞书多维表格授权需要管理员修复”，不要继续尝试其他终端命令。
