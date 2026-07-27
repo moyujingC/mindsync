@@ -160,12 +160,18 @@ export class LarkCliBitableClient {
 
   async createTable(schema) {
     const fields = Object.values(schema.fields).map(toCliField);
-    const json = await this.run([
-      ...this.baseArgs, 'base', '+table-create', '--as', this.as,
-      '--base-token', this.config.baseAppToken, '--name', schema.tableName,
-      '--fields', JSON.stringify(fields), '--format', 'json',
-    ]);
-    return json.data?.table ?? json.data;
+    try {
+      const json = await this.run([
+        ...this.baseArgs, 'base', '+table-create', '--as', this.as,
+        '--base-token', this.config.baseAppToken, '--name', schema.tableName,
+        '--fields', JSON.stringify(fields), '--format', 'json',
+      ]);
+      return json.data?.table ?? json.data;
+    } catch (error) {
+      const existingTableId = existingTableIdFromError(error);
+      if (!existingTableId) throw error;
+      return { table_id: existingTableId, reused: true };
+    }
   }
 
   async setViewFilter(tableName, viewId, filter) {
@@ -216,6 +222,12 @@ function isWriteRateLimited(error) {
 
 function delay(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function existingTableIdFromError(error) {
+  const message = error instanceof Error ? error.message : String(error);
+  if (!/reuse the existing table/.test(message)) return null;
+  return message.match(/\((tbl[A-Za-z0-9]+)\)/)?.[1] ?? null;
 }
 
 export function parseJsonFromStdout(stdout) {

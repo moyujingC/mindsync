@@ -85,6 +85,18 @@ test('LarkCliBitableClient retries a Feishu write rate limit', async () => {
   assert.equal(calls, 2);
 });
 
+test('LarkCliBitableClient reuses a table created before a later failure', async () => {
+  const client = new LarkCliBitableClient({
+    mode: 'lark-cli', baseAppToken: 'base-test', as: 'user', bin: 'mock-lark', tables: {},
+  });
+  client.run = async () => {
+    throw new Error('validation_error: reuse the existing table 内容加工任务 (tblExisting123) instead of creating another one');
+  };
+
+  const table = await client.createTable({ tableName: '内容加工任务', fields: {} });
+  assert.deepEqual(table, { table_id: 'tblExisting123', reused: true });
+});
+
 test('summarizeFeishuField supports lark-cli field names', () => {
   assert.deepEqual(summarizeFeishuField({ id: 'fld_1', name: '内容唯一键', type: 'text' }), {
     fieldId: 'fld_1',
