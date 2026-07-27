@@ -11,6 +11,7 @@ export class LarkCliBitableClient {
     this.baseArgs = config.bin
       ? []
       : ['-y', '@larksuite/cli@latest'];
+    this.retryDelayMs = config.retryDelayMs ?? 1_100;
   }
 
   async listRecords(tableName) {
@@ -97,7 +98,7 @@ export class LarkCliBitableClient {
 
   async updateRecord(tableName, recordId, fields) {
     const table = this.getTable(tableName);
-    const json = await this.run([
+    const args = [
       ...this.baseArgs,
       'base',
       '+record-batch-update',
@@ -114,8 +115,20 @@ export class LarkCliBitableClient {
       }),
       '--format',
       'json',
-    ]);
+    ];
+    const json = await this.runWithRateLimitRetry(args);
     return json.data;
+  }
+
+  async runWithRateLimitRetry(args, attempts = 3) {
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      try {
+        return await this.run(args);
+      } catch (error) {
+        if (!isWriteRateLimited(error) || attempt === attempts - 1) throw error;
+        await delay(this.retryDelayMs * (attempt + 1));
+      }
+    }
   }
 
   async createField(tableName, field) {
@@ -195,6 +208,14 @@ export class LarkCliBitableClient {
     });
     return parseJsonFromStdout(stdout);
   }
+}
+
+function isWriteRateLimited(error) {
+  return /OpenAPIBatchUpdateRecords limited|800004135/.test(error instanceof Error ? error.message : String(error));
+}
+
+function delay(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 export function parseJsonFromStdout(stdout) {

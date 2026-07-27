@@ -65,6 +65,26 @@ test('LarkCliBitableClient filters records by an exact field value', async () =>
   ]);
 });
 
+test('LarkCliBitableClient retries a Feishu write rate limit', async () => {
+  const client = new LarkCliBitableClient({
+    mode: 'lark-cli',
+    baseAppToken: 'base-test',
+    as: 'user',
+    bin: 'mock-lark',
+    retryDelayMs: 0,
+    tables: { contents: { tableId: 'tbl_contents', fields: {} } },
+  });
+  let calls = 0;
+  client.run = async () => {
+    calls += 1;
+    if (calls === 1) throw new Error('OpenAPIBatchUpdateRecords limited (800004135)');
+    return { data: { record_id_list: ['rec_1'] } };
+  };
+
+  await client.updateRecord('contents', 'rec_1', { 标题: '更新后标题' });
+  assert.equal(calls, 2);
+});
+
 test('summarizeFeishuField supports lark-cli field names', () => {
   assert.deepEqual(summarizeFeishuField({ id: 'fld_1', name: '内容唯一键', type: 'text' }), {
     fieldId: 'fld_1',
