@@ -97,6 +97,16 @@ test('LarkCliBitableClient reuses a table created before a later failure', async
   assert.deepEqual(table, { table_id: 'tblExisting123', reused: true });
 });
 
+test('LarkCliBitableClient accepts an idempotent view update', async () => {
+  const client = new LarkCliBitableClient({
+    mode: 'lark-cli', baseAppToken: 'base-test', as: 'user', bin: 'mock-lark',
+    tables: { contents: { tableId: 'tbl_contents', fields: {} } },
+  });
+  client.run = async () => { throw new Error('no operation produced (800070003)'); };
+
+  assert.deepEqual(await client.setViewFilter('contents', 'view_1', { logic: 'and', conditions: [] }), { noOp: true });
+});
+
 test('summarizeFeishuField supports lark-cli field names', () => {
   assert.deepEqual(summarizeFeishuField({ id: 'fld_1', name: '内容唯一键', type: 'text' }), {
     fieldId: 'fld_1',

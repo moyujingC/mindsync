@@ -188,11 +188,16 @@ export class LarkCliBitableClient {
 
   async setViewConfig(tableName, command, viewId, json) {
     const table = this.getTable(tableName);
-    return this.run([
-      ...this.baseArgs, 'base', command, '--as', this.as,
-      '--base-token', this.config.baseAppToken, '--table-id', table.tableId,
-      '--view-id', viewId, '--json', JSON.stringify(json), '--format', 'json',
-    ]);
+    try {
+      return await this.run([
+        ...this.baseArgs, 'base', command, '--as', this.as,
+        '--base-token', this.config.baseAppToken, '--table-id', table.tableId,
+        '--view-id', viewId, '--json', JSON.stringify(json), '--format', 'json',
+      ]);
+    } catch (error) {
+      if (isNoOpMutation(error)) return { noOp: true };
+      throw error;
+    }
   }
 
   getTable(tableName) {
@@ -222,6 +227,10 @@ function isWriteRateLimited(error) {
 
 function delay(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function isNoOpMutation(error) {
+  return /no operation produced|800070003/.test(error instanceof Error ? error.message : String(error));
 }
 
 function existingTableIdFromError(error) {

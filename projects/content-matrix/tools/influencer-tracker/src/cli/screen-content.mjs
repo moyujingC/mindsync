@@ -7,9 +7,10 @@ import { FeishuBitableClient } from '../feishu/client.mjs';
 import { screenFeishuContents } from '../jobs/screen-content.mjs';
 
 const args = parseArgs(process.argv.slice(2));
+let config = null;
 try {
   if (!args.feishu) throw new Error('--feishu is required');
-  const config = await readJsonFile(resolve(process.cwd(), args.feishu));
+  config = await readJsonFile(resolve(process.cwd(), args.feishu));
   const feishuClient = config.mode === 'lark-cli' ? new LarkCliBitableClient(config) : new FeishuBitableClient(config);
   const result = await screenFeishuContents({
     feishuClient,
@@ -24,4 +25,10 @@ try {
 } catch (error) {
   console.error(`[fatal] ${error.message}`);
   process.exitCode = 1;
+} finally {
+  // A table may be created before a later view update fails. Keep its ID so a
+  // retry reuses the table instead of attempting another same-name creation.
+  if (!args.dryRun && typeof config?.tables?.contentProcessingTasks?.tableId === 'string') {
+    await writeJsonFile(resolve(process.cwd(), args.feishu), config);
+  }
 }
