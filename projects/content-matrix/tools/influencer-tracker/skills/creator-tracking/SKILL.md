@@ -11,14 +11,16 @@ description: Use when a user asks in Feishu chat to track, modify, pause, or res
 
 ## 两阶段操作
 
-1. 调用 `creator:tracking` 准备请求，解析主页并生成确认 ID。
-2. 向用户展示确认卡片；仅在用户明确回复“确认”后，使用确认 ID 调用 `creator:tracking --confirm`。
+1. 先收集必填信息；缺主题时只提问，不执行命令。
+2. 信息齐全后调用 `creator:tracking` 准备请求，解析主页并生成确认 ID。
+3. 向用户展示确认卡片；仅在用户明确回复“确认”后，使用确认 ID 调用 `creator:tracking --confirm`。
 
 ## 必须确认的信息
 
 - 至少一个主题。
 - 每个主题对应的需求库路由。
 - 检查频率：每日、每周或手动。默认手动。
+- 首次回溯范围：近 60 天、近 90 天或不回溯。默认近 90 天；该项在当前命令接入前只作为确认信息展示。
 - 已存在同一平台账号时，询问是追加主题、修改频率、暂停还是保持不变。
 
 ## 禁止
@@ -27,3 +29,5 @@ description: Use when a user asks in Feishu chat to track, modify, pause, or res
 - 不要把单条内容链接当作博主主页。
 - 不要创建同一“平台 + 平台账号 ID”的重复记录。
 - 不要在用户未确认前调用确认命令。
+- 缺少主题时，不要调用 `creator:tracking`，更不要传入空的 `--topics` 参数。
+- 命令报错时，不要调用无关的 `lark-cli config` 或自行创建飞书资源；只报告错误并回到缺失信息或人工处理步骤。
