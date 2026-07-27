@@ -91,6 +91,15 @@ const OPTIONAL_TABLES = {
 };
 
 const OPTIONAL_TABLE_FIELDS = {
+  contents: [
+    'screeningStatus',
+    'topicPotentialScore',
+    'substanceSignalScore',
+    'topicRecommendation',
+    'substanceRecommendation',
+    'scoredAt',
+    'screeningNote',
+  ],
   creators: [
     'sourceLink',
     'linkType',

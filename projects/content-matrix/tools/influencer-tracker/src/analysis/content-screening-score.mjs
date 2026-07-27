@@ -1,20 +1,18 @@
 // L1 scores rank comparable evidence for human review. They are deliberately
 // not claims about content quality, commercial value, or causal performance.
-export function scoreContentScreening({ item, cohort, hasMultipleSnapshots = false }) {
+export function scoreContentScreening({ item, cohort, scoredAt = new Date() }) {
   const comparable = cohort.filter((candidate) => candidate?.metrics);
   if (comparable.length < 5) {
     return observing('可比样本不足 5 条');
   }
   const topic = weighted([
-    [engagementPercentile(item, comparable, ['likeCount', 'favoriteCount', 'shareCount']), 60],
-    [hasMultipleSnapshots ? bounded(item.growthPercentile) : null, 25],
-    [metricPercentile(item, comparable, 'commentCount'), 15],
+    [dailyEngagementPercentile(item, comparable, ['likeCount', 'favoriteCount', 'shareCount'], scoredAt), 80],
+    [dailyMetricPercentile(item, comparable, 'commentCount', scoredAt), 20],
   ]);
   const substanceSignal = weighted([
-    [metricPercentile(item, comparable, 'favoriteCount'), 45],
-    [metricPercentile(item, comparable, 'shareCount'), 25],
-    [bounded(item.qualityDiscussionPercentile), 20],
-    [bounded(item.completenessPercentile), 10],
+    [dailyMetricPercentile(item, comparable, 'favoriteCount', scoredAt), 55],
+    [dailyMetricPercentile(item, comparable, 'shareCount', scoredAt), 30],
+    [dailyMetricPercentile(item, comparable, 'commentCount', scoredAt), 15],
   ]);
   return {
     status: '可评分',
@@ -26,18 +24,30 @@ export function scoreContentScreening({ item, cohort, hasMultipleSnapshots = fal
   };
 }
 
-function engagementPercentile(item, cohort, keys) {
+function dailyEngagementPercentile(item, cohort, keys, scoredAt) {
   const available = keys
-    .map((key) => metricPercentile(item, cohort, key))
+    .map((key) => dailyMetricPercentile(item, cohort, key, scoredAt))
     .filter((score) => score !== null);
   return available.length ? average(available) : null;
 }
 
-function metricPercentile(item, cohort, key) {
-  const value = item.metrics?.[key];
-  const values = cohort.map((candidate) => candidate.metrics?.[key]).filter(Number.isFinite);
+function dailyMetricPercentile(item, cohort, key, scoredAt) {
+  const value = perDayMetric(item, key, scoredAt);
+  const values = cohort.map((candidate) => perDayMetric(candidate, key, scoredAt)).filter(Number.isFinite);
   if (!Number.isFinite(value) || values.length < 5) return null;
   return (values.filter((candidate) => candidate <= value).length / values.length) * 100;
+}
+
+function perDayMetric(item, key, scoredAt) {
+  const value = item.metrics?.[key];
+  if (!Number.isFinite(value)) return null;
+  const publishedAt = new Date(item.publishedAt).getTime();
+  const scoredAtMs = new Date(scoredAt).getTime();
+  // A post has at least one observation day so a same-day item does not divide by zero.
+  const ageDays = Number.isFinite(publishedAt) && Number.isFinite(scoredAtMs)
+    ? Math.max(1, (scoredAtMs - publishedAt) / 86_400_000)
+    : 1;
+  return value / ageDays;
 }
 
 function weighted(pairs) {
@@ -45,10 +55,6 @@ function weighted(pairs) {
   if (present.length === 0) return 0;
   const weightTotal = present.reduce((sum, [, weight]) => sum + weight, 0);
   return present.reduce((sum, [score, weight]) => sum + score * weight, 0) / weightTotal;
-}
-
-function bounded(value) {
-  return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : null;
 }
 
 function average(values) {

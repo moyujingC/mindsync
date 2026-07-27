@@ -208,6 +208,37 @@ export function mapContentToFeishuFields(content, fieldMap) {
     [fieldMap.favoriteCount]: metrics.favoriteCount,
     [fieldMap.shareCount]: metrics.shareCount,
     [fieldMap.analysisStatus]: '待分析',
+    [fieldMap.screeningStatus]: '待评分',
+  });
+}
+
+export function mapFeishuContentRecord(record, fieldMap) {
+  const fields = record.fields ?? {};
+  const value = (key) => fields[fieldMap[key]];
+  return {
+    recordId: record.record_id,
+    uniqueKey: extractTextValue(value('uniqueKey')),
+    platform: normalizeSingleSelect(value('platform')),
+    creatorName: extractTextValue(value('creator')),
+    publishedAt: extractTextValue(value('publishedAt')),
+    metrics: {
+      likeCount: numberOrNull(value('likeCount')),
+      commentCount: numberOrNull(value('commentCount')),
+      favoriteCount: numberOrNull(value('favoriteCount')),
+      shareCount: numberOrNull(value('shareCount')),
+    },
+  };
+}
+
+export function mapContentScreeningToFeishuFields(score, fieldMap, scoredAt) {
+  return compactObject({
+    [fieldMap.screeningStatus]: score.status,
+    [fieldMap.topicPotentialScore]: score.topicPotentialScore,
+    [fieldMap.substanceSignalScore]: score.substanceSignalScore,
+    [fieldMap.topicRecommendation]: score.topicRecommendation,
+    [fieldMap.substanceRecommendation]: score.substanceRecommendation,
+    [fieldMap.scoredAt]: scoredAt,
+    [fieldMap.screeningNote]: score.reason ?? `同博主同平台 ${score.comparableSampleCount} 条内容的互动/内容年龄相对排名。`,
   });
 }
 

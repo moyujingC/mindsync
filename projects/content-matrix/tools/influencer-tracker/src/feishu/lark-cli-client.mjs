@@ -118,6 +118,54 @@ export class LarkCliBitableClient {
     return json.data;
   }
 
+  async createField(tableName, field) {
+    const table = this.getTable(tableName);
+    return this.run([
+      ...this.baseArgs, 'base', '+field-create', '--as', this.as,
+      '--base-token', this.config.baseAppToken, '--table-id', table.tableId,
+      '--json', JSON.stringify(toCliField(field)), '--format', 'json',
+    ]);
+  }
+
+  async listViews(tableName) {
+    const table = this.getTable(tableName);
+    const json = await this.run([
+      ...this.baseArgs, 'base', '+view-list', '--as', this.as,
+      '--base-token', this.config.baseAppToken, '--table-id', table.tableId, '--format', 'json',
+    ]);
+    return json.data?.items ?? json.data?.views ?? json.data ?? [];
+  }
+
+  async createView(tableName, view) {
+    const table = this.getTable(tableName);
+    return this.run([
+      ...this.baseArgs, 'base', '+view-create', '--as', this.as,
+      '--base-token', this.config.baseAppToken, '--table-id', table.tableId,
+      '--json', JSON.stringify(view), '--format', 'json',
+    ]);
+  }
+
+  async setViewFilter(tableName, viewId, filter) {
+    return this.setViewConfig(tableName, '+view-set-filter', viewId, filter);
+  }
+
+  async setViewSort(tableName, viewId, sortConfig) {
+    return this.setViewConfig(tableName, '+view-set-sort', viewId, { sort_config: sortConfig });
+  }
+
+  async setViewVisibleFields(tableName, viewId, visibleFields) {
+    return this.setViewConfig(tableName, '+view-set-visible-fields', viewId, { visible_fields: visibleFields });
+  }
+
+  async setViewConfig(tableName, command, viewId, json) {
+    const table = this.getTable(tableName);
+    return this.run([
+      ...this.baseArgs, 'base', command, '--as', this.as,
+      '--base-token', this.config.baseAppToken, '--table-id', table.tableId,
+      '--view-id', viewId, '--json', JSON.stringify(json), '--format', 'json',
+    ]);
+  }
+
   getTable(tableName) {
     const table = this.config.tables?.[tableName];
     if (!table?.tableId) {
@@ -207,6 +255,17 @@ function normalizeValueForCli(value) {
     return value.link;
   }
   return value ?? null;
+}
+
+function toCliField(field) {
+  const types = { 1: 'text', 2: 'number', 3: 'select', 4: 'select', 5: 'date', 15: 'url' };
+  const options = field.property?.options;
+  const result = { name: field.field_name, type: types[field.type] ?? field.type };
+  if (options) {
+    result.multiple = field.type === 4;
+    result.options = options;
+  }
+  return result;
 }
 
 function orderedFieldsForTable(tableName, fields) {

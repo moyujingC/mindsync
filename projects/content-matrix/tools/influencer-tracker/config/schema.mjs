@@ -97,6 +97,25 @@ export const FEISHU_TABLE_SCHEMAS = {
         type: FEISHU_FIELD_TYPES.singleSelect,
         property: { options: optionNames(['待分析', '已分析', '忽略', '需人工复核']) },
       },
+      screeningStatus: {
+        field_name: '筛选状态',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['待评分', '可评分', '观察中']) },
+      },
+      topicPotentialScore: { field_name: '爆款选题分', type: FEISHU_FIELD_TYPES.number },
+      substanceSignalScore: { field_name: '干货信号分', type: FEISHU_FIELD_TYPES.number },
+      topicRecommendation: {
+        field_name: '选题建议',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['爆款选题库候选', '人工快速查看', '保留 L1']) },
+      },
+      substanceRecommendation: {
+        field_name: '深读建议',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['建议申请 L2', '保留 L1']) },
+      },
+      scoredAt: { field_name: '评分时间', type: FEISHU_FIELD_TYPES.date },
+      screeningNote: { field_name: '评分说明', type: FEISHU_FIELD_TYPES.text },
     },
   },
   comments: {
