@@ -104,6 +104,8 @@
 - [服务 Framing](specs/2026-07-01-AI服务小单-Framing.md)
 - [企业 AI 落地互动课程首期验证 SPEC](specs/2026-07-28-企业AI落地互动课程-首期验证SPEC.md)
 - [企业 AI 互动课程首期验证 QA 基线](qa/2026-07-28-企业AI互动课程首期验证-QA基线.md)
+- [成长型企业 AI 服务 IP 与互动内训原文](references/2026-07-28-成长型企业AI服务IP与互动内训-原文.md)
+- [成长型企业 AI 服务 IP 与互动内训参考](references/2026-07-28-成长型企业AI服务IP与互动内训参考.md)
 - [业务系统](system/README.md)
 - [可交付能力包](capabilities/README.md)
 - [AI 营销获客能力包](capabilities/ai-marketing-acquisition/README.md)
