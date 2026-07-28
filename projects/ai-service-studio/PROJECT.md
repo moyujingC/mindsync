@@ -102,6 +102,8 @@
 ## 4. 当前直接编辑入口
 
 - [服务 Framing](specs/2026-07-01-AI服务小单-Framing.md)
+- [企业 AI 落地互动课程首期验证 SPEC](specs/2026-07-28-企业AI落地互动课程-首期验证SPEC.md)
+- [企业 AI 互动课程首期验证 QA 基线](qa/2026-07-28-企业AI互动课程首期验证-QA基线.md)
 - [业务系统](system/README.md)
 - [可交付能力包](capabilities/README.md)
 - [AI 营销获客能力包](capabilities/ai-marketing-acquisition/README.md)
