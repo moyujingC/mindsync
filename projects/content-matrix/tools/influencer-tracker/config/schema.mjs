@@ -97,6 +97,17 @@ export const FEISHU_TABLE_SCHEMAS = {
         type: FEISHU_FIELD_TYPES.singleSelect,
         property: { options: optionNames(['待分析', '已分析', '忽略', '需人工复核']) },
       },
+      refinementStatus: {
+        field_name: '内容提纯状态',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['未请求', '处理中', '已完成', '已降级', '失败']) },
+      },
+      transcriptSource: {
+        field_name: '文字稿来源',
+        type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['平台正文', '图片 OCR', '平台字幕', '语音转写', '混合']) },
+      },
+      transcriptText: { field_name: '文字稿', type: FEISHU_FIELD_TYPES.text },
       screeningStatus: {
         field_name: '筛选状态',
         type: FEISHU_FIELD_TYPES.singleSelect,

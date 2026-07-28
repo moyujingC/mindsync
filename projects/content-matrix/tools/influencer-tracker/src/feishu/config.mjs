@@ -96,6 +96,9 @@ const OPTIONAL_TABLES = {
 
 const OPTIONAL_TABLE_FIELDS = {
   contents: [
+    'refinementStatus',
+    'transcriptSource',
+    'transcriptText',
     'screeningStatus',
     'topicPotentialScore',
     'substanceSignalScore',

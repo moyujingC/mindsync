@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { screenFeishuContents } from '../src/jobs/screen-content.mjs';
-import { processNextContentTask } from '../src/jobs/content-processing-worker.mjs';
+import { processNextContentTask, writeTranscriptToFeishu } from '../src/jobs/content-processing-worker.mjs';
 
 const contentFields = {
   uniqueKey: '内容唯一键', platform: '平台', creator: '博主', publishedAt: '发布时间', title: '标题', description: '正文/简介', url: '内容链接', contentType: '内容类型',
@@ -69,6 +69,29 @@ test('processing worker sends a dependent insight to manual review when L2 fails
   assert.equal(updates[0].recordId, 'insight');
   assert.equal(updates[0].fields.状态, '需人工处理');
   assert.equal(updates[0].fields.错误摘要, '依赖的 L2 内容提纯未完成');
+});
+
+test('processing worker writes the clean transcript into the original Feishu content row', async () => {
+  const createdFields = [];
+  const updates = [];
+  const result = await writeTranscriptToFeishu({
+    feishuClient: {
+      listFields: async () => [{ field_name: '内容提纯状态' }],
+      createField: async (_table, field) => createdFields.push(field.field_name),
+      updateRecord: async (_table, recordId, fields) => updates.push({ recordId, fields }),
+    },
+    feishuConfig: { tables: { contents: { fields: contentFields } } },
+    content: { recordId: 'rec_content_1' },
+    transcript: '清理后的字幕全文',
+    source: '平台字幕',
+    refinementStatus: '已完成',
+  });
+
+  assert.deepEqual(createdFields, ['文字稿来源', '文字稿']);
+  assert.equal(result.written, true);
+  assert.deepEqual(updates, [{ recordId: 'rec_content_1', fields: {
+    内容提纯状态: '已完成', 文字稿来源: '平台字幕', 文字稿: '清理后的字幕全文',
+  } }]);
 });
 
 function taskConfig() {

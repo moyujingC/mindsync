@@ -208,6 +208,9 @@ export function mapContentToFeishuFields(content, fieldMap) {
     [fieldMap.favoriteCount]: metrics.favoriteCount,
     [fieldMap.shareCount]: metrics.shareCount,
     [fieldMap.analysisStatus]: '待分析',
+    [fieldMap.refinementStatus]: content.refinementStatus,
+    [fieldMap.transcriptSource]: content.transcriptSource,
+    [fieldMap.transcriptText]: content.refinedText,
     [fieldMap.screeningStatus]: '待评分',
   });
 }
@@ -224,6 +227,9 @@ export function mapFeishuContentRecord(record, fieldMap) {
     title: extractTextValue(value('title')),
     description: extractTextValue(value('description')),
     contentType: normalizeSingleSelect(value('contentType')),
+    refinementStatus: normalizeSingleSelect(value('refinementStatus')),
+    transcriptSource: normalizeSingleSelect(value('transcriptSource')),
+    transcriptText: extractTextValue(value('transcriptText')),
     publishedAt: extractTextValue(value('publishedAt')),
     metrics: {
       likeCount: numberOrNull(value('likeCount')),
