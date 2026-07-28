@@ -269,7 +269,7 @@ export const FEISHU_TABLE_SCHEMAS = {
       contentKey: { field_name: '内容唯一键', type: FEISHU_FIELD_TYPES.text },
       taskType: {
         field_name: '任务类型', type: FEISHU_FIELD_TYPES.singleSelect,
-        property: { options: optionNames(['L2 内容提纯', '选题洞察']) },
+        property: { options: optionNames(['L2 内容提纯']) },
       },
       triggerReason: { field_name: '触发原因', type: FEISHU_FIELD_TYPES.text },
       status: {

@@ -80,10 +80,8 @@ async function enqueueProcessingTasks({ feishuClient, feishuConfig, results, dry
 function buildTasks(result, createdAt) {
   const { uniqueKey, score } = result;
   const l2 = score.substanceRecommendation === '建议申请 L2';
-  const topic = score.topicRecommendation === '爆款选题库候选';
   const tasks = [];
   if (l2) tasks.push(task({ contentKey: uniqueKey, taskType: 'L2 内容提纯', priority: score.substanceSignalScore, triggerReason: `干货信号分 ${score.substanceSignalScore} >= 70`, status: '待处理', createdAt }));
-  if (topic) tasks.push(task({ contentKey: uniqueKey, taskType: '选题洞察', priority: score.topicPotentialScore, triggerReason: `爆款选题分 ${score.topicPotentialScore} >= 80`, status: l2 ? '等待依赖' : '待处理', dependencyTaskKey: l2 ? `${uniqueKey}::L2 内容提纯` : '', createdAt }));
   return tasks;
 }
 

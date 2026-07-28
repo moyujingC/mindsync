@@ -1,10 +1,9 @@
 import { join, resolve } from 'node:path';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { collectSingleContent } from './single-content-collect.mjs';
-import { buildContentEnrichment } from './enrich-content.mjs';
 import { TikHubClient } from '../platforms/tikhub/client.mjs';
 import { FEISHU_TABLE_SCHEMAS } from '../../config/schema.mjs';
-import { mapFeishuContentRecord, mapFeishuProcessingTaskRecord, mapProcessingTaskToFeishuFields, mapTopicCandidateToFeishuFields } from '../feishu/client.mjs';
+import { mapFeishuContentRecord, mapFeishuProcessingTaskRecord, mapProcessingTaskToFeishuFields } from '../feishu/client.mjs';
 
 export async function processNextContentTask({ feishuClient, feishuConfig, appDir = process.cwd(), storePath, outputDir }) {
   const taskFields = feishuConfig.tables.contentProcessingTasks?.fields;
@@ -18,9 +17,8 @@ export async function processNextContentTask({ feishuClient, feishuConfig, appDi
   if (!content) return fail({ feishuClient, taskFields, task: runnable, message: '未找到来源内容，无法执行加工任务' });
   await updateTask(feishuClient, taskFields, runnable, { status: '执行中', updatedAt: new Date().toISOString(), errorSummary: '' });
   try {
-    const result = runnable.taskType === 'L2 内容提纯'
-      ? await runL2({ content, feishuClient, feishuConfig, storePath, outputDir })
-      : await runTopicInsight({ content, feishuClient, feishuConfig, appDir, tasks: taskRecords, taskFields });
+    if (runnable.taskType !== 'L2 内容提纯') throw new Error(`不再自动执行任务类型：${runnable.taskType}`);
+    const result = await runL2({ content, feishuClient, feishuConfig, storePath, outputDir });
     await updateTask(feishuClient, taskFields, runnable, { status: '完成', artifactPath: result.artifactPath ?? '', updatedAt: new Date().toISOString(), errorSummary: '' });
     return { processed: true, taskKey: runnable.taskKey, taskType: runnable.taskType, result };
   } catch (error) {
@@ -114,21 +112,6 @@ async function findRefinedTranscript(path) {
 
 function inferTranscriptSource(path) {
   return path.includes('platform-subtitle') ? '平台字幕' : '语音转写';
-}
-
-async function runTopicInsight({ content, feishuClient, feishuConfig, appDir, tasks, taskFields }) {
-  const dependency = tasks.map((record) => ({ ...mapFeishuProcessingTaskRecord(record, taskFields), raw: record }))
-    .find((task) => task.taskKey === `${content.uniqueKey}::L2 内容提纯`);
-  const artifactPath = dependency?.raw?.fields?.[taskFields.artifactPath] ?? '';
-  const transcript = artifactPath ? await readFile(resolve(appDir, artifactPath), 'utf8').catch(() => '') : '';
-  const enrichment = buildContentEnrichment({ metadata: content, transcript, comments: [] });
-  const candidate = { ...enrichment.topicCandidates[0], source: { contentUniqueKey: content.uniqueKey }, targetAccounts: ['墨予镜'] };
-  const fields = feishuConfig.tables.insights.fields;
-  const existing = await feishuClient.listRecords('insights');
-  if (!existing.some((record) => record.fields?.[fields.sourceContentKeys] === content.uniqueKey && record.fields?.[fields.insightType] === '选题')) {
-    await feishuClient.createRecords('insights', [mapTopicCandidateToFeishuFields(candidate, fields)]);
-  }
-  return { artifactPath: artifactPath || `洞察与选题:${content.uniqueKey}`, candidate: candidate.topicTitle };
 }
 
 async function releaseDependencies({ feishuClient, taskFields, tasks }) {

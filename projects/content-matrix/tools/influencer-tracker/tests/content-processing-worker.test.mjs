@@ -9,7 +9,7 @@ const contentFields = {
   screeningStatus: '筛选状态', topicPotentialScore: '爆款选题分', substanceSignalScore: '干货信号分', topicRecommendation: '选题建议', substanceRecommendation: '深读建议', scoredAt: '评分时间', screeningNote: '评分说明',
 };
 
-test('screening queues L2 before dependent topic insight and deduplicates reruns', async () => {
+test('screening queues only L2 tasks and deduplicates reruns', async () => {
   const taskRecords = [];
   const client = {
     listFields: async () => Object.values(contentFields).map((field_name) => ({ field_name })),
@@ -21,10 +21,8 @@ test('screening queues L2 before dependent topic insight and deduplicates reruns
   };
   const config = { tables: { contents: { fields: contentFields } } };
   const first = await screenFeishuContents({ feishuClient: client, feishuConfig: config, scoredAt: '2026-07-27T00:00:00Z' });
-  assert.equal(first.taskQueue.createdCount, 4);
-  const topic = first.taskQueue.tasks.find((task) => task.taskType === '选题洞察');
-  assert.equal(topic.status, '等待依赖');
-  assert.match(topic.dependencyTaskKey, /L2 内容提纯$/);
+  assert.equal(first.taskQueue.createdCount, 2);
+  assert.deepEqual(first.taskQueue.tasks.map((task) => task.taskType), ['L2 内容提纯', 'L2 内容提纯']);
   const second = await screenFeishuContents({ feishuClient: client, feishuConfig: config, scoredAt: '2026-07-27T00:00:00Z' });
   assert.equal(second.taskQueue.createdCount, 0);
 });
@@ -35,41 +33,6 @@ function contentRecords() {
     点赞数: count, 评论数: count, 收藏数: count, '转发/分享数': count,
   }}));
 }
-
-test('processing worker releases a dependent insight only after L2 completes', async () => {
-  const updates = [];
-  const result = await processNextContentTask({
-    feishuClient: taskClient([
-      taskRecord('l2', { 任务唯一键: 'douyin:1::L2 内容提纯', 状态: '完成' }),
-      taskRecord('insight', { 任务唯一键: 'douyin:1::选题洞察', 状态: '等待依赖', 依赖任务: 'douyin:1::L2 内容提纯' }),
-    ], updates),
-    feishuConfig: taskConfig(),
-  });
-
-  assert.equal(result.processed, false);
-  assert.equal(result.reason, 'empty-or-waiting');
-  assert.equal(updates.length, 1);
-  assert.equal(updates[0].recordId, 'insight');
-  assert.equal(updates[0].fields.状态, '待处理');
-  assert.match(updates[0].fields.更新时间, /^\d{4}-\d{2}-\d{2}T/);
-});
-
-test('processing worker sends a dependent insight to manual review when L2 fails', async () => {
-  const updates = [];
-  const result = await processNextContentTask({
-    feishuClient: taskClient([
-      taskRecord('l2', { 任务唯一键: 'douyin:1::L2 内容提纯', 状态: '失败' }),
-      taskRecord('insight', { 任务唯一键: 'douyin:1::选题洞察', 状态: '等待依赖', 依赖任务: 'douyin:1::L2 内容提纯' }),
-    ], updates),
-    feishuConfig: taskConfig(),
-  });
-
-  assert.equal(result.processed, false);
-  assert.equal(updates.length, 1);
-  assert.equal(updates[0].recordId, 'insight');
-  assert.equal(updates[0].fields.状态, '需人工处理');
-  assert.equal(updates[0].fields.错误摘要, '依赖的 L2 内容提纯未完成');
-});
 
 test('processing worker writes the clean transcript into the original Feishu content row', async () => {
   const createdFields = [];
@@ -104,16 +67,5 @@ function taskConfig() {
         },
       },
     },
-  };
-}
-
-function taskRecord(record_id, fields) {
-  return { record_id, fields: { 内容唯一键: 'douyin:1', 任务类型: '选题洞察', 优先级: 80, ...fields } };
-}
-
-function taskClient(records, updates) {
-  return {
-    listRecords: async (table) => table === 'contentProcessingTasks' ? records : [],
-    updateRecord: async (_table, recordId, fields) => updates.push({ recordId, fields }),
   };
 }

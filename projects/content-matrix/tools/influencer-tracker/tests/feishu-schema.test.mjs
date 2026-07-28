@@ -48,6 +48,12 @@ test('link inbox schema separates received links from collected content', () => 
   );
 });
 
+test('content processing schema only automates L2 refinement', () => {
+  const options = FEISHU_TABLE_SCHEMAS.contentProcessingTasks.fields.taskType.property.options
+    .map((option) => option.name);
+  assert.deepEqual(options, ['L2 内容提纯']);
+});
+
 test('bootstrap schema can produce tracker config field maps', () => {
   const config = {
     appId: 'cli_xxx',
