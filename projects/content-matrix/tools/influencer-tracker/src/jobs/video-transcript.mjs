@@ -115,7 +115,7 @@ export function findSubtitle(value) {
   const candidates = collectValues(value, /(?:subtitle|caption|transcript)/i);
   for (const candidate of candidates) {
     if (typeof candidate === 'string' && /^https:\/\//i.test(candidate)) return { url: candidate };
-    if (typeof candidate === 'string' && candidate.trim().length > 0 && looksLikeSubtitle(candidate)) {
+    if (typeof candidate === 'string' && isTimedSubtitle(candidate)) {
       return { text: candidate, extension: candidate.includes('WEBVTT') ? '.vtt' : '.srt' };
     }
   }
@@ -159,8 +159,11 @@ function collectStrings(value, values) {
   }
 }
 
-function looksLikeSubtitle(value) {
-  return value.includes('\n') || value.includes('-->') || value.includes('WEBVTT');
+function isTimedSubtitle(value) {
+  const text = value.trim();
+  // Descriptions often live under caption-like response fields. A transcript needs
+  // an actual cue timeline before it can bypass audio transcription.
+  return text.startsWith('WEBVTT') || /\d{1,2}:\d{2}:\d{2}[,.]\d{3}\s*-->\s*\d{1,2}:\d{2}:\d{2}[,.]\d{3}/.test(text);
 }
 
 async function downloadToFile({ url, outputPath, fetchImpl, maxBytes }) {

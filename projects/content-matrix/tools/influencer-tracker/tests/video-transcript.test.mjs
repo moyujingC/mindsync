@@ -65,6 +65,33 @@ test('media URL and subtitle discovery support TikHub nested response fields', (
   assert.deepEqual(findSubtitle(raw), { url: 'https://example.test/subtitle.srt' });
 });
 
+test('video transcript rejects a content description that is mislabeled as a caption', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'video-transcript-caption-'));
+  try {
+    const result = await enrichVideoTranscripts({
+      collection: { contents: { items: [video({
+        caption: '这是一段视频简介，不是带时间轴的字幕。',
+        video: { play_addr: { url_list: ['https://example.test/video.mp4'] } },
+      })] } },
+      outputDir: dir,
+      fetchImpl: async () => new Response('video-bytes', { status: 200 }),
+      processMedia: async ({ inputPath }) => {
+        const refinedTextPath = `${inputPath}.refined.txt`;
+        await writeFile(refinedTextPath, '语音转写结果\n');
+        return {
+          subtitlePath: `${inputPath}.srt`,
+          originalTranscriptPath: `${inputPath}.original.srt`,
+          refinedTextPath,
+        };
+      },
+    });
+    assert.equal(findSubtitle({ caption: '这是一段视频简介，不是带时间轴的字幕。' }), null);
+    assert.equal(result.media.items[0].source, '语音转写');
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 function video(raw) {
   return { uniqueKey: 'douyin:123', title: '测试视频', contentType: '视频', raw };
 }
