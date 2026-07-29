@@ -21,6 +21,7 @@ logs/
 tmp/
 temp/
 data/
+Clippings/
 *.tmp
 .playwright-cli/
 
