@@ -92,6 +92,13 @@ const OPTIONAL_TABLES = {
     'snapshotKey', 'contentKey', 'publishedAt', 'capturedAt', 'contentAgeDays',
     'likeCount', 'commentCount', 'favoriteCount', 'shareCount', 'runId', 'source',
   ],
+  contentExperiments: [
+    'experimentId', 'topicTitle', 'targetAccount', 'contentFormat', 'topicSource',
+    'hypothesis', 'evidenceRefs', 'primaryGoal', 'status', 'platform', 'publishUrl',
+    'publishedAt', 'observedUntil', 'impressions', 'likes', 'favorites', 'comments',
+    'shares', 'directMessages', 'qualifiedResponses', 'qualifiedConsultations',
+    'humanConclusion', 'nextAdjustment', 'createdAt', 'updatedAt',
+  ],
 };
 
 const OPTIONAL_TABLE_FIELDS = {

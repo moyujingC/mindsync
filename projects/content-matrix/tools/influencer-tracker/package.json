@@ -20,6 +20,8 @@
     "content:screen": "node src/cli/screen-content.mjs --feishu config/feishu.local.json",
     "content:process": "node --env-file-if-exists=config/runtime.env src/cli/content-processing-worker.mjs --feishu config/feishu.local.json",
     "content:sync-transcripts": "node src/cli/content-processing-worker.mjs --feishu config/feishu.local.json --sync-transcripts",
+    "experiment:setup": "node src/cli/content-experiment.mjs --feishu config/feishu.local.json",
+    "experiment:record": "node src/cli/content-experiment.mjs --feishu config/feishu.local.json",
     "inbox:server": "node --env-file-if-exists=config/runtime.env src/cli/link-inbox-server.mjs --feishu config/feishu.local.json",
     "inbox:worker": "node --env-file-if-exists=config/runtime.env src/cli/link-inbox-worker.mjs --feishu config/feishu.local.json",
     "capture:tikhub-contract": "node src/cli/capture-tikhub-contract.mjs",

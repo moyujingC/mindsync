@@ -322,6 +322,45 @@ export function mapEngagementSnapshotToFeishuFields(snapshot, fieldMap) {
   });
 }
 
+export function mapContentExperimentToFeishuFields(experiment, fieldMap) {
+  return compactObject({
+    [fieldMap.experimentId]: experiment.experimentId,
+    [fieldMap.topicTitle]: experiment.topicTitle,
+    [fieldMap.targetAccount]: experiment.targetAccount,
+    [fieldMap.contentFormat]: experiment.contentFormat,
+    [fieldMap.topicSource]: experiment.topicSource,
+    [fieldMap.hypothesis]: experiment.hypothesis,
+    [fieldMap.evidenceRefs]: experiment.evidenceRefs,
+    [fieldMap.primaryGoal]: experiment.primaryGoal,
+    [fieldMap.status]: experiment.status,
+    [fieldMap.platform]: experiment.platform,
+    [fieldMap.publishUrl]: asFeishuUrl(experiment.publishUrl),
+    [fieldMap.publishedAt]: experiment.publishedAt,
+    [fieldMap.observedUntil]: experiment.observedUntil,
+    [fieldMap.impressions]: experiment.metrics?.impressions,
+    [fieldMap.likes]: experiment.metrics?.likes,
+    [fieldMap.favorites]: experiment.metrics?.favorites,
+    [fieldMap.comments]: experiment.metrics?.comments,
+    [fieldMap.shares]: experiment.metrics?.shares,
+    [fieldMap.directMessages]: experiment.metrics?.directMessages,
+    [fieldMap.qualifiedResponses]: experiment.metrics?.qualifiedResponses,
+    [fieldMap.qualifiedConsultations]: experiment.metrics?.qualifiedConsultations,
+    [fieldMap.humanConclusion]: experiment.humanConclusion,
+    [fieldMap.nextAdjustment]: experiment.nextAdjustment,
+    [fieldMap.createdAt]: experiment.createdAt,
+    [fieldMap.updatedAt]: experiment.updatedAt,
+  });
+}
+
+export function mapFeishuContentExperimentRecord(record, fieldMap) {
+  const fields = record.fields ?? {};
+  const value = (key) => fields[fieldMap[key]];
+  return {
+    recordId: record.record_id,
+    experimentId: extractTextValue(value('experimentId')),
+  };
+}
+
 export function mapTopicCandidateToFeishuFields(candidate, fieldMap) {
   return compactObject({
     [fieldMap.title]: candidate.topicTitle,

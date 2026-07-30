@@ -285,6 +285,55 @@ export const FEISHU_TABLE_SCHEMAS = {
       updatedAt: { field_name: '更新时间', type: FEISHU_FIELD_TYPES.date },
     },
   },
+  contentExperiments: {
+    tableName: '内容实验与反馈',
+    defaultViewName: '全部实验',
+    fields: {
+      experimentId: { field_name: '实验ID', type: FEISHU_FIELD_TYPES.text },
+      topicTitle: { field_name: '选题标题', type: FEISHU_FIELD_TYPES.text },
+      targetAccount: {
+        field_name: '账号', type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['墨予镜', '一镜一梳']) },
+      },
+      contentFormat: {
+        field_name: '内容形态', type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['公众号文章', '视频号视频', '微博', '即刻', '其他']) },
+      },
+      topicSource: {
+        field_name: '选题来源', type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['自发表达', '爆款结构', '用户需求', '课题研究', '混合']) },
+      },
+      hypothesis: { field_name: '选题假设', type: FEISHU_FIELD_TYPES.text },
+      evidenceRefs: { field_name: '来源证据', type: FEISHU_FIELD_TYPES.text },
+      primaryGoal: {
+        field_name: '目标动作', type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['关注', '收藏', '私信', '资料索取', '咨询']) },
+      },
+      status: {
+        field_name: '实验状态', type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['待发布', '已发布待复盘', '已复盘', '停止']) },
+      },
+      platform: {
+        field_name: '发布平台', type: FEISHU_FIELD_TYPES.singleSelect,
+        property: { options: optionNames(['公众号', '视频号', '微博', '即刻', '小红书', '抖音', '其他']) },
+      },
+      publishUrl: { field_name: '发布链接', type: FEISHU_FIELD_TYPES.url },
+      publishedAt: { field_name: '发布时间', type: FEISHU_FIELD_TYPES.date },
+      observedUntil: { field_name: '观察截至', type: FEISHU_FIELD_TYPES.date },
+      impressions: { field_name: '曝光/播放', type: FEISHU_FIELD_TYPES.number },
+      likes: { field_name: '点赞', type: FEISHU_FIELD_TYPES.number },
+      favorites: { field_name: '收藏', type: FEISHU_FIELD_TYPES.number },
+      comments: { field_name: '评论', type: FEISHU_FIELD_TYPES.number },
+      shares: { field_name: '转发', type: FEISHU_FIELD_TYPES.number },
+      directMessages: { field_name: '私信', type: FEISHU_FIELD_TYPES.number },
+      qualifiedResponses: { field_name: '有效反馈', type: FEISHU_FIELD_TYPES.number },
+      qualifiedConsultations: { field_name: '有效咨询', type: FEISHU_FIELD_TYPES.number },
+      humanConclusion: { field_name: '人工结论', type: FEISHU_FIELD_TYPES.text },
+      nextAdjustment: { field_name: '下一轮调整', type: FEISHU_FIELD_TYPES.text },
+      createdAt: { field_name: '创建时间', type: FEISHU_FIELD_TYPES.date },
+      updatedAt: { field_name: '更新时间', type: FEISHU_FIELD_TYPES.date },
+    },
+  },
 };
 
 export function buildFieldNameMap(schema) {

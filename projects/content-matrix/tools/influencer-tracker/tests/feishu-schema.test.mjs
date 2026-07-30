@@ -13,7 +13,15 @@ test('FEISHU_TABLE_SCHEMAS includes all content intelligence tables', () => {
     'researchRequests',
     'linkInbox',
     'contentProcessingTasks',
+    'contentExperiments',
   ]);
+});
+
+test('content experiment schema keeps topic source and human outcome separate', () => {
+  const fields = FEISHU_TABLE_SCHEMAS.contentExperiments.fields;
+  assert.deepEqual(fields.topicSource.property.options.map((option) => option.name), ['自发表达', '爆款结构', '用户需求', '课题研究', '混合']);
+  assert.equal(fields.qualifiedConsultations.field_name, '有效咨询');
+  assert.equal(fields.humanConclusion.field_name, '人工结论');
 });
 
 test('buildFieldNameMap converts internal keys to Feishu field names', () => {
