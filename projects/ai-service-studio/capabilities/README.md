@@ -1,9 +1,9 @@
 # 可交付能力包
 
 > 状态：draft
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：CEO / Orchestrator
-> last_updated：2026-07-15
+> last_updated：2026-08-01
 > source_of_truth：projects/ai-service-studio/capabilities/README.md
 
 这里沉淀 `知行AI服务` 可以跨行业复用的服务能力。
@@ -29,6 +29,7 @@
 | [AI 营销获客](ai-marketing-acquisition/README.md) | draft | 面向线上内容 / 流量需要转成线下服务或产品成交的业务，连接市场信号、内容生产、私域承接和服务验证 |
 | AI 工作流诊断 | active | 当前以 [AI 工作流诊断 SOP](../sops/AI工作流诊断-SOP.md) 维护 |
 | AI 文档 / 知识库整理 | active | 当前以 [AI 文档知识库整理 SOP](../sops/AI文档知识库整理-SOP.md) 维护 |
+| [知识库交付技术能力基线](knowledge-base-delivery/README.md) | draft | 面向资料治理与知识库 PoC 的内部技术能力、学习路径与合作边界 |
 | AI 落地翻译 | draft | 当前作为售前、诊断、试点定义和交付设计的前置能力维护，不单独包装成熟服务 |
 
 ## 与行业方案的关系

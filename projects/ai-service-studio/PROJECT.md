@@ -114,6 +114,7 @@
 - [企业 AI 互动内训三模块展开参考](references/2026-07-28-企业AI互动内训三模块展开参考.md)
 - [业务系统](system/README.md)
 - [可交付能力包](capabilities/README.md)
+- [知识库交付技术能力基线](capabilities/knowledge-base-delivery/README.md)
 - [AI 营销获客能力包](capabilities/ai-marketing-acquisition/README.md)
 - [行业方案包](industries/README.md)
 - [心理与疗愈行业方案包](industries/psychology-healing/README.md)
