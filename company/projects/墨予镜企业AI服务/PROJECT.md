@@ -1,20 +1,20 @@
-# 知行AI服务项目入口
+# 墨予镜企业AI服务项目入口
 
 > 状态：draft
 > 版本：0.2.0
 > owner：CEO / Orchestrator
 > last_updated：2026-07-13
-> source_of_truth：company/projects/知行AI服务/PROJECT.md
+> source_of_truth：company/projects/墨予镜企业AI服务/PROJECT.md
 > 对应项目工作区：[projects/ai-service-studio](../../../projects/ai-service-studio)
 > 项目类型：AI 服务收入验证项目
 
-这份文档是 `知行AI服务` 在 `mindsync` 中的公司侧项目入口。
+这份文档是 `墨予镜企业AI服务` 在 `mindsync` 中的公司侧项目入口。
 
-`知行AI服务` 的目录名 / slug 为 `ai-service-studio`。
+`墨予镜企业AI服务` 的目录名 / slug 为 `ai-service-studio`。
 
 ## 1. 项目定位
 
-`知行AI服务` 不是只做“AI 咨询”的项目，而是一个面向落地交付的 AI 服务项目。
+`墨予镜企业AI服务` 不是只做“AI 咨询”的项目，而是一个面向落地交付的 AI 服务项目。
 
 当前分成两条服务线：
 
@@ -58,7 +58,7 @@
 
 ## 4. 与其他项目的边界
 
-`知行AI服务` 与 `智务工坊`、`馨冉求职`、`怀瑾握瑜` 相关，但不是同一个项目。
+`墨予镜企业AI服务` 与 `智务工坊`、`馨冉求职`、`怀瑾握瑜` 相关，但不是同一个项目。
 
 - `智务工坊`
   - 面向平台型 AI 人工任务和专家任务收入验证
@@ -66,7 +66,7 @@
   - 面向本人当前求职推进、简历、作品集和面试准备
 - `怀瑾握瑜`
   - 面向职业转型支持产品化假设
-- `知行AI服务`
+- `墨予镜企业AI服务`
   - 面向企业 AI 落地服务和个人 AI 工作系统服务
 
 如果服务交付沉淀出可公开表达的案例、内容或方法，再 handoff 到：

@@ -6,7 +6,7 @@
 > last_updated：2026-07-15
 > source_of_truth：projects/ai-service-studio/industries/README.md
 
-这里沉淀 `知行AI服务` 的行业切入、行业客户理解和行业化交付资产。
+这里沉淀 `墨予镜企业AI服务` 的行业切入、行业客户理解和行业化交付资产。
 
 “行业方案包”不是成熟行业解决方案。当前阶段先记录可深耕行业、客户类型、真实流程、风险边界和可复用素材。
 

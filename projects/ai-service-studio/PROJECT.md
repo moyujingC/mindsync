@@ -1,20 +1,20 @@
-# 知行AI服务项目工作区
+# 墨予镜企业AI服务项目工作区
 
 > 状态：draft
 > 版本：0.2.0
 > owner：CEO / Orchestrator
 > last_updated：2026-07-18
 > source_of_truth：projects/ai-service-studio/PROJECT.md
-> 公司侧入口：[company/projects/知行AI服务/PROJECT.md](../../company/projects/知行AI服务/PROJECT.md)
+> 公司侧入口：[company/projects/墨予镜企业AI服务/PROJECT.md](../../company/projects/墨予镜企业AI服务/PROJECT.md)
 > 项目类型：AI 服务收入验证工作区
 
-这是 `知行AI服务` 在 Monorepo 中的正式项目工作区入口。
+这是 `墨予镜企业AI服务` 在 Monorepo 中的正式项目工作区入口。
 
 项目目录名为 `ai-service-studio`。
 
 ## 1. 项目是什么
 
-`知行AI服务` 用于承接 AI 服务的定义、SOP、报价实验、交付模板、参考研究和复盘。
+`墨予镜企业AI服务` 用于承接 AI 服务的定义、SOP、报价实验、交付模板、参考研究和复盘。
 
 项目内同时采用两种组织方式：
 
@@ -73,7 +73,7 @@
 
 ## 3.1 获客依据与内容系统
 
-`知行AI服务` 的公域内容和私域触达，应逐步接入 `内容矩阵` 下的 [AI 营销获客系统](../content-matrix/specs/2026-07-21-AI营销获客系统组件化重构方案.md)。
+`墨予镜企业AI服务` 的公域内容和私域触达，应逐步接入 `内容矩阵` 下的 [AI 营销获客系统](../content-matrix/specs/2026-07-21-AI营销获客系统组件化重构方案.md)。
 
 这套系统把市场需求调研、博主 / 对标账号追踪、评论区需求归纳、选题、草稿、成稿、配图、排版、发布和反馈回流连成一条链路。
 

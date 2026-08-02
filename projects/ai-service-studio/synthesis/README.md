@@ -1,4 +1,4 @@
-# 知行AI服务纵向复盘
+# 墨予镜企业AI服务纵向复盘
 
 > 状态：draft
 > 版本：0.1.0
@@ -6,7 +6,7 @@
 > last_updated：2026-07-15
 > source_of_truth：projects/ai-service-studio/synthesis/README.md
 
-这里存放 `知行AI服务` 的阶段性纵向复盘文档。
+这里存放 `墨予镜企业AI服务` 的阶段性纵向复盘文档。
 
 它不是单篇参考材料目录，也不是最终业务系统。
 

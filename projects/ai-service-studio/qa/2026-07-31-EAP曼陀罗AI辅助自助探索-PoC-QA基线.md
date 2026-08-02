@@ -5,7 +5,7 @@
 > owner：Test / QA
 > last_updated：2026-07-31
 > source_of_truth：projects/ai-service-studio/qa/2026-07-31-EAP曼陀罗AI辅助自助探索-PoC-QA基线.md
-> 项目：知行AI服务
+> 项目：墨予镜企业AI服务
 > 阶段：qa-basis
 > 关联 SPEC：[EAP 曼陀罗 AI 辅助自助探索 PoC 规格](../specs/2026-07-31-EAP曼陀罗AI辅助自助探索-PoC-SPEC.md)
 

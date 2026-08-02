@@ -5,7 +5,7 @@
 > owner：CEO / Product Spec Lead
 > last_updated：2026-07-31
 > source_of_truth：projects/ai-service-studio/specs/2026-07-31-EAP曼陀罗AI辅助自助探索-PoC-SPEC.md
-> 项目：知行AI服务
+> 项目：墨予镜企业AI服务
 > 阶段：spec
 > 任务级别：局部实验
 > depends_on：[心理与疗愈行业方案包](../industries/psychology-healing/README.md)、[共用曼陀罗解读引擎讨论稿](../../aimandala/docs/specs/2026-07-31-共用曼陀罗解读引擎-产品规格讨论稿.md)

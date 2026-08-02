@@ -6,7 +6,7 @@
 > last_updated：2026-08-01
 > source_of_truth：projects/ai-service-studio/capabilities/README.md
 
-这里沉淀 `知行AI服务` 可以跨行业复用的服务能力。
+这里沉淀 `墨予镜企业AI服务` 可以跨行业复用的服务能力。
 
 “能力包”不是一个宣传词，而是一组可以被售前、报价、交付和复盘复用的服务单元。
 

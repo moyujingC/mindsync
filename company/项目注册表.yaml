@@ -64,12 +64,12 @@ objects:
       - "保证正式答题阶段以人工理解和人工输入为主，不依赖实时 AI 代答或复制粘贴"
 
   - id: "ai-service-studio"
-    name: "知行AI服务"
+    name: "墨予镜企业AI服务"
     slug: "ai-service-studio"
     kind: "product"
     status: "draft"
     goal: "AI 服务收入验证：企业 FDE 高客单服务 + 个人 AI 工作系统服务"
-    company_entry: "company/projects/知行AI服务/PROJECT.md"
+    company_entry: "company/projects/墨予镜企业AI服务/PROJECT.md"
     workspace_entry: "projects/ai-service-studio/PROJECT.md"
     runtime_directory: "projects/ai-service-studio"
     purpose:

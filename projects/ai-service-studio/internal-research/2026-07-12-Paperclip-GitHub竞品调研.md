@@ -15,7 +15,7 @@ Paperclip 在 GitHub 上没有很多完全同构的竞品。它最接近的定�
 3. AI 工作流平台：Dify、Flowise、Langflow、n8n、Activepieces。
 4. coding agent 控制台：OpenHands、Open Interpreter，以及客户手动使用 Codex / Claude Code / Cursor。
 
-对 `知行AI服务` 来说，Paperclip 不应该正面竞争“谁更会搭 agent”或“谁集成更多工具”。它的机会在交付侧：把一条业务流程的责任、状态、AI 使用、人工审核、异常处理和复盘记录固定下来。
+对 `墨予镜企业AI服务` 来说，Paperclip 不应该正面竞争“谁更会搭 agent”或“谁集成更多工具”。它的机会在交付侧：把一条业务流程的责任、状态、AI 使用、人工审核、异常处理和复盘记录固定下来。
 
 ## 2. Paperclip 的基准位置
 
@@ -267,7 +267,7 @@ Paperclip 的差异：
 把已经发生的人机协作，变成有责任、有状态、有审批、有交付记录的流程。
 ```
 
-## 9. 对知行AI服务的定位建议
+## 9. 对墨予镜企业AI服务的定位建议
 
 不要把 Paperclip 放在“AI 应用开发平台”位置。这个位置会撞上 Dify、Flowise、Langflow。
 
@@ -317,7 +317,7 @@ Dify、n8n、CrewAI、LangGraph 能解决一部分“怎么构建/自动化”�
 
 ## 12. 对第一单服务的建议
 
-如果用 Paperclip 参与 `知行AI服务` 的第一单，不要从“平台部署”开始。
+如果用 Paperclip 参与 `墨予镜企业AI服务` 的第一单，不要从“平台部署”开始。
 
 推荐服务名：
 
