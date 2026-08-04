@@ -1,5 +1,5 @@
 version: 0.1.0
-last_updated: 2026-04-04
+last_updated: 2026-08-05
 source_of_truth: company/项目注册表.yaml
 description: >
   知行工坊公司对象注册表。这里是公司内项目、共享能力与品牌/IP 对象的唯一权威清单；
@@ -77,6 +77,20 @@ objects:
       - "承接个人 AI 服务，面向个人专业服务者验证 AI 工作流诊断、文档/知识库整理和工作系统搭建"
       - "企业线不围绕单个小工具售卖，优先验证高客单、强落地、可复盘的服务闭环"
       - "个人线保留小单验证属性，不承诺收入增长、获客、融资、求职成功或组织转型结果"
+
+  - id: "28764450-7549-4261-91bc-9bd6e8c433aa"
+    name: "AI 副业"
+    slug: "ai-side-hustle"
+    kind: "product"
+    status: "draft"
+    goal: "通过案例研究与小规模验证，筛选可合规自动化的 AI 副业机会"
+    company_entry: "company/projects/AI 副业/PROJECT.md"
+    workspace_entry: "projects/ai-side-hustle/PROJECT.md"
+    runtime_directory: "projects/ai-side-hustle"
+    purpose:
+      - "留存和分析 AI 副业案例、平台规则与可验证线索"
+      - "评估可自动化程度、启动成本、交付风险与真实收入证据"
+      - "在合规前提下，为后续小规模试点与收入验证提供候选方向"
 
   - id: "healing-courses"
     name: "疗愈课程体系"
