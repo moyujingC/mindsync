@@ -25,37 +25,7 @@
 | `作品集前四张详情页方案.md` | `support / portfolio-draft` | 作品集详情页方案草稿，不能直接替代简历事实源 |
 | `三岗位2分钟自我介绍.md` | `support / interview` | 面试表达材料，不作为简历事实源 |
 
-## 三、非 active 文件分类（防误投）
-
-### 3.1 historical / do-not-submit
-
-以下文件只作历史参考或压缩参考，不得直接投递，也不得作为后续修改入口：
-
-| 文件 | 状态 | 说明 |
-|---|---|---|
-| `在线简历母版.md` | `historical / do-not-submit` | 已被 `09-总在线简历-BOSS版.md` 取代；其中薪资、To B、商业化等口径可能过时 |
-| `崔兴-FDE.md` | `historical / do-not-submit / compression-reference` | 已被 `07-崔兴-FDE-AI解决方案工程师-v1.md` 取代，可作短版表达参考 |
-| `崔兴-AI应用开发工程师.md` | `historical / do-not-submit / compression-reference` | 已被 `06-崔兴-AI应用工程师-v1.md` 取代 |
-| `崔兴-AI产品经理.md` | `historical / do-not-submit / compression-reference` | 已被 `08-崔兴-AI产品经理-v1.md` 取代 |
-
-### 3.2 headhunter / needs-refresh
-
-| 文件 | 状态 | 说明 |
-|---|---|---|
-| `崔兴-猎头版简历.md` | `headhunter / needs-refresh / do-not-submit-as-is` | 暂保留猎头用途，但旧版含薪资和旧口径；未刷新前不得直接发猎头 |
-
-### 3.3 English-only / historical
-
-以下文件只服务英文岗位或英文猎头需求，不进入中文主投递包；如需英文投递，应从 active 中文版重新翻译：
-
-| 文件 | 状态 |
-|---|---|
-| `在线简历母版-英文版.md` | `English-only / historical / do-not-submit-as-is` |
-| `Xing Cui-FDE.md` | `English-only / historical / do-not-submit-as-is` |
-| `崔兴-AI转型咨询顾问-英文版.md` | `English-only / historical / do-not-submit-as-is` |
-| `崔兴-AI产品经理-英文版.md` | `English-only / historical / do-not-submit-as-is` |
-
-## 四、同步规则（事实 → 论点 → 投递材料）
+## 三、同步规则（事实 → 论点 → 投递材料）
 
 事实或口径变化时，按固定顺序改，一次提交完成：
 
@@ -67,7 +37,7 @@
 
 禁止在某一份简历里单独发明项目事实。
 
-## 五、日常投递轻量流程
+## 四、日常投递轻量流程
 
 看到一个岗位时，不先改简历，只做三步：
 
@@ -75,7 +45,7 @@
 2. **判是否值得定制**：只有目标公司重要、JD 高匹配、HR/猎头明确反馈、或 JD 暴露当前简历硬缺口时，才定制。
 3. **最多改 3 处**：标题 / 求职意向、个人优势前 2-3 行、一个项目 bullet 或项目排序。单条 JD 不重写事实源和全套简历。
 
-## 六、投递前 60 秒红线检查
+## 五、投递前 60 秒红线检查
 
 每次发出前只查以下 8 项：
 
@@ -88,7 +58,7 @@
 7. 是否出现禁用旧口径：育碧 / Ubisoft、成熟商业化平台、已接入支付系统、医疗诊断、心理治疗。
 8. 所有强数字是否能解释来源和统计口径。
 
-## 七、已定稿口径速查（改动需本人同意）
+## 六、已定稿口径速查（改动需本人同意）
 
 - 支付：「内测兑换码模式运行中，在线支付接入中」
 - 手写代码：早年 9 年手写功底正面提，近 2 年框定 AI 原生开发；“不是不能手写，是没必要手写”仅作为面试口径，不放在简历首屏硬怼
@@ -100,6 +70,6 @@
 - 叙事主线三段式：Lovable v1 报废（2026.02）→ ai-mandala 独立仓两周重写 183 commits（2026.03）→ 迁入 MindSync 治理升级并内测（2026.04 至今）
 - `ai-service-studio`、`ai-career / 怀瑾握瑜`、JD 数据库与求职工程化不写进投递简历，只作为面试弹药或内部工作系统
 
-## 八、仍缺的输入
+## 七、仍缺的输入
 
 - 7/24 AI-FDE 面试复盘（校准认知卡二第⑤条“面客表达”）
