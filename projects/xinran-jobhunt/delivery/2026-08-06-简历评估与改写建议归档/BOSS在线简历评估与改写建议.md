@@ -1,10 +1,10 @@
 # BOSS 在线简历评估与改写建议
 
-> 状态：working
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-08-05
-> source_of_truth：projects/xinran-jobhunt/BOSS在线简历评估与改写建议.md
+> source_of_truth：projects/xinran-jobhunt/delivery/2026-08-06-简历评估与改写建议归档/BOSS在线简历评估与改写建议.md
 > depends_on：projects/xinran-jobhunt/总在线简历-BOSS版.md, projects/xinran-jobhunt/求职材料公共问题与改写原则.md
 
 ## 1. 总体判断

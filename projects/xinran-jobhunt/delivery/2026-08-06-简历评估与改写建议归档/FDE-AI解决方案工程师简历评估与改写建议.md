@@ -1,10 +1,10 @@
 # FDE / AI 解决方案工程师简历评估与改写建议
 
-> 状态：working
+> 状态：historical-reference
 > 版本：0.1.0
 > owner：CEO / Orchestrator
 > last_updated：2026-08-05
-> source_of_truth：projects/xinran-jobhunt/FDE-AI解决方案工程师简历评估与改写建议.md
+> source_of_truth：projects/xinran-jobhunt/delivery/2026-08-06-简历评估与改写建议归档/FDE-AI解决方案工程师简历评估与改写建议.md
 > depends_on：projects/xinran-jobhunt/崔兴-FDE-AI解决方案工程师简历.md, projects/xinran-jobhunt/三岗位认知卡.md, projects/xinran-jobhunt/求职材料公共问题与改写原则.md
 
 ## 1. 总体判断
