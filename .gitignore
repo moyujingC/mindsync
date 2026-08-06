@@ -30,6 +30,7 @@ Clippings/
 *.key
 .env
 .env.local
+.claude/settings.local.json
 secrets/
 
 # Node modules (if any)
