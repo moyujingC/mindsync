@@ -4,7 +4,9 @@ import path from "node:path";
 import process from "node:process";
 
 const MODEL_PRESETS = {
-  default: "gpt-5.5",
+  default: "gpt-5.6-sol",
+  gpt56: "gpt-5.6-sol",
+  "gpt-5.6-sol": "gpt-5.6-sol",
   gpt55: "gpt-5.5",
   "gpt-5.5": "gpt-5.5",
   deepseek: "deepseek-v4-pro",
@@ -40,9 +42,10 @@ function usage() {
   node shared/tools/switch-vscode-claude-code-model.mjs <preset-or-model>
 
 Presets:
-  default | gpt55                  -> gpt-5.5
-  deepseek | deepseek-v4-pro       -> deepseek-v4-pro
-  qwen | qwen3.6-35b-a3b          -> Qwen3.6-35B-A3B
+  default | gpt56 | gpt-5.6-sol   -> gpt-5.6-sol
+  gpt55 | gpt-5.5                -> gpt-5.5
+  deepseek | deepseek-v4-pro      -> deepseek-v4-pro
+  qwen | qwen3.6-35b-a3b         -> Qwen3.6-35B-A3B
   fast | cheap | high-performance-fast -> 高性能极速模型
 `);
 }
@@ -86,6 +89,6 @@ fs.writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
 console.log(`VS Code Claude Code model set to ${model}`);
 console.log("Selector slots: Opus=deepseek-v4-pro, Sonnet=Qwen3.6-35B-A3B, Haiku=高性能极速模型");
 if (TEXT_ONLY_MODELS.has(model)) {
-  console.log("Warning: selected model is text-only on the current AITechFlux Claude Code path. Use gpt-5.5 for chats that include screenshots/images.");
+  console.log("Warning: selected model is text-only on the current AITechFlux Claude Code path. Use gpt-5.6-sol for chats that include screenshots/images.");
 }
 console.log(`Updated ${settingsPath}`);
