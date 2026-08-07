@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>崔兴 · AI 应用工程师</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #eef2f5; }
+  body { color: #17212b; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  .page { width: 1080px; min-height: 100vh; margin: 0 auto; background: #fff; padding: 0 64px 72px; }
+  header { margin: 0 -64px 38px; padding: 62px 64px 40px; color: #fff; background: linear-gradient(135deg, #0b3a53, #145d75); }
+  .label { margin-bottom: 14px; color: #bfe0eb; font-size: 20px; font-weight: 650; letter-spacing: .14em; }
+  h1 { margin: 0; font-size: 44px; font-weight: 750; letter-spacing: .01em; }
+  h2 { margin: 38px 0 18px; padding: 0 0 12px 16px; border-bottom: 2px solid #d9e5e9; border-left: 7px solid #16809d; color: #0d5067; font-size: 28px; line-height: 1.25; }
+  h3 { margin: 28px 0 12px; color: #183c4b; font-size: 24px; line-height: 1.45; }
+  p, li { font-size: 20px; line-height: 1.72; }
+  p { margin: 10px 0; }
+  p.bullet { position: relative; padding-left: 25px; }
+  p.bullet::before { position: absolute; left: 2px; color: #16809d; content: "•"; font-weight: 800; }
+  ol { margin: 8px 0 0; padding-left: 33px; }
+  li { margin: 7px 0; padding-left: 4px; }
+  li::marker { color: #16809d; font-weight: 700; }
+  strong { font-weight: 750; }
+  .url { color: #067b9e; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; word-break: break-all; }
+  footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid #d9e5e9; color: #70818a; font-size: 15px; letter-spacing: .04em; }
+</style>
+</head>
+<body>
+  <main class="page">
+    <header><div class="label">BOSS 直聘｜附件简历</div><h1>崔兴 · AI 应用工程师</h1></header>
+    <h2>基础信息</h2>
+<p class="bullet">崔兴 ｜ 上海 ｜ 18018683811 ｜ alinecui@qq.com</p>
+<p class="bullet">求职意向：AI 应用工程师 / 大模型应用工程师 / Agent 应用工程师 ｜ 离职，随时到岗</p>
+<p class="bullet">上线产品：<span class="url">https://web.jingshu.cc</span> ｜ 作品集：<span class="url">https://xinran.jingshu.cc</span></p>
+<h2>个人优势</h2>
+<p>9 年商业项目研发经验，近 2 年以 AI 原生开发方式独立上线曼陀罗绘画 AI 解读产品。能把模型调用、生成链路、评测回归、失败降级和部署运维串成可运行、可测试、可排障的 AI 应用系统。</p>
+<p class="bullet">AI 应用 0→1：独立上线「一镜一梳」（web.jingshu.cc），当前 Web 版覆盖图像上传、画面结构标定、Lite 报告、报告内追问、历史记录、私有对象存储和公网部署；Pro 为内部预备形态。</p>
+<p class="bullet">模型链路与质量闭环：设计 two-pass / single-pass 两类报告方案，用 11 个完整案例完成 A/B 对照批跑；完成视觉 / 文字模型评测选型，候选模型 GLM 经 9 张测试图 × 3 轮稳定性评测后淘汰，并建立 5 组 golden case 做回归验证。</p>
+<p class="bullet">防御工程与边界控制：围绕识别失败、越界回答和图片访问设计防御策略，包括模型失败保守返回、追问安全拦截、图片私有存储 + 签名 URL、Nginx + HTTPS、自动冒烟测试与部分故障自恢复。</p>
+<p class="bullet">工程底盘与协作物证：早年 C++ / Lua / C# / Java / Qt / Jenkins 商业项目研发经验；向 paperclipai/paperclip 合入 5 个 PR，覆盖缺陷修复与 CLI 测试补齐。</p>
+<h2>技术栈</h2>
+<p class="bullet">模型与 AI 应用：DeepSeek 系列推理模型、qwen-vl-max、豆包（降级兜底）；two-pass / single-pass A/B 测试、模型评测与选型、golden case、RAG 方案设计、输出安全边界</p>
+<p class="bullet">后端与数据：Python、FastAPI、腾讯云 COS（图片私有存储 + 签名 URL 授权访问）、报告生成链路留痕</p>
+<p class="bullet">前端与多端：React / Vite，一套核心代码适配多端（mobile-web 已上线，小程序 / 原生 App 预留）</p>
+<p class="bullet">部署与运维：腾讯云三机分工、Nginx + HTTPS、GitHub Actions CI、自动冒烟测试与部分故障自恢复、main→dev / release→prod 发布流</p>
+<p class="bullet">研发方式：规格驱动开发（SDD）、Harness Engineering、TDD、Monorepo 治理、代码审查、调试排障</p>
+<p class="bullet">历史技术栈：C++ / Lua / C# / Objective-C / Java / Qt，Jenkins CI/CD</p>
+<h2>工作经历</h2>
+<h3>一人公司 · AI 应用独立开发者（2025.01 - 至今，上海）</h3>
+<ol><li>独立从 0 到 1 上线曼陀罗绘画 AI 解读产品「一镜一梳」（web.jingshu.cc）：当前 Web 版支持用户上传曼陀罗画作并生成参考性的 Lite 报告，链路覆盖画作上传、画面结构标定、报告内追问和历史记录；Pro 为内部预备形态，执业疗愈师试用中，当前以内测兑换码模式运行。</li><li>设计评估驱动的模型选型与质量闭环：文字模型采用 DeepSeek 系列推理模型，视觉模型 qwen-vl-max（豆包兜底）；候选模型 GLM 经 9 张测试图 × 3 轮重复生成的稳定性评测后淘汰；5 组 golden case 用于每次改动后的报告质量回归。</li><li>生成链路与 A/B 测试：设计 two-pass / single-pass 两类方案，用 11 个完整案例进行对照批跑；two-pass 先生成可复用的自然语言视觉基准，再按议题生成报告，用于降低画面信息丢失和同图多议题观察不一致风险。</li><li>RAG 与防御工程：完成共用解读引擎的 RAG 产品规格设计，定义按画面信号、议题、交付模式和风险边界取回受控知识单元；该 RAG 引擎仍处于 draft 规格阶段，尚未上线。线上产品围绕识别失败、越界回答和图片访问设计失败降级、追问安全拦截、私有存储和签名 URL。</li><li>自建 AI 辅助研发与文档治理流程：将需求、规格、任务、质检、验证和交付沉淀为可追踪文档流，减少 AI 协作中的上下文断裂和质量不可追踪问题；4 个月 2200+ 次提交、连续 70+ 天自动化复盘作为投入和迭代节奏的辅助证据。</li><li>向开源项目 paperclipai/paperclip 合入 5 个 PR（#2572、#9137、#9138、#9253、#9254），完成 Issue 分析、测试编写、代码修改、审查反馈与 CI 协作。</li></ol>
+<h3>上海优诺优诺信息咨询有限公司 · 创始合伙人（2019.11 - 2024.12，上海）</h3>
+<ol><li>创办高信任房产咨询服务，4 人团队年营收约 200 万，累计服务 150+ 高净值客户，约 70% 来自转介绍。</li><li>将非标准服务沉淀为 SOP、知识库、风控清单和培训体系，孵化 30+ 经纪人，新人独立上岗周期从约 18 个月压缩至约 6 个月。</li><li>对 AI 工程岗的迁移价值：长期处理低结构化需求、风险边界、知识库和 SOP，后来迁移到 AI 产品的输出安全边界、评测样本和失败兜底设计。</li></ol>
+<h3>友邦保险上海分公司 · 保险代理人（2017.07 - 2019.10，上海）</h3>
+<ol><li>负责家庭保障需求诊断、方案设计、保单维护与理赔协助。</li><li>擅长竞品分析与体系化知识整理，长期承担团队内部疑难问题支持。</li></ol>
+<h3>自由职业程序员（2016.02 - 2017.06，上海）</h3>
+<ol><li>独立交付基于 MRI 影像的脑科穿刺路径规划工具，将穿刺点、进针轨迹和深度做三维可视化，辅助医生制定术前方案；自学 Qt 完成跨平台开发，工具在华山医院脑科手术中实际使用。</li></ol>
+<h3>游戏与软件研发｜程序员 → 项目经理 → 制作人 / 技术负责人（2008.07 - 2016.01，上海）</h3>
+<ol><li>在昱泉国际参与 MMORPG《射雕英雄传》客户端与服务端开发，使用 C++ / Lua 完成 UI、任务、组队、自动寻路等系统，并与台湾团队远程协作。</li><li>在维塔士参与《席德梅尔的海盗》Wii 版移植和《Generator Rex》跨平台 AAA 项目，覆盖 Wii、PS3、Xbox 360；负责或参与 UI、基础渲染、天空盒、地形、粒子、资源压缩打包和美术工具链，使用 C++ / Python / C#。</li><li>搭建 Jenkins CI/CD 与自动化版本发布流程，持续编写技术文档并与策划、美术、测试协作，积累复杂模块调试、跨平台适配、性能约束处理和研发流程治理经验。</li><li>转任项目经理后负责 MMORPG 项目的进度、评审、风险控制和版本发布；后任制作人兼技术负责人，带领上海 / 西安 12 人团队推进卡牌手游研发，承担任务拆解、技术方案和交付质量管理。</li><li>在 3 人创业团队中使用 Objective-C / Java 完成知识管理产品及外包项目的 iOS / Android 双端开发，并参与产品设计。</li></ol>
+<h2>项目经历</h2>
+<h3>一镜一梳 · 曼陀罗绘画 AI 解读与个性化报告产品（2025.01 - 至今）</h3>
+<p>两阶段端到端线上报告系统 ｜ <span class="url">https://web.jingshu.cc</span> ｜ 角色：独立开发推进</p>
+<ol><li>系统链路：React / Vite 前端 + FastAPI 后端 + 腾讯云 COS 私有存储 + 签名 URL + 视觉模型 + 推理模型 + 降级兜底 + Nginx / HTTPS 部署；已将“视觉草稿 → 议题报告”两阶段链路接入线上 API 主链，覆盖上传、报告生成、报告内追问和历史记录。</li><li>生成链路：采用“视觉描述 → 议题推理”两段式结构，先保留自然语言画面事实，再按用户议题生成报告，降低画面信息丢失和推理前后不一致风险。</li><li>质量评测：通过 9 张测试图 × 3 轮重复生成比较候选模型稳定性，淘汰 GLM；建立 5 组 golden case 做 prompt / 模型链路改动后的回归验证。</li><li>防御策略：两个模型都识别失败时返回保守默认结果；报告内追问限制为报告陪读，不做诊断与治疗承诺；图片访问采用私有存储和签名 URL 控制。</li><li>工程演进：Lovable 快速验证 v1 主动报废 → 独立仓两周重写 183 commits → 迁入 MindSync Monorepo 治理升级并上线内测。</li></ol>
+<h3>MindSync · AI 辅助研发与文档治理流程（2026.01 - 至今）</h3>
+<p>AI-assisted software delivery system ｜ 角色：系统设计者</p>
+<ol><li>搭建 AI 辅助研发与文档治理流程，将需求、规格、任务、质检、验证和交付沉淀为可追踪文档流，用于支撑多项目并行推进、减少上下文断裂和质量不可追踪问题。</li><li>将规格驱动开发、TDD、Harness Engineering 纳入日常研发闭环：规格先行、任务拆解、输出契约、质量门、人工复核、交付回写、复盘。</li><li>4 个月 2200+ 次提交、连续 70+ 天自动化复盘，作为 AI 原生开发投入强度和持续迭代节奏的辅助证据。</li></ol>
+<h3>paperclipai/paperclip · 开源贡献（2026.04 / 2026.07）</h3>
+<ol><li>5 个 PR 全部合入主干：修复文档编辑器 Markdown 粘贴处理缺陷（#2572）；为 CLI 补齐 API 路径构造（#9254）、Board Token 命令（#9138）、提示词交接（#9137）、客户端请求替身（#9253）的测试覆盖。</li><li>在真实开源代码库中完成 Issue 分析、测试编写、代码修改、审查反馈与 CI 协作全流程。</li></ol>
+<h2>教育与培训</h2>
+<p class="bullet">哈尔滨工业大学 ｜ 数字媒体技术与艺术 ｜ 本科（2004.09 - 2008.07）</p>
+<p class="bullet">AI 全栈工程师课程（2024）、AI 产品经理课程（2025）</p>
+<p class="bullet">曼陀罗绘画艺术疗愈系统培训 ｜ 100+ 小时个案实践</p>
+    <footer>崔兴｜上海｜附件简历长图</footer>
+  </main>
+</body>
+</html>
