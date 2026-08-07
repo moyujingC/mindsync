@@ -159,7 +159,7 @@ function PhaseCard({ phase, align }: { phase: Phase; align: "left" | "right" }) 
 
 export function Story() {
   return (
-    <section id="story" className="relative py-28 md:py-36 bg-[#F9F7F3]">
+    <section id="story" className="relative scroll-mt-24 py-28 md:py-36 bg-[#F9F7F3]">
       <div className="max-w-6xl mx-auto px-6 md:px-10">
         <Reveal>
           <div className="text-center mb-20">

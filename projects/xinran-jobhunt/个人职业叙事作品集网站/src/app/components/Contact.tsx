@@ -19,7 +19,7 @@ const opportunityFocus = ["FDE / AI 解决方案交付", "AI 产品从 0 到 1",
 
 export function Contact() {
   return (
-    <section id="contact" className="relative py-28 md:py-36 bg-[#2C3E50] overflow-hidden">
+    <section id="contact" className="relative scroll-mt-24 py-28 md:py-36 bg-[#2C3E50] overflow-hidden">
       <Mandala className="absolute -bottom-40 -left-40 w-[600px] h-[600px] pointer-events-none" opacity={0.08} />
       <Mandala className="absolute -top-40 -right-40 w-[500px] h-[500px] pointer-events-none" opacity={0.05} />
       <div className="relative max-w-4xl mx-auto px-6 md:px-10">

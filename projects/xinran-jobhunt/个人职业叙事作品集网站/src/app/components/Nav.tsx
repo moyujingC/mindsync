@@ -28,7 +28,7 @@ export function Nav() {
   const worksLinks = getWorkLinks(target);
   const homeHref = (hash: string) => (isHome ? hash : `/${search}`);
 
-  const scrollToRole = (hash: string) => {
+  const scrollToSection = (hash: string) => {
     const scroll = () => {
       document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
     };
@@ -68,15 +68,16 @@ export function Nav() {
           {items.map((item) => {
             if (item.type === "anchor") {
               return (
-                <a
+                <button
                   key={item.hash}
-                  href={homeHref(item.hash)}
-                  className="relative text-sm text-[#2C3E50]/80 hover:text-[#8B5A2B] transition-colors duration-300 group"
+                  type="button"
+                  onClick={() => scrollToSection(item.hash)}
+                  className="relative bg-transparent border-0 p-0 text-sm text-[#2C3E50]/80 hover:text-[#8B5A2B] transition-colors duration-300 group"
                   style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
                 >
                   {item.label}
                   <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#8B5A2B] transition-all duration-300 group-hover:w-full" />
-                </a>
+                </button>
               );
             }
             return (
@@ -115,7 +116,7 @@ export function Nav() {
                             key={link.hash}
                             onClick={() => {
                               setDesktopDropdown(null);
-                              scrollToRole(link.hash);
+                              scrollToSection(link.hash);
                             }}
                             className="block w-full text-left px-5 py-2.5 text-sm text-[#2C3E50]/85 hover:text-[#8B5A2B] hover:bg-[#8B5A2B]/5 transition-colors tracking-wider"
                             style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
@@ -158,15 +159,18 @@ export function Nav() {
             {items.map((item) => {
               if (item.type === "anchor") {
                 return (
-                  <a
+                  <button
                     key={item.hash}
-                    href={homeHref(item.hash)}
-                    onClick={() => setOpen(false)}
-                    className="text-[#2C3E50] hover:text-[#8B5A2B] transition-colors py-1"
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      scrollToSection(item.hash);
+                    }}
+                    className="w-full bg-transparent border-0 p-0 text-left text-[#2C3E50] hover:text-[#8B5A2B] transition-colors py-1"
                     style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
                   >
                     {item.label}
-                  </a>
+                  </button>
                 );
               }
               return (
@@ -187,7 +191,7 @@ export function Nav() {
                               key={link.hash}
                               onClick={() => {
                                 setOpen(false);
-                                scrollToRole(link.hash);
+                                scrollToSection(link.hash);
                               }}
                               className="text-left text-sm text-[#2C3E50]/80 hover:text-[#8B5A2B] transition-colors py-1"
                               style={{ fontFamily: "'Noto Sans SC', sans-serif" }}
