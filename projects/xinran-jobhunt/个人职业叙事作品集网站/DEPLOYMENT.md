@@ -20,8 +20,11 @@
 
 ```bash
 npm install
+npm run portfolio:pdf
 npm run build
 ```
+
+先生成 PDF，再构建站点。Vite 会将 `public/` 复制到 `dist/`；如果先构建，发布目录会包含上一版 PDF。
 
 构建产物在 `dist/`，不提交到 Git。
 
@@ -64,4 +67,3 @@ curl -I https://xinran.jingshu.cc
 ```bash
 sudo certbot certificates -d xinran.jingshu.cc
 ```
-
