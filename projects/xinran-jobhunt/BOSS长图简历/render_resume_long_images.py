@@ -128,10 +128,14 @@ def render_page(title: str, body: str, output: Path) -> None:
         f"--screenshot={output}",
         html_path.as_uri(),
     ]
-    result = subprocess.run(command, capture_output=True, text=True, timeout=45)
-    if result.returncode != 0 or not output.exists():
-        raise RuntimeError(result.stderr.strip() or "Chrome screenshot rendering failed")
-    crop_bottom_whitespace(output)
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=45)
+        if result.returncode != 0 or not output.exists():
+            raise RuntimeError(result.stderr.strip() or "Chrome screenshot rendering failed")
+        crop_bottom_whitespace(output)
+    finally:
+        # The HTML is only an intermediate input for Chrome, not a delivery artifact.
+        html_path.unlink(missing_ok=True)
 
 
 def crop_bottom_whitespace(path: Path) -> None:
