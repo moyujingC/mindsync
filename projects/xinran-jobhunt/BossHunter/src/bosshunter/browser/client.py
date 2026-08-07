@@ -23,8 +23,11 @@ class RuntimeClient:
         data = self._get_json("/targets", timeout=5)
         return data if isinstance(data, list) else []
 
-    def new_tab(self, url: str) -> str | None:
-        data = self._get_json("/new", params={"url": url}, timeout=15)
+    def new_tab(self, url: str, background: bool = False) -> str | None:
+        params: dict[str, str] = {"url": url}
+        if background:
+            params["background"] = "1"
+        data = self._get_json("/new", params=params, timeout=15)
         return data.get("targetId") if isinstance(data, dict) else None
 
     def close_tab(self, target_id: str) -> bool:
@@ -63,8 +66,14 @@ class RuntimeClient:
     def click_at(self, target_id: str, selector_or_xy: str) -> bool:
         return self._post_ok("/clickAt", params={"target": target_id}, content=selector_or_xy, timeout=10)
 
-    def type_text(self, target_id: str, text: str) -> bool:
-        return self._post_ok("/type", params={"target": target_id}, content=text, timeout=10)
+    def type_text(self, target_id: str, text: str, human: bool = False) -> bool:
+        params: dict[str, Any] = {"target": target_id}
+        if human:
+            params["human"] = "1"
+        return self._post_ok("/type", params=params, content=text, timeout=30 if human else 10)
+
+    def press_key(self, target_id: str, key: str) -> bool:
+        return self._post_ok("/key", params={"target": target_id}, content=key, timeout=10)
 
     def set_files(self, target_id: str, selector: str, files: list[str]) -> bool:
         try:
@@ -125,4 +134,3 @@ class RuntimeClient:
             return response.status_code == 200
         except httpx.HTTPError:
             return False
-

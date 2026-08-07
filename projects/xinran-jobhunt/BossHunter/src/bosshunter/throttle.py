@@ -179,4 +179,3 @@ class ProgressiveBackoff:
 def should_take_day_off(probability: float = 0.05) -> bool:
     """Random chance to skip a day entirely (anti-pattern detection)."""
     return random.random() < probability
-

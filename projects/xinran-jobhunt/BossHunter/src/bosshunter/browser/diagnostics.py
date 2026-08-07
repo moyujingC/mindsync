@@ -110,4 +110,3 @@ def print_browser_diagnostics(config: dict[str, Any] | None = None, console: Con
         out.print("[yellow]![/yellow] 未发现 BOSS直聘 页面，请在 Chrome 中打开 www.zhipin.com 并登录")
 
     return bool(result["runtime"] and result["chrome"])
-

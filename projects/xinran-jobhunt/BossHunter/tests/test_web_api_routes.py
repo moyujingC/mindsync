@@ -10,10 +10,17 @@ from zipfile import ZipFile
 
 import yaml
 
-from bosshunter.db import add_history, get_db, insert_job, update_job_score, update_job_status
+from bosshunter.db import (
+    add_history,
+    get_db,
+    insert_job,
+    update_job_greeting,
+    update_job_score,
+    update_job_status,
+)
 from bosshunter.throttle import SendWindowChecker
 from bosshunter.web import server
-from threading import Event
+from threading import Event, Lock
 
 from bosshunter.web.tasks import TaskAlreadyRunningError, WorkbenchTask, WorkbenchTaskRunner
 
@@ -132,6 +139,20 @@ class WebApiRouteTests(unittest.TestCase):
         self.assertEqual(json.loads(body), {"error": "Not found"})
         self.assertNotIn("<!doctype html", body.lower())
 
+    def test_web_assets_serve_javascript_with_windows_safe_mime_type(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            frontend_dir = Path(tmp)
+            assets_dir = frontend_dir / "assets"
+            assets_dir.mkdir()
+            (assets_dir / "app.js").write_text("console.log('ok')\n", encoding="utf-8")
+
+            with patch.object(server, "FRONTEND_DIR", frontend_dir):
+                status, headers, body = self._request("/assets/app.js")
+
+        self.assertTrue(status.startswith("200"))
+        self.assertTrue(headers["Content-Type"].startswith("application/javascript"))
+        self.assertIn("console.log", body)
+
     def test_web_api_workbench_preflight_full_returns_json_payload(self):
         # Arrange
         with tempfile.TemporaryDirectory() as tmp:
@@ -170,6 +191,42 @@ class WebApiRouteTests(unittest.TestCase):
         self.assertTrue(status.startswith("200"))
         self.assertIn("application/json", headers["Content-Type"])
         self.assertEqual(json.loads(body), {"ok": True, "messages": [], "checks": ready_checks})
+
+    def test_web_api_workbench_preflight_supports_rescore_mode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base_dir = Path(tmp)
+            resume_path = base_dir / "resume.md"
+            resume_path.write_text("# Resume", encoding="utf-8")
+            (base_dir / "config.yaml").write_text(
+                yaml.dump(
+                    {
+                        "profile": {"resume_path": str(resume_path)},
+                        "ai": {"api_key": "test-api-key"},
+                    },
+                    allow_unicode=True,
+                    sort_keys=False,
+                ),
+                encoding="utf-8",
+            )
+            server.set_base_dir(base_dir)
+            ready_checks = [
+                {
+                    "id": "ai_credentials",
+                    "title": "AI API",
+                    "status": "pass",
+                    "message": "AI 已连接",
+                    "detail": "",
+                    "action": "",
+                }
+            ]
+
+            with patch.object(server, "collect_preflight_checks", return_value=ready_checks) as collect:
+                status, headers, body = self._request("/api/workbench/preflight?mode=rescore")
+
+        self.assertTrue(status.startswith("200"))
+        self.assertIn("application/json", headers["Content-Type"])
+        self.assertTrue(json.loads(body)["ok"])
+        self.assertEqual(collect.call_args.args[0], "rescore")
 
     def test_web_api_workbench_preflight_full_requires_ai_key(self):
         # Arrange
@@ -487,6 +544,109 @@ class WebApiRouteTests(unittest.TestCase):
         self.assertEqual(full_task.context["confirmed_job_ids"], ["ready-job"])
         self.assertEqual(json.loads(response_body)["id"], "full-task")
 
+    def test_web_api_deliver_queues_jobs_while_full_task_is_monitoring(self):
+        # Arrange
+        wakeup_event = Event()
+        full_task = WorkbenchTask(id="full-monitoring", mode="full", label="运行全流程")
+        full_task.context.update({
+            "monitoring": True,
+            "monitor_queue_lock": Lock(),
+            "monitor_wakeup_event": wakeup_event,
+            "pending_deliveries": [],
+        })
+        runner = WorkbenchTaskRunner()
+        runner._tasks[full_task.id] = full_task
+
+        with tempfile.TemporaryDirectory() as tmp:
+            base_dir = Path(tmp)
+            db = get_db(base_dir / "data" / "bosshunter.db")
+            try:
+                insert_job(db, _job("ready-job"))
+                update_job_status(db, "ready-job", "ready")
+            finally:
+                db.close()
+            server.set_base_dir(base_dir)
+
+            body = json.dumps({"job_ids": ["ready-job"]}).encode("utf-8")
+            status_headers = {}
+
+            def start_response(status, headers, exc_info=None):
+                status_headers["status"] = status
+                status_headers["headers"] = dict(headers)
+
+            environ = {
+                "REQUEST_METHOD": "POST",
+                "PATH_INFO": "/api/workbench/deliver",
+                "QUERY_STRING": "",
+                "CONTENT_LENGTH": str(len(body)),
+                "CONTENT_TYPE": "application/json",
+                "SERVER_NAME": "127.0.0.1",
+                "SERVER_PORT": "8686",
+                "wsgi.version": (1, 0),
+                "wsgi.url_scheme": "http",
+                "wsgi.input": io.BytesIO(body),
+                "wsgi.errors": io.StringIO(),
+                "wsgi.multithread": False,
+                "wsgi.multiprocess": False,
+                "wsgi.run_once": False,
+            }
+
+            # Act
+            with patch.object(server, "task_runner", runner):
+                response_body = b"".join(
+                    chunk if isinstance(chunk, bytes) else chunk.encode("utf-8")
+                    for chunk in server.app(environ, start_response)
+                ).decode("utf-8")
+
+            verify_db = get_db(base_dir / "data" / "bosshunter.db")
+            try:
+                status = verify_db.execute(
+                    "SELECT status FROM jobs WHERE id = ?",
+                    ("ready-job",),
+                ).fetchone()["status"]
+            finally:
+                verify_db.close()
+
+        # Assert
+        self.assertTrue(status_headers["status"].startswith("200"), response_body)
+        self.assertEqual(json.loads(response_body)["id"], "full-monitoring")
+        self.assertEqual(status, "approved")
+        self.assertTrue(wakeup_event.is_set())
+        self.assertEqual(
+            full_task.context["pending_deliveries"],
+            [{"job_ids": ["ready-job"], "direct_send": False}],
+        )
+
+    def test_monitor_loop_processes_queued_delivery_before_next_check(self):
+        # Arrange
+        task = WorkbenchTask(id="monitoring-task", mode="full", label="运行全流程")
+        task.context.update({
+            "monitor_queue_lock": Lock(),
+            "monitor_wakeup_event": Event(),
+            "pending_deliveries": [
+                {"job_ids": ["approved-a", "approved-b"], "direct_send": False}
+            ],
+        })
+
+        def stop_after_monitor(_config):
+            task.stop_requested.set()
+
+        # Act
+        with patch.object(server, "_execute_deliver") as execute_deliver, \
+             patch(
+                 "bosshunter.executor.monitor.monitor_and_send_resumes",
+                 side_effect=stop_after_monitor,
+             ):
+            server._execute_monitor(task, {"monitor": {"interval": 30}})
+
+        # Assert
+        execute_deliver.assert_called_once()
+        deliver_config = execute_deliver.call_args.args[1]
+        self.assertEqual(
+            deliver_config["_workbench_job_ids"],
+            ["approved-a", "approved-b"],
+        )
+
     def test_web_api_deliver_ignores_stale_stopped_full_task_waiting_context(self):
         # Arrange
         stale_event = Event()
@@ -560,7 +720,11 @@ class WebApiRouteTests(unittest.TestCase):
             calls.append("collect")
 
         def fake_deliver(task, config):
-            calls.append(("deliver", config.get("_workbench_job_ids")))
+            calls.append((
+                "deliver",
+                config.get("_workbench_job_ids"),
+                config.get("throttle", {}).get("daily_limit"),
+            ))
 
         def fake_monitor(task, config):
             calls.append("monitor")
@@ -582,7 +746,8 @@ class WebApiRouteTests(unittest.TestCase):
 
             with patch.object(server, "_execute_collect", side_effect=fake_collect), \
                  patch.object(server, "_execute_deliver", side_effect=fake_deliver), \
-                 patch.object(server, "_execute_monitor", side_effect=fake_monitor):
+                 patch.object(server, "_execute_monitor", side_effect=fake_monitor), \
+                 patch.object(server, "load_config", return_value={"throttle": {"daily_limit": 40}}):
                 task = runner.start("full", {})
                 for _ in range(50):
                     running_task = runner._tasks[task["id"]]
@@ -595,7 +760,96 @@ class WebApiRouteTests(unittest.TestCase):
                 runner.wait(timeout=1)
 
         # Assert
-        self.assertEqual(calls, ["collect", ("deliver", ["ready-a", "ready-b"]), "monitor"])
+        self.assertEqual(
+            calls,
+            ["collect", ("deliver", ["ready-a", "ready-b"], 40), "monitor"],
+        )
+
+    def test_full_task_sends_previous_confirmed_backlog_before_collecting(self):
+        # Arrange
+        calls = []
+        task = WorkbenchTask(id="backlog-first", mode="full", label="运行全流程")
+
+        def fake_deliver(_task, deliver_config):
+            calls.append((
+                "deliver",
+                deliver_config.get("_workbench_job_ids"),
+                deliver_config.get("_workbench_skip_greeting"),
+                deliver_config.get("throttle", {}).get("daily_limit"),
+            ))
+
+        def fake_collect(_task, _config):
+            calls.append("collect")
+
+        # Act
+        with tempfile.TemporaryDirectory() as tmp:
+            base_dir = Path(tmp)
+            db = get_db(base_dir / "data" / "bosshunter.db")
+            try:
+                insert_job(db, _job("deferred-ready"))
+                update_job_status(db, "deferred-ready", "ready")
+                update_job_greeting(db, "deferred-ready", "您好，我对这个岗位很感兴趣。")
+            finally:
+                db.close()
+            server.set_base_dir(base_dir)
+
+            with patch.object(server, "_execute_deliver", side_effect=fake_deliver), \
+                 patch.object(server, "_execute_collect", side_effect=fake_collect), \
+                 patch.object(server, "load_config", return_value={"throttle": {"daily_limit": 40}}):
+                server._execute_full(task, {})
+
+        # Assert
+        self.assertEqual(
+            calls,
+            [("deliver", ["deferred-ready"], True, 40), "collect"],
+        )
+        self.assertIn("优先续发上次已确认但未完成的 1 个岗位", task.logs)
+
+    def test_deliver_keeps_partial_result_and_continues_after_single_failure(self):
+        # Arrange
+        task = WorkbenchTask(id="partial-delivery", mode="full", label="运行全流程")
+        config = {"_workbench_job_ids": ["job-a", "job-b", "job-c"]}
+
+        def fake_send(send_config, force=False):
+            send_config["_workbench_send_report"] = {
+                "sent_count": 1,
+                "failed_count": 1,
+                "deferred_count": 1,
+                "quota_deferred_count": 1,
+                "stop_reason": "daily_limit",
+            }
+            return 1
+
+        # Act: a partial result must not raise and abort the full workflow.
+        with patch("bosshunter.ai.greeter.generate_greetings", return_value=3), \
+             patch("bosshunter.executor.sender.send_greetings", side_effect=fake_send):
+            server._execute_deliver(task, config)
+
+        # Assert
+        self.assertIn("招呼语发送结果：成功 1，失败 1，待下次发送 1（共 3）", task.logs)
+        self.assertIn("1 个岗位发送失败已单独记录，继续后续流程", task.logs)
+        self.assertIn("1 个岗位因今日发送额度未执行，已保留在“待发送招呼语”", task.logs)
+
+    def test_deliver_still_stops_on_account_risk_signal(self):
+        # Arrange
+        task = WorkbenchTask(id="risk-delivery", mode="full", label="运行全流程")
+        config = {"_workbench_job_ids": ["job-a", "job-b"]}
+
+        def fake_send(send_config, force=False):
+            send_config["_workbench_send_report"] = {
+                "sent_count": 0,
+                "failed_count": 1,
+                "deferred_count": 1,
+                "quota_deferred_count": 0,
+                "stop_reason": "captcha",
+            }
+            return 0
+
+        # Act / Assert
+        with patch("bosshunter.ai.greeter.generate_greetings", return_value=2), \
+             patch("bosshunter.executor.sender.send_greetings", side_effect=fake_send), \
+             self.assertRaisesRegex(RuntimeError, "验证码"):
+            server._execute_deliver(task, config)
 
     def test_web_api_workbench_reject_marks_selected_ready_jobs_rejected(self):
         # Arrange
@@ -1071,4 +1325,3 @@ class WebApiRouteTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

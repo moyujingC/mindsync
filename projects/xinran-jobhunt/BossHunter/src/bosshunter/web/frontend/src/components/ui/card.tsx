@@ -35,4 +35,3 @@ export const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElem
   )
 )
 CardContent.displayName = 'CardContent'
-

@@ -101,4 +101,3 @@ def show_confirmation(config: dict) -> bool:
     console.print(f"\n[green]✓ 已确认 {approved_count} 个岗位[/green]")
     db.close()
     return approved_count > 0
-

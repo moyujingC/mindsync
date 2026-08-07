@@ -319,7 +319,8 @@ const server = http.createServer(async (req, res) => {
       sendJson(res, resp.result.targetInfos.filter((target) => target.type === 'page'));
     } else if (pathname === '/new') {
       const targetUrl = q.url || 'about:blank';
-      const resp = await sendCDP('Target.createTarget', { url: targetUrl, background: true });
+      const background = q.background === '1' || q.background === 'true';
+      const resp = await sendCDP('Target.createTarget', { url: targetUrl, background });
       const targetId = resp.result.targetId;
       if (targetUrl !== 'about:blank') {
         try {
@@ -388,12 +389,29 @@ const server = http.createServer(async (req, res) => {
         coord = { x: Number(xyMatch[1]), y: Number(xyMatch[2]), source: 'coordinates' };
       } else {
         const selectorJson = JSON.stringify(body);
-        const js = `(() => {
-          const el = document.querySelector(${selectorJson});
-          if (!el) return { error: 'Element not found: ' + ${selectorJson} };
-          el.scrollIntoView({ block: 'center' });
-          const rect = el.getBoundingClientRect();
-          return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2, tag: el.tagName, text: (el.textContent || '').slice(0, 100), source: 'selector' };
+        const js = `(async () => {
+          const elements = Array.from(document.querySelectorAll(${selectorJson}));
+          if (!elements.length) return { error: 'Element not found: ' + ${selectorJson} };
+          const state = (el) => {
+            const rect = el.getBoundingClientRect();
+            const style = getComputedStyle(el);
+            const visible = !!(rect.width && rect.height && style.display !== 'none' && style.visibility !== 'hidden' && style.pointerEvents !== 'none');
+            const inViewport = visible && rect.bottom > 0 && rect.right > 0 && rect.top < innerHeight && rect.left < innerWidth;
+            const x = Math.min(Math.max(rect.x + rect.width / 2, 0), innerWidth - 1);
+            const y = Math.min(Math.max(rect.y + rect.height / 2, 0), innerHeight - 1);
+            const top = inViewport ? document.elementFromPoint(x, y) : null;
+            return { el, rect, visible, inViewport, topmost: !!(top && (top === el || el.contains(top))) };
+          };
+          const candidates = elements.map(state).filter((item) => item.visible);
+          if (!candidates.length) return { error: 'No visible element found: ' + ${selectorJson} };
+          candidates.sort((a, b) => Number(b.topmost) - Number(a.topmost) || Number(b.inViewport) - Number(a.inViewport));
+          const chosen = candidates[0];
+          if (!chosen.inViewport) {
+            chosen.el.scrollIntoView({ block: 'center', inline: 'center' });
+            await new Promise((resolve) => setTimeout(resolve, 80));
+          }
+          const rect = chosen.el.getBoundingClientRect();
+          return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2, tag: chosen.el.tagName, text: (chosen.el.textContent || '').slice(0, 100), source: 'selector' };
         })()`;
         const coordResp = await sendCDP('Runtime.evaluate', { expression: js, returnByValue: true, awaitPromise: true }, sessionId);
         coord = coordResp.result?.result?.value;
@@ -402,7 +420,10 @@ const server = http.createServer(async (req, res) => {
           return;
         }
       }
+      await sendCDP('Input.dispatchMouseEvent', { type: 'mouseMoved', x: coord.x, y: coord.y, button: 'none' }, sessionId);
+      await new Promise((resolve) => setTimeout(resolve, 60));
       await sendCDP('Input.dispatchMouseEvent', { type: 'mousePressed', x: coord.x, y: coord.y, button: 'left', clickCount: 1 }, sessionId);
+      await new Promise((resolve) => setTimeout(resolve, 80));
       await sendCDP('Input.dispatchMouseEvent', { type: 'mouseReleased', x: coord.x, y: coord.y, button: 'left', clickCount: 1 }, sessionId);
       sendJson(res, { clicked: true, x: coord.x, y: coord.y, tag: coord.tag, text: coord.text, source: coord.source });
     } else if (pathname === '/setFiles') {
@@ -428,8 +449,59 @@ const server = http.createServer(async (req, res) => {
         sendJson(res, { error: 'POST body must contain text' }, 400);
         return;
       }
-      await sendCDP('Input.insertText', { text }, sessionId);
-      sendJson(res, { typed: true, length: text.length });
+      if (q.human === '1') {
+        for (const character of Array.from(text)) {
+          await sendCDP('Input.insertText', { text: character }, sessionId);
+          const punctuationPause = /[\u3002\uff0c\uff01\uff1f,.!?;:\n]/.test(character) ? 70 : 0;
+          const delay = 25 + Math.floor(Math.random() * 46) + punctuationPause;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      } else {
+        await sendCDP('Input.insertText', { text }, sessionId);
+      }
+      sendJson(res, { typed: true, length: text.length, human: q.human === '1' });
+    } else if (pathname === '/key') {
+      const sessionId = await ensureSession(q.target);
+      const key = (await readBody(req)).trim();
+      if (key === 'SelectAll') {
+        const onMac = process.platform === 'darwin';
+        const modifierKey = onMac ? 'Meta' : 'Control';
+        const modifierCode = onMac ? 'MetaLeft' : 'ControlLeft';
+        const modifierVirtualKey = onMac ? 91 : 17;
+        const modifiers = onMac ? 4 : 2;
+        await sendCDP('Input.dispatchKeyEvent', {
+          type: 'rawKeyDown', key: modifierKey, code: modifierCode,
+          windowsVirtualKeyCode: modifierVirtualKey, nativeVirtualKeyCode: modifierVirtualKey,
+          modifiers,
+        }, sessionId);
+        await sendCDP('Input.dispatchKeyEvent', {
+          type: 'rawKeyDown', key: 'a', code: 'KeyA',
+          windowsVirtualKeyCode: 65, nativeVirtualKeyCode: 65, modifiers,
+        }, sessionId);
+        await sendCDP('Input.dispatchKeyEvent', {
+          type: 'keyUp', key: 'a', code: 'KeyA',
+          windowsVirtualKeyCode: 65, nativeVirtualKeyCode: 65, modifiers,
+        }, sessionId);
+        await sendCDP('Input.dispatchKeyEvent', {
+          type: 'keyUp', key: modifierKey, code: modifierCode,
+          windowsVirtualKeyCode: modifierVirtualKey, nativeVirtualKeyCode: modifierVirtualKey,
+        }, sessionId);
+        sendJson(res, { pressed: true, key, platform: process.platform });
+        return;
+      }
+      const supported = {
+        Backspace: { code: 'Backspace', windowsVirtualKeyCode: 8, nativeVirtualKeyCode: 8 },
+        Enter: { code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 },
+      };
+      const info = supported[key];
+      if (!info) {
+        sendJson(res, { error: 'Unsupported key' }, 400);
+        return;
+      }
+      await sendCDP('Input.dispatchKeyEvent', { type: 'keyDown', key, ...info }, sessionId);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      await sendCDP('Input.dispatchKeyEvent', { type: 'keyUp', key, ...info }, sessionId);
+      sendJson(res, { pressed: true, key });
     } else if (pathname === '/scroll') {
       const sessionId = await ensureSession(q.target);
       const y = parseInt(q.y || '3000', 10);
@@ -481,7 +553,7 @@ const server = http.createServer(async (req, res) => {
     } else {
       sendJson(res, {
         error: 'unknown endpoint',
-        endpoints: ['/health', '/targets', '/new', '/close', '/navigate', '/back', '/eval', '/click', '/clickAt', '/type', '/setFiles', '/scroll', '/screenshot', '/pdf', '/info'],
+        endpoints: ['/health', '/targets', '/new', '/close', '/navigate', '/back', '/eval', '/click', '/clickAt', '/type', '/key', '/setFiles', '/scroll', '/screenshot', '/pdf', '/info'],
       }, 404);
     }
   } catch (error) {
@@ -544,4 +616,3 @@ process.on('unhandledRejection', (error) => {
 });
 
 main();
-

@@ -37,4 +37,3 @@ export function FunnelCards({ data }: FunnelCardsProps) {
     </div>
   )
 }
-

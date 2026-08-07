@@ -78,4 +78,3 @@ class CDPSession:
 
     def __exit__(self, *args: Any) -> None:
         self.close()
-

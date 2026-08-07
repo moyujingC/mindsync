@@ -6,6 +6,9 @@ from bosshunter.job_filters import matching_deal_breaker
 
 
 _INTERNSHIP_KEYWORDS = ("实习", "intern", "internship", "管培")
+_ANONYMOUS_COMPANY_PATTERN = re.compile(
+    r"^(?:[\u4e00-\u9fff]{2,4})?某.+(?:公司|企业|集团)$"
+)
 
 
 def quick_score(job: dict, config: dict) -> tuple[int, str]:
@@ -13,6 +16,10 @@ def quick_score(job: dict, config: dict) -> tuple[int, str]:
     profile = config.get("profile", {})
     deal_breakers = profile.get("deal_breakers", [])
     title = job.get("title") or ""
+    company = str(job.get("company") or "").strip()
+
+    if _ANONYMOUS_COMPANY_PATTERN.search(company):
+        return 0, "匿名公司岗位"
 
     breaker = matching_deal_breaker(title, deal_breakers)
     if breaker:
@@ -55,4 +62,3 @@ def _as_number(value: object) -> float:
 
 def _format_k(value: float) -> str:
     return str(int(value)) if value.is_integer() else str(value)
-

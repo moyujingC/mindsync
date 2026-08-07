@@ -65,4 +65,3 @@ export function RecentActivity({ data }: RecentActivityProps) {
     </Card>
   )
 }
-

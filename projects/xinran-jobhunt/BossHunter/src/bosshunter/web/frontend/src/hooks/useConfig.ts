@@ -85,4 +85,3 @@ export function useConfig() {
 
   return { config, schema, loading, saving, dirty, error, message, updateConfig, saveConfig, resetConfig }
 }
-

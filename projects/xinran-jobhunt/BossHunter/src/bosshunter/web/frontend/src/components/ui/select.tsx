@@ -16,4 +16,3 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
   )
 )
 Select.displayName = 'Select'
-

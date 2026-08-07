@@ -56,4 +56,3 @@ export function TrendChart({ data }: TrendChartProps) {
     </Card>
   )
 }
-

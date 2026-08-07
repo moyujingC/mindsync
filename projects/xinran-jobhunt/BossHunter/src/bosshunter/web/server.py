@@ -6,10 +6,11 @@ Serves:
 """
 
 import json
+import mimetypes
 import time
 from copy import deepcopy
 from pathlib import Path
-from threading import Event
+from threading import Event, Lock
 
 from bottle import Bottle, request, response, static_file, abort
 
@@ -35,6 +36,11 @@ from bosshunter.db import (
 from bosshunter.web.preflight import check_ai_connection, collect_preflight_checks, error_messages
 from bosshunter.web.resume_upload import ResumeUploadError, prepare_resume_content
 from bosshunter.web.tasks import TaskAlreadyRunningError, WorkbenchTask, WorkbenchTaskRunner
+
+mimetypes.add_type("application/javascript", ".js", strict=True)
+mimetypes.add_type("application/javascript", ".mjs", strict=True)
+mimetypes.add_type("text/javascript", ".cjs", strict=True)
+mimetypes.add_type("text/css", ".css", strict=True)
 
 app = Bottle()
 task_runner = WorkbenchTaskRunner()
@@ -174,7 +180,7 @@ def _sanitize_config_for_write(data):
 def _preflight_messages(mode: str, config: dict) -> list[str]:
 	"""Return user-actionable blockers before starting a dashboard task."""
 	messages: list[str] = []
-	if mode not in {"full", "collect", "monitor"}:
+	if mode not in {"full", "collect", "rescore", "monitor"}:
 		messages.append(f"不支持的任务模式：{mode}")
 
 	profile = config.get("profile", {})
@@ -185,7 +191,7 @@ def _preflight_messages(mode: str, config: dict) -> list[str]:
 	if mode in {"full", "collect"} and not config.get("search", {}).get("keywords"):
 		messages.append("请先在配置页填写搜索关键词。")
 
-	if mode in {"full", "collect"} and not get_ai_api_key(config):
+	if mode in {"full", "collect", "rescore"} and not get_ai_api_key(config):
 		messages.append("请先在配置页填写当前 AI 服务的 API Key，或设置对应的标准环境变量。")
 
 	return messages
@@ -213,8 +219,65 @@ def _execute_collect(task: WorkbenchTask, config: dict) -> None:
 		return
 	_log(task, "开始 AI 评分")
 	score_config = dict(config)
+	score_config["_workbench_stop_event"] = task.stop_requested
 	score_config["_workbench_log"] = lambda message: _log(task, message)
+	score_config["_workbench_score_progress"] = lambda state: _log(
+		task,
+		f"AI 评分进度 {state['completed']}/{state['total']}：通过 {state['scored']}，过滤 {state['filtered']}，失败 {state['failed']}",
+	)
 	score_jobs(score_config)
+
+
+def _execute_rescore(task: WorkbenchTask, config: dict) -> None:
+	from bosshunter.ai.scorer import score_jobs
+
+	score_config = dict(config)
+	score_config["_workbench_stop_event"] = task.stop_requested
+	score_config["_workbench_log"] = lambda message: _log(task, message)
+	score_config["_workbench_score_progress"] = lambda state: _log(
+		task,
+		f"AI 评分进度 {state['completed']}/{state['total']}：通过 {state['scored']}，过滤 {state['filtered']}，失败 {state['failed']}",
+	)
+	_log(task, "开始重新评分")
+	score_jobs(score_config, rescore_filtered=True)
+
+
+def _queue_monitor_delivery(
+	task: WorkbenchTask,
+	job_ids: list[str],
+	*,
+	direct_send: bool = False,
+) -> dict:
+	"""Queue confirmed jobs on a task that is already in its monitor loop."""
+	queue_lock = task.context.get("monitor_queue_lock")
+	if queue_lock is None:
+		queue_lock = Lock()
+		task.context["monitor_queue_lock"] = queue_lock
+	with queue_lock:
+		pending = task.context.setdefault("pending_deliveries", [])
+		queued_ids = {
+			str(job_id)
+			for batch in pending
+			for job_id in batch.get("job_ids", [])
+		}
+		new_ids = [job_id for job_id in job_ids if job_id not in queued_ids]
+		if new_ids:
+			pending.append({"job_ids": new_ids, "direct_send": direct_send})
+			_log(task, f"监测期间新增 {len(new_ids)} 个确认投递岗位，已加入发送队列")
+	wakeup_event = task.context.get("monitor_wakeup_event")
+	if isinstance(wakeup_event, Event):
+		wakeup_event.set()
+	return task.snapshot()
+
+
+def _take_monitor_deliveries(task: WorkbenchTask) -> list[dict]:
+	queue_lock = task.context.get("monitor_queue_lock")
+	if queue_lock is None:
+		return []
+	with queue_lock:
+		pending = list(task.context.get("pending_deliveries", []))
+		task.context["pending_deliveries"] = []
+	return pending
 
 
 def _execute_monitor(task: WorkbenchTask, config: dict) -> None:
@@ -224,16 +287,48 @@ def _execute_monitor(task: WorkbenchTask, config: dict) -> None:
 	monitor_config["_workbench_stop_event"] = task.stop_requested
 	interval_min = int(config.get("monitor", {}).get("interval", 30) or 30)
 	interval_sec = max(interval_min * 60, 1)
-	while not task.stop_requested.is_set():
-		_log(task, "执行一轮监测")
-		monitor_and_send_resumes(monitor_config)
-		if task.stop_requested.is_set():
-			return
-		_log(task, f"本轮监测完成，{interval_min} 分钟后再次检查")
-		task.stop_requested.wait(interval_sec)
+	queue_lock = task.context.setdefault("monitor_queue_lock", Lock())
+	wakeup_event = task.context.setdefault("monitor_wakeup_event", Event())
+	task.context["monitoring"] = True
+	try:
+		while not task.stop_requested.is_set():
+			for batch in _take_monitor_deliveries(task):
+				deliver_config = dict(config)
+				deliver_config["_workbench_job_ids"] = batch.get("job_ids", [])
+				if batch.get("direct_send"):
+					deliver_config["_workbench_skip_greeting"] = True
+				_log(task, f"处理监测期间新增的 {len(deliver_config['_workbench_job_ids'])} 个投递岗位")
+				_execute_deliver(task, deliver_config)
+				if task.stop_requested.is_set():
+					return
+			_log(task, "执行一轮监测")
+			monitor_and_send_resumes(monitor_config)
+			if task.stop_requested.is_set():
+				return
+			_log(task, f"本轮监测完成，{interval_min} 分钟后再次检查")
+			wakeup_event.wait(interval_sec)
+			wakeup_event.clear()
+	finally:
+		task.context["monitoring"] = False
+		task.context.pop("monitor_wakeup_event", None)
+		task.context.pop("monitor_queue_lock", None)
 
 
 def _execute_full(task: WorkbenchTask, config: dict) -> None:
+	db = _get_web_db()
+	try:
+		deferred_job_ids = [str(job["id"]) for job in get_jobs_ready_to_send(db)]
+	finally:
+		db.close()
+	if deferred_job_ids:
+		_log(task, f"优先续发上次已确认但未完成的 {len(deferred_job_ids)} 个岗位")
+		deferred_config = load_config(CONFIG_PATH)
+		deferred_config["_workbench_job_ids"] = deferred_job_ids
+		deferred_config["_workbench_skip_greeting"] = True
+		_execute_deliver(task, deferred_config)
+		if task.stop_requested.is_set():
+			return
+
 	_execute_collect(task, config)
 	if task.stop_requested.is_set():
 		return
@@ -268,12 +363,14 @@ def _execute_full(task: WorkbenchTask, config: dict) -> None:
 
 	task.context["waiting_confirmation"] = False
 	_log(task, f"前端已确认 {len(job_ids)} 个岗位，继续投递")
-	deliver_config = dict(config)
+	# The user may adjust the daily limit or other send settings while reviewing
+	# jobs. Reload immediately before delivery instead of using the task-start snapshot.
+	deliver_config = load_config(CONFIG_PATH)
 	deliver_config["_workbench_job_ids"] = job_ids
 	_execute_deliver(task, deliver_config)
 	if task.stop_requested.is_set():
 		return
-	_execute_monitor(task, config)
+	_execute_monitor(task, load_config(CONFIG_PATH))
 
 
 def _execute_deliver(task: WorkbenchTask, config: dict) -> None:
@@ -283,18 +380,54 @@ def _execute_deliver(task: WorkbenchTask, config: dict) -> None:
 	config = dict(config)
 	config["_workbench_stop_event"] = task.stop_requested
 	config["_workbench_log"] = lambda message: _log(task, message)
+	selected_job_ids = [str(job_id) for job_id in config.get("_workbench_job_ids", []) if str(job_id)]
 	if not config.get("_workbench_skip_greeting"):
 		_log(task, "生成招呼语")
-		generate_greetings(config)
+		generated_count = generate_greetings(config)
+		_log(task, f"招呼语生成完成：{generated_count}/{len(selected_job_ids) or generated_count}")
 		if task.stop_requested.is_set():
 			return
+		if selected_job_ids and generated_count != len(selected_job_ids):
+			raise RuntimeError(
+				f"招呼语生成失败：选择 {len(selected_job_ids)} 个岗位，仅成功生成 {generated_count} 条；未发送任何消息"
+			)
 	_log(task, "发送招呼语")
-	send_greetings(config, force=True)
+	sent_count = send_greetings(config, force=True)
+	report = config.get("_workbench_send_report", {})
+	failed_count = int(report.get("failed_count", 0) or 0)
+	deferred_count = int(report.get("deferred_count", 0) or 0)
+	quota_deferred_count = min(
+		int(report.get("quota_deferred_count", 0) or 0),
+		deferred_count,
+	)
+	paused_count = max(deferred_count - quota_deferred_count, 0)
+	total_count = len(selected_job_ids) or sent_count + failed_count + deferred_count
+	_log(
+		task,
+		f"招呼语发送结果：成功 {sent_count}，失败 {failed_count}，待下次发送 {deferred_count}（共 {total_count}）",
+	)
+	if failed_count:
+		_log(task, f"{failed_count} 个岗位发送失败已单独记录，继续后续流程")
+	if quota_deferred_count:
+		_log(task, f"{quota_deferred_count} 个岗位因今日发送额度未执行，已保留在“待发送招呼语”")
+	if paused_count:
+		_log(task, f"{paused_count} 个岗位本轮未执行，已保留在“待发送招呼语”")
+
+	stop_reason = report.get("stop_reason")
+	if stop_reason in {"captcha", "rate_limit", "blocked", "consecutive_errors"}:
+		reason_labels = {
+			"captcha": "验证码",
+			"rate_limit": "频率限制",
+			"blocked": "账号或请求被拦截",
+			"consecutive_errors": "连续错误过多",
+		}
+		raise RuntimeError(f"发送已安全暂停：检测到{reason_labels[stop_reason]}")
 
 
 task_runner._executors.update({
 	"full": _execute_full,
 	"collect": _execute_collect,
+	"rescore": _execute_rescore,
 	"monitor": _execute_monitor,
 	"deliver": _execute_deliver,
 })
@@ -509,6 +642,22 @@ def api_workbench_deliver():
 				if isinstance(confirmation_event, Event):
 					confirmation_event.set()
 				return _json_response(waiting_task.snapshot())
+
+		status = task_runner.status()
+		active_task = status.get("active") or {}
+		monitoring_task = task_runner._tasks.get(active_task.get("id"))
+		if (
+			monitoring_task
+			and monitoring_task.status == "running"
+			and monitoring_task.context.get("monitoring")
+		):
+			return _json_response(
+				_queue_monitor_delivery(
+					monitoring_task,
+					job_ids,
+					direct_send=direct_send,
+				)
+			)
 
 		deliver_options = {"_workbench_job_ids": job_ids}
 		if direct_send:
@@ -789,9 +938,26 @@ def api_resume_delete():
 
 # ─── Static Files + SPA Fallback ─────────────────────────
 
+_STATIC_MIME_TYPES = {
+	".css": "text/css; charset=utf-8",
+	".cjs": "text/javascript; charset=utf-8",
+	".html": "text/html; charset=utf-8",
+	".js": "application/javascript; charset=utf-8",
+	".json": "application/json; charset=utf-8",
+	".mjs": "application/javascript; charset=utf-8",
+	".svg": "image/svg+xml",
+}
+
+
+def _serve_static(filename: str, root: Path):
+	"""Serve static assets with stable MIME types while retaining range/cache support."""
+	mimetype = _STATIC_MIME_TYPES.get(Path(filename).suffix.lower(), "auto")
+	return static_file(filename, root=str(root), mimetype=mimetype)
+
+
 @app.route("/assets/<filepath:path>")
 def serve_assets(filepath):
-	return static_file(filepath, root=str(FRONTEND_DIR / "assets"))
+	return _serve_static(filepath, FRONTEND_DIR / "assets")
 
 
 @app.route("/")
@@ -803,9 +969,9 @@ def serve_spa(filepath="index.html"):
 	# Try serving the exact file first
 	file_path = FRONTEND_DIR / filepath
 	if file_path.is_file():
-		return static_file(filepath, root=str(FRONTEND_DIR))
+		return _serve_static(filepath, FRONTEND_DIR)
 	# SPA fallback: return index.html for all non-API routes
-	return static_file("index.html", root=str(FRONTEND_DIR))
+	return _serve_static("index.html", FRONTEND_DIR)
 
 
 # ─── Error Handlers ──────────────────────────────────────
@@ -816,7 +982,7 @@ def error404(error):
 		response.content_type = "application/json; charset=utf-8"
 		return json.dumps({"error": "Not found"}, ensure_ascii=False)
 	# SPA fallback for non-API 404s
-	return static_file("index.html", root=str(FRONTEND_DIR))
+	return _serve_static("index.html", FRONTEND_DIR)
 
 
 @app.error(500)
@@ -838,4 +1004,3 @@ def run_server(host: str = "127.0.0.1", port: int = 8686, open_browser: bool = T
 		threading.Thread(target=_open, daemon=True).start()
 
 	app.run(host=host, port=port, quiet=False, reloader=False)
-

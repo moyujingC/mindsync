@@ -221,4 +221,3 @@ def _build_history_panel(history: list[dict]) -> Panel:
 
     text = "\n".join(lines)
     return Panel(text, title="[bold]近期动态[/bold]", border_style="cyan")
-

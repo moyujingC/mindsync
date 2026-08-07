@@ -151,4 +151,3 @@ export function JobsTable({ jobs }: JobsTableProps) {
     </Card>
   )
 }
-

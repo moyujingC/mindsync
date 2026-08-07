@@ -142,4 +142,3 @@ def _truncate_utf8(value: str, max_bytes: int) -> str:
 	if len(encoded) <= max_bytes:
 		return value
 	return encoded[:max_bytes].decode("utf-8", errors="ignore").rstrip()
-

@@ -43,4 +43,3 @@ export function getActionLabel(action: string | null | undefined): string {
   if (!action) return '未知'
   return ACTION_LABELS[action] ?? action
 }
-

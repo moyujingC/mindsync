@@ -54,4 +54,3 @@ export function parseHistoryDetail(item: HistoryItem): ParsedHistoryDetail {
     conversationTail: [],
   }
 }
-

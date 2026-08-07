@@ -15,7 +15,20 @@ class BrowserFacadeTests(unittest.TestCase):
 
         self.assertEqual(result, "target-1")
         ensure_runtime.assert_called_once()
-        client_cls.return_value.new_tab.assert_called_once_with("https://example.com")
+        client_cls.return_value.new_tab.assert_called_once_with("https://example.com", background=False)
+
+    @patch("bosshunter.browser.RuntimeClient")
+    @patch("bosshunter.browser.ensure_runtime")
+    def test_new_tab_can_open_in_background(self, ensure_runtime, client_cls):
+        import bosshunter.browser as browser
+
+        ensure_runtime.return_value = True
+        client_cls.return_value.new_tab.return_value = "target-1"
+
+        result = browser.new_tab("https://example.com", background=True)
+
+        self.assertEqual(result, "target-1")
+        client_cls.return_value.new_tab.assert_called_once_with("https://example.com", background=True)
 
     @patch("bosshunter.browser.RuntimeClient")
     @patch("bosshunter.browser.ensure_runtime")
@@ -51,6 +64,28 @@ class BrowserFacadeTests(unittest.TestCase):
         client_cls.return_value.click.return_value = True
 
         self.assertTrue(browser.click("target-1", "button"))
+
+    @patch("bosshunter.browser.RuntimeClient")
+    @patch("bosshunter.browser.ensure_runtime")
+    def test_type_text_can_request_human_input_events(self, ensure_runtime, client_cls):
+        import bosshunter.browser as browser
+
+        ensure_runtime.return_value = True
+        client_cls.return_value.type_text.return_value = True
+
+        self.assertTrue(browser.type_text("target-1", "hello", human=True))
+        client_cls.return_value.type_text.assert_called_once_with("target-1", "hello", human=True)
+
+    @patch("bosshunter.browser.RuntimeClient")
+    @patch("bosshunter.browser.ensure_runtime")
+    def test_press_key_delegates_to_runtime_client(self, ensure_runtime, client_cls):
+        import bosshunter.browser as browser
+
+        ensure_runtime.return_value = True
+        client_cls.return_value.press_key.return_value = True
+
+        self.assertTrue(browser.press_key("target-1", "SelectAll"))
+        client_cls.return_value.press_key.assert_called_once_with("target-1", "SelectAll")
 
     @patch("bosshunter.browser.RuntimeClient")
     @patch("bosshunter.browser.ensure_runtime")
@@ -118,4 +153,3 @@ class BrowserFacadeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

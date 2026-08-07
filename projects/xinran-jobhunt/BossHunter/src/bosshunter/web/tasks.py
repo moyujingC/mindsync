@@ -14,6 +14,7 @@ from bosshunter.throttle import SendWindowChecker
 MODE_LABELS = {
     "full": "运行全流程",
     "collect": "单独采集",
+    "rescore": "重新评分",
     "monitor": "单独监测",
     "deliver": "确认投递",
 }
@@ -186,4 +187,3 @@ def _deadline_from_config(mode: str, config: dict) -> datetime | None:
     if not isinstance(windows, list):
         return None
     return SendWindowChecker(windows).latest_end_datetime()
-

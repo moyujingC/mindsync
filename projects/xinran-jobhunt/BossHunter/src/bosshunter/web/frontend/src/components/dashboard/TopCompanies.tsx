@@ -53,4 +53,3 @@ export function TopCompanies({ data }: TopCompaniesProps) {
     </Card>
   )
 }
-

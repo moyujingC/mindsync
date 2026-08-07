@@ -1,13 +1,15 @@
 """AI Greeter - Generate personalized greeting messages with self-review."""
 
 import json
+import re
 from pathlib import Path
 
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from bosshunter.ai.credentials import AIRequestError, call_anthropic_text
-from bosshunter.db import get_db, get_jobs_by_status, update_job_greeting, update_job_status
+from bosshunter.cancellation import OperationCancelled, run_cancellable
+from bosshunter.db import add_history, get_db, get_jobs_by_status, update_job_greeting, update_job_status
 
 console = Console()
 
@@ -68,9 +70,35 @@ def _get_resume_summary(config: dict) -> str:
     return content[:1500]
 
 
-def _call_claude(prompt: str, config: dict, max_tokens: int = 300) -> str | None:
+def _call_claude(
+    prompt: str,
+    config: dict,
+    max_tokens: int | None = None,
+    *,
+    purpose: str = "greeting",
+) -> str | None:
     """Call Claude API and return response text."""
-    return call_anthropic_text(prompt, config, max_tokens)
+    ai_cfg = config.get("ai", {}) if isinstance(config.get("ai"), dict) else {}
+    default_key = "greeting_review_max_tokens" if purpose == "greeting_review" else "greeting_max_tokens"
+    default_tokens = 4096 if purpose == "greeting_review" else 8192
+    token_limit = max_tokens if max_tokens is not None else ai_cfg.get(default_key, default_tokens)
+    try:
+        token_limit = max(128, min(int(token_limit or default_tokens), 65536))
+    except (TypeError, ValueError):
+        token_limit = default_tokens
+    return run_cancellable(
+        lambda: call_anthropic_text(
+            prompt,
+            config,
+            token_limit,
+            timeout=ai_cfg.get(
+                f"{purpose}_timeout_seconds",
+                ai_cfg.get("greeting_timeout_seconds", ai_cfg.get("timeout_seconds", 180)),
+            ),
+            purpose=purpose,
+        ),
+        config,
+    )
 
 
 def _truncate_prompt_text(text: str, limit: int) -> str:
@@ -90,11 +118,124 @@ def _notify(config: dict, message: str, *, error: bool = False) -> None:
         callback(message)
 
 
+def _json_greeting_text(value: object) -> str | None:
+    if isinstance(value, str):
+        return value.strip() or None
+    if isinstance(value, list):
+        for item in value:
+            nested = _json_greeting_text(item)
+            if nested:
+                return nested
+        return None
+    if not isinstance(value, dict):
+        return None
+    for key in ("greeting", "message", "text", "content"):
+        nested = _json_greeting_text(value.get(key))
+        if nested:
+            return nested
+    for key in ("data", "result", "output"):
+        nested = _json_greeting_text(value.get(key))
+        if nested:
+            return nested
+    return None
+
+
+def _normalize_greeting_response(response: str | None) -> str | None:
+    """Accept common provider wrappers while rejecting non-answer payloads."""
+    if not isinstance(response, str):
+        return None
+    greeting = response.strip()
+    if not greeting:
+        return None
+
+    fenced = re.fullmatch(
+        r"```(?:json|text|markdown|md)?\s*(.*?)\s*```",
+        greeting,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if fenced:
+        greeting = fenced.group(1).strip()
+
+    parsed_greeting = None
+    structured_response = greeting.startswith("{") or greeting.startswith("[")
+    if structured_response:
+        try:
+            parsed = json.loads(greeting)
+        except (json.JSONDecodeError, TypeError):
+            return None
+        parsed_greeting = _json_greeting_text(parsed)
+    else:
+        decoder = json.JSONDecoder()
+        for index, char in enumerate(greeting):
+            if char not in "[{":
+                continue
+            try:
+                parsed, _ = decoder.raw_decode(greeting[index:])
+            except (json.JSONDecodeError, TypeError):
+                continue
+            parsed_greeting = _json_greeting_text(parsed)
+            if parsed_greeting:
+                break
+    if structured_response and parsed_greeting is None:
+        return None
+    if parsed_greeting is not None:
+        greeting = parsed_greeting
+
+    greeting = re.sub(
+        r"^\s*(?:最终)?(?:打招呼语|招呼语|消息内容|回复)\s*[:：]\s*",
+        "",
+        greeting,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+    greeting = greeting.strip().strip('"\'“”‘’').strip()
+    if not greeting:
+        return None
+    if re.fullmatch(r"(?is)(?:抱歉|无法|不能).{0,80}", greeting):
+        return None
+
+    if len(greeting) > 150:
+        cut = greeting[:150]
+        for sep in ("。", "！", "？", "～", "\n"):
+            idx = cut.rfind(sep)
+            if idx > 50:
+                greeting = cut[:idx + 1]
+                break
+        else:
+            greeting = cut
+    return greeting.strip() or None
+
+
+def _parse_review_response(response: str | None) -> dict | None:
+    if not isinstance(response, str) or not response.strip():
+        return None
+    decoder = json.JSONDecoder()
+    for index, char in enumerate(response):
+        if char != "{":
+            continue
+        try:
+            parsed, _ = decoder.raw_decode(response[index:])
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if not isinstance(parsed, dict):
+            continue
+        try:
+            avg = float(parsed.get("avg"))
+        except (TypeError, ValueError):
+            continue
+        if not 1 <= avg <= 10:
+            continue
+        parsed["avg"] = avg
+        parsed["critique"] = str(parsed.get("critique") or "")
+        return parsed
+    return None
+
+
 def _review_greeting(
     greeting: str,
     job: dict,
     config: dict,
-    max_tokens: int = 300,
+    max_tokens: int | None = None,
 ) -> dict | None:
     """Self-evaluate a greeting. Returns scores dict or None on failure."""
     prompt = REVIEW_PROMPT.format(
@@ -102,17 +243,8 @@ def _review_greeting(
         company=job["company"],
         greeting=greeting,
     )
-    response = _call_claude(prompt, config, max_tokens)
-    if not response:
-        return None
-    try:
-        start = response.find("{")
-        end = response.rfind("}") + 1
-        if start >= 0 and end > start:
-            return json.loads(response[start:end])
-    except (json.JSONDecodeError, TypeError):
-        pass
-    return None
+    response = _call_claude(prompt, config, max_tokens, purpose="greeting_review")
+    return _parse_review_response(response)
 
 
 def _generate_greeting_once(
@@ -122,7 +254,7 @@ def _generate_greeting_once(
     critique: str = "",
     *,
     compact: bool = False,
-    max_tokens: int = 300,
+    max_tokens: int | None = None,
 ) -> str | None:
     """Generate a single greeting attempt."""
     jd_limit = 250 if compact else 500
@@ -150,24 +282,10 @@ def _generate_greeting_once(
         extra_highlights=_truncate_prompt_text(extra_highlights, 500),
     )
 
-    greeting = _call_claude(prompt, config, max_tokens)
-    if not greeting:
-        return None
-
-    # Clean up
-    greeting = greeting.strip('"\'')
-    # Enforce max length
-    if len(greeting) > 150:
-        cut = greeting[:150]
-        for sep in ("。", "！", "～", "！", "\n"):
-            idx = cut.rfind(sep)
-            if idx > 50:
-                greeting = cut[:idx + 1]
-                break
-        else:
-            greeting = cut
-
-    return greeting
+    ai_cfg = config.get("ai", {}) if isinstance(config.get("ai"), dict) else {}
+    token_limit = max_tokens if max_tokens is not None else ai_cfg.get("greeting_max_tokens", 8192)
+    response = _call_claude(prompt, config, token_limit)
+    return _normalize_greeting_response(response)
 
 
 def _generate_with_token_retry(
@@ -178,12 +296,36 @@ def _generate_with_token_retry(
 ) -> str | None:
     """Retry only request-size/output-limit failures without changing batch size."""
     try:
-        return _generate_greeting_once(job, resume_summary, config, critique)
+        result = _generate_greeting_once(job, resume_summary, config, critique)
+        if result:
+            return result
+        ai_cfg = config.get("ai", {}) if isinstance(config.get("ai"), dict) else {}
+        try:
+            max_attempts = max(1, min(int(ai_cfg.get("greeting_max_attempts", 2) or 2), 3))
+        except (TypeError, ValueError):
+            max_attempts = 2
+        for attempt in range(2, max_attempts + 1):
+            _notify(
+                config,
+                f"{job['company']}｜{job['title']} 未返回完整招呼语，正在重试（{attempt}/{max_attempts}）。",
+            )
+            result = _generate_greeting_once(job, resume_summary, config, critique)
+            if result:
+                return result
+        return None
     except AIRequestError as exc:
         if exc.kind == "output_truncated":
             _notify(config, f"{job['company']}｜{job['title']} 的招呼语回答被截断，正在增大输出 Token 上限后重试。")
             compact = False
-            retry_max_tokens = 600
+            ai_cfg = config.get("ai", {}) if isinstance(config.get("ai"), dict) else {}
+            try:
+                configured_tokens = int(ai_cfg.get("greeting_max_tokens", 8192) or 8192)
+            except (TypeError, ValueError):
+                configured_tokens = 8192
+            retry_max_tokens = min(
+                max(configured_tokens * 2, 600),
+                65536,
+            )
         elif exc.kind == "output_limit":
             _notify(config, f"{job['company']}｜{job['title']} 正在降低单次输出 Token 上限后重试招呼语。")
             compact = False
@@ -221,7 +363,15 @@ def _review_with_token_retry(greeting: str, job: dict, config: dict) -> dict | N
     except AIRequestError as exc:
         if exc.kind == "output_truncated":
             _notify(config, f"{job['company']}｜{job['title']} 的质量检查回答被截断，正在增大输出 Token 上限后重试。")
-            retry_max_tokens = 600
+            ai_cfg = config.get("ai", {}) if isinstance(config.get("ai"), dict) else {}
+            try:
+                configured_tokens = int(ai_cfg.get("greeting_review_max_tokens", 4096) or 4096)
+            except (TypeError, ValueError):
+                configured_tokens = 4096
+            retry_max_tokens = min(
+                max(configured_tokens * 2, 600),
+                65536,
+            )
         elif exc.kind == "output_limit":
             _notify(config, f"{job['company']}｜{job['title']} 正在降低单次输出 Token 上限后重试质量检查。")
             retry_max_tokens = 128
@@ -267,6 +417,8 @@ def generate_greetings(config: dict) -> int:
     count = 0
     failed = 0
     pause_reason = ""
+    stop_event = config.get("_workbench_stop_event")
+    cancelled = False
 
     with Progress(
         SpinnerColumn(),
@@ -276,16 +428,29 @@ def generate_greetings(config: dict) -> int:
         task = progress.add_task(f"生成招呼语 (0/{len(jobs)})", total=len(jobs))
 
         for index, job in enumerate(jobs, start=1):
+            if stop_event is not None and stop_event.is_set():
+                break
             best_greeting = None
             pause_after_current = ""
 
             for iteration in range(max_iterations + 1):
+                if stop_event is not None and stop_event.is_set():
+                    break
                 critique = ""
                 if iteration > 0 and best_greeting:
                     try:
                         review = _review_with_token_retry(best_greeting, job, config)
+                    except OperationCancelled:
+                        cancelled = True
+                        break
                     except AIRequestError as exc:
                         pause_after_current = exc.user_message
+                        break
+                    if review is None:
+                        _notify(
+                            config,
+                            f"{job['company']}｜{job['title']} 的质量检查返回格式无法识别，已保留可用招呼语并继续。",
+                        )
                         break
                     if review and review.get("avg", 10) >= review_threshold:
                         break
@@ -293,6 +458,9 @@ def generate_greetings(config: dict) -> int:
 
                 try:
                     greeting = _generate_with_token_retry(job, resume_summary, config, critique)
+                except OperationCancelled:
+                    cancelled = True
+                    break
                 except AIRequestError as exc:
                     if best_greeting:
                         pause_after_current = exc.user_message
@@ -309,7 +477,11 @@ def generate_greetings(config: dict) -> int:
                 if max_iterations == 0:
                     break
 
+            if cancelled or (stop_event is not None and stop_event.is_set()):
+                break
             if not best_greeting:
+                if not pause_reason and not (stop_event is not None and stop_event.is_set()):
+                    add_history(db, job["id"], "greeting_failed", "AI 未返回完整招呼语，岗位保留为待生成")
                 progress.update(task, advance=1, description=f"生成招呼语 ({index}/{len(jobs)})")
                 if pause_reason:
                     break
@@ -335,4 +507,3 @@ def generate_greetings(config: dict) -> int:
     if failed:
         _notify(config, f"本轮有 {failed} 个岗位未生成招呼语并保留为待处理，可稍后重试。")
     return count
-

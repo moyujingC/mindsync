@@ -30,4 +30,3 @@ export function Switch({ checked, onChange, className, disabled }: SwitchProps) 
     </button>
   )
 }
-
