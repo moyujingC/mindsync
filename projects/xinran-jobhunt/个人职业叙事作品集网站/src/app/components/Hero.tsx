@@ -5,8 +5,8 @@ const evolution = [
   "技术实现",
   "项目组织",
   "高信任服务",
-  "AI 产品化",
-  "ToB / FDE 交付",
+  "AI 应用交付",
+  "解决方案落地",
 ];
 
 export function Hero() {
@@ -46,9 +46,9 @@ export function Hero() {
             className="max-w-4xl text-[#2C3E50]/70 mb-10 tracking-wide leading-relaxed"
             style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "1.05rem" }}
           >
+            FDE（驻场交付工程师）/ AI 解决方案工程师 <span className="text-[#8B5A2B]/60 mx-2">|</span>
             AI 产品经理 <span className="text-[#8B5A2B]/60 mx-2">|</span>
-            AI Agent / Workflow 产品经理 <span className="text-[#8B5A2B]/60 mx-2">|</span>
-            FDE / AI 解决方案工程师
+            AI 应用工程师
           </p>
         </Reveal>
 
@@ -57,8 +57,8 @@ export function Hero() {
             className="max-w-2xl text-[#2C3E50]/80 leading-[2] mb-14"
             style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "1rem" }}
           >
-            技术出身的复杂问题解决者：能从真实业务现场出发，
-            把高信任、非标准化场景拆成 PoC、Agent 工作流、质量门、交付边界和团队可执行的 AI 产品方案。
+            9 年商业研发、7 年高信任服务与近 2 年 AI 应用实践。能从真实业务场景识别问题、约束与风险，
+            将专家经验和业务流程落成可运行、可评测、可交付的 AI 应用与方案。
           </p>
         </Reveal>
 

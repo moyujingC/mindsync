@@ -12,7 +12,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/works/mandala-app" element={<MandalaApp />} />
-        <Route path="/works/monorepo" element={<Monorepo />} />
+        <Route path="/works/delivery-system" element={<Monorepo />} />
         <Route path="/works/healing-kb" element={<HealingKB />} />
         <Route path="/works/healing-ai-research" element={<HealingAIResearch />} />
         <Route path="/works/game-career" element={<GameCareer />} />

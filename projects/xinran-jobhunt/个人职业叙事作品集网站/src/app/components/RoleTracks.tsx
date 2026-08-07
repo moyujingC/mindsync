@@ -16,13 +16,13 @@ export function RoleTracks({ target }: { target: PortfolioTarget }) {
               className="text-[#2C3E50]"
               style={{ fontFamily: "'Noto Serif SC', serif", fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", fontWeight: 500 }}
             >
-              三个投递方向，一套能力证据
+              三个投递方向，一套可核验的能力证据
             </h2>
             <p
               className="max-w-2xl mx-auto mt-5 text-[#2C3E50]/70 leading-[1.9]"
               style={{ fontFamily: "'Noto Sans SC', sans-serif", fontSize: "0.95rem" }}
             >
-              这套作品集用同一组能力证据，连接 AI 产品、AI 工作流、业务诊断和可验证交付方案。
+              当前以 FDE / AI 解决方案工程师为主投，面向 AI 产品经理和 AI 应用工程师提供同一组可展开核验的项目证据。
             </p>
             <div className="w-12 h-px bg-[#8B5A2B] mx-auto mt-6" />
           </div>

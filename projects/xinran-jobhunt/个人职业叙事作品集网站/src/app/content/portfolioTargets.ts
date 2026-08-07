@@ -2,7 +2,7 @@ import { works, type WorkSummary } from "./works";
 
 export type PortfolioTarget =
   | "ai-product-manager"
-  | "ai-transformation-consultant"
+  | "ai-application-engineer"
   | "fde-ai-solution-engineer";
 
 export type RoleTrack = {
@@ -12,26 +12,26 @@ export type RoleTrack = {
   proof: string[];
 };
 
-export const defaultPortfolioTarget: PortfolioTarget = "ai-product-manager";
+export const defaultPortfolioTarget: PortfolioTarget = "fde-ai-solution-engineer";
 
 const roleTracks: RoleTrack[] = [
   {
     id: "role-ai-product-manager",
     title: "AI 产品经理",
-    summary: "从真实痛点出发，定义 AI 产品路径、BRD / PRD、MVP / PoC 范围、Agent Loop、输出契约、质量门和迭代评估口径。",
-    proof: ["一镜一梳", "知行工坊", "心理疗愈 AI 产品观察"],
+    summary: "从真实问题定义产品路径，完成 MVP 取舍、AI 输出质量设计、商业化路径设计与端到端上线推进。",
+    proof: ["一镜一梳线上产品", "11 个案例 A/B 对照", "4 人创业团队经营"],
   },
   {
-    id: "role-ai-transformation-consultant",
-    title: "AI 转型咨询顾问",
-    summary: "进入复杂业务现场，诊断流程问题，把专家经验沉淀为 SOP、知识库、AI 工作流、试点路径、交付边界和组织采用口径。",
-    proof: ["知行工坊", "ai-service-studio 服务验证", "房产咨询与经纪人孵化"],
+    id: "role-ai-application-engineer",
+    title: "AI 应用工程师",
+    summary: "将模型调用、生成链路、评测回归、失败降级和部署运维组织为可运行、可测试、可排障的 AI 应用系统。",
+    proof: ["两段式报告主链", "模型稳定性评测", "开源 PR 与 CI 协作"],
   },
   {
     id: "role-fde-ai-solution-engineer",
     title: "FDE / AI 解决方案工程师",
-    summary: "把客户场景拆成可验证 PoC、Agent 工作流、数据与权限边界、日志 / 人审 / 回滚、评估口径和可交付材料。",
-    proof: ["知行工坊", "influencer-tracker 内容系统", "早期工程与独立交付经历"],
+    summary: "从客户场景中识别目标、约束与风险，将非标准服务拆成可验证 PoC、方案边界、工程联调与可复用交付体系。",
+    proof: ["150+ 高信任客户服务", "SOP 与培训体系", "AI 产品上线与质量验证"],
   },
 ];
 
@@ -42,49 +42,49 @@ const targetProfiles = {
   "ai-product-manager": {
     label: "AI 产品经理",
     shortLabel: "产品经理版",
-    summary: "把 AI 产品经理放在第一优先级，并突出一镜一梳与知行工坊作为主案例。",
+    summary: "突出一镜一梳从真实问题到上线验证的产品闭环，以及 AI 输出质量与商业化路径设计。",
     roleOrder: [
       "role-ai-product-manager",
-      "role-ai-transformation-consultant",
       "role-fde-ai-solution-engineer",
+      "role-ai-application-engineer",
     ],
     workOrder: [
       "mandala-app",
-      "healing-ai-research",
-      "monorepo",
+      "delivery-system",
       "game-career",
+      "healing-ai-research",
       "healing-kb",
     ],
   },
-  "ai-transformation-consultant": {
-    label: "AI 转型咨询顾问",
-    shortLabel: "咨询顾问版",
-    summary: "把复杂业务诊断、服务边界、知识沉淀和流程落地相关案例放在最前面。",
+  "ai-application-engineer": {
+    label: "AI 应用工程师",
+    shortLabel: "工程版",
+    summary: "突出两段式生成链路、模型评测、回归验证、失败降级和商业工程底盘。",
     roleOrder: [
-      "role-ai-transformation-consultant",
-      "role-fde-ai-solution-engineer",
+      "role-ai-application-engineer",
       "role-ai-product-manager",
+      "role-fde-ai-solution-engineer",
     ],
     workOrder: [
-      "monorepo",
-      "healing-kb",
       "mandala-app",
-      "healing-ai-research",
+      "delivery-system",
       "game-career",
+      "healing-kb",
+      "healing-ai-research",
     ],
   },
   "fde-ai-solution-engineer": {
     label: "FDE / AI 解决方案工程师",
     shortLabel: "解决方案版",
-    summary: "把系统设计、PoC 交付、生产化边界和跨场景落地能力放在最前面。",
+    summary: "突出客户诊断、服务标准化、AI 方案边界、原型验证和工程交付的组合能力。",
     roleOrder: [
       "role-fde-ai-solution-engineer",
       "role-ai-product-manager",
-      "role-ai-transformation-consultant",
+      "role-ai-application-engineer",
     ],
     workOrder: [
-      "monorepo",
       "mandala-app",
+      "delivery-system",
       "game-career",
       "healing-kb",
       "healing-ai-research",
@@ -102,7 +102,7 @@ const targetProfiles = {
 >;
 
 export function isPortfolioTarget(value: string | null): value is PortfolioTarget {
-  return value === "ai-product-manager" || value === "ai-transformation-consultant" || value === "fde-ai-solution-engineer";
+  return value === "ai-product-manager" || value === "ai-application-engineer" || value === "fde-ai-solution-engineer";
 }
 
 export function resolvePortfolioTarget(value: string | null): PortfolioTarget {

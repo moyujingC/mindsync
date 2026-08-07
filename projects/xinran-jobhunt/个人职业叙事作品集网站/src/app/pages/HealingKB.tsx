@@ -113,8 +113,8 @@ export default function HealingKB() {
             accent={ACCENT}
             items={[
               { role: "AI 产品经理", fit: "体现领域知识建模、AI 输出规范设计和高信任场景的质量控制能力。" },
-              { role: "AI 转型咨询顾问", fit: "体现把专家经验沉淀成 SOP、知识库和可复用工作流的能力。" },
-              { role: "FDE", fit: "体现我能把专家经验转成系统可调用的知识层、输出契约和质量检查规则。" },
+              { role: "AI 应用工程师", fit: "体现将领域知识、输出契约和质量检查规则接入 AI 应用链路的能力。" },
+              { role: "FDE / AI 解决方案工程师", fit: "体现我能把专家经验沉淀为 SOP、知识库和可复用的交付规则。" },
             ]}
           />
         </div>

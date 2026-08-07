@@ -18,12 +18,12 @@ export default function Monorepo() {
     <PageShell>
       <PageHero
         eyebrow="P R O J E C T &nbsp; 0 2"
-        title="知行工坊"
-        subtitle="AI 一人公司 Monorepo / 公司工作空间"
-        oneLiner="一个自用中的 AI 一人公司工作系统原型：把公司治理、项目入口、Agent 协作、ai-service-studio、influencer-tracker、知识库和阶段 artifact 收束到同一仓库，让 AI 产品、服务验证和内容获客工作可追踪、可交接、可复盘。"
-        role="系统设计者 / 一人公司工作空间搭建者 / Agent 协作机制推进者"
+        title="AI 辅助研发与交付流程"
+        subtitle="需求到验证的可追踪协作系统"
+        oneLiner="将需求定义、方案拆解、实现、验证、交付与复盘组织为可追踪文档流，支持多个 AI 应用并行推进并减少 AI 协作中的上下文断裂。"
+        role="系统设计者 / AI 协作流程推进者"
         period="2026 — 至今"
-        tags={["Monorepo", "Agent 协作", "AI 服务验证", "内容系统", "交付回写"]}
+        tags={["SDD", "TDD", "Agent 协作", "质量门", "交付回写"]}
         accent={ACCENT}
       />
 
@@ -31,7 +31,7 @@ export default function Monorepo() {
         <Prose>
           <p>当 AI 参与长期工作后，问题会从「怎么写一个 prompt」扩展到信息、任务、角色和项目如何持续保持可追踪。</p>
           <p>在多项目并行时，如果所有信息都散落在聊天记录、临时文档和运行时工具里，Agent 很难稳定接手上下文，人也很难判断当前项目到底处于什么阶段。</p>
-          <p>知行工坊要解决的是一人公司在 AI 协作下的长期运转问题：让公司治理、项目实现、角色分工、知识沉淀、服务验证和内容获客都有统一入口。</p>
+          <p>这套流程解决的是 AI 协作下的长期研发问题：让项目、角色、知识、任务和验证记录有稳定入口，工作可以被复核和交接。</p>
         </Prose>
       </Section>
 
@@ -39,33 +39,29 @@ export default function Monorepo() {
         <BulletList
           accent={ACCENT}
           items={[
-            "设计并落地 MindSync（知行工坊）Monorepo / 公司工作空间。",
-            "建立 company、projects、agents、shared、knowledge-base 五层结构。",
-            "建立项目注册表、公司蓝图、研发原则、任务状态流转规则和文档治理入口。",
-            "将 AI 产品、研究、内容、求职材料、ai-service-studio 和 influencer-tracker 等项目纳入统一工作区。",
-            "基于 Paperclip、本地 Codex / Claude Code 和 artifact-based handoff，设计多角色 Agent 协作方式。",
+            "设计并落地 Monorepo（单仓多项目工作区）与项目级入口，区分公司治理、项目实现、共享工具和知识资产。",
+            "建立项目注册表、研发原则、任务状态流转规则和文档治理入口。",
+            "将 AI 产品、研究、内容和求职材料纳入统一工作区，保证对象边界和上下文可追踪。",
+            "基于 AI 编程助手与文档化交接，设计多角色协作方式。",
             "将 spec、task、QA、delivery 等阶段产物纳入项目推进闭环，保留质量检查、问题定位、验收口径和交付回写记录。",
           ]}
         />
       </Section>
 
-      <Section index="0 3" title="真实案例 ｜ 研究母库如何和项目研究衔接" accent={ACCENT}>
+      <Section index="0 3" title="真实案例 ｜ 从需求到交付的工作流" accent={ACCENT}>
         <div className="space-y-6">
           <StepFlow
             accent={ACCENT}
             steps={[
-              { title: "研究项目区", note: "心理疗愈 app 研究先留在 projects/research-center/research/，允许保留原始报告和过程材料。" },
-              { title: "研究母库", note: "从项目研究中抽取长期可复用判断，进入 projects/research-center/kb/ 这一层。" },
-              { title: "主题分流", note: "AI 产品方法进入 kb/wiki/ai；可核验心理学方法才谨慎进入 kb/wiki/healing。" },
-              { title: "产品化知识库", note: "已经明确服务 Aimandala 的知识，再进入 projects/aimandala/docs/疗愈体系知识库/。" },
-              { title: "公司级知识库", note: "只有跨项目、跨角色、边界清楚的稳定知识，才晋升到 company/knowledge-base/。" },
-              { title: "对外发布", note: "适合公开表达的部分，再转去网站、内容矩阵或作品集，原始研究材料保留在内部研究区。" },
+              { title: "需求与事实", note: "保留原始输入、约束、假设和可核验事实，避免后续实现脱离问题。" },
+              { title: "方案与任务", note: "将产品决策、接口约束、实现任务和验收条件拆开记录。" },
+              { title: "实现与验证", note: "以测试、质量门、人工检查和运行记录验证关键主张。" },
+              { title: "交付与复盘", note: "将交付物、遗留风险、问题定位和后续行动回写到项目入口。" },
             ]}
           />
           <Prose>
-            <p>这套系统的关键，是明确不同产物应该去哪里，并让研究、知识、产品和内容之间形成可追踪的中间层。</p>
-            <p>我在 2026-06-08 新补的《研究母库与项目研究衔接说明》中，把这条链路正式写清了：研究项目区保留过程材料；研究母库沉淀长期判断；产品化知识库只接收已经能服务产品链路的知识；公司级知识库只保留成熟稳定的跨项目资产。</p>
-            <p>知行工坊把研究、知识、产品和内容之间的分工写成结构化规则，减少对临时文件夹和单次聊天上下文的依赖。</p>
+            <p>这套系统的重点，是让不同阶段的产物有明确位置，并把问题、方案、实现和验证之间的关系保留下来。</p>
+            <p>它减少了临时文件夹和一次性聊天上下文带来的断裂，也让后续项目可以复用已验证的质量标准和交付经验。</p>
           </Prose>
         </div>
       </Section>
@@ -74,11 +70,10 @@ export default function Monorepo() {
         <ModuleGrid
           accent={ACCENT}
           modules={[
-            { title: "agents", body: "角色定义，回答谁负责做什么。" },
-            { title: "company", body: "公司治理规则、注册表、蓝图和公司级入口。" },
-              { title: "projects", body: "项目工作区、项目实现和项目级文档，承载 AI 产品、AI 服务验证和内容系统。" },
-            { title: "shared", body: "共享脚本、模板和跨项目工具。" },
-            { title: "company / knowledge-base", body: "长期复用知识沉淀。" },
+            { title: "项目入口", body: "明确当前目标、事实来源、工作范围和交付入口。" },
+            { title: "方案与任务", body: "记录关键决策、实现约束、任务拆解与验收条件。" },
+            { title: "质量记录", body: "通过测试、质量门和人工检查保存验证依据。" },
+            { title: "交付与复盘", body: "交付物、遗留风险、问题定位和后续行动持续回写。" },
           ]}
         />
       </Section>
@@ -88,56 +83,46 @@ export default function Monorepo() {
           accent={ACCENT}
           headers={["设计问题", "我的选择", "解决的问题"]}
           rows={[
-            ["公司规则和项目实现放在哪里", "company 和 projects 分层", "区分公司治理和项目源码边界"],
-            ["Agent 如何接手上下文", "每个项目有稳定入口文件", "减少重复解释和聊天依赖"],
-            ["任务如何进入长期闭环", "spec / task / QA / delivery artifact", "让工作过程可追踪、可复盘、可交接"],
-            ["AI 服务如何避免空泛包装", "ai-service-studio 只记录输入、边界、验收和样本沟通", "把服务验证限制在可交付范围内"],
-            ["内容获客如何变成数据链路", "influencer-tracker 先跑通采集、去重、选题和 brief", "让内容系统从人工判断升级为可审计工作流"],
-            ["多项目如何保持边界", "项目注册表和项目工作区", "区分品牌、产品、能力和项目对象"],
-            ["知识如何复用", "knowledge-base 长期沉淀", "把一次性研究变成可调用资产"],
+            ["AI 如何接手上下文", "每个项目设置稳定入口与事实来源", "减少重复解释和上下文断裂"],
+            ["任务如何进入闭环", "规格、任务、质量检查和交付记录分阶段沉淀", "让工作过程可追踪、可复盘、可交接"],
+            ["AI 输出如何保持质量", "将验收条件、测试样例和人工检查前置", "避免只依赖一次生成结果"],
+            ["多项目如何保持边界", "对象登记与项目级工作区", "区分项目、共享能力与公开材料"],
+            ["经验如何复用", "将经验证的判断沉淀为知识与模板", "让下一次交付更快进入可执行状态"],
           ]}
         />
       </Section>
 
-      <Section index="0 6" title="真实物证 ｜ Artifact" shaded accent={ACCENT}>
+      <Section index="0 6" title="可核验物证 ｜ Artifact" shaded accent={ACCENT}>
         <DecisionTable
           accent={ACCENT}
-          headers={["真实物证", "仓库位置", "说明什么"]}
+          headers={["物证", "类型", "说明什么"]}
           rows={[
-            ["项目注册表", "company/项目注册表.yaml", "公司对象有唯一权威清单；当前登记 8 个对象。"],
-            ["公司蓝图", "company/公司蓝图.md", "公司定义、对象类型、角色哲学和长期原则有稳定落点。"],
-            ["任务审阅规范", "company/任务审阅与状态流转规范.md", "任务 review 有明确状态流转规则。"],
-            ["角色入口", "agents/*/AGENTS.md", "当前独立维护 10 个核心角色入口，明确谁负责什么。"],
-            ["研究母库衔接文档", "projects/research-center/kb/研究母库与项目研究衔接说明.md", "明确写清 research、kb、产品化知识库和公司级知识库四层分工。"],
-            ["研究中心双入口", "company/projects/研究中心/PROJECT.md + projects/research-center/PROJECT.md", "公司级说明和项目级工作区明确分层。"],
-            ["研究母库目录", "projects/research-center/kb/", "研究母库是一层正式工作区，包含 README、模板、规则和主题知识。"],
-            ["AI 服务验证工作区", "projects/ai-service-studio/", "沉淀 AI 工作流诊断、知识库整理、FDE 售前诊断模板和交付边界。"],
-            ["内容采集工具", "projects/content-matrix/tools/influencer-tracker/", "跑通对标账号更新、内容标准化、去重、飞书写入、选题候选、brief 和每日摘要。"],
+            ["项目入口", "结构化项目文档", "目标、事实来源、工作范围和交付入口可被持续追踪。"],
+            ["规格与任务", "方案与实现记录", "关键决策、实现约束、任务拆解和验收条件可复核。"],
+            ["质量门", "测试与人工检查", "关键链路的测试样例、检查项和问题定位依据可回看。"],
+            ["交付记录", "交付与复盘文档", "保留交付物、遗留风险、后续行动和经验回写。"],
           ]}
         />
       </Section>
 
-      <Section index="0 7" title="当前结果 ｜ 目前已经跑起来什么" accent={ACCENT}>
+      <Section index="0 7" title="当前结果 ｜ 已形成什么能力" accent={ACCENT}>
         <div className="space-y-6">
           <ModuleGrid
             cols={2}
             accent={ACCENT}
             modules={[
-              { title: "8 个公司对象已统一登记", body: "产品、能力和品牌对象都已经进入 company/项目注册表.yaml，形成稳定登记口径。"},
-              { title: "10 个核心角色入口已独立维护", body: "CEO、产品、研究、架构、工程、QA、内容等角色有各自 AGENTS.md。"},
-              { title: "多个主工作区已进入 projects", body: "研究、内容、求职、AI 服务、内容采集工具和共享能力底座都在同一仓库内并行推进。"},
-              { title: "知识分流规则已正式成文", body: "研究区、研究母库、产品化知识库、公司级知识库之间的边界已正式成文。"},
-              { title: "内容获客工具已形成 MVP", body: "influencer-tracker 已打通 RSS 追踪、去重、飞书写入、选题候选、brief、每日摘要和评论入库链路。"},
-              { title: "AI 服务验证骨架已成形", body: "ai-service-studio 已沉淀工作流诊断、文档知识库整理、FDE 售前诊断模板和样本沟通记录。"},
+              { title: "项目入口稳定", body: "项目目标、事实来源、当前范围和交付入口可被持续定位。"},
+              { title: "协作上下文可交接", body: "角色、任务、约束和阶段产物进入可复用的交接结构。"},
+              { title: "验证依据可回看", body: "测试、质量门、人工检查和问题定位不只留在一次对话中。"},
+              { title: "经验能够回写", body: "完成的交付、遗留风险和复盘结论可进入下一轮实现和方案判断。"},
             ]}
           />
           <BulletList
             accent={ACCENT}
             items={[
-              "它已经承载公司治理：公司蓝图、研发原则、任务规范、对象注册表都有正式入口。",
-              "它已经承载项目推进：一镜一梳、研究中心、内容矩阵、馨冉求职、知行AI服务等工作进入统一项目入口。",
-              "它已经承载角色协作：当任务需要换角色时，有明确入口和上下文交接材料。",
-              "它已经承载知识沉淀：研究、内容、服务验证与交付可以继续回写成长期资产。",
+              "支持从需求定义到交付复盘的连续工作流，而不是依赖零散聊天记录推进项目。",
+              "支持在产品、工程、内容和研究等不同任务之间保持事实来源、约束和当前状态一致。",
+              "支持将已验证的判断、质量要求和问题定位方法沉淀为下一次可复用的工作资产。",
             ]}
           />
         </div>
@@ -147,14 +132,14 @@ export default function Monorepo() {
         <RoleFit
           accent={ACCENT}
           items={[
-            { role: "AI 产品经理", fit: "体现信息架构、工作流产品思维、复杂系统拆解、数据入口和工程协作理解。" },
-            { role: "AI 转型咨询顾问", fit: "体现组织知识治理、AI 协作流程设计、服务边界定义和从工具使用走向工作系统建设的能力。" },
-            { role: "FDE", fit: "体现我能为复杂客户场景搭建 Agent 协作、项目入口、质量记录、交付 artifact、问题排查和复盘回写系统。" },
+            { role: "AI 产品经理", fit: "体现我能把复杂需求转成可推进的产品路径、任务与验收条件。" },
+            { role: "AI 应用工程师", fit: "体现我能将测试、质量门、问题定位和交付回写纳入日常研发闭环。" },
+            { role: "FDE / AI 解决方案工程师", fit: "体现我能将客户约束、方案边界、验证记录和交付物组织成可复核的协作过程。" },
           ]}
         />
         <div className="mt-6">
           <Boundary accent={ACCENT}>
-            对外定位为自用 AI 一人公司工作系统、Monorepo 实践和一人公司操作系统原型；重点呈现项目入口、知识治理、任务流转、质量记录、交付回写、服务验证和内容系统能力，不包装成成熟 SaaS 或已规模化商业案例。
+            对外定位为自用的 AI 辅助研发与交付流程。它呈现项目入口、任务流转、质量记录、交付回写和问题复盘能力，不将内部工具或工作方式包装成独立商业产品。
           </Boundary>
         </div>
       </Section>
