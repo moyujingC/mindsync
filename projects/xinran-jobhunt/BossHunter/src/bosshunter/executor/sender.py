@@ -67,6 +67,20 @@ def _select_resume_image_input(target_id: str) -> dict:
     """))
 
 
+def _resume_image_delivery_state(target_id: str, file_name: str) -> str:
+    """Verify that the selected image filename is visible in the current chat."""
+    expected = json.dumps(file_name, ensure_ascii=False)
+    result = _parse_js_result(evaluate(target_id, f"""
+    (() => {{
+        const expected = {expected};
+        const text = document.querySelector('.chat-record, .chat-conversation, .chat-content')?.innerText || '';
+        const images = Array.from(document.querySelectorAll('.chat-record img, .chat-conversation img, .chat-content img'));
+        return JSON.stringify({{state: text.includes(expected) || images.length > 0 ? 'delivered' : 'missing'}});
+    }})()
+    """))
+    return str(result.get("state") or "missing")
+
+
 def _send_resume_image_after_greeting(target_id: str, job: dict, send_config: dict) -> dict:
     profile_config = send_config.get("_profile", {})
     if not profile_config.get("send_resume_image_after_greeting", False):
@@ -96,6 +110,12 @@ def _send_resume_image_after_greeting(target_id: str, job: dict, send_config: di
         return {**send_button, "history_detail": "图片简历已选择，但未找到可用的发送按钮"}
     if _sleep_or_stop(2, send_config.get("_workbench_stop_event")):
         return {"success": False, "error": "stopped", "history_detail": "用户已请求停止"}
+    if _resume_image_delivery_state(target_id, image_file.name) != "delivered":
+        return {
+            "success": False,
+            "error": "resume_image_delivery_unverified",
+            "history_detail": "图片简历已点击发送，但聊天记录中未确认送达",
+        }
     return {"success": True, "role": role, "path": str(image_file)}
 
 
