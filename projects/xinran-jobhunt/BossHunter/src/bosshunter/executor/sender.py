@@ -19,7 +19,7 @@ from bosshunter.browser import (
     set_files,
     type_text,
 )
-from bosshunter.db import get_db, get_jobs_ready_to_send, update_job_status, add_history, add_risk_event
+from bosshunter.db import get_db, get_jobs_ready_to_send, update_job_greeting, update_job_status, add_history, add_risk_event
 from bosshunter.throttle import RequestThrottle, SendWindowChecker, ProgressiveBackoff, should_take_day_off
 from bosshunter.ai.greeter import strip_web_addresses
 
