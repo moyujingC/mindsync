@@ -2,6 +2,7 @@
 
 import time
 import json
+from pathlib import Path
 from threading import Event
 from urllib.parse import urljoin
 from rich.console import Console
@@ -15,12 +16,97 @@ from bosshunter.browser import (
     get_page_targets,
     navigate,
     press_key,
+    set_files,
     type_text,
 )
 from bosshunter.db import get_db, get_jobs_ready_to_send, update_job_status, add_history, add_risk_event
 from bosshunter.throttle import RequestThrottle, SendWindowChecker, ProgressiveBackoff, should_take_day_off
+from bosshunter.ai.greeter import strip_web_addresses
 
 console = Console()
+
+RESUME_IMAGE_ROLE_KEYWORDS = {
+    "fde": ("fde", "forward deployed", "解决方案", "售前", "交付工程师", "实施工程师"),
+    "product": ("产品经理", "product manager", "pm", "产品负责人", "ai builder"),
+    "engineering": ("应用工程师", "大模型工程师", "agent工程师", "agent 工程师", "算法工程师", "研发工程师"),
+}
+
+
+def _resolve_resume_image(job: dict, profile_config: dict, base_dir: Path | None = None) -> tuple[str | None, str | None]:
+    """Select the matching configured image resume for one job."""
+    configured_paths = profile_config.get("resume_image_paths", {})
+    if not isinstance(configured_paths, dict):
+        return None, None
+    job_text = " ".join(str(job.get(field) or "") for field in ("title", "jd", "score_reason")).lower()
+    role = next(
+        (name for name, keywords in RESUME_IMAGE_ROLE_KEYWORDS.items() if any(keyword in job_text for keyword in keywords)),
+        str(profile_config.get("resume_image_default_role") or "").lower() or None,
+    )
+    raw_path = configured_paths.get(role) if role else None
+    if not isinstance(raw_path, str) or not raw_path.strip():
+        return role, None
+    candidate = Path(raw_path).expanduser()
+    if not candidate.is_absolute() and base_dir:
+        candidate = base_dir / candidate
+    return role, str(candidate.resolve())
+
+
+def _select_resume_image_input(target_id: str) -> dict:
+    """Return a chat image input selector without clicking a send control."""
+    return _parse_js_result(evaluate(target_id, """
+    (() => {
+        const inputs = Array.from(document.querySelectorAll('input[type="file"]'));
+        const imageInput = inputs.find((input) => {
+            const accept = String(input.getAttribute('accept') || '').toLowerCase();
+            return /image/.test(accept) || /png|jpe?g|webp/.test(accept);
+        }) || inputs[0];
+        if (!imageInput) return JSON.stringify({success: false, error: 'resume_image_input_missing'});
+        if (!imageInput.id) imageInput.id = 'bosshunter-resume-image-input';
+        return JSON.stringify({success: true, selector: '#' + CSS.escape(imageInput.id)});
+    })()
+    """))
+
+
+def _send_resume_image_after_greeting(target_id: str, job: dict, send_config: dict) -> dict:
+    profile_config = send_config.get("_profile", {})
+    if not profile_config.get("send_resume_image_after_greeting", False):
+        return {"success": True, "skipped": "disabled"}
+    base_dir = Path(profile_config.get("resume_path") or Path.cwd()).expanduser().resolve().parent
+    role, image_path = _resolve_resume_image(job, profile_config, base_dir)
+    if not image_path:
+        return {"success": False, "error": "resume_image_role_unmatched", "history_detail": "图片简历未发送：岗位未匹配到已配置的图片简历"}
+    image_file = Path(image_path)
+    if not image_file.is_file() or image_file.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp"}:
+        return {"success": False, "error": "resume_image_missing", "history_detail": f"图片简历未发送：{role or '默认'} 图片文件不存在或格式不支持"}
+    input_state = _select_resume_image_input(target_id)
+    if not input_state.get("success"):
+        return {**input_state, "history_detail": "图片简历未发送：聊天页没有可验证的图片上传入口"}
+    if not set_files(target_id, input_state["selector"], [str(image_file)]):
+        return {"success": False, "error": "resume_image_upload_failed", "history_detail": "图片简历未发送：图片文件未能写入平台上传控件"}
+    send_button = _parse_js_result(evaluate(target_id, """
+    (() => {
+        const button = Array.from(document.querySelectorAll('.btn-send, .send-btn, [class*="send"]'))
+            .find((element) => !element.disabled && !element.classList.contains('disabled'));
+        if (!button) return JSON.stringify({success: false, error: 'resume_image_send_button_unavailable'});
+        button.click();
+        return JSON.stringify({success: true});
+    })()
+    """))
+    if not send_button.get("success"):
+        return {**send_button, "history_detail": "图片简历已选择，但未找到可用的发送按钮"}
+    if _sleep_or_stop(2, send_config.get("_workbench_stop_event")):
+        return {"success": False, "error": "stopped", "history_detail": "用户已请求停止"}
+    return {"success": True, "role": role, "path": str(image_file)}
+
+
+def _complete_verified_greeting(target_id: str, job: dict, send_config: dict, result: dict) -> tuple[dict, None]:
+    resume_image = _send_resume_image_after_greeting(target_id, job, send_config)
+    close_tab(target_id)
+    if resume_image.get("skipped") == "disabled":
+        return result, None
+    if resume_image.get("success"):
+        return {**result, "resume_image_sent": True, "resume_image_role": resume_image.get("role")}, None
+    return {**result, "resume_image_sent": False, "resume_image_error": resume_image.get("error", "unknown"), "resume_image_detail": resume_image.get("history_detail", "图片简历未发送")}, None
 
 CHAT_BUTTON_SELECTOR = (
     'a[redirect-url*="/web/geek/chat"], '
@@ -759,12 +845,11 @@ def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tupl
                     close_tab(target_id)
                     return {"success": False, "error": "stopped", "history_detail": "用户已请求停止", "skip_backoff": True}, None
                 if _message_delivery_state(target_id, greeting) == "delivered":
-                    close_tab(target_id)
-                    return {
+                    return _complete_verified_greeting(target_id, job, throttle_config, {
                         "success": True,
                         "verified": True,
                         "first_contact": True,
-                    }, None
+                    })
                 return {
                     "success": False,
                     "error": "first_contact_send_not_stable",
@@ -827,8 +912,7 @@ def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tupl
                 close_tab(target_id)
                 return {"success": False, "error": "stopped", "history_detail": "用户已请求停止", "skip_backoff": True}, None
             if _message_delivery_state(target_id, greeting) == "delivered":
-                close_tab(target_id)
-                return {"success": True, "verified": True}, None
+                return _complete_verified_greeting(target_id, job, throttle_config, {"success": True, "verified": True})
             return {
                 "success": False,
                 "error": "send_not_stable",
@@ -946,13 +1030,15 @@ def send_greetings(config: dict, force: bool = False) -> int:
                 send_report["stop_reason"] = "stopped"
                 break
 
-            greeting = job.get("greeting", "")
+            greeting = strip_web_addresses(job.get("greeting", ""))
             if not greeting:
                 update_job_status(db, job["id"], "error")
                 send_report["attempted_count"] += 1
                 send_report["failed_count"] += 1
                 progress.update(task, advance=1)
                 continue
+            if greeting != job.get("greeting", ""):
+                update_job_greeting(db, job["id"], greeting)
 
             # Wait between sends (except first)
             if sent_count > 0:
@@ -964,14 +1050,16 @@ def send_greetings(config: dict, force: bool = False) -> int:
 
             progress.update(task, description=f"发送: {job['company'][:10]} - {job['title'][:15]}")
 
-            result_data, failed_target_id = _send_greeting_once(job, greeting, throttle_config)
+            send_config = dict(throttle_config)
+            send_config["_profile"] = config.get("profile", {})
+            result_data, failed_target_id = _send_greeting_once(job, greeting, send_config)
             if result_data.get("error") == "stopped":
                 send_report["stop_reason"] = "stopped"
                 break
             if result_data.get("error") == "no_chat_input" and failed_target_id:
                 console.print("[yellow]    ! 未进入具体聊天会话，重新打开岗位页再试一次[/yellow]")
                 close_tab(failed_target_id)
-                result_data, failed_target_id = _send_greeting_once(job, greeting, throttle_config)
+                result_data, failed_target_id = _send_greeting_once(job, greeting, send_config)
                 if result_data.get("error") == "stopped":
                     send_report["stop_reason"] = "stopped"
                     break
@@ -988,6 +1076,10 @@ def send_greetings(config: dict, force: bool = False) -> int:
                 throttle.mark()
                 update_job_status(db, job["id"], "sent")
                 add_history(db, job["id"], "sent", greeting[:50])
+                if result_data.get("resume_image_sent"):
+                    add_history(db, job["id"], "resume_image_sent", str(result_data.get("resume_image_role") or ""))
+                elif result_data.get("resume_image_sent") is False:
+                    add_history(db, job["id"], "resume_image_failed", result_data.get("resume_image_detail", "图片简历未发送"))
                 sent_count += 1
                 send_report["sent_count"] = sent_count
                 backoff.record_success()

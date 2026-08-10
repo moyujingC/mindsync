@@ -65,6 +65,9 @@ DEFAULTS: dict[str, Any] = {
     "profile": {
         "resume_path": "./resume.md",
         "resume_output_dir": "./data/resumes",
+        "send_resume_image_after_greeting": False,
+        "resume_image_paths": {},
+        "resume_image_default_role": "",
         "target_cities": ["北京"],
         "salary_min": 0,
         "salary_max": 0,

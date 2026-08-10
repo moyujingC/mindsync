@@ -35,7 +35,7 @@ GREETING_PROMPT = """你是一位求职者，需要在BOSS直聘上给HR发送�
 4. 表达对岗位的兴趣，但不要谄媚
 5. 不要用"您好，我是xxx"这种模板开头，要有差异化
 6. 适配手机端阅读
-7. 在合适的位置自然带出作品集链接（不要每次都放，根据岗位匹配度决定）
+7. 不要包含网址、超链接、二维码或任何引导站外跳转的信息
 8. 【严禁】不得捏造我没有的经历、头衔或身份，只能使用"我的背景"中明确提到的信息
 9. 【严禁】不得把岗位JD中的描述（如公司头衔、项目名）当作我的经历来写
 10. 严格使用"我的背景"中的原文描述，不得改写或美化
@@ -203,7 +203,25 @@ def _normalize_greeting_response(response: str | None) -> str | None:
                 break
         else:
             greeting = cut
-    return greeting.strip() or None
+    return strip_web_addresses(greeting)
+
+
+_WEB_ADDRESS_RE = re.compile(
+    r"(?:https?://|www\.)[^\s\]\[<>（）(){}]+|(?<![\w@])(?:[\w-]+\.)+(?:com|cn|net|org|io|cc|co|ai|app|dev|me)(?:/[^\s]*)?",
+    flags=re.IGNORECASE,
+)
+
+
+def strip_web_addresses(text: str | None) -> str | None:
+    """Remove URLs from a BOSS greeting before it can reach the platform."""
+    if not isinstance(text, str):
+        return None
+    cleaned = _WEB_ADDRESS_RE.sub("", text)
+    cleaned = re.sub(r"\[([^\]]+)\]\s*\(\s*\)", r"\1", cleaned)
+    cleaned = re.sub(r"[ \t]+", " ", cleaned)
+    cleaned = re.sub(r"\s+([，。！？；：,;:])", r"\1", cleaned)
+    cleaned = re.sub(r"\s*\n\s*", "\n", cleaned).strip(" ，,;；:：")
+    return cleaned or None
 
 
 def _parse_review_response(response: str | None) -> dict | None:
@@ -262,13 +280,10 @@ def _generate_greeting_once(
     jd_summary = _truncate_prompt_text(job.get("jd", ""), jd_limit) or "无详细描述"
     critique_section = f"\n7. 上次生成的问题: {critique}，请避免此问题\n" if critique else ""
 
-    # Build extra highlights from config (portfolio URL, personal strengths, etc.)
+    # Website URLs are deliberately excluded from greeting generation.
     profile_cfg = config.get("profile", {})
     highlights = profile_cfg.get("extra_highlights", [])
-    portfolio_url = profile_cfg.get("portfolio_url", "")
     highlight_lines = [f"- {h}" for h in highlights]
-    if portfolio_url:
-        highlight_lines.append(f"- 个人作品集网址：{portfolio_url}")
     extra_highlights = "\n".join(highlight_lines) if highlight_lines else "（无额外亮点配置）"
 
     prompt = GREETING_PROMPT.format(
