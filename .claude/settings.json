@@ -1,12 +1,1 @@
-{
-  "env": {
-    "ANTHROPIC_BASE_URL": "https://api.kimi.com/coding/",
-    "ANTHROPIC_MODEL": "k3",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "k3",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "k3",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "k3",
-    "ANTHROPIC_REASONING_MODEL": "k3",
-    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "k3"
-  }
-}
+{}
