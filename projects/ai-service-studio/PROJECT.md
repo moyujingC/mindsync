@@ -100,13 +100,15 @@
 当前优先行业是 [心理与疗愈](industries/psychology-healing/README.md)。
 
 ## 4. 当前直接编辑入口
-
 - [HA7CH AI 原生与 FDE 学校参考](references/2026-08-12-HA7CH-AI原生与FDE学校参考.md)
 - [HA7CH AI Native School 开源项目原文](references/2026-08-12-HA7CH-AI原生与FDE学校-原文.md)
 - [老板自研 ERP 与反向 FDE 参考](references/2026-08-05-老板自研ERP与反向FDE参考.md)
 - [老板自研 ERP 与反向 FDE 原文](references/2026-08-05-老板自研ERP与反向FDE-原文.md)
+- [FDE 现场闭环产品化参考](references/2026-07-30-FDE现场闭环产品化参考.md)
+- [FDE 现场闭环产品化原文](references/2026-07-30-FDE现场闭环产品化-原文.md)
 - [知识库技术栈与场景选型参考](references/2026-08-01-知识库技术栈与场景选型参考.md)
 - [知识库技术栈与场景选型原文](references/2026-08-01-知识库技术栈与场景选型-原文.md)
+- [企业级知识库建构方法论研究简报](internal-research/2026-08-16-企业级知识库建构方法论研究简报.md)
 - [知识库服务阶段门与交付边界纵向复盘](synthesis/2026-08-01-知识库服务阶段门与交付边界纵向复盘.md)
 - [服务 Framing](specs/2026-07-01-AI服务小单-Framing.md)
 - [企业 AI 落地互动课程首期验证 SPEC](specs/2026-07-28-企业AI落地互动课程-首期验证SPEC.md)
