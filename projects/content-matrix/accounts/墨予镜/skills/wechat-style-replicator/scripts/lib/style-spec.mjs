@@ -71,15 +71,14 @@ export function extractStyleSpec(html, meta = {}) {
   if (bodyColor) spec.colors.body = bodyColor;
   if (bodyWeight) spec.typography.body.weight = bodyWeight;
 
-  // 标题：h1→title，h2→primary，h3→secondary；缺失时按字号补
+  // 小节标题：公众号正文里 h1/h2 都表示小节标题（mdnice 用 h1，原生编辑器用 h2）。
+  // 文章主标题（title）是单独字段 #activity-name，不在正文里，保持默认深色。
   const base = bodySize || 16;
-  const titleNodes = h1s.length ? h1s : [];
-  const primaryNodes = h2s.length ? h2s : [];
+  const primaryNodes = h1s.length ? h1s : h2s;
   const secondaryNodes = h3s.length ? h3s : [];
 
-  applyHeading(spec, "title", titleNodes, primaryNodes, base, "title");
-  applyHeading(spec, "headingPrimary", primaryNodes, titleNodes, base, "heading");
-  applyHeading(spec, "headingSecondary", secondaryNodes, primaryNodes, base, "heading");
+  applyHeading(spec, "headingPrimary", primaryNodes, base, "heading");
+  applyHeading(spec, "headingSecondary", secondaryNodes, base, "heading");
 
   // 若标题色与正文色相同（没抽到独立标题色），回退到默认强调色
   if (normalizeColor(spec.colors.heading) === normalizeColor(spec.colors.body)) {
@@ -99,17 +98,29 @@ export function extractStyleSpec(html, meta = {}) {
   return spec;
 }
 
-function applyHeading(spec, key, nodes, fallbackNodes, base, colorRef) {
+// 读取节点或其后代（第一个带样式的 span/strong/b/em）的某个 CSS 属性。
+// mdnice 等编辑器把标题的字号/颜色放在 h1 内部的 span 上，而非 h1 自身。
+function deepStyle(node, prop) {
+  const own = styleProp(node.getAttribute?.("style"), prop);
+  if (own) return own;
+  const descendants = node.querySelectorAll?.("span, strong, b, em") || [];
+  for (const d of descendants) {
+    const v = styleProp(d.getAttribute?.("style"), prop);
+    if (v) return v;
+  }
+  return undefined;
+}
+
+function applyHeading(spec, key, nodes, base, colorRef) {
   const t = spec.typography[key];
-  const sizePx = mode(nodes.map((n) => parsePx(n.getAttribute("style") ? styleProp(n.getAttribute("style"), "font-size") : undefined)));
-  const color = mode(nodes.map((n) => normalizeColor(n.getAttribute("style") ? styleProp(n.getAttribute("style"), "color") : undefined)));
-  const weight = mode(nodes.map((n) => normalizeWeight(n.getAttribute("style") ? styleProp(n.getAttribute("style"), "font-weight") : undefined)));
+  if (!nodes.length) return;
+  const sizePx = mode(nodes.map((n) => parsePx(deepStyle(n, "font-size"))));
+  const color = mode(nodes.map((n) => normalizeColor(deepStyle(n, "color"))));
+  const weight = mode(nodes.map((n) => normalizeWeight(deepStyle(n, "font-weight"))));
 
   if (sizePx) t.sizeRatio = round1(sizePx / base);
   if (weight) t.weight = weight;
-  if (color && colorRef === "title") spec.colors.title = color;
   if (color && colorRef === "heading") spec.colors.heading = color;
-  if (nodes.length === 0 && fallbackNodes.length === 0) return;
 }
 
 // ---------- 解析辅助 ----------
@@ -150,7 +161,20 @@ function parseLineHeight(value, bodySize) {
 function normalizeColor(value) {
   if (!value) return null;
   const s = String(value).trim().toLowerCase();
-  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(s) || /^rgb/i.test(s) ? s : null;
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/.test(s)) return s;
+  const rgb = s.match(/^rgba?\(([^)]+)\)$/);
+  if (rgb) {
+    const parts = rgb[1].split(/[,\s/]+/).filter(Boolean).map(Number);
+    if (parts.length < 3) return null;
+    // rgba：第 4 位是 alpha，透明（<1）视为无效颜色
+    if (parts.length >= 4 && parts[3] < 1) return null;
+    return `#${toHex(parts[0])}${toHex(parts[1])}${toHex(parts[2])}`;
+  }
+  return null;
+}
+
+function toHex(n) {
+  return Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, "0");
 }
 
 function normalizeWeight(value) {
@@ -162,15 +186,19 @@ function normalizeWeight(value) {
 }
 
 function mode(values) {
-  const counts = new Map();
+  const counts = new Map(); // key → { count, value }
   for (const v of values) {
     if (v == null || v === "") continue;
     const k = String(v);
-    counts.set(k, (counts.get(k) || 0) + 1);
+    const entry = counts.get(k) || { count: 0, value: v };
+    entry.count += 1;
+    counts.set(k, entry);
   }
   let best = null;
   let bestCount = 0;
-  for (const [k, n] of counts) if (n > bestCount) (best = k), (bestCount = n);
+  for (const { count, value } of counts.values()) {
+    if (count > bestCount) (best = value), (bestCount = count);
+  }
   return best;
 }
 
