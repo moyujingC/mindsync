@@ -42,14 +42,13 @@ export function buildWechatArticleHtml(template, title, blocks, coverImageUrl, i
       }
 
       if (block.type === "heading") {
-        const headingStyle =
-          block.level === "primary"
-            ? template.primaryHeadingStyle
-            : template.secondaryHeadingStyle;
+        const isPrimary = block.level === "primary";
+        const tag = isPrimary ? "h2" : "h3";
+        const headingStyle = isPrimary ? template.primaryHeadingStyle : template.secondaryHeadingStyle;
         const bodyHtml = block.body
           ? `<p style="${template.paragraphStyle}">${inlineMarkdownToHtml(block.body)}</p>`
           : "";
-        return `<section style="margin-top:34px;"><h2 style="${headingStyle}">${escapeHtml(block.title)}</h2>${bodyHtml}</section>`;
+        return `<section style="margin-top:34px;"><${tag} style="${headingStyle}">${escapeHtml(block.title)}</${tag}>${bodyHtml}</section>`;
       }
 
       return "";
