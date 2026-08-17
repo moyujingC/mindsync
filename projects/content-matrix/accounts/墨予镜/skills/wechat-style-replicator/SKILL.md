@@ -52,7 +52,12 @@ node scripts/render-wechat.mjs <成稿.md> <styles/<风格名>.json>
 node scripts/publish-draft.mjs <成稿.md> <styles/<风格名>.json> [封面图.png]
 ```
 
-渲染 + 上传封面 + 发草稿箱（凭证从 `.env` 读，不入 git）。
+渲染 + 上传封面 + 上传正文配图 + 发草稿箱（凭证从 `.env` 读，不入 git）。
+
+- **封面**：走永久素材接口（`material/add_material`），建议横版 **900×383**，否则微信会裁切。
+- **正文配图**：走「图文消息内图片」接口（`media/uploadimg`），HTML 里 `src/data-src` 指向本地文件的 `<img>` 会自动上传并替换为 `mmbiz.qpic.cn` URL；已是 `http(s)` 的线上 URL 跳过。
+- **配图限制**：`uploadimg` 仅收 jpg/png 且 **< 1MB**，超限图片自动用 PIL 转 jpg 压到限内（需本机装 `python3` + `Pillow`）。
+- **图片引用约定**：成稿里的图片用相对路径（相对成稿 `.md` 所在目录），如 `xxx-成稿-assets/wx-visual-01.png`，不要写绝对路径。
 
 ### 4. 生成小红书卡片
 
