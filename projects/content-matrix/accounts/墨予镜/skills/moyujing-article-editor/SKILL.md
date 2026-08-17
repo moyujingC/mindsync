@@ -1,6 +1,6 @@
 ---
 name: moyujing-article-editor
-description: Use when refining an existing Chinese article draft for 墨予镜 from draft to publishable form, especially when the core观点 and structure already exist but the work now is reader fit, structure review, noise reduction, style calibration, or final pre-publish checks for公众号-style content.
+description: Use when refining an existing Chinese article draft for 墨予镜 from draft to publishable form, especially when the core观点 and structure already exist but the work now is reader fit, structure review, expression de-noising (去AI味 / de-AI / 表达降噪), style calibration (表达准确 / 像人话 / 黄有璨风格), or final pre-publish checks for公众号-style content. Triggers include 润色、改写、去AI味、去机器味、降噪、像人话、表达准确、成稿编辑.
 ---
 
 # Moyujing Article Editor
@@ -46,6 +46,8 @@ Run these five rounds in order. Do not collapse them into one vague “润色”
 5. Pre-publish check
 
 For the exact prompts and output shapes, read [references/editing-rounds.md](references/editing-rounds.md).
+
+The `Expression de-noising` round (round 3) must first read [references/ai-de-style.md](references/ai-de-style.md) — the 11 AI-writing patterns + hard constraints + noise budget — instead of guessing what "AI-flavored" means. The `Style calibration` round (round 4) applies the 黄有璨 "表达准确" anchors (precise judgment, clear taxonomy, concrete image, every sentence advancing, ending hands the judgment back).
 
 ## Style Constraints
 
