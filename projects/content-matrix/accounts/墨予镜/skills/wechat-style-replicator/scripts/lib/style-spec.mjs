@@ -19,8 +19,8 @@ export const DEFAULT_SPEC = {
   typography: {
     body: { size: 16, lineHeight: 1.8, weight: 400 },
     title: { sizeRatio: 1.44, color: "title", weight: 600 },
-    headingPrimary: { sizeRatio: 1.5, color: "heading", weight: 600 },
-    headingSecondary: { sizeRatio: 1.38, color: "heading", weight: 600 },
+    headingPrimary: { sizeRatio: 1.5, color: "heading", weight: 600, border: null },
+    headingSecondary: { sizeRatio: 1.38, color: "heading", weight: 600, border: null },
     strong: { color: "strong", weight: 600 },
     quote: { sizeRatio: 1.0, color: "heading", weight: 400 },
   },
@@ -121,6 +121,15 @@ function applyHeading(spec, key, nodes, base, colorRef) {
   if (sizePx) t.sizeRatio = round2(sizePx / base);
   if (weight) t.weight = weight;
   if (color && colorRef === "heading") spec.colors.heading = color;
+
+  // 边框装饰：抽第一个有 border-left 的标题（原生排版常用，如增长女黑客的橙色竖条）
+  for (const n of nodes) {
+    const border = parseBorder(deepStyle(n, "border-left"));
+    if (border) {
+      t.border = border;
+      break;
+    }
+  }
 }
 
 // ---------- 解析辅助 ----------
@@ -158,6 +167,25 @@ function parseLineHeight(value, bodySize) {
   const n = parseFloat(s);
   if (!Number.isFinite(n)) return null;
   return isPx ? round2(n / bodySize) : n;
+}
+
+// 解析 border-left 简写（如 "4px solid #E8501A"）→ { side, width, color, style }
+function parseBorder(value) {
+  if (!value) return null;
+  const tokens = String(value).trim().split(/\s+/);
+  let width = null;
+  let style = null;
+  let color = null;
+  for (const tk of tokens) {
+    if (/^\d+(\.\d+)?(px)?$/.test(tk)) width = parseFloat(tk);
+    else if (/^(solid|dashed|dotted|double)$/.test(tk)) style = tk;
+    else {
+      const c = normalizeColor(tk);
+      if (c) color = c;
+    }
+  }
+  if (!color) return null; // none / 抽不到颜色 → 无边框
+  return { side: "left", width: width && width > 0 ? width : 3, color, style: style || "solid" };
 }
 
 const NAMED_COLORS = {
@@ -251,6 +279,20 @@ export function resolveStyle(spec, viewport) {
     paraGap: Math.round(bodySize * sp.paraGap),
     headingTop: Math.round(bodySize * sp.headingTop),
     headingBottom: Math.round(bodySize * sp.headingBottom),
+    headingBorder: resolveBorder(t.headingPrimary?.border, bodySize),
+    secondaryBorder: resolveBorder(t.headingSecondary?.border, bodySize),
+  };
+}
+
+// 边框宽度按正文字号比例缩放（公众号 4px → 小红书视口按比例加粗）。
+function resolveBorder(border, bodySize) {
+  if (!border || !border.color) return null;
+  const ratio = bodySize / 16;
+  return {
+    side: border.side || "left",
+    width: Math.max(1, Math.round((border.width || 3) * ratio)),
+    color: border.color,
+    style: border.style || "solid",
   };
 }
 
@@ -259,13 +301,14 @@ export function resolveWechatTemplate(spec) {
   const s = resolveStyle(spec, { bodySize: spec.typography.body.size });
   const c = spec.colors;
   const lh = spec.typography.body.lineHeight;
+  const borderCss = (b) => (b ? `border-${b.side}:${b.width}px ${b.style} ${b.color};padding-${b.side}:12px;` : "");
 
   return {
     containerStyle: `font-size:${s.bodySize}px;line-height:${lh};color:${c.body};background:#ffffff;padding:0 30px;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;`,
     titleStyle: `margin:0 0 12px;color:${c.title};font-size:${s.titleSize}px;line-height:1.45;font-weight:${s.titleWeight};letter-spacing:0;`,
     metaStyle: `margin:0 0 18px;color:${c.meta};font-size:11px;line-height:1.6;`,
-    primaryHeadingStyle: `margin:0 0 15px;color:${c.heading};font-size:${s.headingSize}px;line-height:1.5;letter-spacing:0;font-weight:${s.headingWeight};`,
-    secondaryHeadingStyle: `margin:0 0 12px;color:${c.heading};font-size:${s.secondarySize}px;line-height:1.55;letter-spacing:0;font-weight:${s.headingWeight};`,
+    primaryHeadingStyle: `margin:0 0 15px;color:${c.heading};font-size:${s.headingSize}px;line-height:1.5;letter-spacing:0;font-weight:${s.headingWeight};${borderCss(s.headingBorder)}`,
+    secondaryHeadingStyle: `margin:0 0 12px;color:${c.heading};font-size:${s.secondarySize}px;line-height:1.55;letter-spacing:0;font-weight:${s.headingWeight};${borderCss(s.secondaryBorder)}`,
     paragraphStyle: `margin:18px 0 0;padding:8px 0;color:${c.body};font-size:${s.bodySize}px;line-height:${lh};text-align:justify;`,
     quoteStyle: `margin:20px 0 12px;padding:10px 14px;border-left:3px solid ${c.heading};background:${c.blockBg};color:${c.heading};font-size:${s.quoteSize}px;line-height:${lh};border-radius:0 8px 8px 0;`,
     noteStyle: `margin:18px 0 0;padding:10px 12px;border:1px solid #ECEAE3;border-radius:8px;background:#FAF7F2;color:${c.body};font-size:${Math.max(s.bodySize - 1, 12)}px;line-height:${lh};`,

@@ -23,12 +23,19 @@
     "headingPrimary": {
       "sizeRatio": 1.25,
       "color": "heading",
-      "weight": 700
+      "weight": 700,
+      "border": {
+        "side": "left",
+        "width": 4,
+        "color": "#e8501a",
+        "style": "solid"
+      }
     },
     "headingSecondary": {
       "sizeRatio": 1.38,
       "color": "heading",
-      "weight": 600
+      "weight": 600,
+      "border": null
     },
     "strong": {
       "color": "strong",

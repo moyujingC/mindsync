@@ -142,7 +142,15 @@ function flowPageSVG(items, seq) {
   let body = "";
   for (const item of items) {
     if (item.kind === "title") {
-      body += `\n  <text x="${MX}" y="${y + tokens.headingTop + tokens.headingSize}" font-size="${tokens.headingSize}" fill="${c.title}" font-weight="600">${esc(item.text)}</text>`;
+      const border = tokens.headingBorder;
+      const textX = border ? MX + border.width + 12 : MX;
+      const textY = y + tokens.headingTop + tokens.headingSize;
+      if (border) {
+        const lineY1 = y + tokens.headingTop;
+        const lineY2 = lineY1 + tokens.headingSize;
+        body += `\n  <line x1="${MX}" y1="${lineY1}" x2="${MX}" y2="${lineY2}" stroke="${border.color}" stroke-width="${border.width}" stroke-linecap="round"/>`;
+      }
+      body += `\n  <text x="${textX}" y="${textY}" font-size="${tokens.headingSize}" fill="${c.title}" font-weight="600">${esc(item.text)}</text>`;
       y += tokens.headingTop + tokens.headingSize + 28;
     } else if (item.kind === "para") {
       const fill = item.strong ? tokens.strongColor : c.body;
