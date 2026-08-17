@@ -19,9 +19,9 @@ const FONT = "PingFang SC, Hiragino Sans GB, Source Han Sans SC, sans-serif";
 const W = 1080, H = 1440, MX = 90;
 const VIEWPORT = { bodySize: 34 };
 
-const [mdPath, specPath] = process.argv.slice(2);
+const [mdPath, specPath, subDir = "原文版"] = process.argv.slice(2);
 if (!mdPath || !specPath) {
-  console.error("用法：node scripts/render-xhs.mjs <成稿.md> <styles/风格名.json>");
+  console.error("用法：node scripts/render-xhs.mjs <成稿.md> <styles/风格名.json> [输出子目录]");
   process.exit(1);
 }
 
@@ -217,8 +217,8 @@ pages.forEach((items, i) => {
   writeFileSync(join(OUT_DIR, `xhs-${String(i + 2).padStart(2, "0")}.svg`), flowPageSVG(items, seq), "utf8");
 });
 
-// 转 PNG 到 小红书出图/原文版/
-const outDir = join(ACCOUNT_DIR, "小红书出图", "原文版");
+// 转 PNG 到 小红书出图/<subDir>/
+const outDir = join(ACCOUNT_DIR, "小红书出图", subDir);
 mkdirSync(outDir, { recursive: true });
 for (const f of ["xhs-01.svg", ...Array.from({ length: pages.length }, (_, i) => `xhs-${String(i + 2).padStart(2, "0")}.svg`)]) {
   const base = f.replace(".svg", "");
