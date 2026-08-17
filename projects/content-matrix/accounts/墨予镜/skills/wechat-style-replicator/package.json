@@ -1,0 +1,10 @@
+{
+  "name": "wechat-style-replicator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "复刻公众号排版风格 → 生成公众号草稿 HTML + 小红书 3:4 卡片",
+  "dependencies": {
+    "node-html-parser": "^6.1.13"
+  }
+}

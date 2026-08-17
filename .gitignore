@@ -60,3 +60,6 @@ external/*/
 # Archive (keep structure but ignore large/old files)
 archive/**/*.zip
 archive/**/*.tar.gz
+
+# Generated card images (图片不进 git)
+projects/content-matrix/accounts/墨予镜/小红书出图/

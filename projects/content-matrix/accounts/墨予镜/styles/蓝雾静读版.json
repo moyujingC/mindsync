@@ -1,0 +1,21 @@
+{
+  "name": "蓝雾静读版",
+  "source": "",
+  "colors": {
+    "title": "#303543",
+    "heading": "#6e7fa8",
+    "body": "#393d49",
+    "strong": "#333333",
+    "meta": "#a8b1c4",
+    "blockBg": "#f0f3fa"
+  },
+  "typography": {
+    "body": { "size": 16, "lineHeight": 1.8, "weight": 400 },
+    "title": { "sizeRatio": 1.44, "color": "title", "weight": 600 },
+    "headingPrimary": { "sizeRatio": 1.5, "color": "heading", "weight": 600 },
+    "headingSecondary": { "sizeRatio": 1.38, "color": "heading", "weight": 600 },
+    "strong": { "color": "strong", "weight": 600 },
+    "quote": { "sizeRatio": 1.0, "color": "heading", "weight": 400 }
+  },
+  "spacing": { "paraGap": 1.125, "headingTop": 2.125, "headingBottom": 0.94 }
+}
