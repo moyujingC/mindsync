@@ -24,15 +24,23 @@
    - 比例化 token：字号存相对正文字号的比例，切视口（公众号 16px / 小红书 34px）自动缩放
    - 支持：标题边框装饰（border）、rgb/命名色转 hex、h2 优先标题识别、标题样式下钻 span
 
+4. **本次已验证（排版测试跑通）**：两套风格各出一版「公众号草稿 + 小红书卡片」，均成功
+   - 公众号草稿箱（`publish-draft.mjs` 直发）：
+     - 墨予镜-mdnice 版 → media_id `gIWpGXkCUVULoKN1jpdMldYF6bYFmaOfoy9fC2d5FG2lkkb0BoVSGcEOzeE8ZJR4`
+     - 增长女黑客-橙色版 → media_id `gIWpGXkCUVULoKN1jpdMlc2P_F1mj2tKfQmLUrLs3rUnF2lAqURz8L33cJTQPbM9`
+   - 小红书 3:4 卡片：`小红书出图/墨予镜-mdnice/` 与 `小红书出图/增长女黑客/` 各 8 张（封面 + 7 页正文）
+
 ## 关键规范（沿用）
 
 - **图片不进 git**：`小红书出图/` 已 ignore
 - **抓取原文快照不进 git**：`reference-samples/*/content.html`、`meta.json` 已 ignore
 - **草稿/成稿分离**（账号写作规则）：草稿定内容、成稿定表达
 
-## 下一步（第一优先）：测试排版效果
+## 下一步（第一优先）：看效果 + 换横版封面
 
-用两套风格，把成稿《企业上AI，先别急着选工具》排版，各出一版「公众号版 + 小红书版」，对比排版差异。
+1. **在公众号草稿箱查看两个草稿**，对比蓝雾 vs 橙色的标题色 / 正文色 / 标题边框
+2. **换横版封面**：当前封面用的是小红书竖版 `full-01.png`（1080×1440），公众号封面建议换横版 900×383 后重发
+3. 对比小红书两版卡片的分页 / 字号 / 标题竖条
 
 成稿：[2026-08-17-企业上AI先别急着选工具-成稿.md](../accounts/墨予镜/2026-08-17-企业上AI先别急着选工具-成稿.md)
 
@@ -45,10 +53,13 @@ node scripts/render-wechat.mjs <成稿.md> <styles/风格名.json>
 
 输出 `<成稿名>-公众号成品.html`（带内联样式）。
 
-**发草稿箱（现状：不可行，默认富文本复制）**：
-- 微信草稿箱接口 `draft/add` 需要公众号 AppID + AppSecret → access_token，且需认证账号的草稿箱权限。当前项目**没有任何公众号 API 凭证**，无法直发。
-- 默认走「富文本复制」：浏览器打开输出的 HTML → 全选 → 复制 → 粘贴到公众号编辑器。
-- 若「直发草稿箱」是硬需求：需用户提供公众号 AppID/AppSecret（配 `.env`，不入 git），再补一个 `publish-draft.mjs` 调草稿箱接口。**待用户决定是否做**。
+**发草稿箱（现状：已跑通，直发）**：
+- 已配 `.env`（`WECHAT_APP_ID` / `WECHAT_APP_SECRET`，不入 git），新增 `publish-draft.mjs` 直发草稿箱：
+  ```bash
+  node scripts/publish-draft.mjs <成稿.md> <styles/风格名.json> [封面图.png]
+  ```
+- 两套风格已各发一个草稿成功（见下「本次已验证」）。
+- 富文本复制仍是兜底：`render-wechat.mjs` 输出 HTML → 浏览器全选复制 → 粘贴。
 
 ### 小红书版
 
@@ -66,6 +77,6 @@ node scripts/render-xhs.mjs <成稿.md> <styles/风格名.json>
 
 ## 后续队列
 
-- 「直发草稿箱」若确认要做：补公众号 API 凭证 + `publish-draft.mjs`
+- 生成公众号横版封面（900×383），替换竖版小红书卡片作封面
 - 复刻更多欣赏的公众号风格（skill 已验证跨账号通用）
 - 首篇公众号手动发布（对照 FDE 定位 spec 质量门）+ 填回流表
