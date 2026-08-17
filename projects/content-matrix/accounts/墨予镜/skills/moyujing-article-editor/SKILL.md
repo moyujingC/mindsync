@@ -1,6 +1,6 @@
 ---
 name: moyujing-article-editor
-description: Use when refining an existing Chinese article draft for 墨予镜 from draft to publishable form, especially when the core观点 and structure already exist but the work now is reader fit, structure review, expression de-noising (去AI味 / de-AI / 表达降噪), style calibration (表达准确 / 像人话 / 黄有璨风格), or final pre-publish checks for公众号-style content. Triggers include 润色、改写、去AI味、去机器味、降噪、像人话、表达准确、成稿编辑.
+description: Use when refining an existing Chinese article draft for 墨予镜 from draft to publishable form, especially when the core观点 and structure already exist but the work now is reader fit, structure review, expression de-noising (去AI味 / de-AI / 表达降噪), style calibration (表达准确 / 像人话 / 黄有璨风格), title crafting (起标题 / 标题润色 / 改标题), or final pre-publish checks for公众号-style content. Triggers include 润色、改写、去AI味、去机器味、降噪、像人话、表达准确、成稿编辑、起标题、改标题、标题润色.
 ---
 
 # Moyujing Article Editor
@@ -37,17 +37,18 @@ Do not use it when:
 
 ## Workflow
 
-Run these five rounds in order. Do not collapse them into one vague “润色”.
+Run these six rounds in order. Do not collapse them into one vague “润色”.
 
 1. Reader and purpose calibration
 2. Structure review
 3. Expression de-noising
 4. Style calibration
-5. Pre-publish check
+5. Title crafting
+6. Pre-publish check
 
 For the exact prompts and output shapes, read [references/editing-rounds.md](references/editing-rounds.md).
 
-The `Expression de-noising` round (round 3) must first read [references/ai-de-style.md](references/ai-de-style.md) — the 11 AI-writing patterns + hard constraints + noise budget — instead of guessing what "AI-flavored" means. The `Style calibration` round (round 4) applies the 黄有璨 "表达准确" anchors (precise judgment, clear taxonomy, concrete image, every sentence advancing, ending hands the judgment back).
+The `Expression de-noising` round (round 3) must first read [references/ai-de-style.md](references/ai-de-style.md) — the 11 AI-writing patterns + hard constraints + noise budget — instead of guessing what "AI-flavored" means. The `Style calibration` round (round 4) applies the 黄有璨 "表达准确" anchors (precise judgment, clear taxonomy, concrete image, every sentence advancing, ending hands the judgment back). The `Title crafting` round (round 5) must first read [references/title-crafting.md](references/title-crafting.md) — the 标题 DNA + 模式库 + 质量门 — and trace every title back to the article's core judgment instead of guessing "起个标题".
 
 ## Style Constraints
 
