@@ -1,27 +1,31 @@
 ---
 name: wechat-style-replicator
-description: 复刻公众号排版风格并生成多尺寸内容。给一个公众号文章链接，自动抓取并抽取其排版风格（存成 JSON 规格），再用这套风格把成稿排版成公众号草稿 HTML 和小红书 3:4 分页卡片（视口自适应）。触发词：「复刻公众号排版」「给公众号链接」「生成公众号草稿」「小红书自适应排版」「把成稿排版成小红书」。
+description: 复刻公众号排版风格并生成多尺寸内容。给一个公众号文章链接，自动抓取并抽取其排版「HTML 骨架」（100% 无损复刻），存成 JSON 骨架库，再用这套骨架把成稿排版成公众号草稿 HTML 和小红书 3:4 分页卡片。触发词：「复刻公众号排版」「给公众号链接」「生成公众号草稿」「小红书自适应排版」「把成稿排版成小红书」。
 ---
 
 # 公众号排版复刻器
 
 ## 目标
 
-把任意一篇公众号文章的排版风格抽成可复用的 JSON 规格，并一键生成两种形态：
+把任意一篇公众号文章的排版抽成可复用的 **HTML 骨架库**，并一键生成两种形态：
 
-1. **公众号草稿 HTML** —— 带内联样式，复制粘贴到公众号编辑器即成为草稿
-2. **小红书 3:4 分页卡片** —— 同一套风格，切视口尺寸后自动适配
+1. **公众号草稿 HTML** —— 完整 HTML 骨架填字，1:1 无损复刻原文排版，粘贴到公众号编辑器即成为草稿
+2. **小红书 3:4 分页卡片** —— 从骨架反推风格 token（颜色/字号/间距），切视口放大后自动分页
 
-## 适用场景
+## 核心：留骨架，而非抽字段
 
-- 用户给一个公众号链接，想复刻它的排版风格
-- 用已保存的风格给新的成稿排版
-- 把成稿一键转成小红书图文卡
+旧方案预设字段（字号/颜色/间距），抽取数值后重拼「干净」HTML——有损，换一篇结构不同的文章就失效。
 
-## 不适用场景
+本方案**不预设字段**：把原文每个块级元素的「标签 + 完整 style + 嵌套关系」原样保留，只把文字/图片 URL 换成占位符。复刻时把新文字填回占位符，排版 100% 一致。
 
-- 需要 AI 绘图的插画/知识卡（那是另一条「出图」链路）
-- 付费或需登录才能看的公众号文章
+```
+原文：<blockquote style="...border-left:3px solid rgb(191,191,191);padding-left:20px...">
+        <p style="color:rgb(102,102,102)">引用文字</p>
+      </blockquote>
+骨架：<blockquote style="...border-left:3px solid rgb(191,191,191);padding-left:20px...">
+        <p style="color:rgb(102,102,102)">{{text}}</p>
+      </blockquote>
+```
 
 ## 执行流程
 
@@ -40,9 +44,17 @@ node scripts/extract-style.mjs <content.html> <风格名>     # 抽取 → style
 node scripts/render-wechat.mjs <成稿.md> <styles/<风格名>.json>
 ```
 
-输出 `<成稿名>-公众号成品.html`。文章标题会打印到 stdout，需单独填到公众号标题栏；HTML 里是正文（小节标题/段落/引用/强调）。
+输出 `<成稿名>-公众号成品.html`。文章标题打印到 stdout，需单独填到公众号标题栏；HTML 是正文（小节标题/段落/引用/列表/图片/强调）。
 
-### 3. 生成小红书卡片
+### 3. 直发公众号草稿箱
+
+```bash
+node scripts/publish-draft.mjs <成稿.md> <styles/<风格名>.json> [封面图.png]
+```
+
+渲染 + 上传封面 + 发草稿箱（凭证从 `.env` 读，不入 git）。
+
+### 4. 生成小红书卡片
 
 ```bash
 node scripts/render-xhs.mjs <成稿.md> <styles/<风格名>.json>
@@ -50,18 +62,37 @@ node scripts/render-xhs.mjs <成稿.md> <styles/<风格名>.json>
 
 输出 `小红书出图/原文版/full-*.png`（封面 + 流式分页正文，撑满一页再换页）。
 
-## 视口自适应（核心）
+## 骨架库结构（styles/<风格名>.json）
 
-同一份风格 JSON 存「比例化 token」——字号用相对正文字号的比例，颜色用绝对值：
+```json
+{
+  "name": "风格名",
+  "source": "复刻来源链接",
+  "blocks": [
+    { "role": "paragraph", "count": 89, "skeleton": "<p style=\"...\">{{text}}</p>" },
+    { "role": "heading",   "count": 6,  "skeleton": "<h1 style=\"...\">{{text}}</h1>" },
+    { "role": "list", "count": 5, "skeleton": "<section style=\"...\">{{items}}</section>",
+      "listItem": "<span style=\"...\">•{{text}}</span>" }
+  ],
+  "inline": { "strong": { "color": "rgb(51,51,51)", "weight": "bold" } },
+  "container": "<section style=\"...padding-left:10px...\">{{content}}</section>"
+}
+```
 
-- **公众号视口**：正文字号 = 规格里的 `body.size`（约 16px），流式长文 HTML
-- **小红书视口**：正文字号 = 34px，所有 `sizeRatio` 等比放大，3:4 画布自动分页
+- `blocks`：每种块级排版变体的完整 HTML 骨架（按出现次数排序，取 count 最多的）
+- `inline`：内联强调（strong/b/em…）的颜色/字重，供 `**加粗**` 渲染
+- `container`：全文外层容器（mdnice 的 section 带 padding/字体），无则缺省
 
-切视口 = 改正文字号基准 + 画布尺寸，风格比例不变。详见 [references/风格规格说明.md](references/风格规格说明.md)。
+## 两种形态的实现差异
+
+- **公众号**：直接用 HTML 骨架填字（`{{text}}`/`{{img}}`/`{{items}}`），100% 复刻
+- **小红书**：SVG 卡片无法用 HTML 骨架，从骨架反推 token（正文色/字号/行高、标题色/字号/左边框、强调色、引用色），再按 `bodySize=34` 整体放大
+
+详见 [references/风格规格说明.md](references/风格规格说明.md)。
 
 ## 输出
 
-- `styles/<风格名>.json` —— 可复用的风格规格
+- `styles/<风格名>.json` —— 可复用的骨架库
 - `<成稿名>-公众号成品.html` —— 公众号草稿
 - `小红书出图/原文版/full-*.png` —— 小红书卡片（图片不进 git）
 

@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 import { buildWechatArticleBlocks } from "./lib/wechat-blocks.mjs";
-import { resolveStyle } from "./lib/style-spec.mjs";
+import { extractStyleTokens } from "./lib/style-tokens.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ACCOUNT_DIR = join(__dirname, "../../../");
@@ -27,7 +27,7 @@ if (!mdPath || !specPath) {
 
 const md = readFileSync(mdPath, "utf8");
 const spec = JSON.parse(readFileSync(specPath, "utf8"));
-const tokens = resolveStyle(spec, VIEWPORT);
+const tokens = extractStyleTokens(spec, VIEWPORT);
 
 // 中文换行：perLine 字/行，标点规避
 function wrap(text, perLine) {
@@ -194,7 +194,7 @@ function toPng(svgFile, pngFile) {
 
 // ---------- 主流程 ----------
 
-const LH = Math.round(VIEWPORT.bodySize * spec.typography.body.lineHeight);
+const LH = Math.round(VIEWPORT.bodySize * tokens.lineHeight);
 const PER = Math.floor((W - 2 * MX) / VIEWPORT.bodySize);
 
 const { title, body } = extractArticle(md);

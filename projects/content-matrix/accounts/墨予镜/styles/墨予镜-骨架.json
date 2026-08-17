@@ -1,0 +1,50 @@
+{
+  "name": "墨予镜-骨架",
+  "source": "https://mp.weixin.qq.com/s/Z_1R4wTqTi6slgOZlf-xpQ",
+  "blocks": [
+    {
+      "role": "paragraph",
+      "count": 89,
+      "skeleton": "<p style=\"color: rgb(51, 51, 51);font-size: 16px;line-height: 1.8em;letter-spacing: 0em;text-align: justify;text-indent: 0em;margin-top: 0px;margin-bottom: 0px;margin-left: 0px;margin-right: 0px;padding-top: 8px;padding-bottom: 8px;padding-left: 0px;padding-right: 0px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "quote",
+      "count": 6,
+      "skeleton": "<blockquote style=\"margin-top: 20px;margin-bottom: 20px;margin-left: 0px;margin-right: 0px;padding-top: 10px;padding-bottom: 10px;padding-left: 20px;padding-right: 10px;border-top-style: none;border-bottom-style: none;border-left-style: solid;border-right-style: none;border-top-width: 3px;border-bottom-width: 3px;border-left-width: 3px;border-right-width: 3px;border-top-color: rgba(0, 0, 0, 0.4);border-bottom-color: rgba(0, 0, 0, 0.4);border-left-color: rgb(191, 191, 191);border-right-color: rgba(0, 0, 0, 0.4);border-top-left-radius: 0px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;border-bottom-left-radius: 0px;background-attachment: scroll;background-clip: border-box;background-color: rgb(247, 249, 253);background-image: none;background-origin: padding-box;background-position-x: left;background-position-y: top;background-repeat: no-repeat;background-size: auto;width: auto;height: auto;box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px;display: block;overflow-x: auto;overflow-y: auto;\"><p style=\"text-indent: 0em;padding-top: 8px;padding-bottom: 8px;padding-left: 0px;padding-right: 0px;color: rgb(102, 102, 102);font-size: 16px;line-height: 1.8em;letter-spacing: 0em;text-align: left;font-weight: normal;margin-top: 0px;margin-right: 0px;margin-bottom: 0px;margin-left: 0px;\">{{text}}</p></blockquote>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 6,
+      "skeleton": "<h1 style=\"margin-top: 30px;margin-bottom: 15px;margin-left: 0px;margin-right: 0px;padding-top: 0px;padding-bottom: 0px;padding-left: 0px;padding-right: 0px;display: block;\"><span style=\"font-size: 24px;color: rgb(110, 127, 168);line-height: 1.5em;letter-spacing: 0em;text-align: left;font-weight: bold;display: block;\">{{text}}</span></h1>",
+      "listItem": null
+    },
+    {
+      "role": "image",
+      "count": 3,
+      "skeleton": "<figure style=\"margin-top: 20px;margin-bottom: 20px;margin-left: 5px;margin-right: 5px;padding-top: 0px;padding-bottom: 0px;padding-left: 0px;padding-right: 0px;display: flex;flex-direction: column;justify-content: center;align-items: center;\"><img class=\"rich_pages wxw-img\" style=\"display: block;margin-top: 0px;margin-right: auto;margin-bottom: 0px;margin-left: auto;max-width: 100%;border-top-style: none;border-bottom-style: none;border-left-style: none;border-right-style: none;border-top-width: 3px;border-bottom-width: 3px;border-left-width: 3px;border-right-width: 3px;border-top-color: rgba(0, 0, 0, 0.4);border-bottom-color: rgba(0, 0, 0, 0);border-left-color: rgba(0, 0, 0, 0.4);border-right-color: rgba(0, 0, 0, 0.4);border-top-left-radius: 8px;border-top-right-radius: 8px;border-bottom-right-radius: 8px;border-bottom-left-radius: 8px;object-fit: fill;box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px;\" data-src=\"{{img}}\"></figure>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<p style=\"box-sizing: border-box;margin: 0px;cursor: pointer;color: rgb(51, 51, 51);font-size: 16px;line-height: 1.8em;letter-spacing: normal;text-align: justify;text-indent: 0px;padding: 8px 0px;font-family: Optima, &quot;Microsoft YaHei&quot;, PingFangSC-regular, serif;font-style: normal;font-variant-ligatures: normal;font-variant-caps: normal;font-weight: 400;orphans: 2;text-transform: none;widows: 2;word-spacing: 0px;-webkit-text-stroke-width: 0px;white-space: normal;background-color: rgb(255, 255, 255);text-decoration-thickness: initial;text-decoration-style: initial;text-decoration-color: initial;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "quote",
+      "count": 1,
+      "skeleton": "<blockquote style=\"box-sizing: border-box;margin: 20px 0px;cursor: pointer;padding: 10px 10px 10px 20px;border-style: none none none solid;border-width: 3px;border-color: rgba(0, 0, 0, 0.4) rgba(0, 0, 0, 0.4) rgba(0, 0, 0, 0.4) rgb(191, 191, 191);border-radius: 0px;background: none left top / auto no-repeat scroll padding-box border-box rgb(247, 249, 253);width: auto;height: auto;box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px;display: block;overflow: auto;color: rgb(0, 0, 0);font-family: Optima, &quot;Microsoft YaHei&quot;, PingFangSC-regular, serif;font-size: 16px;font-style: normal;font-variant-ligatures: normal;font-variant-caps: normal;font-weight: 400;letter-spacing: normal;orphans: 2;text-align: left;text-indent: 0px;text-transform: none;widows: 2;word-spacing: 0px;-webkit-text-stroke-width: 0px;white-space: normal;text-decoration-thickness: initial;text-decoration-style: initial;text-decoration-color: initial;\"><p style=\"box-sizing: border-box;margin: 0px;cursor: pointer;color: rgb(102, 102, 102);font-size: 16px;line-height: 1.8em;letter-spacing: 0em;text-align: left;text-indent: 0em;padding: 8px 0px;font-weight: normal;\">{{text}}</p></blockquote>",
+      "listItem": null
+    }
+  ],
+  "inline": {
+    "strong": {
+      "color": "rgb(51, 51, 51)",
+      "weight": "bold",
+      "background": null
+    }
+  },
+  "container": "<section style=\"margin-top: 0px;margin-bottom: 0px;margin-left: 0px;margin-right: 0px;padding-top: 0px;padding-bottom: 0px;padding-left: 10px;padding-right: 10px;background-attachment: scroll;background-clip: border-box;background-color: rgba(0, 0, 0, 0);background-image: none;background-origin: padding-box;background-position-x: left;background-position-y: top;background-repeat: no-repeat;background-size: auto;width: auto;font-family: Optima, 'Microsoft YaHei', PingFangSC-regular, serif;font-size: 16px;color: rgb(0, 0, 0);line-height: 1.5em;word-spacing: 0em;letter-spacing: 0em;word-break: break-word;overflow-wrap: break-word;text-align: left;\">{{content}}</section>"
+}

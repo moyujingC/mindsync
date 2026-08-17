@@ -6,9 +6,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildWechatArticleBlocks } from "./lib/wechat-blocks.mjs";
-import { buildWechatArticleHtml } from "./lib/wechat-html.mjs";
-import { resolveWechatTemplate } from "./lib/style-spec.mjs";
+import { renderArticleBody } from "./lib/render.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ACCOUNT_DIR = join(__dirname, "../../../");
@@ -91,9 +89,7 @@ async function main() {
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
 
   const { title, body } = extractArticle(md);
-  const blocks = buildWechatArticleBlocks(body);
-  const template = resolveWechatTemplate(spec);
-  const html = buildWechatArticleHtml(template, null, blocks, null, null);
+  const html = renderArticleBody(body, spec);
 
   const token = await getAccessToken(env);
   console.log(`✓ access_token 获取成功`);

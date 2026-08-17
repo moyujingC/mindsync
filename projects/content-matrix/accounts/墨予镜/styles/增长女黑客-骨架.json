@@ -1,0 +1,62 @@
+{
+  "name": "增长女黑客-骨架",
+  "source": "https://mp.weixin.qq.com/s/NSi2tTu_1n7iUQaykZqhHw?scene=334",
+  "blocks": [
+    {
+      "role": "paragraph",
+      "count": 115,
+      "skeleton": "<p style=\"box-sizing:border-box;padding:8px 0;line-height:25.6px;color:#3f3f3f;font-size:16px;margin:10px 0;letter-spacing:0.544px;text-align:justify;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 11,
+      "skeleton": "<h2 style=\"box-sizing:border-box;margin-top:30px;margin-bottom:15px;font-weight:bold;font-size:20px;color:black;letter-spacing:0.544px;text-align:justify;border-left:4px solid #E8501A;padding-left:12px;\">{{text}}</h2>",
+      "listItem": null
+    },
+    {
+      "role": "image",
+      "count": 5,
+      "skeleton": "<section style=\"text-align:center;margin:22px 0;\" nodeleaf=\"\"><img class=\"rich_pages wxw-img\" style=\"display:block;width:100%;border-radius:0;margin:0 auto;\" data-src=\"{{img}}\"></section>",
+      "listItem": null
+    },
+    {
+      "role": "list",
+      "count": 5,
+      "skeleton": "<section style=\"margin:4px 0;padding-left:25px;color:#010101;font-size:16px;letter-spacing:0.544px;line-height:26px;\">{{items}}</section>",
+      "listItem": "<span style=\"text-indent:-1em;display:block;margin:8px 0;\">•{{text}}</span>"
+    },
+    {
+      "role": "image",
+      "count": 1,
+      "skeleton": "<h1 style=\"box-sizing:border-box;margin:30px 0 15px;padding:0;font-weight:bold;color:black;font-size:24px;\"><img class=\"rich_pages wxw-img\" style=\"display:block;width:100%;border-radius:0;margin:0 auto;\" data-src=\"{{img}}\"></h1>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<h1 style=\"box-sizing:border-box;margin:30px 0 15px;padding:0;font-weight:bold;color:black;font-size:24px;\">{{text}}</h1>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"box-sizing:border-box;padding:8px 0;line-height:25.6px;color:#3f3f3f;font-size:16px;margin:30px 0 10px;letter-spacing:0.544px;text-align:justify;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "image",
+      "count": 1,
+      "skeleton": "<section style=\"text-align:center;margin:30px 0;\"><p style=\"margin-bottom:10px;color:#666;font-size:14px;\">{{text}}</p><img class=\"rich_pages wxw-img\" style=\"display:block;width:100%;border-radius:0;margin:0 auto;\" data-src=\"{{img}}\"></section>",
+      "listItem": null
+    }
+  ],
+  "inline": {
+    "strong": {
+      "color": "#ff3502",
+      "weight": null,
+      "background": null
+    }
+  },
+  "container": "<section style=\"box-sizing:border-box;margin:0;padding:0;font-size:16px;font-family:Optima-Regular,Optima,PingFangSC-light,PingFangTC-light,'PingFang SC',Cambria,Cochin,Georgia,Times,'Times New Roman',serif;letter-spacing:0.544px;text-align:justify;color:rgba(0,0,0,0.9);line-height:25.6px;\">{{content}}</section>"
+}

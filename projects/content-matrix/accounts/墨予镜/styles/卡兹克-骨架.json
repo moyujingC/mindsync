@@ -1,0 +1,73 @@
+{
+  "name": "卡兹克-骨架",
+  "source": "https://mp.weixin.qq.com/s/r6CE2U3Y0-pU05wF3_PuTQ",
+  "blocks": [
+    {
+      "role": "paragraph",
+      "count": 56,
+      "skeleton": "<section style=\"margin-left: 8px;margin-right: 8px;\">{{text}}</section>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 50,
+      "skeleton": "<p style=\"margin-left: 8px;margin-right: 8px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "image",
+      "count": 15,
+      "skeleton": "<section style=\"text-align: center;margin-left: 8px;margin-right: 8px;\" nodeleaf=\"\"><img class=\"rich_pages wxw-img\" type=\"block\" data-src=\"{{img}}\"></section>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 7,
+      "skeleton": "<p style=\"margin-bottom: 24px;margin-left: 8px;margin-right: 8px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "image",
+      "count": 2,
+      "skeleton": "<section style=\"text-align: center;margin-left: 8px;margin-right: 8px;\" nodeleaf=\"\"><img class=\"rich_pages wxw-img\" style=\"width: 100%;\" type=\"block\" data-src=\"{{img}}\"></section>",
+      "listItem": null
+    },
+    {
+      "role": "image",
+      "count": 1,
+      "skeleton": "<section style=\"margin-left: 8px;margin-right: 8px;\"><img class=\"rich_pages wxw-img\" type=\"block\" data-src=\"{{img}}\"></section>",
+      "listItem": null
+    },
+    {
+      "role": "image",
+      "count": 1,
+      "skeleton": "<section style=\"text-align: center;margin-left: 8px;margin-right: 8px;\" nodeleaf=\"\"><img class=\"rich_pages wxw-img\" style=\"width: 578px;height: 222px;\" type=\"block\" data-src=\"{{img}}\"></section>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"outline: 0px;font-family: system-ui, -apple-system, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;letter-spacing: 0.544px;text-wrap: wrap;background-color: rgb(255, 255, 255);margin-bottom: 24px;margin-left: 8px;margin-right: 8px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"outline: 0px;font-family: system-ui, -apple-system, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;letter-spacing: 0.544px;text-wrap: wrap;background-color: rgb(255, 255, 255);text-align: left;margin-bottom: 8px;margin-left: 8px;margin-right: 8px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"outline: 0px;font-family: system-ui, -apple-system, BlinkMacSystemFont, &quot;Helvetica Neue&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei UI&quot;, &quot;Microsoft YaHei&quot;, Arial, sans-serif;letter-spacing: 0.544px;text-wrap: wrap;background-color: rgb(255, 255, 255);text-align: left;margin-bottom: 24px;margin-left: 8px;margin-right: 8px;\">{{text}}</p>",
+      "listItem": null
+    }
+  ],
+  "inline": {
+    "strong": {
+      "color": "rgb(255, 0, 0)",
+      "weight": null,
+      "background": null
+    }
+  }
+}
