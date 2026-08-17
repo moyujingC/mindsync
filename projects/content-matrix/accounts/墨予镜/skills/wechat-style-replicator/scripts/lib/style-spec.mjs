@@ -9,20 +9,23 @@ export const DEFAULT_SPEC = {
   name: "蓝雾静读版",
   source: "",
   colors: {
-    title: "#303543",   // 主标题/一级标题
-    heading: "#6e7fa8", // 小节标题/强调色（蓝雾）
-    body: "#393d49",    // 正文
-    strong: "#333333",  // 加粗强调
-    meta: "#a8b1c4",    // 辅助/图注
-    blockBg: "#f0f3fa", // 引用块背景
+    title: "#303543",             // 主标题/一级标题（H1）
+    heading: "#6e7fa8",           // 小节标题 primary（蓝雾）
+    headingSecondary: "#6e7fa8",  // 子标题 secondary（独立键，避免被 primary 覆盖）
+    body: "#393d49",              // 正文
+    strong: "#333333",            // 加粗强调
+    meta: "#a8b1c4",              // 辅助/图注
+    blockBg: "#f0f3fa",           // 引用块背景
+    quoteBorder: "#bfbfbf",       // 引用块左边框色
+    quoteText: "#666666",         // 引用块文字色
   },
   typography: {
-    body: { size: 16, lineHeight: 1.8, weight: 400 },
-    title: { sizeRatio: 1.44, color: "title", weight: 600 },
+    body: { size: 16, lineHeight: 1.8, weight: 400, letterSpacing: 0 },
+    title: { sizeRatio: 1.5, color: "title", weight: 700, border: null },
     headingPrimary: { sizeRatio: 1.5, color: "heading", weight: 600, border: null },
-    headingSecondary: { sizeRatio: 1.38, color: "heading", weight: 600, border: null },
-    strong: { color: "strong", weight: 600 },
-    quote: { sizeRatio: 1.0, color: "heading", weight: 400 },
+    headingSecondary: { sizeRatio: 1.25, color: "headingSecondary", weight: 600, border: null },
+    strong: { color: "strong", weight: 700 },
+    quote: { sizeRatio: 1.0, color: "quoteText", weight: 400, borderColor: "quoteBorder", borderWidth: 3 },
   },
   spacing: { paraGap: 1.125, headingTop: 2.125, headingBottom: 0.94 },
 };
@@ -63,6 +66,7 @@ export function extractStyleSpec(html, meta = {}) {
   const bodyLineHeight = mode(ps.map((n) => css(n, "line-height")));
   const bodyColor = mode(ps.map((n) => normalizeColor(css(n, "color"))));
   const bodyWeight = mode(ps.map((n) => weightOf(n)));
+  const bodyLetterSpacing = mode(ps.map((n) => parsePx(css(n, "letter-spacing"))));
 
   if (bodySize) spec.typography.body.size = bodySize;
   if (bodyLineHeight) {
@@ -70,6 +74,7 @@ export function extractStyleSpec(html, meta = {}) {
   }
   if (bodyColor) spec.colors.body = bodyColor;
   if (bodyWeight) spec.typography.body.weight = bodyWeight;
+  if (bodyLetterSpacing != null) spec.typography.body.letterSpacing = bodyLetterSpacing;
 
   // 小节标题：公众号正文里 h2 优先（原生编辑器惯例，h1 是文章主标题），
   // 无 h2 时才用 h1（mdnice 编辑器用小节标题导出为 h1）。
@@ -77,12 +82,16 @@ export function extractStyleSpec(html, meta = {}) {
   const primaryNodes = h2s.length ? h2s : h1s;
   const secondaryNodes = h3s.length ? h3s : [];
 
-  applyHeading(spec, "headingPrimary", primaryNodes, base, "heading");
-  applyHeading(spec, "headingSecondary", secondaryNodes, base, "heading");
+  // 原生排版（有 h2）时，h1 是文章主标题，单独抽到 title
+  if (h2s.length && h1s.length) {
+    applyHeading(spec, "title", h1s, base, "title");
+  }
 
-  // 若标题色与正文色相同（没抽到独立标题色），回退到默认强调色
-  if (normalizeColor(spec.colors.heading) === normalizeColor(spec.colors.body)) {
-    // 保持默认，不强制改
+  applyHeading(spec, "headingPrimary", primaryNodes, base, "heading");
+  applyHeading(spec, "headingSecondary", secondaryNodes, base, "headingSecondary");
+  // secondary 未抽到（无 h3）时回退到 primary 色，避免残留默认蓝雾色与 primary 不一致
+  if (!secondaryNodes.length) {
+    spec.colors.headingSecondary = spec.colors.heading;
   }
 
   // 强调
@@ -91,9 +100,21 @@ export function extractStyleSpec(html, meta = {}) {
   if (strongColor) spec.colors.strong = strongColor;
   if (strongWeight) spec.typography.strong.weight = strongWeight;
 
-  // 引用块背景
+  // 引用块：背景 + 左边框（色/宽）+ 文字色（文字色在内部 p 上，不在 blockquote 自身）
   const quoteBg = mode(quotes.map((n) => normalizeColor(css(n, "background") || css(n, "background-color"))));
   if (quoteBg) spec.colors.blockBg = quoteBg;
+
+  const quoteBorders = quotes.map(blockquoteBorder).filter(Boolean);
+  const quoteBorderColor = mode(quoteBorders.map((b) => b.color));
+  const quoteBorderWidth = mode(quoteBorders.map((b) => b.width));
+  if (quoteBorderColor) spec.colors.quoteBorder = quoteBorderColor;
+  if (quoteBorderWidth) spec.typography.quote.borderWidth = quoteBorderWidth;
+
+  const quoteColor = mode(quotes.map((n) => {
+    const innerP = n.querySelector("p");
+    return normalizeColor(innerP ? css(innerP, "color") : css(n, "color"));
+  }));
+  if (quoteColor) spec.colors.quoteText = quoteColor;
 
   return spec;
 }
@@ -120,7 +141,7 @@ function applyHeading(spec, key, nodes, base, colorRef) {
 
   if (sizePx) t.sizeRatio = round2(sizePx / base);
   if (weight) t.weight = weight;
-  if (color && colorRef === "heading") spec.colors.heading = color;
+  if (color && colorRef) spec.colors[colorRef] = color;
 
   // 边框装饰：抽第一个有 border-left 的标题（原生排版常用，如增长女黑客的橙色竖条）
   for (const n of nodes) {
@@ -186,6 +207,25 @@ function parseBorder(value) {
   }
   if (!color) return null; // none / 抽不到颜色 → 无边框
   return { side: "left", width: width && width > 0 ? width : 3, color, style: style || "solid" };
+}
+
+// 解析 blockquote 的左边框：长写 border-left-color/width/style 优先，简写 border-left 兜底。
+function blockquoteBorder(node) {
+  const rawStyle = node.getAttribute && node.getAttribute("style");
+  const s = rawStyle ? parseStyleString(rawStyle) : {};
+  let color = normalizeColor(s["border-left-color"]);
+  let width = parsePx(s["border-left-width"]);
+  let borderStyle = s["border-left-style"];
+  if (!color || !width) {
+    const b = parseBorder(s["border-left"]);
+    if (b) {
+      color = color || b.color;
+      width = width || b.width;
+      borderStyle = borderStyle || b.style;
+    }
+  }
+  if (!color) return null;
+  return { color, width: width && width > 0 ? width : 3, style: borderStyle || "solid" };
 }
 
 const NAMED_COLORS = {
@@ -262,20 +302,28 @@ export function resolveStyle(spec, viewport) {
   const sp = spec.spacing;
   const bodySize = viewport.bodySize;
   const color = (ref) => c[ref] || ref;
+  const ratio = bodySize / 16; // 视口缩放比（公众号 1x，小红书 ≈2.1x）
 
   return {
     colors: c,
     bodySize,
     lineHeight: t.body.lineHeight,
+    letterSpacing: (t.body.letterSpacing ?? 0) * ratio,
     titleSize: Math.round(bodySize * t.title.sizeRatio),
     headingSize: Math.round(bodySize * t.headingPrimary.sizeRatio),
     secondarySize: Math.round(bodySize * t.headingSecondary.sizeRatio),
     quoteSize: Math.round(bodySize * (t.quote?.sizeRatio ?? 1.0)),
     titleWeight: t.title.weight,
     headingWeight: t.headingPrimary.weight,
+    secondaryWeight: t.headingSecondary.weight,
     strongColor: color(t.strong?.color || "strong"),
+    strongWeight: t.strong?.weight ?? 700,
     headingColor: color(t.headingPrimary.color),
+    secondaryColor: color(t.headingSecondary.color),
     titleColor: color(t.title.color),
+    quoteColor: color(t.quote?.color || "quoteText"),
+    quoteBorderColor: color(t.quote?.borderColor || "quoteBorder"),
+    quoteBorderWidth: t.quote?.borderWidth ?? 3,
     paraGap: Math.round(bodySize * sp.paraGap),
     headingTop: Math.round(bodySize * sp.headingTop),
     headingBottom: Math.round(bodySize * sp.headingBottom),
@@ -304,13 +352,14 @@ export function resolveWechatTemplate(spec) {
   const borderCss = (b) => (b ? `border-${b.side}:${b.width}px ${b.style} ${b.color};padding-${b.side}:12px;` : "");
 
   return {
+    strongStyle: { color: s.strongColor, weight: s.strongWeight },
     containerStyle: `font-size:${s.bodySize}px;line-height:${lh};color:${c.body};background:#ffffff;padding:0;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;`,
-    titleStyle: `margin:0 0 12px;color:${c.title};font-size:${s.titleSize}px;line-height:1.45;font-weight:${s.titleWeight};letter-spacing:0;`,
+    titleStyle: `margin:0 0 12px;color:${s.titleColor};font-size:${s.titleSize}px;line-height:1.45;font-weight:${s.titleWeight};letter-spacing:0;`,
     metaStyle: `margin:0 0 18px;color:${c.meta};font-size:11px;line-height:1.6;`,
-    primaryHeadingStyle: `margin:0 0 15px;color:${c.heading};font-size:${s.headingSize}px;line-height:1.5;letter-spacing:0;font-weight:${s.headingWeight};${borderCss(s.headingBorder)}`,
-    secondaryHeadingStyle: `margin:0 0 12px;color:${c.heading};font-size:${s.secondarySize}px;line-height:1.55;letter-spacing:0;font-weight:${s.headingWeight};${borderCss(s.secondaryBorder)}`,
-    paragraphStyle: `margin:18px 0 0;padding:8px 0;color:${c.body};font-size:${s.bodySize}px;line-height:${lh};text-align:justify;`,
-    quoteStyle: `margin:20px 0 12px;padding:10px 14px;border-left:3px solid ${c.heading};background:${c.blockBg};color:${c.heading};font-size:${s.quoteSize}px;line-height:${lh};border-radius:0 8px 8px 0;`,
+    primaryHeadingStyle: `margin:0 0 15px;color:${s.headingColor};font-size:${s.headingSize}px;line-height:1.5;letter-spacing:0;font-weight:${s.headingWeight};${borderCss(s.headingBorder)}`,
+    secondaryHeadingStyle: `margin:0 0 12px;color:${s.secondaryColor};font-size:${s.secondarySize}px;line-height:1.55;letter-spacing:0;font-weight:${s.secondaryWeight};${borderCss(s.secondaryBorder)}`,
+    paragraphStyle: `margin:18px 0 0;padding:8px 0;color:${c.body};font-size:${s.bodySize}px;line-height:${lh};letter-spacing:${s.letterSpacing}px;text-align:justify;`,
+    quoteStyle: `margin:20px 0 12px;padding:10px 14px;border-left:${s.quoteBorderWidth}px solid ${s.quoteBorderColor};background:${c.blockBg};color:${s.quoteColor};font-size:${s.quoteSize}px;line-height:${lh};border-radius:0 8px 8px 0;`,
     noteStyle: `margin:18px 0 0;padding:10px 12px;border:1px solid #ECEAE3;border-radius:8px;background:#FAF7F2;color:${c.body};font-size:${Math.max(s.bodySize - 1, 12)}px;line-height:${lh};`,
     eyebrowStyle: `margin:18px 0 8px;color:${c.heading};font-size:11.5px;letter-spacing:0.14em;`,
     figcaptionStyle: `margin-top:8px;color:${c.meta};font-size:10.5px;line-height:1.6;text-align:center;`,

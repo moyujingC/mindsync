@@ -9,13 +9,17 @@ export function escapeHtml(text) {
 }
 
 // 行内 markdown：**粗体** → <strong>
-export function inlineMarkdownToHtml(text) {
+// strongStyle: { color, weight }，来自抽取的 strong 颜色/字重（不传则默认 700 纯黑）
+export function inlineMarkdownToHtml(text, strongStyle = {}) {
+  const { color, weight = 700 } = strongStyle;
+  const style = [weight ? `font-weight:${weight}` : "", color ? `color:${color}` : ""].filter(Boolean).join(";");
+  const styleAttr = style ? ` style="${style}"` : "";
   return text
     .split(/(\*\*[^*]+\*\*)/g)
     .map((part) => {
       const match = part.match(/^\*\*([^*]+)\*\*$/);
       if (!match) return escapeHtml(part);
-      return `<strong style="font-weight:700;">${escapeHtml(match[1])}</strong>`;
+      return `<strong${styleAttr}>${escapeHtml(match[1])}</strong>`;
     })
     .join("");
 }

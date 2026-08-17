@@ -2,23 +2,28 @@
   "name": "增长女黑客-橙色强调",
   "source": "https://mp.weixin.qq.com/s/NSi2tTu_1n7iUQaykZqhHw?scene=334",
   "colors": {
-    "title": "#303543",
+    "title": "#000000",
     "heading": "#000000",
+    "headingSecondary": "#000000",
     "body": "#3f3f3f",
     "strong": "#ff3502",
     "meta": "#a8b1c4",
-    "blockBg": "#f0f3fa"
+    "blockBg": "#f0f3fa",
+    "quoteBorder": "#bfbfbf",
+    "quoteText": "#666666"
   },
   "typography": {
     "body": {
       "size": 16,
       "lineHeight": 1.6,
-      "weight": 400
+      "weight": 400,
+      "letterSpacing": 0.544
     },
     "title": {
-      "sizeRatio": 1.44,
+      "sizeRatio": 1.5,
       "color": "title",
-      "weight": 600
+      "weight": 700,
+      "border": null
     },
     "headingPrimary": {
       "sizeRatio": 1.25,
@@ -32,19 +37,21 @@
       }
     },
     "headingSecondary": {
-      "sizeRatio": 1.38,
-      "color": "heading",
+      "sizeRatio": 1.25,
+      "color": "headingSecondary",
       "weight": 600,
       "border": null
     },
     "strong": {
       "color": "strong",
-      "weight": 600
+      "weight": 700
     },
     "quote": {
       "sizeRatio": 1,
-      "color": "heading",
-      "weight": 400
+      "color": "quoteText",
+      "weight": 400,
+      "borderColor": "quoteBorder",
+      "borderWidth": 3
     }
   },
   "spacing": {

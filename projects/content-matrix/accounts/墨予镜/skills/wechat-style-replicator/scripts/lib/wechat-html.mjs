@@ -10,6 +10,7 @@ import { escapeHtml, inlineMarkdownToHtml } from "./wechat-blocks.mjs";
 //     paragraphStyle, quoteStyle, noteStyle, eyebrowStyle, figcaptionStyle }
 export function buildWechatArticleHtml(template, title, blocks, coverImageUrl, inlineImageMap) {
   const imageMap = inlineImageMap ?? new Map();
+  const strongStyle = template.strongStyle || {};
   const coverHtml = coverImageUrl
     ? `<figure style="margin:18px 0 22px;text-align:center;"><img src="${escapeHtml(coverImageUrl)}" alt="公众号封面预览" style="display:block;width:100%;height:auto;margin:0 auto;border-radius:8px;object-fit:cover;background:#f0f3fa;" /></figure>`
     : "";
@@ -17,17 +18,17 @@ export function buildWechatArticleHtml(template, title, blocks, coverImageUrl, i
   const blocksHtml = blocks
     .map((block) => {
       if (block.type === "paragraph") {
-        return `<p style="${template.paragraphStyle}">${inlineMarkdownToHtml(block.text)}</p>`;
+        return `<p style="${template.paragraphStyle}">${inlineMarkdownToHtml(block.text, strongStyle)}</p>`;
       }
 
       if (block.type === "quote") {
-        return `<blockquote style="${template.quoteStyle}">${inlineMarkdownToHtml(block.text)}</blockquote>`;
+        return `<blockquote style="${template.quoteStyle}">${inlineMarkdownToHtml(block.text, strongStyle)}</blockquote>`;
       }
 
       if (block.type === "list") {
         const tag = block.ordered ? "ol" : "ul";
         const items = block.items
-          .map((item) => `<li style="margin:0 0 8px;padding-left:2px;">${inlineMarkdownToHtml(item)}</li>`)
+          .map((item) => `<li style="margin:0 0 8px;padding-left:2px;">${inlineMarkdownToHtml(item, strongStyle)}</li>`)
           .join("");
         return `<${tag} style="${template.paragraphStyle};padding-left:1.35em;">${items}</${tag}>`;
       }
@@ -46,7 +47,7 @@ export function buildWechatArticleHtml(template, title, blocks, coverImageUrl, i
         const tag = isPrimary ? "h2" : "h3";
         const headingStyle = isPrimary ? template.primaryHeadingStyle : template.secondaryHeadingStyle;
         const bodyHtml = block.body
-          ? `<p style="${template.paragraphStyle}">${inlineMarkdownToHtml(block.body)}</p>`
+          ? `<p style="${template.paragraphStyle}">${inlineMarkdownToHtml(block.body, strongStyle)}</p>`
           : "";
         return `<section style="margin-top:34px;"><${tag} style="${headingStyle}">${escapeHtml(block.title)}</${tag}>${bodyHtml}</section>`;
       }
