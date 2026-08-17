@@ -71,10 +71,10 @@ export function extractStyleSpec(html, meta = {}) {
   if (bodyColor) spec.colors.body = bodyColor;
   if (bodyWeight) spec.typography.body.weight = bodyWeight;
 
-  // 小节标题：公众号正文里 h1/h2 都表示小节标题（mdnice 用 h1，原生编辑器用 h2）。
-  // 文章主标题（title）是单独字段 #activity-name，不在正文里，保持默认深色。
+  // 小节标题：公众号正文里 h2 优先（原生编辑器惯例，h1 是文章主标题），
+  // 无 h2 时才用 h1（mdnice 编辑器用小节标题导出为 h1）。
   const base = bodySize || 16;
-  const primaryNodes = h1s.length ? h1s : h2s;
+  const primaryNodes = h2s.length ? h2s : h1s;
   const secondaryNodes = h3s.length ? h3s : [];
 
   applyHeading(spec, "headingPrimary", primaryNodes, base, "heading");
@@ -118,7 +118,7 @@ function applyHeading(spec, key, nodes, base, colorRef) {
   const color = mode(nodes.map((n) => normalizeColor(deepStyle(n, "color"))));
   const weight = mode(nodes.map((n) => normalizeWeight(deepStyle(n, "font-weight"))));
 
-  if (sizePx) t.sizeRatio = round1(sizePx / base);
+  if (sizePx) t.sizeRatio = round2(sizePx / base);
   if (weight) t.weight = weight;
   if (color && colorRef === "heading") spec.colors.heading = color;
 }
@@ -152,15 +152,31 @@ function parsePx(value) {
 
 function parseLineHeight(value, bodySize) {
   if (!value) return null;
-  const s = String(value).replace(/px/g, "").trim();
+  const raw = String(value).trim();
+  const isPx = /px/i.test(raw);
+  const s = raw.replace(/px/gi, "").trim();
   const n = parseFloat(s);
   if (!Number.isFinite(n)) return null;
-  return s.includes("px") ? round2(n / bodySize) : n;
+  return isPx ? round2(n / bodySize) : n;
 }
+
+const NAMED_COLORS = {
+  black: "#000000",
+  white: "#ffffff",
+  red: "#ff0000",
+  blue: "#0000ff",
+  green: "#008000",
+  gray: "#808080",
+  grey: "#808080",
+  orange: "#ffa500",
+  yellow: "#ffff00",
+  purple: "#800080",
+};
 
 function normalizeColor(value) {
   if (!value) return null;
   const s = String(value).trim().toLowerCase();
+  if (NAMED_COLORS[s]) return NAMED_COLORS[s];
   if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/.test(s)) return s;
   const rgb = s.match(/^rgba?\(([^)]+)\)$/);
   if (rgb) {

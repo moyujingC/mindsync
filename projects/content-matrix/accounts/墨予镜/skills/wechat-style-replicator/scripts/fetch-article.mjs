@@ -47,8 +47,10 @@ async function main() {
   const contentNode = root.querySelector("#js_content");
   const content = contentNode ? contentNode.innerHTML : "";
 
-  // 反爬特征检测
-  const blocked = /环境异常|去验证|验证码|请完成|安全验证|访问过于频繁/i.test(html) || !content.trim();
+  // 反爬特征检测：只认「正文为空」或明确的微信反爬提示词。
+  // 不用「去验证/验证码/verify」等宽泛词——正常正文里可能出现（如「让 AI 去验证」）。
+  const blocked =
+    !content.trim() || /环境异常|请在微信客户端打开|访问过于频繁/.test(html);
   if (blocked) {
     console.error("疑似触发反爬（环境异常/验证码），未能拿到正文。");
     printFallback(url);
