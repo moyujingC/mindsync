@@ -304,7 +304,7 @@ export function resolveWechatTemplate(spec) {
   const borderCss = (b) => (b ? `border-${b.side}:${b.width}px ${b.style} ${b.color};padding-${b.side}:12px;` : "");
 
   return {
-    containerStyle: `font-size:${s.bodySize}px;line-height:${lh};color:${c.body};background:#ffffff;padding:0 30px;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;`,
+    containerStyle: `font-size:${s.bodySize}px;line-height:${lh};color:${c.body};background:#ffffff;padding:0;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;`,
     titleStyle: `margin:0 0 12px;color:${c.title};font-size:${s.titleSize}px;line-height:1.45;font-weight:${s.titleWeight};letter-spacing:0;`,
     metaStyle: `margin:0 0 18px;color:${c.meta};font-size:11px;line-height:1.6;`,
     primaryHeadingStyle: `margin:0 0 15px;color:${c.heading};font-size:${s.headingSize}px;line-height:1.5;letter-spacing:0;font-weight:${s.headingWeight};${borderCss(s.headingBorder)}`,
