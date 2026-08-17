@@ -60,7 +60,11 @@ function blocksToFlow(blocks) {
     } else if (b.type === "quote") {
       flow.push({ kind: "quote", text: stripStrong(b.text).text });
     } else if (b.type === "list") {
-      for (const item of b.items) flow.push({ kind: "para", text: stripStrong(item).text, strong: false });
+      // 列表项保留符号：无序 •，有序 1. 2. 3.…
+      b.items.forEach((item, i) => {
+        const mark = b.ordered ? `${i + 1}. ` : "• ";
+        flow.push({ kind: "para", text: mark + stripStrong(item).text, strong: false });
+      });
     }
   }
   return flow;
