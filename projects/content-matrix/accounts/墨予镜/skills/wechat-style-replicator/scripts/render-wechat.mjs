@@ -25,7 +25,8 @@ const blocks = buildWechatArticleBlocks(body);
 const template = resolveWechatTemplate(spec);
 const html = buildWechatArticleHtml(template, null, blocks, null, null);
 
-const outName = basename(mdPath).replace(/\.md$/, "") + "-公众号成品.html";
+const styleName = basename(specPath).replace(/\.json$/, "");
+const outName = `${basename(mdPath).replace(/\.md$/, "")}-公众号成品-${styleName}.html`;
 const outPath = join(ACCOUNT_DIR, outName);
 writeFileSync(outPath, html, "utf8");
 

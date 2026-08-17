@@ -30,7 +30,7 @@ export function buildWechatArticleHtml(template, title, blocks, coverImageUrl, i
         const items = block.items
           .map((item) => `<li style="margin:0 0 8px;padding-left:2px;">${inlineMarkdownToHtml(item, strongStyle)}</li>`)
           .join("");
-        return `<${tag} style="${template.paragraphStyle};padding-left:1.35em;">${items}</${tag}>`;
+        return `<${tag} style="${template.paragraphStyle}padding-left:1.35em;">${items}</${tag}>`;
       }
 
       if (block.type === "image") {
@@ -49,7 +49,7 @@ export function buildWechatArticleHtml(template, title, blocks, coverImageUrl, i
         const bodyHtml = block.body
           ? `<p style="${template.paragraphStyle}">${inlineMarkdownToHtml(block.body, strongStyle)}</p>`
           : "";
-        return `<section style="margin-top:34px;"><${tag} style="${headingStyle}">${escapeHtml(block.title)}</${tag}>${bodyHtml}</section>`;
+        return `<${tag} style="${headingStyle}">${escapeHtml(block.title)}</${tag}>${bodyHtml}`;
       }
 
       return "";

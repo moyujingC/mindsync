@@ -27,7 +27,13 @@ export const DEFAULT_SPEC = {
     strong: { color: "strong", weight: 700 },
     quote: { sizeRatio: 1.0, color: "quoteText", weight: 400, borderColor: "quoteBorder", borderWidth: 3 },
   },
-  spacing: { paraGap: 1.125, headingTop: 2.125, headingBottom: 0.94 },
+  spacing: {
+    paraGap: 18,           // 段落上边距 margin-top（px，公众号视口基准）
+    paraPadding: 8,        // 段落上下内边距 padding-top/bottom（px）
+    headingTop: 30,        // 标题上边距 margin-top（px）
+    headingBottom: 15,     // 标题下边距 margin-bottom（px）
+    containerPadding: 0,   // 容器左右内边距 padding-left/right（px）
+  },
 };
 
 // ---------- 抽取 ----------
@@ -76,6 +82,12 @@ export function extractStyleSpec(html, meta = {}) {
   if (bodyWeight) spec.typography.body.weight = bodyWeight;
   if (bodyLetterSpacing != null) spec.typography.body.letterSpacing = bodyLetterSpacing;
 
+  // 段落上下边距/内边距（段间距、段内留白）
+  const paraMarginTop = mode(ps.map((n) => boxValue(styleOf(n), "margin", "top")));
+  const paraPaddingTop = mode(ps.map((n) => boxValue(styleOf(n), "padding", "top")));
+  if (paraMarginTop != null) spec.spacing.paraGap = paraMarginTop;
+  if (paraPaddingTop != null) spec.spacing.paraPadding = paraPaddingTop;
+
   // 小节标题：公众号正文里 h2 优先（原生编辑器惯例，h1 是文章主标题），
   // 无 h2 时才用 h1（mdnice 编辑器用小节标题导出为 h1）。
   const base = bodySize || 16;
@@ -93,6 +105,12 @@ export function extractStyleSpec(html, meta = {}) {
   if (!secondaryNodes.length) {
     spec.colors.headingSecondary = spec.colors.heading;
   }
+
+  // 标题上下边距（标题与正文之间的间距）
+  const headingMarginTop = mode(primaryNodes.map((n) => boxValue(styleOf(n), "margin", "top")));
+  const headingMarginBottom = mode(primaryNodes.map((n) => boxValue(styleOf(n), "margin", "bottom")));
+  if (headingMarginTop != null) spec.spacing.headingTop = headingMarginTop;
+  if (headingMarginBottom != null) spec.spacing.headingBottom = headingMarginBottom;
 
   // 强调
   const strongColor = mode(strongs.map((n) => normalizeColor(css(n, "color"))));
@@ -115,6 +133,13 @@ export function extractStyleSpec(html, meta = {}) {
     return normalizeColor(innerP ? css(innerP, "color") : css(n, "color"));
   }));
   if (quoteColor) spec.colors.quoteText = quoteColor;
+
+  // 容器左右内边距：取根 section 的 padding-left/right
+  const rootSection = root.querySelector("section");
+  if (rootSection) {
+    const containerPadding = boxValue(styleOf(rootSection), "padding", "left");
+    if (containerPadding != null) spec.spacing.containerPadding = containerPadding;
+  }
 
   return spec;
 }
@@ -228,6 +253,26 @@ function blockquoteBorder(node) {
   return { color, width: width && width > 0 ? width : 3, style: borderStyle || "solid" };
 }
 
+// 从 margin/padding 的简写或长写里取某一边的值（px）。
+// 支持 1/2/3/4 值简写：1=四边同，2=上下/左右，3=上/左右/下，4=上右下左。
+function boxValue(styleObj, prop, side) {
+  const long = styleObj[`${prop}-${side}`];
+  if (long != null) {
+    const v = parsePx(long);
+    if (v != null) return v;
+  }
+  const short = styleObj[prop];
+  if (!short) return null;
+  const parts = String(short).trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return null;
+  let idx;
+  if (parts.length === 1) idx = 0;
+  else if (parts.length === 2) idx = side === "top" || side === "bottom" ? 0 : 1;
+  else if (parts.length === 3) idx = side === "top" ? 0 : side === "bottom" ? 2 : 1;
+  else idx = { top: 0, right: 1, bottom: 2, left: 3 }[side] ?? 0;
+  return parsePx(parts[idx] ?? parts[0]);
+}
+
 const NAMED_COLORS = {
   black: "#000000",
   white: "#ffffff",
@@ -324,9 +369,11 @@ export function resolveStyle(spec, viewport) {
     quoteColor: color(t.quote?.color || "quoteText"),
     quoteBorderColor: color(t.quote?.borderColor || "quoteBorder"),
     quoteBorderWidth: t.quote?.borderWidth ?? 3,
-    paraGap: Math.round(bodySize * sp.paraGap),
-    headingTop: Math.round(bodySize * sp.headingTop),
-    headingBottom: Math.round(bodySize * sp.headingBottom),
+    paraGap: Math.round(sp.paraGap * ratio),
+    paraPadding: Math.round(sp.paraPadding * ratio),
+    headingTop: Math.round(sp.headingTop * ratio),
+    headingBottom: Math.round(sp.headingBottom * ratio),
+    containerPadding: Math.round(sp.containerPadding * ratio),
     headingBorder: resolveBorder(t.headingPrimary?.border, bodySize),
     secondaryBorder: resolveBorder(t.headingSecondary?.border, bodySize),
   };
@@ -353,12 +400,12 @@ export function resolveWechatTemplate(spec) {
 
   return {
     strongStyle: { color: s.strongColor, weight: s.strongWeight },
-    containerStyle: `font-size:${s.bodySize}px;line-height:${lh};color:${c.body};background:#ffffff;padding:0;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;`,
-    titleStyle: `margin:0 0 12px;color:${s.titleColor};font-size:${s.titleSize}px;line-height:1.45;font-weight:${s.titleWeight};letter-spacing:0;`,
+    containerStyle: `font-size:${s.bodySize}px;line-height:${lh};color:${c.body};background:#ffffff;padding:0 ${s.containerPadding}px;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;`,
+    titleStyle: `margin:0 0 ${s.headingBottom}px;color:${s.titleColor};font-size:${s.titleSize}px;line-height:1.45;font-weight:${s.titleWeight};letter-spacing:0;`,
     metaStyle: `margin:0 0 18px;color:${c.meta};font-size:11px;line-height:1.6;`,
-    primaryHeadingStyle: `margin:0 0 15px;color:${s.headingColor};font-size:${s.headingSize}px;line-height:1.5;letter-spacing:0;font-weight:${s.headingWeight};${borderCss(s.headingBorder)}`,
-    secondaryHeadingStyle: `margin:0 0 12px;color:${s.secondaryColor};font-size:${s.secondarySize}px;line-height:1.55;letter-spacing:0;font-weight:${s.secondaryWeight};${borderCss(s.secondaryBorder)}`,
-    paragraphStyle: `margin:18px 0 0;padding:8px 0;color:${c.body};font-size:${s.bodySize}px;line-height:${lh};letter-spacing:${s.letterSpacing}px;text-align:justify;`,
+    primaryHeadingStyle: `margin:${s.headingTop}px 0 ${s.headingBottom}px;color:${s.headingColor};font-size:${s.headingSize}px;line-height:1.5;letter-spacing:0;font-weight:${s.headingWeight};${borderCss(s.headingBorder)}`,
+    secondaryHeadingStyle: `margin:${s.headingTop}px 0 ${s.headingBottom}px;color:${s.secondaryColor};font-size:${s.secondarySize}px;line-height:1.55;letter-spacing:0;font-weight:${s.secondaryWeight};${borderCss(s.secondaryBorder)}`,
+    paragraphStyle: `margin:${s.paraGap}px 0 0;padding:${s.paraPadding}px 0;color:${c.body};font-size:${s.bodySize}px;line-height:${lh};letter-spacing:${s.letterSpacing}px;text-align:justify;`,
     quoteStyle: `margin:20px 0 12px;padding:10px 14px;border-left:${s.quoteBorderWidth}px solid ${s.quoteBorderColor};background:${c.blockBg};color:${s.quoteColor};font-size:${s.quoteSize}px;line-height:${lh};border-radius:0 8px 8px 0;`,
     noteStyle: `margin:18px 0 0;padding:10px 12px;border:1px solid #ECEAE3;border-radius:8px;background:#FAF7F2;color:${c.body};font-size:${Math.max(s.bodySize - 1, 12)}px;line-height:${lh};`,
     eyebrowStyle: `margin:18px 0 8px;color:${c.heading};font-size:11.5px;letter-spacing:0.14em;`,

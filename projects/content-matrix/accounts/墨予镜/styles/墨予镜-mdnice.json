@@ -50,8 +50,10 @@
     }
   },
   "spacing": {
-    "paraGap": 1.125,
-    "headingTop": 2.125,
-    "headingBottom": 0.94
+    "paraGap": 0,
+    "paraPadding": 8,
+    "headingTop": 30,
+    "headingBottom": 15,
+    "containerPadding": 10
   }
 }
