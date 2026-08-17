@@ -1,1 +1,132 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396395129-e8592dfb-7ee9-4f54-89b0-0f176054dc5b.png" width="1672" title="null" crop="0,0,1,1" id="YvFIs" class="ne-image"> 本节总览图：这张图中心是 `StateGraph(State)`，左侧画 State schema，右侧画多个 node，节点之间用 edge 连接。每个 node 都有输入 state 和输出 partial update；条件边用菱形判断节点表示。图中要标出 `START` 和 `END` 是特殊入口和出口。 ## 课程目标 学完这一节，你应该能说清： + State schema 定义什么。 + Node 函数应该接收什么、返回什么。 + `START` 和 `END` 的作用。 + `add_node`、`add_edge`、`add_conditional_edges` 的区别。 + reducer 为什么用于合并状态更新。 + `Command` 什么时候用于同时更新状态和路由。 + `Command(update=..., goto=...)` 和 `Command(resume=...)` 分别出现在什么位置。 --- ## 1. State 是图的共享数据结构 State 定义图运行过程中能携带哪些字段。 ```python from typing import TypedDict class State(TypedDict): question: str intent: str answer: str ``` 电商例子： ```latex question：用户原始问题 intent：订单、售后、商品、发票 order_no：订单号 policy_context：检索到的政策 answer：最终回复 ``` State 要明确，不要用一个大 `dict` 随便塞所有东西。 --- ## 2. Node 做一件事 节点函数读取 state，返回 state update： ```python def classify_intent(state: State) -> dict: question = state["question"] if "退" in question: return {"intent": "after_sale"} if "订单" in question: return {"intent": "order"} return {"intent": "general"} ``` 节点应该尽量职责单一。不要把分类、查询、检索、生成回复都写进一个节点。 --- ## 3. Edge 决定执行顺序 ```python from langgraph.graph import StateGraph, START, END builder = StateGraph(State) builder.add_node("classify_intent", classify_intent) builder.add_node("answer", answer) builder.add_edge(START, "classify_intent") builder.add_edge("classify_intent", "answer") builder.add_edge("answer", END) ``` `START` 是图入口，`END` 是图出口。普通边表示固定下一步。 --- ## 4. 条件边 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396395024-0a684d2f-9fd3-475d-939c-99be4f2fc253.png" width="1672" title="null" crop="0,0,1,1" id="C3ps2" class="ne-image"> 条件边路由图：这张图从 `classify_intent` 节点进入菱形判断 `intent?`，根据 `order`、`after_sale`、`general` 三个值分别路由到 `lookup_order`、`retrieve_policy`、`answer_general`。每条边旁标注条件返回值。 条件边用于根据 state 决定下一步： ```python def route_by_intent(state: State) -> str: if state["intent"] == "order": return "lookup_order" if state["intent"] == "after_sale": return "retrieve_policy" return "answer_general" builder.add_conditional_edges("classify_intent", route_by_intent) ``` --- ## 5. Reducer：合并状态更新 如果多个节点会更新同一个字段，LangGraph 需要知道怎么合并。 消息列表常用 `add_messages`： ```python from typing import Annotated from langgraph.graph.message import add_messages class MessageState(TypedDict): messages: Annotated[list, add_messages] ``` 没有 reducer 时，后写入可能覆盖前写入。对列表、消息、日志这类字段，要明确合并规则。 --- ## 6. Command：更新状态并路由 `Command` 是 LangGraph 中控制图执行的通用对象。官方文档里它主要出现在三类上下文： | 使用位置 | 常见写法 | 作用 | | --- | --- | --- | | 从 node 返回 | `return Command(update=..., goto=...)` | 节点同时更新 state 并决定下一跳 | | 作为 `invoke` / `stream` 输入 | `graph.invoke(Command(resume=...), config=...)` | interrupt 暂停后，从外部传入恢复值继续执行 | | 从 tool 返回 | `return Command(update=...)` | 工具执行后更新图状态，通常配合 `ToolNode` | 本节先讲第一种：**从节点返回 **`Command(update=..., goto=...)`。 有时节点既要更新 state，又要决定下一个节点。可以在节点函数里返回 `Command`： ```python from typing import Literal from langgraph.types import Command def route_after_risk_check(state: State) -> Command[Literal["human_review", "draft_reply"]]: if state.get("risk") == "high": return Command(update={"needs_review": True}, goto="human_review") return Command(update={"needs_review": False}, goto="draft_reply") ``` 这里的 `update` 表示这个节点写入哪些 state 字段，`goto` 表示下一步跳到哪个节点。它适合“状态更新”和“路由判断”必须在同一个节点里完成的情况。 注意：如果一个节点用 `Command(goto=...)` 做动态路由，就不要再给它同时定义会冲突的静态下一跳。官方文档明确说明，`Command` 只会增加动态边，已经通过 `add_edge` 定义的静态边仍然会执行。也就是说，如果 `node_a` 返回 `Command(goto="node_c")`，同时你又写了 `builder.add_edge("node_a", "node_b")`，那么 `node_b` 和 `node_c` 都可能执行，图行为会变得难以理解。 更推荐的写法是：同一个节点只选择一种路由机制。 ```latex 固定流程：使用 add_edge 条件流程：使用 add_conditional_edges 同时更新状态并路由：从节点返回 Command(update=..., goto=...) ``` <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396395127-f8c03779-89f8-4b80-98c7-74f176d6aebc.png" title="null" crop="0,0,1,1" id="FZmDT" class="ne-image"> Command 使用位置图：这张图分成三栏。左栏是 `node function` 返回 `Command(update, goto)`，箭头指向 state update 和 next node；中栏是外部调用方把 `Command(resume)` 传给 `graph.invoke` 或 `graph.stream`，箭头指向被 interrupt 暂停的图继续执行；右栏是 `tool function` 返回 `Command(update)`，通过 `ToolNode` 把工具结果写回 graph state。图中要强调 `resume` 不是从节点返回，而是恢复暂停执行时作为输入传入。 `Command(resume=...)` 不属于本节的主要代码路径。它通常出现在 Human-in-the-loop 场景中：图执行到 `interrupt` 暂停，外部人工审批后，再用 `graph.invoke(Command(resume=...), config=...)` 或 `graph.stream(Command(resume=...), config=...)` 继续执行。第 24 课会详细讲 interrupt 和 resume。 --- ## 7. 可运行 Demo：订单和售后路由 ```python from typing import TypedDict from langgraph.graph import StateGraph, START, END class State(TypedDict): question: str intent: str answer: str def classify(state: State) -> dict: if "退" in state["question"]: return {"intent": "after_sale"} if "订单" in state["question"]: return {"intent": "order"} return {"intent": "general"} def route(state: State) -> str: return state["intent"] def order_answer(state: State) -> dict: return {"answer": "订单问题需要提供订单号后查询。"} def after_sale_answer(state: State) -> dict: return {"answer": "售后问题需要结合订单状态和政策判断。"} def general_answer(state: State) -> dict: return {"answer": "这是普通咨询。"} builder = StateGraph(State) builder.add_node("classify", classify) builder.add_node("order", order_answer) builder.add_node("after_sale", after_sale_answer) builder.add_node("general", general_answer) builder.add_edge(START, "classify") builder.add_conditional_edges("classify", route) builder.add_edge("order", END) builder.add_edge("after_sale", END) builder.add_edge("general", END) graph = builder.compile() print(graph.invoke({"question": "这个订单能退吗？", "intent": "", "answer": ""})) ``` --- ## 8. 本节知识框架总结 ```latex LangGraph 基础单元 -> State：共享数据结构 -> Node：读取 state，返回 update -> Edge：固定顺序 -> Conditional edge：按 state 路由 -> Reducer：合并状态更新 -> Command： - 从节点返回 update / goto - 作为 invoke / stream 输入传入 resume - 从工具返回 update ``` ## 9. 本节小结 你需要记住： 1. State 要显式建模。 2. Node 应该职责单一。 3. Edge 和 conditional edge 分别表达固定流程和条件流程。 4. 多节点更新同一字段时要考虑 reducer。 5. 从节点返回 `Command(update=..., goto=...)` 适合同时更新状态和路由。 6. `Command(resume=...)` 是恢复 interrupt 时传给 `invoke` / `stream` 的输入，不是从普通节点返回。 课后练习： 1. 为客服流程设计一个 State。 2. 写一个识别订单号的 node。 3. 设计一个根据 intent 路由的 conditional edge。 4. 说明哪些字段需要 reducer。 5. 说明 `Command(update=..., goto=...)` 和 `Command(resume=...)` 的区别。
+# 状态、节点和边：LangGraph 的最小表达单元
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396395129-e8592dfb-7ee9-4f54-89b0-0f176054dc5b.png" width="1672" title="null" crop="0,0,1,1" id="YvFIs" class="ne-image">
+
+本节总览图：这张图中心是 `StateGraph(State)`，左侧画 State schema，右侧画多个 node，节点之间用 edge 连接。每个 node 都有输入 state 和输出 partial update；条件边用菱形判断节点表示。图中要标出 `START` 和 `END` 是特殊入口和出口。
+
+## 课程目标
+
+学完这一节，你应该能说清：
+- State schema 定义什么。
+- Node 函数应该接收什么、返回什么。
+- `START` 和 `END` 的作用。
+- `add_node`、`add_edge`、`add_conditional_edges` 的区别。
+- reducer 为什么用于合并状态更新。
+- `Command` 什么时候用于同时更新状态和路由。
+- `Command(update=..., goto=...)` 和 `Command(resume=...)` 分别出现在什么位置。
+
+---
+
+## 1. State 是图的共享数据结构 State 定义图运行过程中能携带哪些字段。
+
+```python
+from typing import TypedDict class State(TypedDict): question: str intent: str answer: str
+```
+
+电商例子：
+
+```latex
+question：用户原始问题 intent：订单、售后、商品、发票 order_no：订单号 policy_context：检索到的政策 answer：最终回复
+```
+
+State 要明确，不要用一个大 `dict` 随便塞所有东西。
+
+---
+
+## 2. Node 做一件事 节点函数读取 state，返回 state update：
+
+```python
+def classify_intent(state: State) -> dict: question = state["question"] if "退" in question: return {"intent": "after_sale"} if "订单" in question: return {"intent": "order"} return {"intent": "general"}
+```
+
+节点应该尽量职责单一。不要把分类、查询、检索、生成回复都写进一个节点。
+
+---
+
+## 3. Edge 决定执行顺序
+
+```python
+from langgraph.graph import StateGraph, START, END builder = StateGraph(State) builder.add_node("classify_intent", classify_intent) builder.add_node("answer", answer) builder.add_edge(START, "classify_intent") builder.add_edge("classify_intent", "answer") builder.add_edge("answer", END)
+```
+
+`START` 是图入口，`END` 是图出口。普通边表示固定下一步。
+
+---
+
+## 4. 条件边
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396395024-0a684d2f-9fd3-475d-939c-99be4f2fc253.png" width="1672" title="null" crop="0,0,1,1" id="C3ps2" class="ne-image">
+
+条件边路由图：这张图从 `classify_intent` 节点进入菱形判断 `intent?`，根据 `order`、`after_sale`、`general` 三个值分别路由到 `lookup_order`、`retrieve_policy`、`answer_general`。每条边旁标注条件返回值。
+条件边用于根据 state 决定下一步：
+
+```python
+def route_by_intent(state: State) -> str: if state["intent"] == "order": return "lookup_order" if state["intent"] == "after_sale": return "retrieve_policy" return "answer_general" builder.add_conditional_edges("classify_intent", route_by_intent)
+```
+
+---
+
+## 5. Reducer：合并状态更新 如果多个节点会更新同一个字段，LangGraph 需要知道怎么合并。 消息列表常用 `add_messages`：
+
+```python
+from typing import Annotated from langgraph.graph.message import add_messages class MessageState(TypedDict): messages: Annotated[list, add_messages]
+```
+
+没有 reducer 时，后写入可能覆盖前写入。对列表、消息、日志这类字段，要明确合并规则。
+
+---
+
+## 6. Command：更新状态并路由 `Command` 是 LangGraph 中控制图执行的通用对象。官方文档里它主要出现在三类上下文：
+
+| 使用位置 | 常见写法 | 作用 |
+| --- | --- | --- |
+| 从 node 返回 | `return Command(update=..., goto=...)` | 节点同时更新 state 并决定下一跳 |
+| 作为 `invoke` / `stream` 输入 | `graph.invoke(Command(resume=...), config=...)` | interrupt 暂停后，从外部传入恢复值继续执行 |
+| 从 tool 返回 | `return Command(update=...)` | 工具执行后更新图状态，通常配合 `ToolNode` | 本节先讲第一种：**从节点返回 **`Command(update=..., goto=...)`。 有时节点既要更新 state，又要决定下一个节点。可以在节点函数里返回 `Command`：
+
+```python
+from typing import Literal from langgraph.types import Command def route_after_risk_check(state: State) -> Command[Literal["human_review", "draft_reply"]]: if state.get("risk") == "high": return Command(update={"needs_review": True}, goto="human_review") return Command(update={"needs_review": False}, goto="draft_reply")
+```
+
+这里的 `update` 表示这个节点写入哪些 state 字段，`goto` 表示下一步跳到哪个节点。它适合“状态更新”和“路由判断”必须在同一个节点里完成的情况。
+注意：如果一个节点用 `Command(goto=...)` 做动态路由，就不要再给它同时定义会冲突的静态下一跳。官方文档明确说明，`Command` 只会增加动态边，已经通过 `add_edge` 定义的静态边仍然会执行。也就是说，如果 `node_a` 返回 `Command(goto="node_c")`，同时你又写了 `builder.add_edge("node_a", "node_b")`，那么 `node_b` 和 `node_c` 都可能执行，图行为会变得难以理解。
+更推荐的写法是：同一个节点只选择一种路由机制。
+
+```latex
+固定流程：使用 add_edge 条件流程：使用 add_conditional_edges 同时更新状态并路由：从节点返回 Command(update=..., goto=...)
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396395127-f8c03779-89f8-4b80-98c7-74f176d6aebc.png" title="null" crop="0,0,1,1" id="FZmDT" class="ne-image">
+
+Command 使用位置图：这张图分成三栏。左栏是 `node function` 返回 `Command(update, goto)`，箭头指向 state update 和 next node；中栏是外部调用方把 `Command(resume)` 传给 `graph.invoke` 或 `graph.stream`，箭头指向被 interrupt 暂停的图继续执行；右栏是 `tool function` 返回 `Command(update)`，通过 `ToolNode` 把工具结果写回 graph state。图中要强调 `resume` 不是从节点返回，而是恢复暂停执行时作为输入传入。
+`Command(resume=...)` 不属于本节的主要代码路径。它通常出现在 Human-in-the-loop 场景中：图执行到 `interrupt` 暂停，外部人工审批后，再用 `graph.invoke(Command(resume=...), config=...)` 或 `graph.stream(Command(resume=...), config=...)` 继续执行。第 24 课会详细讲 interrupt 和 resume。
+
+---
+
+## 7. 可运行 Demo：订单和售后路由
+
+```python
+from typing import TypedDict from langgraph.graph import StateGraph, START, END class State(TypedDict): question: str intent: str answer: str def classify(state: State) -> dict: if "退" in state["question"]: return {"intent": "after_sale"} if "订单" in state["question"]: return {"intent": "order"} return {"intent": "general"} def route(state: State) -> str: return state["intent"] def order_answer(state: State) -> dict: return {"answer": "订单问题需要提供订单号后查询。"} def after_sale_answer(state: State) -> dict: return {"answer": "售后问题需要结合订单状态和政策判断。"} def general_answer(state: State) -> dict: return {"answer": "这是普通咨询。"} builder = StateGraph(State) builder.add_node("classify", classify) builder.add_node("order", order_answer) builder.add_node("after_sale", after_sale_answer) builder.add_node("general", general_answer) builder.add_edge(START, "classify") builder.add_conditional_edges("classify", route) builder.add_edge("order", END) builder.add_edge("after_sale", END) builder.add_edge("general", END) graph = builder.compile() print(graph.invoke({"question": "这个订单能退吗？", "intent": "", "answer": ""}))
+```
+
+---
+
+## 8. 本节知识框架总结
+
+```latex
+LangGraph 基础单元 -> State：共享数据结构 -> Node：读取 state，返回 update -> Edge：固定顺序 -> Conditional edge：按 state 路由 -> Reducer：合并状态更新 -> Command： - 从节点返回 update / goto - 作为 invoke / stream 输入传入 resume - 从工具返回 update
+```
+
+## 9. 本节小结 你需要记住：
+1. State 要显式建模。
+2. Node 应该职责单一。
+3. Edge 和 conditional edge 分别表达固定流程和条件流程。
+4. 多节点更新同一字段时要考虑 reducer。
+5. 从节点返回 `Command(update=..., goto=...)` 适合同时更新状态和路由。
+6. `Command(resume=...)` 是恢复 interrupt 时传给 `invoke` / `stream` 的输入，不是从普通节点返回。
+课后练习：
+1. 为客服流程设计一个 State。
+2. 写一个识别订单号的 node。
+3. 设计一个根据 intent 路由的 conditional edge。
+4. 说明哪些字段需要 reducer。
+5. 说明 `Command(update=..., goto=...)` 和 `Command(resume=...)` 的区别。

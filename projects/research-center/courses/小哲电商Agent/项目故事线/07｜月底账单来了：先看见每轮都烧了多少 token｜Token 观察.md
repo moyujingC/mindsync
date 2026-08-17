@@ -1,1 +1,206 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396416362-f5b853f5-11d4-480c-b70e-6177f04deb96.png" title="null" crop="0,0,1,1" id="j7x6i" class="ne-image"> ## 老板终于看懂了一件事：贵 第 06 课之后，Prompt 不再是一整面墙。 运营能改活动片段。 售后能维护退款边界。 旧活动也能关闭，不再混进当前回答。 月底，老板把模型平台账单发到群里。 群里安静了几秒。 老板只问了一句： > 我们不是为了省客服成本才做 AI 吗？为什么 token 费比客服工资还高？ > 你点开账单，问题一下子清楚了。 用户每问一句，Agent 都要把客服身份、事实优先级、活动规则、售后边界、回答风格这些 Prompt 片段重新发给模型。 用户问十次，就重复发十次。 用户问一百次，就重复发一百次。 Prompt Registry 让规则更好维护。 但它没有让规则变便宜。 这一课先不急着改架构。 你要先让系统把每轮 token 消耗看出来。 ## 技术机制 ### token 不是抽象概念，是每轮上下文的重量 模型不是按“问题数量”简单收费。 它看的是输入和输出里的 token。 你可以先把 token 理解成模型处理文字时使用的基本单位。 更准确一点说，模型不会直接按“字数”收费。 请求进入模型前，会先经过对应模型的 tokenizer。tokenizer 会把文本拆成一段一段的 token，再由模型平台统计这一轮输入和输出各用了多少 token。 同一句话在不同模型、不同 tokenizer 下，token 数可能不完全一样。所以真实调用时，后端优先记录模型平台返回的 `usage`，而不是自己拍一个固定字数比例。 在小哲电商 Agent 里，一轮请求大概有两类 token： ```latex Prompt token：发给模型的 system/user messages Answer token：模型返回的客服回答 ``` 这两类 token 还要分开看，因为很多模型平台的输入 token 和输出 token 单价不同。 所以 `CostSummary` 里不会只记录一个总数，它会同时记录输入 token、输出 token 和两部分粗略金额。 OpenAI-compatible 接口返回的 `usage`，第 07 课先抓住最核心的三项： + `prompt_tokens`：本轮输入 token。 + `completion_tokens`：本轮输出 token，课程里映射成 `answer_tokens`。 + `total_tokens`：输入和输出合计。 有些平台还会返回 `reasoning_tokens`、`prompt_cache_hit_tokens`、`prompt_cache_miss_tokens` 这类明细。本课只把它们放进 `usage_details` 里观察，不展开缓存优化和完整计费治理。 第 06 课之后，Prompt token 里不只是用户那一句话。 它还包括： + 客服身份。 + 事实优先级。 + 当前意图相关规则片段。 + 回答风格。 + runtime 用户事实。 + 粗意图说明。 + 用户原话。 用户一句话可能只有几十个字。 但完整 Prompt 可能有几百甚至几千个 token。 当咨询量上来以后，这些重复发送的规则文字就会变成真压力。 ### 先把 token 看出来 老板问“为什么贵”，你不能只说： > 因为 Prompt 长。 > 你需要让系统每轮都能回答： + 这次 Prompt 大概多少 token？ + 模型回答大概多少 token？ + 总 token 大概多少？ + 按课程默认单价粗略看，大概是什么量级？ + 同一个会话已经观察了几次 token 消耗？ 所以第 07 课不急着换架构，只新增一件事： ```latex token 观察 ``` 它不是最终计费系统。 真实账单仍然以模型平台为准。 但它能让你看见账单背后的上下文重量： ```latex 规则越塞越多，每轮上下文就越重。 ``` 只要先看见 token 怎么被消耗，下一步才不是拍脑袋改架构。 ## 代码落地 ### 当前代码的实现入口 当前代码快照在： ```latex code/agent-course-versions/lesson-07-token-cost-observation/backend/ ``` 它延续第 06 课的 Prompt Registry，只在回答之后补一层 token 观察。`main.py` 仍然只是启动入口；Prompt 加载在 `prompts/loader.py`，模型调用在 `models/llm_client.py`，token 和费用趋势观察在本课新增的 `cost/observer.py`。本课继续使用 `prompt_registry.json`。 如果模型平台返回了 `usage`，后端优先使用真实 usage；如果没有返回，再用 `estimate_tokens(text)` 做本地估算兜底。 本地估算故意做得很轻：英文、数字这类 ASCII 字符大约按 4 个字符估 1 个 token，中文等非 ASCII 字符大约按 2 个字符估 1 个 token。它只是为了在没有 usage 时继续观察趋势，不是精确 tokenizer。 关键链路是： ```latex /chat -> ChatRequest -> classify_intent(user_message) -> load_prompt_registry() -> select_prompt_fragments(intent) -> render_prompt_template(...) -> call_chat_model(messages) # 返回 answer 和可选 usage -> build_cost_summary(messages, answer, usage) -> ChatResponse ``` 第 07 课在 `/chat` 顶层响应里新增： ```latex cost_summary ``` 这是当前课程真正实现的字段，用来回答老板这次账单事故里最基础的问题：每轮到底消耗了多少 token。 ### `CostSummary` 要回答什么 代码里新增了这个结构： ```python class CostSummary(BaseModel): prompt_tokens: int answer_tokens: int total_tokens: int token_source: Literal["model_usage", "local_estimate"] usage_details: dict[str, Any] estimated_input_cost_cny: float estimated_output_cost_cny: float estimated_total_cost_cny: float context_chars: int pricing_note: str ``` 这个结构只回答五件事： | 字段 | 这一课看什么 | | --- | --- | | `prompt_tokens` / `answer_tokens` / `total_tokens` | 本轮输入、输出和合计 token | | `token_source` | 来自模型 `usage`，还是本地估算兜底 | | `usage_details` | reasoning token、prompt cache 等平台明细，先观察不治理 | | `estimated_input_cost_cny` / `estimated_output_cost_cny` | 按输入、输出不同单价粗略估算 | | `context_chars` / `pricing_note` | Prompt 字符长度和计量说明 | 你只是在让小哲电商团队第一次看清：规则片段虽然被注册表管住了，但它们每轮仍然会变成模型输入。 现在先让老板看到： ```latex usage 优先，估算兜底，每一轮都能被观察。 ``` ## 看见 token 以后，问题更清楚了 现在的小哲电商 Agent 每轮仍然在做这件事： ```latex 按粗意图选择 Prompt 片段，然后把片段送进模型。 ``` 这比第 05 课后半段的全量塞文档好多了。但如果小哲电商资料继续膨胀，哪怕只按意图选择片段，每轮上下文也会越来越重。 问题不在于 Prompt Registry 没用。 它解决的是“规则怎么组织、怎么启停、怎么按意图加载”。 但它没有解决另一个问题： ```latex 用户这一句，到底需要哪几条具体资料？ ``` 你也不能简单把 Prompt 里的规则删掉。删少了，Agent 又会乱承诺；删多了，客服边界、活动口径和售后规则就没依据。 所以下一步不是继续把 Prompt 片段切得更细，而是让 Agent 在回答前先去找“和当前问题最相关的资料”。Prompt 片段选择更像按场景加载一组规则；RAG 要解决的是按用户问题检索具体依据。 这就是第 07 课真正要逼出来的问题： ```latex 不能再把资料都塞给模型，必须只找和用户问题相关的资料。 ``` ## 怎么验证 token 已经看得见 你可以发送： ```latex 降噪耳机会员价还能叠加会员券吗？ ``` 你要看四件事： 1. `/chat` 返回 `cost_summary`。 2. `prompt_tokens`、`answer_tokens`、`total_tokens` 都大于 0。 3. `estimated_input_cost_cny`、`estimated_output_cost_cny` 能分开看到。 4. token 观察数据单独返回，不混进用户看到的客服回答。 这次老板能看到： > 钱不是凭空没的，每轮 Prompt 都在消耗 token。 > 但你也知道，这还只是观察，不是后面那种分层治理。 ## 本节知识总结 Token 是大模型应用的基础计量单位。 你不能只用“字数”或“消息条数”判断一次调用贵不贵。模型服务通常按 token 计费，而 token 来自模型自己的 tokenizer：同一句话在不同模型、不同语言、不同格式下，拆出来的 token 数都可能不同。 做 AI 应用时，token 观察有两个通用目的： ```latex 先知道每轮请求花在哪里 再决定后面怎么优化上下文和成本 ``` 输入 token 主要来自 system prompt、历史消息、RAG 片段、工具结果和用户问题；输出 token 来自模型生成的回答。很多平台输入和输出单价不同，有些模型还会单独统计 reasoning tokens、cached tokens 或其他 usage 明细。你只有把这些观察清楚，后面才能判断应该压缩 Prompt、减少无关知识、复用缓存，还是换模型分层处理。 | 知识点 | 核心概念 | 小哲项目里的落点 | | --- | --- | --- | | tokenizer | token 是模型 tokenizer 分解后的计量单位，不等于简单字数。 | 中文客服话术、规则文档和 JSON 状态都会被拆成 token 计入成本。 | | 输入/输出 token | Prompt、历史、知识和工具结果属于输入；模型回答属于输出，二者常常价格不同。 | 小哲要分开看 `prompt_tokens`、`answer_tokens` 和 `total_tokens`。 | | usage 明细 | 平台返回的 usage 是最可靠来源，扩展明细可以先收集起来，后面再治理。 | `usage_details` 先接住 reasoning tokens、prompt cache 等统计，不在本课展开成本策略。 | | 估算兜底 | 没有平台 usage 时可以本地估算，但估算只能辅助观察，不能替代账单口径。 | `estimate_tokens` 只是模型服务没返回 usage 时的补充。 | | 成本观察边界 | 看见成本不等于已经治理成本；观察是后续 RAG、缓存和模型分层的前提。 | 第 07 课只把 token 账看清楚，下一步才转向不要把所有内容塞进 Prompt。 | ## 第二幕收尾：Prompt 救过火，但不能一直硬撑 第二幕走到这里，小哲电商 Agent 已经比第一幕稳多了。 它能守住客服身份。 它能区分系统事实和用户自称。 它能拒绝乱承诺退款、赔偿、优惠和物流。 它也能把 Prompt 拆成片段，用注册表控制优先级和启用状态。 但问题没有消失。 规则越塞越多。 旧活动和新活动仍然可能互相干扰。 上下文越来越长。 token 消耗越来越高。 你看着账单，心里隐隐觉得： ```latex 不能再把所有文档都塞进 Prompt 里。 ``` 小哲电商 Agent 下一步必须学会： ```latex 用户问什么，就只找相关资料。 ``` 这就进入第三幕。 RAG 要出场了。
+# 月底账单来了：先看见每轮都烧了多少 token｜Token 观察
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396416362-f5b853f5-11d4-480c-b70e-6177f04deb96.png" title="null" crop="0,0,1,1" id="j7x6i" class="ne-image">
+
+## 老板终于看懂了一件事：贵 第 06 课之后，Prompt 不再是一整面墙。 运营能改活动片段。 售后能维护退款边界。 旧活动也能关闭，不再混进当前回答。 月底，老板把模型平台账单发到群里。 群里安静了几秒。 老板只问了一句：
+
+> 我们不是为了省客服成本才做 AI 吗？为什么 token 费比客服工资还高？
+
+> 你点开账单，问题一下子清楚了。
+> 用户每问一句，Agent 都要把客服身份、事实优先级、活动规则、售后边界、回答风格这些 Prompt 片段重新发给模型。
+> 用户问十次，就重复发十次。
+> 用户问一百次，就重复发一百次。
+> Prompt Registry 让规则更好维护。
+> 但它没有让规则变便宜。
+> 这一课先不急着改架构。
+> 你要先让系统把每轮 token 消耗看出来。
+
+## 技术机制
+
+### token 不是抽象概念，是每轮上下文的重量 模型不是按“问题数量”简单收费。 它看的是输入和输出里的 token。 你可以先把 token 理解成模型处理文字时使用的基本单位。 更准确一点说，模型不会直接按“字数”收费。 请求进入模型前，会先经过对应模型的 tokenizer。tokenizer 会把文本拆成一段一段的 token，再由模型平台统计这一轮输入和输出各用了多少 token。 同一句话在不同模型、不同 tokenizer 下，token 数可能不完全一样。所以真实调用时，后端优先记录模型平台返回的 `usage`，而不是自己拍一个固定字数比例。 在小哲电商 Agent 里，一轮请求大概有两类 token：
+
+```latex
+Prompt token：发给模型的 system/user messages Answer token：模型返回的客服回答
+```
+
+这两类 token 还要分开看，因为很多模型平台的输入 token 和输出 token 单价不同。
+所以 `CostSummary` 里不会只记录一个总数，它会同时记录输入 token、输出 token 和两部分粗略金额。
+OpenAI-compatible 接口返回的 `usage`，第 07 课先抓住最核心的三项：
+- `prompt_tokens`：本轮输入 token。
+- `completion_tokens`：本轮输出 token，课程里映射成 `answer_tokens`。
+- `total_tokens`：输入和输出合计。
+有些平台还会返回 `reasoning_tokens`、`prompt_cache_hit_tokens`、`prompt_cache_miss_tokens` 这类明细。本课只把它们放进 `usage_details` 里观察，不展开缓存优化和完整计费治理。
+第 06 课之后，Prompt token 里不只是用户那一句话。
+它还包括：
+- 客服身份。
+- 事实优先级。
+- 当前意图相关规则片段。
+- 回答风格。
+- runtime 用户事实。
+- 粗意图说明。
+- 用户原话。
+用户一句话可能只有几十个字。
+但完整 Prompt 可能有几百甚至几千个 token。
+当咨询量上来以后，这些重复发送的规则文字就会变成真压力。
+
+### 先把 token 看出来 老板问“为什么贵”，你不能只说：
+
+> 因为 Prompt 长。
+
+> 你需要让系统每轮都能回答：
+- 这次 Prompt 大概多少 token？
+- 模型回答大概多少 token？
+- 总 token 大概多少？
+- 按课程默认单价粗略看，大概是什么量级？
+- 同一个会话已经观察了几次 token 消耗？
+所以第 07 课不急着换架构，只新增一件事：
+
+```latex
+token 观察
+```
+
+它不是最终计费系统。
+真实账单仍然以模型平台为准。
+但它能让你看见账单背后的上下文重量：
+
+```latex
+规则越塞越多，每轮上下文就越重。
+```
+
+只要先看见 token 怎么被消耗，下一步才不是拍脑袋改架构。
+
+## 代码落地
+
+### 当前代码的实现入口 当前代码快照在：
+
+```latex
+code/agent-course-versions/lesson-07-token-cost-observation/backend/
+```
+
+它延续第 06 课的 Prompt Registry，只在回答之后补一层 token 观察。`main.py` 仍然只是启动入口；Prompt 加载在 `prompts/loader.py`，模型调用在 `models/llm_client.py`，token 和费用趋势观察在本课新增的 `cost/observer.py`。本课继续使用 `prompt_registry.json`。
+如果模型平台返回了 `usage`，后端优先使用真实 usage；如果没有返回，再用 `estimate_tokens(text)` 做本地估算兜底。
+本地估算故意做得很轻：英文、数字这类 ASCII 字符大约按 4 个字符估 1 个 token，中文等非 ASCII 字符大约按 2 个字符估 1 个 token。它只是为了在没有 usage 时继续观察趋势，不是精确 tokenizer。
+关键链路是：
+
+```latex
+/chat -> ChatRequest -> classify_intent(user_message) -> load_prompt_registry() -> select_prompt_fragments(intent) -> render_prompt_template(...) -> call_chat_model(messages) # 返回 answer 和可选 usage -> build_cost_summary(messages, answer, usage) -> ChatResponse
+```
+
+第 07 课在 `/chat` 顶层响应里新增：
+
+```latex
+cost_summary
+```
+
+这是当前课程真正实现的字段，用来回答老板这次账单事故里最基础的问题：每轮到底消耗了多少 token。
+
+### `CostSummary` 要回答什么 代码里新增了这个结构：
+
+```python
+class CostSummary(BaseModel): prompt_tokens: int answer_tokens: int total_tokens: int token_source: Literal["model_usage", "local_estimate"] usage_details: dict[str, Any] estimated_input_cost_cny: float estimated_output_cost_cny: float estimated_total_cost_cny: float context_chars: int pricing_note: str
+```
+
+这个结构只回答五件事：
+
+| 字段 | 这一课看什么 |
+| --- | --- |
+| `prompt_tokens` / `answer_tokens` / `total_tokens` | 本轮输入、输出和合计 token |
+| `token_source` | 来自模型 `usage`，还是本地估算兜底 |
+| `usage_details` | reasoning token、prompt cache 等平台明细，先观察不治理 |
+| `estimated_input_cost_cny` / `estimated_output_cost_cny` | 按输入、输出不同单价粗略估算 |
+| `context_chars` / `pricing_note` | Prompt 字符长度和计量说明 | 你只是在让小哲电商团队第一次看清：规则片段虽然被注册表管住了，但它们每轮仍然会变成模型输入。 现在先让老板看到：
+
+```latex
+usage 优先，估算兜底，每一轮都能被观察。
+```
+
+## 看见 token 以后，问题更清楚了 现在的小哲电商 Agent 每轮仍然在做这件事：
+
+```latex
+按粗意图选择 Prompt 片段，然后把片段送进模型。
+```
+
+这比第 05 课后半段的全量塞文档好多了。但如果小哲电商资料继续膨胀，哪怕只按意图选择片段，每轮上下文也会越来越重。
+问题不在于 Prompt Registry 没用。
+它解决的是“规则怎么组织、怎么启停、怎么按意图加载”。
+但它没有解决另一个问题：
+
+```latex
+用户这一句，到底需要哪几条具体资料？
+```
+
+你也不能简单把 Prompt 里的规则删掉。删少了，Agent 又会乱承诺；删多了，客服边界、活动口径和售后规则就没依据。
+所以下一步不是继续把 Prompt 片段切得更细，而是让 Agent 在回答前先去找“和当前问题最相关的资料”。Prompt 片段选择更像按场景加载一组规则；RAG 要解决的是按用户问题检索具体依据。
+这就是第 07 课真正要逼出来的问题：
+
+```latex
+不能再把资料都塞给模型，必须只找和用户问题相关的资料。
+```
+
+## 怎么验证 token 已经看得见 你可以发送：
+
+```latex
+降噪耳机会员价还能叠加会员券吗？
+```
+
+你要看四件事：
+1. `/chat` 返回 `cost_summary`。
+2. `prompt_tokens`、`answer_tokens`、`total_tokens` 都大于 0。
+3. `estimated_input_cost_cny`、`estimated_output_cost_cny` 能分开看到。
+4. token 观察数据单独返回，不混进用户看到的客服回答。
+这次老板能看到：
+
+> 钱不是凭空没的，每轮 Prompt 都在消耗 token。
+
+> 但你也知道，这还只是观察，不是后面那种分层治理。
+
+## 本节知识总结 Token 是大模型应用的基础计量单位。 你不能只用“字数”或“消息条数”判断一次调用贵不贵。模型服务通常按 token 计费，而 token 来自模型自己的 tokenizer：同一句话在不同模型、不同语言、不同格式下，拆出来的 token 数都可能不同。 做 AI 应用时，token 观察有两个通用目的：
+
+```latex
+先知道每轮请求花在哪里 再决定后面怎么优化上下文和成本
+```
+
+输入 token 主要来自 system prompt、历史消息、RAG 片段、工具结果和用户问题；输出 token 来自模型生成的回答。很多平台输入和输出单价不同，有些模型还会单独统计 reasoning tokens、cached tokens 或其他 usage 明细。你只有把这些观察清楚，后面才能判断应该压缩 Prompt、减少无关知识、复用缓存，还是换模型分层处理。
+
+| 知识点 | 核心概念 | 小哲项目里的落点 |
+| --- | --- | --- |
+| tokenizer | token 是模型 tokenizer 分解后的计量单位，不等于简单字数。
+
+| 中文客服话术、规则文档和 JSON 状态都会被拆成 token 计入成本。
+
+|
+| 输入/输出 token | Prompt、历史、知识和工具结果属于输入；模型回答属于输出，二者常常价格不同。
+
+| 小哲要分开看 `prompt_tokens`、`answer_tokens` 和 `total_tokens`。
+
+|
+| usage 明细 | 平台返回的 usage 是最可靠来源，扩展明细可以先收集起来，后面再治理。
+
+| `usage_details` 先接住 reasoning tokens、prompt cache 等统计，不在本课展开成本策略。
+
+|
+| 估算兜底 | 没有平台 usage 时可以本地估算，但估算只能辅助观察，不能替代账单口径。
+
+| `estimate_tokens` 只是模型服务没返回 usage 时的补充。
+
+|
+| 成本观察边界 | 看见成本不等于已经治理成本；观察是后续 RAG、缓存和模型分层的前提。
+
+| 第 07 课只把 token 账看清楚，下一步才转向不要把所有内容塞进 Prompt。
+
+|
+
+## 第二幕收尾：Prompt 救过火，但不能一直硬撑 第二幕走到这里，小哲电商 Agent 已经比第一幕稳多了。 它能守住客服身份。 它能区分系统事实和用户自称。 它能拒绝乱承诺退款、赔偿、优惠和物流。 它也能把 Prompt 拆成片段，用注册表控制优先级和启用状态。 但问题没有消失。 规则越塞越多。 旧活动和新活动仍然可能互相干扰。 上下文越来越长。 token 消耗越来越高。 你看着账单，心里隐隐觉得：
+
+```latex
+不能再把所有文档都塞进 Prompt 里。
+```
+
+小哲电商 Agent 下一步必须学会：
+
+```latex
+用户问什么，就只找相关资料。
+```
+
+这就进入第三幕。
+RAG 要出场了。

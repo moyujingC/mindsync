@@ -1,1 +1,229 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396378936-6a57da7b-a667-4836-a7aa-ec5d92d4ae3a.png" title="null" crop="0,0,1,1" id="mVxIo" class="ne-image"> 本节总览图：这张图画出 `用户问题 -> LLM 判断是否检索`，如果不需要检索则直接回答；如果需要检索则进入 `retriever tool -> 文档相关性判断 -> 生成答案`。相关性不足时箭头进入 `rewrite question -> retriever tool` 的循环，强调 Agentic RAG 不是固定先检索，而是由模型在流程中做决策。 ## 课程目标 学完这一节，你应该能说清： + Agentic RAG 和 2-step RAG 的区别。 + 为什么检索可以被封装成 tool。 + Agent 如何决定是否检索。 + 文档相关性判断和查询改写解决什么问题。 + Hybrid RAG 处在 2-step RAG 和 Agentic RAG 之间，适合什么场景。 + Agentic RAG 的成本和不确定性为什么更高。 + 电商场景中哪些问题适合 Agentic RAG。 --- ## 1. 2-step RAG 的限制 2-step RAG 固定流程是： ```latex 用户问题 -> 检索 -> 生成回答 ``` 它适合明确的知识问答。但有些问题不一定一开始就该检索： ```latex 你是谁？ ``` 不需要检索。 ```latex 我这个订单能退吗？ ``` 可能要先问订单号，再查订单，再检索售后政策。 ```latex 这款耳机和上一款比哪个更适合出差？ ``` 可能要先判断商品，再查商品资料，再结合用户需求回答。 Agentic RAG 的核心是： ```latex 让 Agent 在推理过程中决定是否检索、检索什么、是否需要改写查询。 ``` --- ## 2. 检索器作为工具 LangGraph 官方 Agentic RAG 教程把 retriever 包装成 tool： ```python from langchain.tools import tool @tool def retrieve_policy(query: str) -> str: """检索电商售后、物流、发票和活动政策。""" docs = retriever.invoke(query) return "\n\n".join(doc.page_content for doc in docs) ``` 这样模型就能像调用订单工具一样调用检索工具。 区别在于： + 订单工具查结构化业务事实。 + 检索工具查非结构化知识资料。 --- ## 3. Agentic RAG 的典型节点 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396378053-dccfc3c8-deec-46fb-a5fc-21e7f57e1447.png" title="null" crop="0,0,1,1" id="Xkxpt" class="ne-image"> Agentic RAG 节点图：这张图从 `generate_query_or_respond` 开始，条件分支到 `retrieve` 或 `END`；`retrieve` 后进入 `grade_documents`，相关则到 `generate_answer`，不相关则到 `rewrite_question`，再回到 `generate_query_or_respond` 或 `retrieve`。每个节点旁标注职责：判断、检索、评分、改写、回答。 官方教程中的关键步骤包括： + 预处理文档。 + 创建 retriever tool。 + 生成查询或直接回答。 + 判断检索文档是否相关。 + 必要时改写问题。 + 基于文档生成回答。 + 组装 LangGraph。 --- ## 4. 文档相关性判断 检索器可能返回相似但不相关的文档。 比如用户问： ```latex 耳机签收 10 天还能退吗？ ``` 检索到了： ```latex 电子发票开具后 30 天内可申请重开。 ``` 这段包含“申请”，但和退货无关。Agentic RAG 可以增加一个相关性判断节点： ```latex 检索结果是否能回答用户问题？ yes -> 生成答案 no -> 改写查询或说明找不到依据 ``` --- ## 5. 查询改写 用户问题常常太口语： ```latex 这个不想要了咋办？ ``` 可以改写成： ```latex 签收后无理由退货政策、退货条件、特殊商品限制 ``` 查询改写的目标不是改变用户意图，而是让检索器更容易找到相关文档。 --- ## 6. Hybrid RAG：在固定流程里加入少量智能判断 除了 2-step RAG 和 Agentic RAG，还有一种常见形态叫 Hybrid RAG。 区分这三类 RAG，可以先看一个问题：检索流程主要由谁来决定？ ```latex 2-step RAG：程序固定执行 retrieve -> generate Hybrid RAG：程序仍然主控流程，但加入查询改写、相关性判断、rerank、fallback 等增强步骤 Agentic RAG：Agent 在运行中决定是否检索、怎么检索、是否继续 ``` <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396379417-b018e800-babd-43e7-bc88-fe174484ac91.png" title="null" crop="0,0,1,1" id="KnTUA" class="ne-image"> 三类 RAG 架构对比图：这张图横向分三栏。左栏是 `2-step RAG`，流程为 `query -> retrieve -> generate`；中栏是 `Hybrid RAG`，流程为 `query -> rewrite/classify -> retrieve -> rerank/grade -> generate/fallback`；右栏是 `Agentic RAG`，流程为 `LLM decision -> tool retrieve -> grade -> rewrite -> loop/generate`。图中用颜色标出控制权：2-step 由程序固定控制，Hybrid 由程序主控并插入模型判断，Agentic 由模型在图中多次决策。 Hybrid RAG 的核心不是“把所有东西都交给 Agent”，而是在固定 RAG pipeline 中加入几个可控增强点： | 增强点 | 解决的问题 | 电商例子 | | --- | --- | --- | | 查询分类 | 判断问题属于商品、售后、物流还是发票 | “这个能退吗”先归到售后政策 | | 查询改写 | 把口语问题改成更适合检索的查询 | “不想要了咋办”改成“无理由退货条件” | | 多路检索 | 同时查不同知识源 | 同时查商品说明和售后政策 | | rerank | 重新排序候选文档 | 把当前版本政策排在旧政策前 | | 相关性判断 | 判断召回文档是否能回答问题 | 发票政策不能回答退货问题 | | fallback | 没有依据时降级 | 返回“不确定 + 补充信息 / 转人工” | 表里的 rerank，也叫重排，通常由另一个比初次向量召回更精细的排序模型或算法完成。它的工作不是重新去知识库里搜索，而是根据“用户问题”和“已召回片段”的关联程度重新排序，让更适合回答当前问题的内容排在前面。常见做法是使用 cross-encoder reranker，也可以使用专门的重排模型或排序服务。 一个典型 Hybrid RAG 流程可以是： ```latex 用户问题 -> 问题分类 -> 查询改写 -> 检索相关文档 -> rerank 或相关性判断 -> 如果资料足够，生成带引用回答 -> 如果资料不足，返回不确定或转人工 ``` 它仍然是 pipeline，不是完全自由的 Agent 循环。这样做的好处是可控、稳定、容易评估，同时比最朴素的 2-step RAG 更能处理口语表达、低质量召回和多知识源问题。 ### 三类 RAG 的对比表 | 维度 | 2-step RAG | Hybrid RAG | Agentic RAG | | --- | --- | --- | --- | | 基本流程 | 固定 `检索 -> 生成` | 固定主流程 + 若干增强步骤 | Agent 决定是否检索、如何检索、是否继续 | | 控制权 | 程序控制 | 程序主控，局部使用模型判断 | 模型在流程中多次决策 | | 常见步骤 | retrieve、generate | classify、rewrite、retrieve、rerank、grade、fallback、generate | decide、tool retrieve、grade、rewrite、loop、generate | | 灵活性 | 低 | 中 | 高 | | 稳定性 | 高 | 中高 | 中 | | 延迟和成本 | 低 | 中 | 较高 | | 可评估性 | 最容易 | 较容易 | 较难 | | 适合场景 | 明确知识问答、FAQ、单知识源 | 政策问答、商品知识、多知识源、需要引用和降级 | 需要多步判断、追问、动态选择工具和多轮检索 | | 电商例子 | “发票怎么重开？” | “耳机签收 10 天还能退吗？”需要查订单状态和当前政策 | “帮我判断这个投诉该怎么处理”需要查订单、政策、历史沟通并可能转人工 | | 主要风险 | 检索不到也可能生成 | 增强步骤设计不当会误过滤 | 流程不稳定、成本高、分支难评估 | 基础阶段建议按这个顺序掌握： ```latex 先会做 2-step RAG 再给固定流程加入 Hybrid RAG 增强 最后在确实需要模型决策时使用 Agentic RAG ``` --- ## 7. 可运行 Demo：检索工具的最小形态 ```python from langchain.tools import tool POLICY_DOCS = [ "普通数码配件支持签收后 7 天无理由退货。", "质量问题需提交售后检测，检测通过后可维修、换货或退款。", "电子发票抬头错误可在 30 天内申请重开。", ] @tool def retrieve_policy(query: str) -> str: """检索售后、物流、发票和活动政策。""" hits = [doc for doc in POLICY_DOCS if any(char in doc for char in query)] if not hits: return "未检索到相关政策。" return "\n".join(hits[:2]) print(retrieve_policy.invoke({"query": "耳机退货政策"})) ``` 观察点： + 检索被封装成工具。 + Agent 可以选择是否调用。 + 工具返回的是给模型使用的上下文。 --- ## 8. 什么时候不要用 Agentic RAG Agentic RAG 更灵活，但也更复杂： + 调用次数更多。 + 延迟更高。 + 成本更高。 + 流程更难评估。 + 分支更多，错误路径更多。 如果问题总是固定的知识问答，2-step RAG 更稳定。 如果问题需要判断、追问、改写和多步检索，再考虑 Agentic RAG。 --- ## 9. 下一步：查什么知识之外，还要记住对话上下文 RAG 解决的是“从外部知识库查什么资料”的问题。 但 Agent 还有另一个基础问题：用户不会每一轮都把话说完整。 比如一段真实对话可能是： ```latex 用户：我明天出差，要买个降噪耳机。 用户：这款能赶上吗？ 用户：那如果不合适可以退吗？ ``` 第二句里的“这款”，依赖第一句里提到的降噪耳机。 第三句里的“不合适”，依赖前面已经建立的购买场景和商品对象。 如果 Agent 只会 RAG，它可以检索商品说明和退货政策，但它仍然需要知道： ```latex 当前对话里用户已经说过什么 “这款”指的是哪个商品 “不合适”关联的是哪一次购买意图 前面是否已经查过订单、商品或政策 ``` 所以可以这样区分： | 能力 | 解决的问题 | | --- | --- | | RAG | 从外部知识库查相关资料 | | 短期记忆 | 在同一会话里接住上下文 | | 长期记忆 | 跨会话保存稳定偏好或可复用信息 | 接下来的短期记忆和长期记忆，解决的就是“Agent 如何记住对话历史和必要信息”的问题。 --- ## 10. 本节知识框架总结 ```latex Agentic RAG -> 2-step RAG：固定检索再生成 -> Hybrid RAG：固定主流程 + 分类、改写、rerank、相关性判断、fallback -> 检索器封装成 tool -> LLM 决定是否检索 -> 检索后判断文档相关性 -> 不相关时改写查询或降级 -> 相关时基于文档生成答案 -> 灵活性更高，成本和复杂度也更高 -> RAG 解决查知识，Memory 解决记住上下文 ``` ## 11. 本节小结 你需要记住： 1. 2-step RAG 是固定流程，Agentic RAG 是决策流程。 2. Hybrid RAG 在固定流程里加入分类、改写、rerank、相关性判断和 fallback。 3. 检索工具让 Agent 可以按需获取知识。 4. 文档相关性判断和查询改写是 Agentic RAG 的常见增强。 5. Agentic RAG 不适合所有知识问答，复杂度要和收益匹配。 6. RAG 解决“查什么知识”，记忆解决“当前对话和跨会话要记住什么”。 课后练习： 1. 把售后政策检索封装成一个 `retrieve_policy` 工具。 2. 写出三个不需要检索的问题。 3. 写出三个需要先检索再回答的问题。 4. 为“签收 10 天还能退吗？”设计一个 Hybrid RAG 流程。 5. 画出“检索不到相关文档”的降级路径。
+# Agentic RAG：让 Agent 决定何时检索、如何继续
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396378936-6a57da7b-a667-4836-a7aa-ec5d92d4ae3a.png" title="null" crop="0,0,1,1" id="mVxIo" class="ne-image">
+
+本节总览图：这张图画出 `用户问题 -> LLM 判断是否检索`，如果不需要检索则直接回答；如果需要检索则进入 `retriever tool -> 文档相关性判断 -> 生成答案`。相关性不足时箭头进入 `rewrite question -> retriever tool` 的循环，强调 Agentic RAG 不是固定先检索，而是由模型在流程中做决策。
+
+## 课程目标
+
+学完这一节，你应该能说清：
+- Agentic RAG 和 2-step RAG 的区别。
+- 为什么检索可以被封装成 tool。
+- Agent 如何决定是否检索。
+- 文档相关性判断和查询改写解决什么问题。
+- Hybrid RAG 处在 2-step RAG 和 Agentic RAG 之间，适合什么场景。
+- Agentic RAG 的成本和不确定性为什么更高。
+- 电商场景中哪些问题适合 Agentic RAG。
+
+---
+
+## 1. 2-step RAG 的限制 2-step RAG 固定流程是：
+
+```latex
+用户问题 -> 检索 -> 生成回答
+```
+
+它适合明确的知识问答。但有些问题不一定一开始就该检索：
+
+```latex
+你是谁？
+```
+
+不需要检索。
+
+```latex
+我这个订单能退吗？
+```
+
+可能要先问订单号，再查订单，再检索售后政策。
+
+```latex
+这款耳机和上一款比哪个更适合出差？
+```
+
+可能要先判断商品，再查商品资料，再结合用户需求回答。
+Agentic RAG 的核心是：
+
+```latex
+让 Agent 在推理过程中决定是否检索、检索什么、是否需要改写查询。
+```
+
+---
+
+## 2. 检索器作为工具 LangGraph 官方 Agentic RAG 教程把 retriever 包装成 tool：
+
+```python
+from langchain.tools import tool @tool def retrieve_policy(query: str) -> str: """检索电商售后、物流、发票和活动政策。""" docs = retriever.invoke(query) return "\n\n".join(doc.page_content for doc in docs)
+```
+
+这样模型就能像调用订单工具一样调用检索工具。
+区别在于：
+- 订单工具查结构化业务事实。
+- 检索工具查非结构化知识资料。
+
+---
+
+## 3. Agentic RAG 的典型节点
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396378053-dccfc3c8-deec-46fb-a5fc-21e7f57e1447.png" title="null" crop="0,0,1,1" id="Xkxpt" class="ne-image">
+
+Agentic RAG 节点图：这张图从 `generate_query_or_respond` 开始，条件分支到 `retrieve` 或 `END`；`retrieve` 后进入 `grade_documents`，相关则到 `generate_answer`，不相关则到 `rewrite_question`，再回到 `generate_query_or_respond` 或 `retrieve`。每个节点旁标注职责：判断、检索、评分、改写、回答。
+官方教程中的关键步骤包括：
+- 预处理文档。
+- 创建 retriever tool。
+- 生成查询或直接回答。
+- 判断检索文档是否相关。
+- 必要时改写问题。
+- 基于文档生成回答。
+- 组装 LangGraph。
+
+---
+
+## 4. 文档相关性判断 检索器可能返回相似但不相关的文档。 比如用户问：
+
+```latex
+耳机签收 10 天还能退吗？
+```
+
+检索到了：
+
+```latex
+电子发票开具后 30 天内可申请重开。
+```
+
+这段包含“申请”，但和退货无关。Agentic RAG 可以增加一个相关性判断节点：
+
+```latex
+检索结果是否能回答用户问题？ yes -> 生成答案 no -> 改写查询或说明找不到依据
+```
+
+---
+
+## 5. 查询改写 用户问题常常太口语：
+
+```latex
+这个不想要了咋办？
+```
+
+可以改写成：
+
+```latex
+签收后无理由退货政策、退货条件、特殊商品限制
+```
+
+查询改写的目标不是改变用户意图，而是让检索器更容易找到相关文档。
+
+---
+
+## 6. Hybrid RAG：在固定流程里加入少量智能判断 除了 2-step RAG 和 Agentic RAG，还有一种常见形态叫 Hybrid RAG。 区分这三类 RAG，可以先看一个问题：检索流程主要由谁来决定？
+
+```latex
+2-step RAG：程序固定执行 retrieve -> generate Hybrid RAG：程序仍然主控流程，但加入查询改写、相关性判断、rerank、fallback 等增强步骤 Agentic RAG：Agent 在运行中决定是否检索、怎么检索、是否继续
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396379417-b018e800-babd-43e7-bc88-fe174484ac91.png" title="null" crop="0,0,1,1" id="KnTUA" class="ne-image">
+
+三类 RAG 架构对比图：这张图横向分三栏。左栏是 `2-step RAG`，流程为 `query -> retrieve -> generate`；中栏是 `Hybrid RAG`，流程为 `query -> rewrite/classify -> retrieve -> rerank/grade -> generate/fallback`；右栏是 `Agentic RAG`，流程为 `LLM decision -> tool retrieve -> grade -> rewrite -> loop/generate`。图中用颜色标出控制权：2-step 由程序固定控制，Hybrid 由程序主控并插入模型判断，Agentic 由模型在图中多次决策。
+Hybrid RAG 的核心不是“把所有东西都交给 Agent”，而是在固定 RAG pipeline 中加入几个可控增强点：
+
+| 增强点 | 解决的问题 | 电商例子 |
+| --- | --- | --- |
+| 查询分类 | 判断问题属于商品、售后、物流还是发票 | “这个能退吗”先归到售后政策 |
+| 查询改写 | 把口语问题改成更适合检索的查询 | “不想要了咋办”改成“无理由退货条件” |
+| 多路检索 | 同时查不同知识源 | 同时查商品说明和售后政策 |
+| rerank | 重新排序候选文档 | 把当前版本政策排在旧政策前 |
+| 相关性判断 | 判断召回文档是否能回答问题 | 发票政策不能回答退货问题 |
+| fallback | 没有依据时降级 | 返回“不确定 + 补充信息 / 转人工” | 表里的 rerank，也叫重排，通常由另一个比初次向量召回更精细的排序模型或算法完成。它的工作不是重新去知识库里搜索，而是根据“用户问题”和“已召回片段”的关联程度重新排序，让更适合回答当前问题的内容排在前面。常见做法是使用 cross-encoder reranker，也可以使用专门的重排模型或排序服务。 一个典型 Hybrid RAG 流程可以是：
+
+```latex
+用户问题 -> 问题分类 -> 查询改写 -> 检索相关文档 -> rerank 或相关性判断 -> 如果资料足够，生成带引用回答 -> 如果资料不足，返回不确定或转人工
+```
+
+它仍然是 pipeline，不是完全自由的 Agent 循环。这样做的好处是可控、稳定、容易评估，同时比最朴素的 2-step RAG 更能处理口语表达、低质量召回和多知识源问题。
+
+### 三类 RAG 的对比表 | 维度 | 2-step RAG | Hybrid RAG | Agentic RAG |
+| --- | --- | --- | --- |
+| 基本流程 | 固定 `检索 -> 生成` | 固定主流程 + 若干增强步骤 | Agent 决定是否检索、如何检索、是否继续 |
+| 控制权 | 程序控制 | 程序主控，局部使用模型判断 | 模型在流程中多次决策 |
+| 常见步骤 | retrieve、generate | classify、rewrite、retrieve、rerank、grade、fallback、generate | decide、tool retrieve、grade、rewrite、loop、generate |
+| 灵活性 | 低 | 中 | 高 |
+| 稳定性 | 高 | 中高 | 中 |
+| 延迟和成本 | 低 | 中 | 较高 |
+| 可评估性 | 最容易 | 较容易 | 较难 |
+| 适合场景 | 明确知识问答、FAQ、单知识源 | 政策问答、商品知识、多知识源、需要引用和降级 | 需要多步判断、追问、动态选择工具和多轮检索 |
+| 电商例子 | “发票怎么重开？” | “耳机签收 10 天还能退吗？”需要查订单状态和当前政策 | “帮我判断这个投诉该怎么处理”需要查订单、政策、历史沟通并可能转人工 |
+| 主要风险 | 检索不到也可能生成 | 增强步骤设计不当会误过滤 | 流程不稳定、成本高、分支难评估 | 基础阶段建议按这个顺序掌握：
+
+```latex
+先会做 2-step RAG 再给固定流程加入 Hybrid RAG 增强 最后在确实需要模型决策时使用 Agentic RAG
+```
+
+---
+
+## 7. 可运行 Demo：检索工具的最小形态
+
+```python
+from langchain.tools import tool POLICY_DOCS = [ "普通数码配件支持签收后 7 天无理由退货。", "质量问题需提交售后检测，检测通过后可维修、换货或退款。", "电子发票抬头错误可在 30 天内申请重开。", ] @tool def retrieve_policy(query: str) -> str: """检索售后、物流、发票和活动政策。""" hits = [doc for doc in POLICY_DOCS if any(char in doc for char in query)] if not hits: return "未检索到相关政策。" return "\n".join(hits[:2]) print(retrieve_policy.invoke({"query": "耳机退货政策"}))
+```
+
+观察点：
+- 检索被封装成工具。
+- Agent 可以选择是否调用。
+- 工具返回的是给模型使用的上下文。
+
+---
+
+## 8. 什么时候不要用 Agentic RAG Agentic RAG 更灵活，但也更复杂：
+- 调用次数更多。
+- 延迟更高。
+- 成本更高。
+- 流程更难评估。
+- 分支更多，错误路径更多。
+如果问题总是固定的知识问答，2-step RAG 更稳定。
+如果问题需要判断、追问、改写和多步检索，再考虑 Agentic RAG。
+
+---
+
+## 9. 下一步：查什么知识之外，还要记住对话上下文 RAG 解决的是“从外部知识库查什么资料”的问题。 但 Agent 还有另一个基础问题：用户不会每一轮都把话说完整。 比如一段真实对话可能是：
+
+```latex
+用户：我明天出差，要买个降噪耳机。 用户：这款能赶上吗？ 用户：那如果不合适可以退吗？
+```
+
+第二句里的“这款”，依赖第一句里提到的降噪耳机。
+第三句里的“不合适”，依赖前面已经建立的购买场景和商品对象。
+如果 Agent 只会 RAG，它可以检索商品说明和退货政策，但它仍然需要知道：
+
+```latex
+当前对话里用户已经说过什么 “这款”指的是哪个商品 “不合适”关联的是哪一次购买意图 前面是否已经查过订单、商品或政策
+```
+
+所以可以这样区分：
+
+| 能力 | 解决的问题 |
+| --- | --- |
+| RAG | 从外部知识库查相关资料 |
+| 短期记忆 | 在同一会话里接住上下文 |
+| 长期记忆 | 跨会话保存稳定偏好或可复用信息 | 接下来的短期记忆和长期记忆，解决的就是“Agent 如何记住对话历史和必要信息”的问题。
+
+---
+
+## 10. 本节知识框架总结
+
+```latex
+Agentic RAG -> 2-step RAG：固定检索再生成 -> Hybrid RAG：固定主流程 + 分类、改写、rerank、相关性判断、fallback -> 检索器封装成 tool -> LLM 决定是否检索 -> 检索后判断文档相关性 -> 不相关时改写查询或降级 -> 相关时基于文档生成答案 -> 灵活性更高，成本和复杂度也更高 -> RAG 解决查知识，Memory 解决记住上下文
+```
+
+## 11. 本节小结 你需要记住：
+1. 2-step RAG 是固定流程，Agentic RAG 是决策流程。
+2. Hybrid RAG 在固定流程里加入分类、改写、rerank、相关性判断和 fallback。
+3. 检索工具让 Agent 可以按需获取知识。
+4. 文档相关性判断和查询改写是 Agentic RAG 的常见增强。
+5. Agentic RAG 不适合所有知识问答，复杂度要和收益匹配。
+6. RAG 解决“查什么知识”，记忆解决“当前对话和跨会话要记住什么”。
+课后练习：
+1. 把售后政策检索封装成一个 `retrieve_policy` 工具。
+2. 写出三个不需要检索的问题。
+3. 写出三个需要先检索再回答的问题。
+4. 为“签收 10 天还能退吗？”设计一个 Hybrid RAG 流程。
+5. 画出“检索不到相关文档”的降级路径。

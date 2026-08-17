@@ -1,1 +1,332 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396361229-94bc49cf-d525-46c9-a95a-df81632eb919.png" title="null" crop="0,0,1,1" id="V3jBF" class="ne-image"> 本节总览图：这张图分成四列：`普通 LLM 应用`、`Chatbot`、`Agent`、`Workflow`。每列从上到下标出输入、是否保留历史、是否调用工具、是否有显式流程状态、典型输出。Agent 这一列要画出 `用户问题 -> model -> tools -> observation -> model -> answer` 的回环，强调 Agent 在需要外部事实时调用工具，而不是凭空回答。 ## 课程目标 学完这一节，你应该能说清： + AI Agent 是什么。 + Agent 和普通 LLM 应用、Chatbot、Workflow 有什么区别。 + 为什么 Agent 需要模型、工具、上下文和执行循环。 + LangChain、LangGraph、LangSmith 在 Agent 开发中分别解决什么问题。 + 电商业务里哪些任务适合 Agent，哪些任务不应该自动交给 Agent。 + 为什么“能回答”不等于“能执行”，更不等于“可以无审批执行高风险动作”。 参考官方文档： + `../../langchain_official_docs_markdown/01_langchain_python/oss/python/langchain/overview.md` + `../../langchain_official_docs_markdown/01_langchain_python/oss/python/langchain/agents.md` --- ## 1. 为什么需要 AI Agent 大模型很擅长理解语言和生成文本。 比如用户说： ```latex 帮我写一段客服回复，告诉用户商品已经发货。 ``` 模型可以直接生成一段像样的话术。 但在企业系统里，很多问题不是“写一段话”就能解决。 电商客户可能会问： ```latex 订单20260001到哪了？我明天出差前能收到吗？ ``` 这个问题至少包含两层任务： + 理解用户真正关心的是物流状态和预计送达时间。 + 查询订单系统或物流系统，拿到真实结果后再回答。 模型本身不知道订单是否存在、是否发货、物流节点在哪里。 这些实时事实在业务系统里，不在模型参数里。 所以正确的系统形态不是： ```latex 用户问题 -> 模型凭感觉回答 ``` 而是： ```latex 用户问题 -> 模型理解任务 -> 判断需要查询物流 -> 调用订单或物流工具 -> 获取业务系统结果 -> 基于结果回答用户 ``` 这就是 Agent 的起点：**让模型不只是生成回答，而是能围绕目标调用外部能力、处理上下文，并逐步完成任务。** --- ## 2. LangChain 官方对 Agent 的定位 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396363299-80bcb4a7-2705-49de-a5da-cb31735b51a2.png" title="null" crop="0,0,1,1" id="mNFdU" class="ne-image"> Agent 执行循环图：这张图从 `input` 节点进入 `model` 节点；`model` 有两个出口：一个是 `action`，指向 `tools`；另一个是 `finish`，指向 `final answer`。`tools` 执行后输出 `observation`，箭头回到 `model`。图中要标注这个回环可能执行多次，直到模型给出最终回答、达到迭代上限或触发人工处理。 LangChain 官方文档中，Agent 的核心定位可以概括为： > Agent 把 language model 和 tools 组合起来，让系统能够围绕任务进行判断、选择工具，并迭代地接近目标。 > 这里有三个关键词。 第一个是 language model。 模型是 Agent 的推理核心，负责理解用户意图、判断下一步动作、解释工具结果。 第二个是 tools。 工具让 Agent 访问外部世界，例如数据库、API、搜索服务、订单系统、库存系统。 第三个是 loop。 Agent 通常不是一次模型调用结束，而是可能经历多轮： ```latex input -> model -> action -> tools -> observation -> model -> finish ``` 官方 `agents.md` 里强调：Agent 会运行到停止条件满足，例如模型给出最终答案，或者达到迭代次数限制。 这说明 Agent 不是“单次问答接口”，而是一个带执行过程的系统。 --- ## 3. 普通 LLM 应用是什么 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396361224-630ceb26-8f01-4e4c-ae30-aeecfaf68042.png" title="null" crop="0,0,1,1" id="l94nI" class="ne-image"> LLM 应用 Chatbot Agent Workflow 对比图：这张图用表格或泳道横向对比四类系统。`LLM 应用` 是 `单次输入 -> 模型 -> 文本输出`；`Chatbot` 是 `历史消息 + 当前输入 -> 模型 -> 回复`；`Agent` 是 `输入 -> 模型 -> 工具 -> observation -> 模型 -> 回复`；`Workflow` 是 `固定步骤 -> 条件分支 -> 状态更新 -> 结果`。每列底部放一个电商例子，突出四者能力递进但不是互相替代。 最简单的 LLM 应用是： ```latex 用户输入 -> 模型 -> 文本输出 ``` 例子： ```latex 用户：帮我把这段客服回复改得更礼貌。 模型：当然，下面是一版更礼貌的回复…… ``` 这类应用适合： + 改写文案。 + 总结内容。 + 生成标题。 + 分类文本。 + 抽取简单信息。 它的特点是：模型只需要根据输入文本生成输出，不需要查询实时业务系统，也不需要执行外部动作。 在电商公司里，下面这些任务可以先从普通 LLM 应用开始： + 改写客服话术。 + 总结客户投诉。 + 生成商品卖点。 + 把运营活动说明改成更清晰的版本。 不要一上来就把所有 AI 应用都叫 Agent。 --- ## 4. Chatbot 是什么 Chatbot 在普通 LLM 应用基础上增加了多轮对话。 它的基本形态是： ```latex 历史消息 + 当前问题 -> 模型 -> 回复 ``` 例如： ```latex 用户：我想买一款通勤用耳机。 AI：你更关注降噪、续航还是价格？ 用户：我更关注降噪。 AI：那可以优先看主动降噪款。 ``` Chatbot 能利用前文理解“它”“这款”“刚才那个”等指代。 但 Chatbot 不一定有工具。 如果用户问： ```latex 那这款现在还有库存吗？ ``` 没有库存工具的 Chatbot 仍然不能可靠回答。它最多只能说“建议你查看商品页面”。 所以可以这样区分： ```latex Chatbot 解决连续对话问题。 Agent 进一步解决外部事实和外部动作问题。 ``` --- ## 5. Agent 是什么 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396361170-db0e8784-9096-41ea-9e36-a8833cd3b8dd.png" title="null" crop="0,0,1,1" id="x1tJE" class="ne-image"> Agent 组成关系图：这张图把 `model` 放在中心，左侧输入 `user input` 和 `context`，右侧连接 `tools`，下方连接 `loop controller / stop condition`。箭头要表示：上下文进入模型，模型决定是否调用工具，工具结果作为 observation 回到模型，停止条件控制循环是否继续。图中要标明工具负责外部事实，模型负责判断和生成回答。 Agent 可以理解为： ```latex 模型 + 工具 + 上下文 + 执行循环 + 停止条件 ``` 这几个部分缺一不可。 模型负责判断： + 用户想做什么。 + 现在信息是否足够。 + 是否需要调用工具。 + 调用哪个工具。 + 工具结果是否足够回答。 工具负责连接外部能力： + 查订单。 + 查物流。 + 查库存。 + 检索售后政策。 + 查询商品资料。 上下文负责提供任务背景： + 当前用户是谁。 + 用户之前说了什么。 + 当前渠道或店铺是什么。 + 系统规则和权限是什么。 执行循环负责把这些能力串起来： ```latex 用户输入 -> 模型判断 -> 工具调用 -> 工具返回 observation -> 模型继续判断 -> 最终回答 ``` 停止条件负责防止无限循环： + 模型已经给出最终回答。 + 达到最大迭代次数。 + 出现需要人工处理的情况。 + 工具失败，需要 fallback。 --- ## 6. Workflow 和 Agent 有什么区别 很多初学者会把 Workflow 和 Agent 混在一起。 Workflow 是事先定义好的流程。 例如售后退款流程： ```latex 收集订单号 -> 查询订单 -> 判断是否在退货期 -> 判断是否已拆封 -> 符合规则则生成处理建议 -> 高风险情况转人工审批 ``` 这个流程里，每一步相对明确，分支条件也比较稳定。 Agent 更强调模型根据上下文动态判断下一步。 例如客户说： ```latex 我这个耳机用了两天有电流声，想退，但是包装盒丢了。 ``` 系统可能需要： + 识别这是售后问题。 + 追问订单号。 + 查询订单日期。 + 检索售后政策。 + 判断包装缺失是否影响退货。 + 必要时转人工。 这类任务里既有流程，也有语言理解和工具选择。 实际工程中，两者经常组合： ```latex 确定性流程负责边界和审批 Agent 负责理解、检索、工具选择和自然语言交互 ``` LangGraph 后续会用来讲这类有状态流程。 --- ## 7. LangChain、LangGraph、LangSmith 的分工 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396361080-d033fe27-418d-4641-8b8e-1cb453117351.png" title="null" crop="0,0,1,1" id="J8emR" class="ne-image"> LangChain LangGraph LangSmith 分工图：这张图用三层或三个相邻模块表示分工。`LangChain` 连接 `models / messages / tools / create_agent`；当流程需要状态和人工确认时，箭头从 LangChain 指向 `LangGraph`，LangGraph 包含 `state / nodes / edges / checkpoint / human-in-the-loop`；所有运行过程再用虚线连到 `LangSmith`，表示 trace、eval 和 observability 覆盖前两者。 LangChain 官方 overview 里强调，LangChain 提供预构建 Agent 架构和模型、工具集成，可以快速构建 Agent。 基础阶段可以先这样理解： | 名称 | 解决什么问题 | 电商场景理解 | | --- | --- | --- | | LangChain | 模型、消息、工具、Agent 基础能力 | 快速做一个能查订单工具的客服 Agent | | LangGraph | 状态图、复杂流程、持久化、人工确认 | 做售后审批、退款审核、报销流程 | | LangSmith | trace、调试、评估、观测 | 查看 AI 为什么调用工具、回答是否回归失败 | 一个常见误区是：只要做 Agent 就必须直接手写 LangGraph。 不一定。 如果只是一个短闭环的客服问答 Agent，可以先用 LangChain 的 `create_agent`。 如果任务需要明确状态、暂停恢复、人工确认、复杂分支，再显式使用 LangGraph。 --- ## 8. `create_agent` 的最小形态 LangChain 官方 overview 给出的最小 Agent 形态类似这样： ```python from langchain.agents import create_agent def get_order_status(order_no: str) -> str: """Get order status for an ecommerce order.""" return f"Order {order_no} has been shipped." agent = create_agent( model="openai:gpt-4.1-mini", tools=[get_order_status], system_prompt="You are a helpful ecommerce customer service assistant.", ) result = agent.invoke( {"messages": [{"role": "user", "content": "Where is order 20260001?"}]} ) print(result["messages"][-1].content) ``` 这段代码里有四个核心对象： + `model`：模型，负责理解和决策。 + `tools`：工具列表，提供外部能力。 + `system_prompt`：系统提示词，约束角色和行为。 + `messages`：用户输入和对话上下文。 后续课程会分别展开模型、消息、工具、Prompt、记忆、RAG 和 LangGraph。 --- ## 9. 可运行 Demo：不用模型模拟 Agent 循环 第一节不要求你马上接入真实模型。下面用普通 Python 模拟 Agent 的结构。 ```python def get_order_status(order_no: str) -> str: """模拟订单查询工具。""" orders = { "20260001": "已发货，物流单号 SF123456，预计明天送达", "20260002": "待发货，仓库正在拣货", } return orders.get(order_no, "未找到该订单") def simple_agent(user_input: str) -> str: """模拟一个极简 Agent。""" if "20260001" in user_input: observation = get_order_status("20260001") return f"我查到订单 20260001：{observation}。" if "订单" in user_input: return "请提供订单号，我再帮你查询。" return "这个问题暂时不需要查询订单系统，我可以先根据已有信息回答。" print(simple_agent("帮我查一下订单20260001到哪了")) print(simple_agent("我的订单到哪了？")) print(simple_agent("你是谁？")) ``` 观察点： + 第一个问题触发了订单查询。 + 第二个问题发现信息不足，要求补充订单号。 + 第三个问题不需要工具。 真实 Agent 会把这里的 `if` 判断交给模型完成，并由 LangChain 运行时负责工具调用循环。 --- ## 10. 哪些任务适合 Agent 适合 Agent 的任务通常有几个特征： + 用户输入是自然语言，表达方式多变。 + 需要模型判断意图。 + 需要调用一个或多个工具。 + 需要结合工具结果继续回答。 + 可能需要追问补充信息。 电商例子： | 用户问题 | 为什么适合 Agent | | --- | --- | | “订单20260001明天能到吗？” | 需要理解问题、查物流、判断预计送达 | | “这个耳机适合通勤吗？” | 需要理解场景、检索商品资料、生成建议 | | “我用了两天有电流声，可以退吗？” | 需要识别售后、查政策、可能查订单 | | “帮我整理这段投诉内容” | 可以用 LLM，但不一定需要工具 | --- ## 11. 哪些任务不应该直接交给 Agent Agent 不等于自动审批系统。 以下任务通常不能让模型直接自动执行： + 自动退款。 + 自动赔付。 + 自动改地址。 + 自动发优惠券。 + 自动付款。 + 自动订票。 + 修改用户权限。 这些动作可以让 Agent 做“辅助判断”或“生成建议”，但最终执行通常需要： + 权限校验。 + 用户确认。 + 人工审批。 + 审计日志。 + 风控规则。 一句话： ```latex 低风险只读查询可以自动化，高风险写操作必须有边界。 ``` --- ## 12. 常见误区 ### 误区 1：会聊天就是 Agent 不是。会聊天只是 Chatbot。Agent 至少要能围绕任务判断下一步，通常还会调用工具。 ### 误区 2：用了工具就是安全的 不是。工具可能返回错误，接口可能超时，用户可能无权查询。工具调用还必须配合权限、错误处理和审计。 ### 误区 3：Agent 可以替代所有后端逻辑 不是。确定性规则应该留在后端。Agent 更适合处理自然语言理解、工具选择、信息整合和人机交互。 ### 误区 4：所有流程都让模型自由决定 不应该。退款、审批、报销、订票这类流程应该用明确状态和规则约束，必要时使用 LangGraph。 --- ## 13. 本节知识框架总结 ```latex AI Agent -> 不是普通文本生成 -> 不是只有多轮对话 -> 核心是模型 + 工具 + 上下文 + 执行循环 -> 模型负责判断 -> 工具负责外部事实和外部动作 -> observation 回到模型 -> 模型给出最终回答或继续执行 -> 高风险动作需要权限、审批和审计 ``` ## 14. 本节小结 你需要记住： 1. 普通 LLM 应用解决文本生成问题。 2. Chatbot 解决多轮对话问题。 3. Agent 解决“理解任务 + 调用工具 + 基于结果回答”的问题。 4. Workflow 解决明确流程、状态和审批问题。 5. LangChain 适合快速构建 Agent，LangGraph 适合复杂有状态流程。 6. 电商里的订单、物流、库存、售后政策都不能让模型凭空回答。 7. Agent 可以辅助企业自动化，但不能绕过权限、审批和审计。 课后练习： 1. 列出 10 个电商客服问题，分别标注为“LLM 应用 / Chatbot / Agent / Workflow”。 2. 解释为什么“订单20260001到哪了”不能只靠模型回答。 3. 写出一个你熟悉业务里的 Agent loop，必须包含 model、tool、observation、final answer。
+# AI Agent：让模型从回答问题走向执行任务
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396361229-94bc49cf-d525-46c9-a95a-df81632eb919.png" title="null" crop="0,0,1,1" id="V3jBF" class="ne-image">
+
+本节总览图：这张图分成四列：`普通 LLM 应用`、`Chatbot`、`Agent`、`Workflow`。每列从上到下标出输入、是否保留历史、是否调用工具、是否有显式流程状态、典型输出。Agent 这一列要画出 `用户问题 -> model -> tools -> observation -> model -> answer` 的回环，强调 Agent 在需要外部事实时调用工具，而不是凭空回答。
+
+## 课程目标
+
+学完这一节，你应该能说清：
+- AI Agent 是什么。
+- Agent 和普通 LLM 应用、Chatbot、Workflow 有什么区别。
+- 为什么 Agent 需要模型、工具、上下文和执行循环。
+- LangChain、LangGraph、LangSmith 在 Agent 开发中分别解决什么问题。
+- 电商业务里哪些任务适合 Agent，哪些任务不应该自动交给 Agent。
+- 为什么“能回答”不等于“能执行”，更不等于“可以无审批执行高风险动作”。
+参考官方文档：
+- `../../langchain_official_docs_markdown/01_langchain_python/oss/python/langchain/overview.md` + `../../langchain_official_docs_markdown/01_langchain_python/oss/python/langchain/agents.md`
+
+---
+
+## 1. 为什么需要 AI Agent 大模型很擅长理解语言和生成文本。 比如用户说：
+
+```latex
+帮我写一段客服回复，告诉用户商品已经发货。
+```
+
+模型可以直接生成一段像样的话术。
+但在企业系统里，很多问题不是“写一段话”就能解决。
+电商客户可能会问：
+
+```latex
+订单20260001到哪了？我明天出差前能收到吗？
+```
+
+这个问题至少包含两层任务：
+- 理解用户真正关心的是物流状态和预计送达时间。
+- 查询订单系统或物流系统，拿到真实结果后再回答。
+模型本身不知道订单是否存在、是否发货、物流节点在哪里。
+这些实时事实在业务系统里，不在模型参数里。
+所以正确的系统形态不是：
+
+```latex
+用户问题 -> 模型凭感觉回答
+```
+
+而是：
+
+```latex
+用户问题 -> 模型理解任务 -> 判断需要查询物流 -> 调用订单或物流工具 -> 获取业务系统结果 -> 基于结果回答用户
+```
+
+这就是 Agent 的起点：**让模型不只是生成回答，而是能围绕目标调用外部能力、处理上下文，并逐步完成任务。**
+
+---
+
+## 2. LangChain 官方对 Agent 的定位
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396363299-80bcb4a7-2705-49de-a5da-cb31735b51a2.png" title="null" crop="0,0,1,1" id="mNFdU" class="ne-image">
+
+Agent 执行循环图：这张图从 `input` 节点进入 `model` 节点；`model` 有两个出口：一个是 `action`，指向 `tools`；另一个是 `finish`，指向 `final answer`。`tools` 执行后输出 `observation`，箭头回到 `model`。图中要标注这个回环可能执行多次，直到模型给出最终回答、达到迭代上限或触发人工处理。
+LangChain 官方文档中，Agent 的核心定位可以概括为：
+
+> Agent 把 language model 和 tools 组合起来，让系统能够围绕任务进行判断、选择工具，并迭代地接近目标。
+
+> 这里有三个关键词。
+> 第一个是 language model。
+> 模型是 Agent 的推理核心，负责理解用户意图、判断下一步动作、解释工具结果。
+> 第二个是 tools。
+> 工具让 Agent 访问外部世界，例如数据库、API、搜索服务、订单系统、库存系统。
+> 第三个是 loop。
+> Agent 通常不是一次模型调用结束，而是可能经历多轮：
+
+```latex
+input -> model -> action -> tools -> observation -> model -> finish
+```
+
+官方 `agents.md` 里强调：Agent 会运行到停止条件满足，例如模型给出最终答案，或者达到迭代次数限制。
+这说明 Agent 不是“单次问答接口”，而是一个带执行过程的系统。
+
+---
+
+## 3. 普通 LLM 应用是什么
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396361224-630ceb26-8f01-4e4c-ae30-aeecfaf68042.png" title="null" crop="0,0,1,1" id="l94nI" class="ne-image">
+
+LLM 应用 Chatbot Agent Workflow 对比图：这张图用表格或泳道横向对比四类系统。`LLM 应用` 是 `单次输入 -> 模型 -> 文本输出`；`Chatbot` 是 `历史消息 + 当前输入 -> 模型 -> 回复`；`Agent` 是 `输入 -> 模型 -> 工具 -> observation -> 模型 -> 回复`；`Workflow` 是 `固定步骤 -> 条件分支 -> 状态更新 -> 结果`。每列底部放一个电商例子，突出四者能力递进但不是互相替代。
+最简单的 LLM 应用是：
+
+```latex
+用户输入 -> 模型 -> 文本输出
+```
+
+例子：
+
+```latex
+用户：帮我把这段客服回复改得更礼貌。 模型：当然，下面是一版更礼貌的回复……
+```
+
+这类应用适合：
+- 改写文案。
+- 总结内容。
+- 生成标题。
+- 分类文本。
+- 抽取简单信息。
+它的特点是：模型只需要根据输入文本生成输出，不需要查询实时业务系统，也不需要执行外部动作。
+在电商公司里，下面这些任务可以先从普通 LLM 应用开始：
+- 改写客服话术。
+- 总结客户投诉。
+- 生成商品卖点。
+- 把运营活动说明改成更清晰的版本。
+不要一上来就把所有 AI 应用都叫 Agent。
+
+---
+
+## 4. Chatbot 是什么 Chatbot 在普通 LLM 应用基础上增加了多轮对话。 它的基本形态是：
+
+```latex
+历史消息 + 当前问题 -> 模型 -> 回复
+```
+
+例如：
+
+```latex
+用户：我想买一款通勤用耳机。 AI：你更关注降噪、续航还是价格？ 用户：我更关注降噪。 AI：那可以优先看主动降噪款。
+```
+
+Chatbot 能利用前文理解“它”“这款”“刚才那个”等指代。
+但 Chatbot 不一定有工具。
+如果用户问：
+
+```latex
+那这款现在还有库存吗？
+```
+
+没有库存工具的 Chatbot 仍然不能可靠回答。它最多只能说“建议你查看商品页面”。
+所以可以这样区分：
+
+```latex
+Chatbot 解决连续对话问题。 Agent 进一步解决外部事实和外部动作问题。
+```
+
+---
+
+## 5. Agent 是什么
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396361170-db0e8784-9096-41ea-9e36-a8833cd3b8dd.png" title="null" crop="0,0,1,1" id="x1tJE" class="ne-image">
+
+Agent 组成关系图：这张图把 `model` 放在中心，左侧输入 `user input` 和 `context`，右侧连接 `tools`，下方连接 `loop controller / stop condition`。箭头要表示：上下文进入模型，模型决定是否调用工具，工具结果作为 observation 回到模型，停止条件控制循环是否继续。图中要标明工具负责外部事实，模型负责判断和生成回答。
+Agent 可以理解为：
+
+```latex
+模型 + 工具 + 上下文 + 执行循环 + 停止条件
+```
+
+这几个部分缺一不可。
+模型负责判断：
+- 用户想做什么。
+- 现在信息是否足够。
+- 是否需要调用工具。
+- 调用哪个工具。
+- 工具结果是否足够回答。
+工具负责连接外部能力：
+- 查订单。
+- 查物流。
+- 查库存。
+- 检索售后政策。
+- 查询商品资料。
+上下文负责提供任务背景：
+- 当前用户是谁。
+- 用户之前说了什么。
+- 当前渠道或店铺是什么。
+- 系统规则和权限是什么。
+执行循环负责把这些能力串起来：
+
+```latex
+用户输入 -> 模型判断 -> 工具调用 -> 工具返回 observation -> 模型继续判断 -> 最终回答
+```
+
+停止条件负责防止无限循环：
+- 模型已经给出最终回答。
+- 达到最大迭代次数。
+- 出现需要人工处理的情况。
+- 工具失败，需要 fallback。
+
+---
+
+## 6. Workflow 和 Agent 有什么区别 很多初学者会把 Workflow 和 Agent 混在一起。 Workflow 是事先定义好的流程。 例如售后退款流程：
+
+```latex
+收集订单号 -> 查询订单 -> 判断是否在退货期 -> 判断是否已拆封 -> 符合规则则生成处理建议 -> 高风险情况转人工审批
+```
+
+这个流程里，每一步相对明确，分支条件也比较稳定。
+Agent 更强调模型根据上下文动态判断下一步。
+例如客户说：
+
+```latex
+我这个耳机用了两天有电流声，想退，但是包装盒丢了。
+```
+
+系统可能需要：
+- 识别这是售后问题。
+- 追问订单号。
+- 查询订单日期。
+- 检索售后政策。
+- 判断包装缺失是否影响退货。
+- 必要时转人工。
+这类任务里既有流程，也有语言理解和工具选择。
+实际工程中，两者经常组合：
+
+```latex
+确定性流程负责边界和审批 Agent 负责理解、检索、工具选择和自然语言交互
+```
+
+LangGraph 后续会用来讲这类有状态流程。
+
+---
+
+## 7. LangChain、LangGraph、LangSmith 的分工
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396361080-d033fe27-418d-4641-8b8e-1cb453117351.png" title="null" crop="0,0,1,1" id="J8emR" class="ne-image">
+
+LangChain LangGraph LangSmith 分工图：这张图用三层或三个相邻模块表示分工。`LangChain` 连接 `models / messages / tools / create_agent`；当流程需要状态和人工确认时，箭头从 LangChain 指向 `LangGraph`，LangGraph 包含 `state / nodes / edges / checkpoint / human-in-the-loop`；所有运行过程再用虚线连到 `LangSmith`，表示 trace、eval 和 observability 覆盖前两者。
+LangChain 官方 overview 里强调，LangChain 提供预构建 Agent 架构和模型、工具集成，可以快速构建 Agent。
+基础阶段可以先这样理解：
+
+| 名称 | 解决什么问题 | 电商场景理解 |
+| --- | --- | --- |
+| LangChain | 模型、消息、工具、Agent 基础能力 | 快速做一个能查订单工具的客服 Agent |
+| LangGraph | 状态图、复杂流程、持久化、人工确认 | 做售后审批、退款审核、报销流程 |
+| LangSmith | trace、调试、评估、观测 | 查看 AI 为什么调用工具、回答是否回归失败  |
+
+一个常见误区是：只要做 Agent 就必须直接手写 LangGraph。 不一定。 如果只是一个短闭环的客服问答 Agent，可以先用 LangChain 的 `create_agent`。 如果任务需要明确状态、暂停恢复、人工确认、复杂分支，再显式使用 LangGraph。
+
+---
+
+## 8. `create_agent` 的最小形态 LangChain 官方 overview 给出的最小 Agent 形态类似这样：
+
+```python
+from langchain.agents import create_agent def get_order_status(order_no: str) -> str: """Get order status for an ecommerce order.""" return f"Order {order_no} has been shipped." agent = create_agent( model="openai:gpt-4.1-mini", tools=[get_order_status], system_prompt="You are a helpful ecommerce customer service assistant.", ) result = agent.invoke( {"messages": [{"role": "user", "content": "Where is order 20260001?"}]} ) print(result["messages"][-1].content)
+```
+
+这段代码里有四个核心对象：
+- `model`：模型，负责理解和决策。
+- `tools`：工具列表，提供外部能力。
+- `system_prompt`：系统提示词，约束角色和行为。
+- `messages`：用户输入和对话上下文。
+后续课程会分别展开模型、消息、工具、Prompt、记忆、RAG 和 LangGraph。
+
+---
+
+## 9. 可运行 Demo：不用模型模拟 Agent 循环 第一节不要求你马上接入真实模型。下面用普通 Python 模拟 Agent 的结构。
+
+```python
+def get_order_status(order_no: str) -> str: """模拟订单查询工具。""" orders = { "20260001": "已发货，物流单号 SF123456，预计明天送达", "20260002": "待发货，仓库正在拣货", } return orders.get(order_no, "未找到该订单") def simple_agent(user_input: str) -> str: """模拟一个极简 Agent。""" if "20260001" in user_input: observation = get_order_status("20260001") return f"我查到订单 20260001：{observation}。" if "订单" in user_input: return "请提供订单号，我再帮你查询。" return "这个问题暂时不需要查询订单系统，我可以先根据已有信息回答。" print(simple_agent("帮我查一下订单20260001到哪了")) print(simple_agent("我的订单到哪了？")) print(simple_agent("你是谁？"))
+```
+
+观察点：
+- 第一个问题触发了订单查询。
+- 第二个问题发现信息不足，要求补充订单号。
+- 第三个问题不需要工具。
+真实 Agent 会把这里的 `if` 判断交给模型完成，并由 LangChain 运行时负责工具调用循环。
+
+---
+
+## 10. 哪些任务适合 Agent 适合 Agent 的任务通常有几个特征：
+- 用户输入是自然语言，表达方式多变。
+- 需要模型判断意图。
+- 需要调用一个或多个工具。
+- 需要结合工具结果继续回答。
+- 可能需要追问补充信息。
+电商例子：
+
+| 用户问题 | 为什么适合 Agent |
+| --- | --- |
+| “订单20260001明天能到吗？” | 需要理解问题、查物流、判断预计送达 |
+| “这个耳机适合通勤吗？” | 需要理解场景、检索商品资料、生成建议 |
+| “我用了两天有电流声，可以退吗？” | 需要识别售后、查政策、可能查订单 |
+| “帮我整理这段投诉内容” | 可以用 LLM，但不一定需要工具 | ---
+
+## 11. 哪些任务不应该直接交给 Agent Agent 不等于自动审批系统。 以下任务通常不能让模型直接自动执行：
+- 自动退款。
+- 自动赔付。
+- 自动改地址。
+- 自动发优惠券。
+- 自动付款。
+- 自动订票。
+- 修改用户权限。
+这些动作可以让 Agent 做“辅助判断”或“生成建议”，但最终执行通常需要：
+- 权限校验。
+- 用户确认。
+- 人工审批。
+- 审计日志。
+- 风控规则。
+一句话：
+
+```latex
+低风险只读查询可以自动化，高风险写操作必须有边界。
+```
+
+---
+
+## 12. 常见误区
+
+### 误区 1：会聊天就是 Agent 不是。会聊天只是 Chatbot。Agent 至少要能围绕任务判断下一步，通常还会调用工具。
+
+### 误区 2：用了工具就是安全的 不是。工具可能返回错误，接口可能超时，用户可能无权查询。工具调用还必须配合权限、错误处理和审计。
+
+### 误区 3：Agent 可以替代所有后端逻辑 不是。确定性规则应该留在后端。Agent 更适合处理自然语言理解、工具选择、信息整合和人机交互。
+
+### 误区 4：所有流程都让模型自由决定 不应该。退款、审批、报销、订票这类流程应该用明确状态和规则约束，必要时使用 LangGraph。
+
+---
+
+## 13. 本节知识框架总结
+
+```latex
+AI Agent -> 不是普通文本生成 -> 不是只有多轮对话 -> 核心是模型 + 工具 + 上下文 + 执行循环 -> 模型负责判断 -> 工具负责外部事实和外部动作 -> observation 回到模型 -> 模型给出最终回答或继续执行 -> 高风险动作需要权限、审批和审计
+```
+
+## 14. 本节小结 你需要记住：
+1. 普通 LLM 应用解决文本生成问题。
+2. Chatbot 解决多轮对话问题。
+3. Agent 解决“理解任务 + 调用工具 + 基于结果回答”的问题。
+4. Workflow 解决明确流程、状态和审批问题。
+5. LangChain 适合快速构建 Agent，LangGraph 适合复杂有状态流程。
+6. 电商里的订单、物流、库存、售后政策都不能让模型凭空回答。
+7. Agent 可以辅助企业自动化，但不能绕过权限、审批和审计。
+课后练习：
+1. 列出 10 个电商客服问题，分别标注为“LLM 应用 / Chatbot / Agent / Workflow”。
+2. 解释为什么“订单20260001到哪了”不能只靠模型回答。
+3. 写出一个你熟悉业务里的 Agent loop，必须包含 model、tool、observation、final answer。

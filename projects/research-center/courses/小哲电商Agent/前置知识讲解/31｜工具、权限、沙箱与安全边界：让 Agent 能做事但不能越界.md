@@ -1,1 +1,214 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396401422-a6b36c16-ffd2-4f02-bace-a6c27a4975e8.png" title="null" crop="0,0,1,1" id="zLrXF" class="ne-image"> 本节总览图：这张图从 `Agent wants to use tool` 开始，进入 `permission check`。分支一是 `allow`，进入 `sandbox / runtime boundary` 后执行工具；分支二是 `ask for approval`，进入 `human confirmation`；分支三是 `deny`，返回拒绝原因。工具类型包括 `Read`、`Edit`、`Bash`、`Web`、`MCP`。图中强调权限、沙箱、checkpoint 是不同层的安全措施，不能互相替代。 ## 课程目标 学完这一节，你应该能说清： + Claude Code 中工具为什么必须配合权限。 + Read、Edit、Bash、Web、MCP 等工具的风险差异。 + allow / deny 和 permission mode 的基本意义。 + 沙箱解决什么问题，不能解决什么问题。 + checkpoint 为什么不是权限系统，但能降低修改风险。 + 如何把工具权限思想迁移到业务 Agent。 --- ## 1. 工具让 Agent 有行动能力 Tool Calling 让模型可以连接外部世界。Claude Code 中的工具更直接： + 读取文件。 + 搜索代码。 + 编辑文件。 + 运行 shell 命令。 + 访问网页。 + 调用 MCP 工具。 这些能力非常强，也意味着风险更高。 业务 Agent 也是一样。查询订单是工具，发起退款也是工具。两者都叫工具，但风险完全不同。 --- ## 2. 工具风险不是一个等级 你可以按风险把工具分成三类： | 风险等级 | 示例 | 处理方式 | | --- | --- | --- | | 低风险只读 | 查询订单状态、搜索商品、读取售后政策 | 可自动执行，但要记录日志 | | 中风险变更 | 修改收货地址、创建售后单、发送通知 | 通常需要确认或限制条件 | | 高风险动作 | 退款、发券、赔付、删除数据 | 必须人工审批或禁止自动执行 | <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396401363-0ec158f6-0c24-4141-97fc-8d9bdf1dbfc4.png" title="null" crop="0,0,1,1" id="VHPxz" class="ne-image"> 工具风险分层图：这张图从下到上画三层工具风险。底层是 `read-only tools`，箭头直接到 `execute + audit`；中层是 `state-changing tools`，箭头先到 `condition check` 和 `confirmation`；高层是 `financial / destructive tools`，箭头进入 `human approval` 或 `deny`。每层旁边标出电商例子。 这比简单说“Agent 可以调用工具”更接近真实系统设计。 --- ## 3. Permission rules：允许、拒绝和细粒度控制 Claude Code 官方权限文档介绍了工具级权限控制。核心思想是： ```latex 不是所有工具调用都默认允许。 ``` 权限规则要回答： + 哪个工具可以用。 + 哪些参数范围可以用。 + 哪些命令或路径允许。 + 哪些操作需要用户确认。 + 哪些操作直接拒绝。 业务 Agent 中也应该有类似规则： ```latex get_order_status: allow get_refund_policy: allow create_refund_request: ask approve_refund: deny_for_agent delete_order: deny ``` 注意：不要让模型自己决定权限。模型可以提出“我想调用退款工具”，但真正的权限判断必须由系统完成。 Claude Code 官方文档中的权限规则可以匹配整个工具，也可以匹配工具的具体用法： ```latex Tool Tool(specifier) ``` 例如： ```latex Bash Read(./.env) WebFetch(domain:example.com) Bash(npm run test *) ``` 这背后的设计思想是：权限应该能从粗到细控制。 业务 Agent 中也应该有类似粒度： ```latex OrderRead(current_user_only) -> allow RefundCreate(amount_under_100) -> ask RefundApprove(*) -> deny CustomerProfileRead(phone,address) -> ask 或脱敏 ``` 不要只设计一个笼统的 `can_use_tools=True`。真实系统需要控制工具、参数、身份和业务条件。 官方权限文档还说明，规则按下面顺序评估： ```latex deny -> ask -> allow ``` 拒绝规则必须优先。例如允许查询订单，并不代表允许查询非当前用户订单。 --- ## 4. Permission mode 和人工确认 不同任务可以使用不同权限模式。 例如： + 只读分析任务：允许读取和查询。 + 小范围修改任务：允许编辑指定文件。 + 高风险业务任务：每次动作都要求确认。 在电商客服里： ```latex 用户问“订单到哪了” -> 自动查询物流 用户说“帮我退款” -> 查询订单和政策 -> 给出退款建议 -> 请求人工确认 -> 审批通过后才执行 ``` 这和第 24 课 Human-in-the-loop 是同一类工程原则：工具越能影响真实世界，越需要确认和审计。 Claude Code 官方文档中有多种 permission mode。课程里不要求死记命令，但要理解差异： | 模式 | 含义 | 适合场景 | | --- | --- | --- | | `default` | 标准模式，敏感操作请求确认 | 日常工程协作 | | `acceptEdits` | 自动接受文件编辑和常见文件系统命令 | 明确的小范围代码修改 | | `plan` | 只读分析，不修改、不执行高风险命令 | 讨论方案、代码审查、需求分析 | | `auto` | 后台安全检查后自动批准部分动作 | 受控环境中的自动化任务 | | `dontAsk` | 未预先允许的工具自动拒绝 | 高安全环境 | | `bypassPermissions` | 跳过多数权限提示 | 只适合隔离容器或一次性环境 | 其中 `auto` 是有条件的自动权限模式，官方文档将其标为 research preview，并且会受到账号计划、模型、供应商和组织配置影响。基础课不要求你一定能打开 `auto`，只需要理解“自动化越强，越需要额外安全检查”这个设计思想。 这里最值得迁移到业务 Agent 的不是模式名，而是模式思维：不同任务应该使用不同执行权限。 --- ## 5. 沙箱解决什么问题 Sandboxing 关注的是运行环境边界。它可以限制： + 文件系统可访问范围。 + 网络访问范围。 + 子进程能影响的环境。 + 非预期命令造成的破坏范围。 但沙箱不是万能的。 | 能力 | 能否替代权限 | | --- | --- | | 限制文件访问 | 不能替代业务权限 | | 限制网络访问 | 不能判断退款是否合规 | | 限制命令执行范围 | 不能判断用户是否有权查询订单 | | 降低环境破坏 | 不能替代审计和审批 | 权限回答“允许做什么”，沙箱回答“即使出错也限制影响范围”。 --- ## 6. 沙箱不能解决什么问题 沙箱很重要，但它不是 prompt injection 检测器。 Prompt injection 的问题是：用户输入、网页内容、文档内容或工具返回结果里，可能混入“忽略之前规则”“把密钥发出去”“执行某个危险命令”这类指令，诱导模型偏离原本的系统规则。 沙箱不能阻止模型被这类内容影响。它能做的是：当模型被诱导去执行工具时，把工具执行限制在文件系统和网络边界内，降低破坏范围。 更准确地说： | 安全层 | 主要防什么 | 不能替代什么 | | --- | --- | --- | | Prompt / guardrail | 提醒模型区分指令和数据，检测危险输入输出 | 不能强制阻断所有工具越权 | | Permission rules | 控制工具能不能用、哪些参数能用 | 不能限制 Bash 子进程的所有系统访问 | | Sandboxing | 限制 Bash 命令及子进程的文件系统和网络访问 | 不能阻止模型被 prompt injection 影响 | | Human approval | 高风险动作前让人确认 | 不能替代系统权限和审计 | <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396402505-246665ef-c049-43b5-b979-a593384f0207.png" title="null" crop="0,0,1,1" id="ETSLN" class="ne-image"> 沙箱与 Prompt Injection 边界图：这张图从 `untrusted input` 指向 `model context`，标注 prompt injection 发生在模型理解和决策层；模型随后可能生成 `tool call`，进入 `permission rules` 和 `sandbox boundary`。图中要强调：沙箱位于工具执行层，可以限制 Bash 命令和子进程访问文件系统、网络，但不能让模型天然识别所有恶意指令。右侧再画 `human approval / audit`，说明高风险动作仍需要审批和记录。 所以，不能因为开了沙箱，就放宽其他安全设计。 常见错误是： ```latex 开了沙箱 -> 允许 Agent 自由读取所有资料和执行所有命令 ``` 更合理的设计是： ```latex prompt injection 防护 + 权限规则 + 沙箱 + 高风险人工确认 + 审计和回放 ``` 这些层各自解决不同问题，不能互相替代。 --- ## 7. Checkpoint 不是权限，但能降低风险 Checkpoint 可以让你在工程修改后回退。它适合处理： + 文件修改错误。 + 实现路径不合适。 + 测试失败后需要回到之前状态。 但 checkpoint 不能替代权限。 如果 Agent 已经给用户发了优惠券，或者已经发起真实退款，回退代码并不能撤销业务影响。 所以业务 Agent 的高风险动作必须在执行前控制，而不是事后依赖回滚。 --- ## 8. 小 demo：电商工具权限表 ```markdown | 工具 | 风险 | 默认策略 | 说明 | |---|---|---|---| | search_products | 低 | allow | 只读商品搜索 | | get_order_status | 低 | allow | 只能查询当前用户订单 | | get_shipping_trace | 低 | allow | 需要订单归属校验 | | update_shipping_address | 中 | ask | 发货前才允许，需用户确认 | | create_after_sale_ticket | 中 | ask | 创建售后单，需确认原因 | | issue_coupon | 高 | ask + audit | 涉及资产，需客服主管审批 | | approve_refund | 高 | deny_for_agent | Agent 只能生成建议，不能最终审批 | | delete_order | 高 | deny | 禁止开放给 Agent | ``` 这个表比 prompt 里的“请谨慎操作”更可靠，因为它能落到系统权限实现。 --- ## 9. 常见错误 ### 错误一：所有工具一视同仁 查询订单和退款不是同一种风险。工具必须分级。 ### 错误二：让模型填写 user_id 或 role 身份、租户、权限必须来自认证和 runtime context，不能来自用户输入或模型生成。 ### 错误三：把沙箱当成业务权限 沙箱限制环境，不能判断业务合规。 ### 错误四：只写 allow，不写 deny 只写允许规则容易扩大权限。高风险动作、敏感字段和越权查询应该有明确 deny 或 ask 规则。 ### 错误五：以为沙箱能防住所有 prompt injection 沙箱可以降低被诱导执行危险命令后的影响范围，但不能阻止模型被恶意内容影响。prompt injection 防护、权限规则、人工确认和审计仍然必须存在。 --- ## 10. 本节知识框架总结 ```latex 工具权限与沙箱 -> 工具让 Agent 能行动 -> 工具风险需要分级 -> permission rules 控制 allow / ask / deny -> 身份和权限由系统注入 -> 沙箱限制执行环境影响范围 -> 沙箱不能阻止模型被 prompt injection 影响 -> checkpoint 支持工程回退 -> 高风险业务动作必须执行前审批 ``` ## 11. 本节小结 你需要记住： 1. 工具能力越强，权限边界越重要。 2. 只读工具、变更工具、资产类工具应该分级处理。 3. 权限判断不能交给模型。 4. 沙箱、权限、checkpoint 是不同层的安全措施。 5. 沙箱不能替代 prompt injection 防护。 6. 高风险业务动作要先审批，再执行。 课后练习： 1. 为“修改收货地址”设计权限规则。 2. 说明为什么退款不能只靠 checkpoint 降低风险。 3. 把你项目中的工具分成 allow、ask、deny 三类。
+# 工具、权限、沙箱与安全边界：让 Agent 能做事但不能越界
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396401422-a6b36c16-ffd2-4f02-bace-a6c27a4975e8.png" title="null" crop="0,0,1,1" id="zLrXF" class="ne-image">
+
+本节总览图：这张图从 `Agent wants to use tool` 开始，进入 `permission check`。分支一是 `allow`，进入 `sandbox / runtime boundary` 后执行工具；分支二是 `ask for approval`，进入 `human confirmation`；分支三是 `deny`，返回拒绝原因。工具类型包括 `Read`、`Edit`、`Bash`、`Web`、`MCP`。图中强调权限、沙箱、checkpoint 是不同层的安全措施，不能互相替代。
+
+## 课程目标
+
+学完这一节，你应该能说清：
+- Claude Code 中工具为什么必须配合权限。
+- Read、Edit、Bash、Web、MCP 等工具的风险差异。
+- allow / deny 和 permission mode 的基本意义。
+- 沙箱解决什么问题，不能解决什么问题。
+- checkpoint 为什么不是权限系统，但能降低修改风险。
+- 如何把工具权限思想迁移到业务 Agent。
+
+---
+
+## 1. 工具让 Agent 有行动能力 Tool Calling 让模型可以连接外部世界。Claude Code 中的工具更直接：
+- 读取文件。
+- 搜索代码。
+- 编辑文件。
+- 运行 shell 命令。
+- 访问网页。
+- 调用 MCP 工具。
+这些能力非常强，也意味着风险更高。
+业务 Agent 也是一样。查询订单是工具，发起退款也是工具。两者都叫工具，但风险完全不同。
+
+---
+
+## 2. 工具风险不是一个等级 你可以按风险把工具分成三类：
+
+| 风险等级 | 示例 | 处理方式 |
+| --- | --- | --- |
+| 低风险只读 | 查询订单状态、搜索商品、读取售后政策 | 可自动执行，但要记录日志 |
+| 中风险变更 | 修改收货地址、创建售后单、发送通知 | 通常需要确认或限制条件 |
+| 高风险动作 | 退款、发券、赔付、删除数据 | 必须人工审批或禁止自动执行 |
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396401363-0ec158f6-0c24-4141-97fc-8d9bdf1dbfc4.png" title="null" crop="0,0,1,1" id="VHPxz" class="ne-image">
+
+工具风险分层图：这张图从下到上画三层工具风险。底层是 `read-only tools`，箭头直接到 `execute + audit`；中层是 `state-changing tools`，箭头先到 `condition check` 和 `confirmation`；高层是 `financial / destructive tools`，箭头进入 `human approval` 或 `deny`。每层旁边标出电商例子。
+这比简单说“Agent 可以调用工具”更接近真实系统设计。
+
+---
+
+## 3. Permission rules：允许、拒绝和细粒度控制 Claude Code 官方权限文档介绍了工具级权限控制。核心思想是：
+
+```latex
+不是所有工具调用都默认允许。
+```
+
+权限规则要回答：
+- 哪个工具可以用。
+- 哪些参数范围可以用。
+- 哪些命令或路径允许。
+- 哪些操作需要用户确认。
+- 哪些操作直接拒绝。
+业务 Agent 中也应该有类似规则：
+
+```latex
+get_order_status: allow get_refund_policy: allow create_refund_request: ask approve_refund: deny_for_agent delete_order: deny
+```
+
+注意：不要让模型自己决定权限。模型可以提出“我想调用退款工具”，但真正的权限判断必须由系统完成。
+Claude Code 官方文档中的权限规则可以匹配整个工具，也可以匹配工具的具体用法：
+
+```latex
+Tool Tool(specifier)
+```
+
+例如：
+
+```latex
+Bash Read(./.env) WebFetch(domain:example.com) Bash(npm run test *)
+```
+
+这背后的设计思想是：权限应该能从粗到细控制。
+业务 Agent 中也应该有类似粒度：
+
+```latex
+OrderRead(current_user_only) -> allow RefundCreate(amount_under_100) -> ask RefundApprove(*) -> deny CustomerProfileRead(phone,address) -> ask 或脱敏
+```
+
+不要只设计一个笼统的 `can_use_tools=True`。真实系统需要控制工具、参数、身份和业务条件。
+官方权限文档还说明，规则按下面顺序评估：
+
+```latex
+deny -> ask -> allow
+```
+
+拒绝规则必须优先。例如允许查询订单，并不代表允许查询非当前用户订单。
+
+---
+
+## 4. Permission mode 和人工确认 不同任务可以使用不同权限模式。 例如：
+- 只读分析任务：允许读取和查询。
+- 小范围修改任务：允许编辑指定文件。
+- 高风险业务任务：每次动作都要求确认。
+在电商客服里：
+
+```latex
+用户问“订单到哪了” -> 自动查询物流 用户说“帮我退款” -> 查询订单和政策 -> 给出退款建议 -> 请求人工确认 -> 审批通过后才执行
+```
+
+这和第 24 课 Human-in-the-loop 是同一类工程原则：工具越能影响真实世界，越需要确认和审计。
+Claude Code 官方文档中有多种 permission mode。课程里不要求死记命令，但要理解差异：
+
+| 模式 | 含义 | 适合场景 |
+| --- | --- | --- |
+| `default` | 标准模式，敏感操作请求确认 | 日常工程协作 |
+| `acceptEdits` | 自动接受文件编辑和常见文件系统命令 | 明确的小范围代码修改 |
+| `plan` | 只读分析，不修改、不执行高风险命令 | 讨论方案、代码审查、需求分析 |
+| `auto` | 后台安全检查后自动批准部分动作 | 受控环境中的自动化任务 |
+| `dontAsk` | 未预先允许的工具自动拒绝 | 高安全环境 |
+| `bypassPermissions` | 跳过多数权限提示 | 只适合隔离容器或一次性环境 | 其中 `auto` 是有条件的自动权限模式，官方文档将其标为 research preview，并且会受到账号计划、模型、供应商和组织配置影响。基础课不要求你一定能打开 `auto`，只需要理解“自动化越强，越需要额外安全检查”这个设计思想。 这里最值得迁移到业务 Agent 的不是模式名，而是模式思维：不同任务应该使用不同执行权限。
+
+---
+
+## 5. 沙箱解决什么问题 Sandboxing 关注的是运行环境边界。它可以限制：
+- 文件系统可访问范围。
+- 网络访问范围。
+- 子进程能影响的环境。
+- 非预期命令造成的破坏范围。
+但沙箱不是万能的。
+
+| 能力 | 能否替代权限 |
+| --- | --- |
+| 限制文件访问 | 不能替代业务权限 |
+| 限制网络访问 | 不能判断退款是否合规 |
+| 限制命令执行范围 | 不能判断用户是否有权查询订单 |
+| 降低环境破坏 | 不能替代审计和审批 | 权限回答“允许做什么”，沙箱回答“即使出错也限制影响范围”。
+
+---
+
+## 6. 沙箱不能解决什么问题 沙箱很重要，但它不是 prompt injection 检测器。 Prompt injection 的问题是：用户输入、网页内容、文档内容或工具返回结果里，可能混入“忽略之前规则”“把密钥发出去”“执行某个危险命令”这类指令，诱导模型偏离原本的系统规则。 沙箱不能阻止模型被这类内容影响。它能做的是：当模型被诱导去执行工具时，把工具执行限制在文件系统和网络边界内，降低破坏范围。 更准确地说：
+
+| 安全层 | 主要防什么 | 不能替代什么 |
+| --- | --- | --- |
+| Prompt / guardrail | 提醒模型区分指令和数据，检测危险输入输出 | 不能强制阻断所有工具越权 |
+| Permission rules | 控制工具能不能用、哪些参数能用 | 不能限制 Bash 子进程的所有系统访问 |
+| Sandboxing | 限制 Bash 命令及子进程的文件系统和网络访问 | 不能阻止模型被 prompt injection 影响 |
+| Human approval | 高风险动作前让人确认 | 不能替代系统权限和审计 |
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396402505-246665ef-c049-43b5-b979-a593384f0207.png" title="null" crop="0,0,1,1" id="ETSLN" class="ne-image">
+
+沙箱与 Prompt Injection 边界图：这张图从 `untrusted input` 指向 `model context`，标注 prompt injection 发生在模型理解和决策层；模型随后可能生成 `tool call`，进入 `permission rules` 和 `sandbox boundary`。图中要强调：沙箱位于工具执行层，可以限制 Bash 命令和子进程访问文件系统、网络，但不能让模型天然识别所有恶意指令。右侧再画 `human approval / audit`，说明高风险动作仍需要审批和记录。
+所以，不能因为开了沙箱，就放宽其他安全设计。
+常见错误是：
+
+```latex
+开了沙箱 -> 允许 Agent 自由读取所有资料和执行所有命令
+```
+
+更合理的设计是：
+
+```latex
+prompt injection 防护 + 权限规则 + 沙箱 + 高风险人工确认 + 审计和回放
+```
+
+这些层各自解决不同问题，不能互相替代。
+
+---
+
+## 7. Checkpoint 不是权限，但能降低风险 Checkpoint 可以让你在工程修改后回退。它适合处理：
+- 文件修改错误。
+- 实现路径不合适。
+- 测试失败后需要回到之前状态。
+但 checkpoint 不能替代权限。
+如果 Agent 已经给用户发了优惠券，或者已经发起真实退款，回退代码并不能撤销业务影响。
+所以业务 Agent 的高风险动作必须在执行前控制，而不是事后依赖回滚。
+
+---
+
+## 8. 小 demo：电商工具权限表
+
+```markdown
+| 工具 | 风险 | 默认策略 | 说明 | |---|---|---|---| | search_products | 低 | allow | 只读商品搜索 | | get_order_status | 低 | allow | 只能查询当前用户订单 | | get_shipping_trace | 低 | allow | 需要订单归属校验 | | update_shipping_address | 中 | ask | 发货前才允许，需用户确认 | | create_after_sale_ticket | 中 | ask | 创建售后单，需确认原因 | | issue_coupon | 高 | ask + audit | 涉及资产，需客服主管审批 | | approve_refund | 高 | deny_for_agent | Agent 只能生成建议，不能最终审批 | | delete_order | 高 | deny | 禁止开放给 Agent |
+```
+
+这个表比 prompt 里的“请谨慎操作”更可靠，因为它能落到系统权限实现。
+
+---
+
+## 9. 常见错误
+
+### 错误一：所有工具一视同仁 查询订单和退款不是同一种风险。工具必须分级。
+
+### 错误二：让模型填写 user_id 或 role 身份、租户、权限必须来自认证和 runtime context，不能来自用户输入或模型生成。
+
+### 错误三：把沙箱当成业务权限 沙箱限制环境，不能判断业务合规。
+
+### 错误四：只写 allow，不写 deny 只写允许规则容易扩大权限。高风险动作、敏感字段和越权查询应该有明确 deny 或 ask 规则。
+
+### 错误五：以为沙箱能防住所有 prompt injection 沙箱可以降低被诱导执行危险命令后的影响范围，但不能阻止模型被恶意内容影响。prompt injection 防护、权限规则、人工确认和审计仍然必须存在。
+
+---
+
+## 10. 本节知识框架总结
+
+```latex
+工具权限与沙箱 -> 工具让 Agent 能行动 -> 工具风险需要分级 -> permission rules 控制 allow / ask / deny -> 身份和权限由系统注入 -> 沙箱限制执行环境影响范围 -> 沙箱不能阻止模型被 prompt injection 影响 -> checkpoint 支持工程回退 -> 高风险业务动作必须执行前审批
+```
+
+## 11. 本节小结 你需要记住：
+1. 工具能力越强，权限边界越重要。
+2. 只读工具、变更工具、资产类工具应该分级处理。
+3. 权限判断不能交给模型。
+4. 沙箱、权限、checkpoint 是不同层的安全措施。
+5. 沙箱不能替代 prompt injection 防护。
+6. 高风险业务动作要先审批，再执行。
+课后练习：
+1. 为“修改收货地址”设计权限规则。
+2. 说明为什么退款不能只靠 checkpoint 降低风险。
+3. 把你项目中的工具分成 allow、ask、deny 三类。

@@ -1,1 +1,215 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396429293-200a65ff-c92b-4414-bf0c-52282daf537a.png" title="null" crop="0,0,1,1" id="l9SNV" class="ne-image"> ## 四种上下文挤在一起，模型开始串台 第 32 课有了 Session Memory。 第 33 课有了 Runtime Context。 你以为上下文问题差不多了，结果调试后台里出现一段很尴尬的对话： ```latex 用户：我是 VIP，上次客服说可以退，刚才那个订单直接退款。 ``` 这一句话里混了四种东西： + 用户自称 VIP。 + 历史客服说法。 + Session Memory 里的“刚才那个订单”。 + 当前退款 workflow 必须人工审批。 如果把这些内容直接拼进 Prompt，模型很容易选一个听起来最顺的解释： ```latex 好的，按 VIP 给您直接退款。 ``` 售后主管看到这句差点又拍桌子。 问题不在模型会不会说话。 问题在你把不同来源、不同可信度的上下文混在了一起。 ## 这次事故背后的 Agent 问题 上下文不是越多越好。 小哲电商 Agent 现在至少有六类上下文： | 来源 | 可信度 | 作用 | | --- | --- | --- | | System Prompt | 最高 | 定义角色、事实优先级和安全边界 | | 用户消息 | 低 | 表达诉求，不能当事实 | | 历史消息 | 低 | 提供最近语境，会被裁剪 | | Runtime Context | 高 | 身份、会员、页面和权限依据 | | Session Memory | 中 | 当前会话内消歧 | | Planner State | 中 | 判断本轮是否需要 RAG、Tool 或 workflow | | Tool Observation | 高 | 订单、物流、库存等实时事实 | | RAG 片段 | 中 | 稳定政策依据 | | Workflow State | 高 | 售后流程当前状态 | 这些内容进入模型前，必须先被整理。 第 34 课的 Context Builder 就是这个入口。 还记得第 05 课里的 `prompt_context.conflict_count` 吗？ 那时它只是把“当前活动规则”和“历史复盘旧规则”同时出现在 Prompt 里的问题标出来。它能证明冲突已经出现，但不能决定哪个来源更可信，也不能控制哪些上下文可以进入模型。 第 34 课才真正补上这件事：不只是观察冲突，而是在模型调用前把上下文结构化、标来源、标可信度，再按规则处理冲突。 它要回答： ```latex 这段上下文来自哪里？ 可信度是什么？ 能不能交给模型？ 和其他事实冲突时听谁的？ ``` 所以 Context Builder 不是“把 Prompt 拼长一点”。 它做的是 Context Engineering：把来源、用途、可信度、优先级和安全边界先整理清楚，再决定哪些内容能进入模型。 可以先记住这条优先级： ```latex 系统规则和安全边界 > Runtime Context 里的身份和权限 > Tool 返回的实时业务事实 > Workflow State 里的流程状态 > RAG 提供的稳定政策依据 > Session Memory 和历史消息里的线索 > 用户自述 ``` 这不是说用户消息不重要。用户消息负责表达诉求，但它不能覆盖身份、实时事实、流程状态和系统规则。 ## 代码落地 ### 当前 Agent 的实现边界 本节代码快照在： ```latex code/agent-course-versions/lesson-34-context-builder/backend/ ``` 第 34 课新增 `context/context_builder.py`。它不负责查订单，也不审批退款，而是把用户消息、Runtime Context、Session Memory、工具 Observation、RAG 片段和 Workflow State 统一标注来源、可信度和冲突处理结果。 所以这一课是在第 33 课的 Runtime Context 和前面售后 Workflow/HITL/Resume 上继续长出来：Context Builder 会把 workflow state 当成高可信流程事实放进上下文报告，但真正恢复审批仍然走 `/chat/resume`，不能被历史消息或用户一句“上次客服说可以退”替代。 关键链路是： ```latex /chat -> runtime_context_facts(request) -> current_memory(session_id) -> load_order(...) and retrieve policy -> ContextBuilder.add(ContextItem ...) -> ContextBuilder.resolve_conflicts(...) -> ChatResponse(context_report) ``` 核心对象是 `ContextItem`： ```latex item_id source_type trust_level content facts allowed_for_model conflict_group decision ``` 它把“上下文”从一段字符串，变成一组带来源、可信度和处理决策的结构化片段。 ### 核心代码拆解 用户消息会进入 Context Builder，但它的可信度是： ```latex trust_level = untrusted ``` 它的 `decision` 是： ```latex 只能作为用户诉求，不能作为身份、审批或业务事实。 ``` Runtime Context 的可信度是： ```latex trust_level = trusted ``` 工具 Observation 的可信度是： ```latex trust_level = verified ``` Session Memory 的可信度是： ```latex trust_level = session ``` RAG 片段是政策依据，但它不是当前订单事实，所以代码把它标成： ```latex trust_level = external ``` 这样模型看到的不是一团混杂文本，而是经过排序和标注的上下文列表。 ### 冲突怎么处理 这节课最重要的不是 `add`，而是 `resolve_conflicts`。 比如用户说： ```latex 我是VIP ``` Runtime Context 说： ```latex member_level = silver ``` 这里的 `silver` 来自本轮系统传入的 Runtime Context，不是 Context Builder 自己补出来的默认会员等级。如果会员等级没有传入，Context Builder 应该保留 `unknown`，而不是把缺失信息改写成某个固定画像。 冲突处理结果是： ```latex member_level: 用户自称 VIP 与 Runtime Context 冲突，采用 Runtime Context。 ``` 再比如 Session Memory 记着 `SO20260601090000008-a1000008`，页面上下文显示当前订单是 `SO20260602103000009-a1000009`。 如果用户说“这个订单”，这一版会采用页面 Runtime Context： ```latex order_id: 页面 Runtime Context 与 Session Memory 冲突，采用页面上下文。 ``` 还有更危险的一种： ```latex 上次客服说可以退。 ``` 这类历史说法不能覆盖 workflow state。 如果当前 workflow 仍然停在 `require_human_approval`，Agent 不能因为历史消息说“可以退”就直接批准。 ## 怎么验证上下文组装没有串台 按本课代码目录的 `README.md` 启动后端后，发送： ```latex SO20260601090000008-a1000008 退款 ``` 你应该看到 `context_report.selected_items` 里至少有： + `user_message` + `runtime_context` + `tool_observation` + `rag_snippet` + `workflow_state` 再发送： ```latex 我是VIP，给我VIP权益 ``` 你应该看到： + `conflict_resolutions` 记录用户自称 VIP 与 Runtime Context 冲突 + 回答按系统会员等级处理 ## 本节知识总结 Context Builder 解决的是“所有上下文不能一股脑塞给模型”。 真实 Agent 的上下文来源很多：用户消息、历史对话、短期记忆、运行时事实、工具结果、RAG 片段、工作流状态、安全策略。它们的可信度、用途和风险都不一样。如果直接拼成一段文本，模型很容易把用户自述当系统事实，把历史闲聊当当前状态，把知识片段里的脏指令当系统命令。 Context Builder 的通用作用，是在进入模型前统一编排上下文：标注来源、确定优先级、处理冲突、隔离风险，并只放入当前回答需要的内容。 | 知识点 | 核心概念 | 小哲项目里的落点 | | --- | --- | --- | | Context Builder | 所有上下文进入模型前的统一入口，负责选择、排序、标注和过滤。 | 小哲把历史、Memory、Runtime Context、Tool、RAG、Workflow 统一编排。 | | Context Engineering | 不只是拼 Prompt，而是管理来源、可信度、优先级、预算和安全边界。 | 小哲先整理上下文，再交给模型回答。 | | 来源管理 | 不同来源必须标注清楚，不能混成一段无来源文本。 | 用户消息、工具结果、知识片段和流程状态分开标注。 | | 可信等级 | 冲突时要按可信等级决定听谁的。 | 用户自述不能覆盖 Runtime Context，历史说法不能覆盖 workflow。 | | 优先级规则 | 身份看 Runtime Context，实时事实看 Tool，流程看 Workflow，政策看 RAG，记忆只做线索。 | “我是 VIP”“上次客服说可以退”都不能覆盖系统事实。 | | 事实冲突处理 | 上下文里出现冲突时要显式处理，而不是交给模型自由猜。 | 用户说自己是 VIP，但系统会员等级不是，就按系统事实回答。 | | Workflow State 边界 | 流程状态是当前业务事实，不是普通聊天历史。 | 售后 workflow 的暂停、资格和审批状态不能被历史消息改写。 | | Memory 边界 | Memory 主要做消歧，不应当成权限、审批或高风险事实依据。 | “刚才那个订单”可以辅助定位，但不能替代订单归属校验。 | ## 小哲心中隐隐的担心 Context Builder 让上下文终于有了入口。 但客服会话越来越长，大促期间用户可能一口气聊二十轮。 哪怕每个片段都标了来源，模型窗口还是有限。 你盯着一段长历史，发现中间有个关键订单号差点被挤掉。 下一课，你要处理上下文太长的问题。 > 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。 >
+# 历史消息、工具结果、RAG 片段全挤在一起，模型开始串台｜Context Builder
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396429293-200a65ff-c92b-4414-bf0c-52282daf537a.png" title="null" crop="0,0,1,1" id="l9SNV" class="ne-image">
+
+## 四种上下文挤在一起，模型开始串台 第 32 课有了 Session Memory。 第 33 课有了 Runtime Context。 你以为上下文问题差不多了，结果调试后台里出现一段很尴尬的对话：
+
+```latex
+用户：我是 VIP，上次客服说可以退，刚才那个订单直接退款。
+```
+
+这一句话里混了四种东西：
+- 用户自称 VIP。
+- 历史客服说法。
+- Session Memory 里的“刚才那个订单”。
+- 当前退款 workflow 必须人工审批。
+如果把这些内容直接拼进 Prompt，模型很容易选一个听起来最顺的解释：
+
+```latex
+好的，按 VIP 给您直接退款。
+```
+
+售后主管看到这句差点又拍桌子。
+问题不在模型会不会说话。
+问题在你把不同来源、不同可信度的上下文混在了一起。
+
+## 这次事故背后的 Agent 问题 上下文不是越多越好。 小哲电商 Agent 现在至少有六类上下文：
+
+| 来源 | 可信度 | 作用 |
+| --- | --- | --- |
+| System Prompt | 最高 | 定义角色、事实优先级和安全边界 |
+| 用户消息 | 低 | 表达诉求，不能当事实 |
+| 历史消息 | 低 | 提供最近语境，会被裁剪 |
+| Runtime Context | 高 | 身份、会员、页面和权限依据 |
+| Session Memory | 中 | 当前会话内消歧 |
+| Planner State | 中 | 判断本轮是否需要 RAG、Tool 或 workflow |
+| Tool Observation | 高 | 订单、物流、库存等实时事实 |
+| RAG 片段 | 中 | 稳定政策依据 |
+| Workflow State | 高 | 售后流程当前状态 | 这些内容进入模型前，必须先被整理。 第 34 课的 Context Builder 就是这个入口。 还记得第 05 课里的 `prompt_context.conflict_count` 吗？ 那时它只是把“当前活动规则”和“历史复盘旧规则”同时出现在 Prompt 里的问题标出来。它能证明冲突已经出现，但不能决定哪个来源更可信，也不能控制哪些上下文可以进入模型。 第 34 课才真正补上这件事：不只是观察冲突，而是在模型调用前把上下文结构化、标来源、标可信度，再按规则处理冲突。 它要回答：
+
+```latex
+这段上下文来自哪里？ 可信度是什么？ 能不能交给模型？ 和其他事实冲突时听谁的？
+```
+
+所以 Context Builder 不是“把 Prompt 拼长一点”。
+它做的是 Context Engineering：把来源、用途、可信度、优先级和安全边界先整理清楚，再决定哪些内容能进入模型。
+可以先记住这条优先级：
+
+```latex
+系统规则和安全边界 > Runtime Context 里的身份和权限 > Tool 返回的实时业务事实 > Workflow State 里的流程状态 > RAG 提供的稳定政策依据 > Session Memory 和历史消息里的线索 > 用户自述
+```
+
+这不是说用户消息不重要。用户消息负责表达诉求，但它不能覆盖身份、实时事实、流程状态和系统规则。
+
+## 代码落地
+
+### 当前 Agent 的实现边界 本节代码快照在：
+
+```latex
+code/agent-course-versions/lesson-34-context-builder/backend/
+```
+
+第 34 课新增 `context/context_builder.py`。它不负责查订单，也不审批退款，而是把用户消息、Runtime Context、Session Memory、工具 Observation、RAG 片段和 Workflow State 统一标注来源、可信度和冲突处理结果。
+所以这一课是在第 33 课的 Runtime Context 和前面售后 Workflow/HITL/Resume 上继续长出来：Context Builder 会把 workflow state 当成高可信流程事实放进上下文报告，但真正恢复审批仍然走 `/chat/resume`，不能被历史消息或用户一句“上次客服说可以退”替代。
+关键链路是：
+
+```latex
+/chat -> runtime_context_facts(request) -> current_memory(session_id) -> load_order(...) and retrieve policy -> ContextBuilder.add(ContextItem ...) -> ContextBuilder.resolve_conflicts(...) -> ChatResponse(context_report)
+```
+
+核心对象是 `ContextItem`：
+
+```latex
+item_id source_type trust_level content facts allowed_for_model conflict_group decision
+```
+
+它把“上下文”从一段字符串，变成一组带来源、可信度和处理决策的结构化片段。
+
+### 核心代码拆解 用户消息会进入 Context Builder，但它的可信度是：
+
+```latex
+trust_level = untrusted
+```
+
+它的 `decision` 是：
+
+```latex
+只能作为用户诉求，不能作为身份、审批或业务事实。
+```
+
+Runtime Context 的可信度是：
+
+```latex
+trust_level = trusted
+```
+
+工具 Observation 的可信度是：
+
+```latex
+trust_level = verified
+```
+
+Session Memory 的可信度是：
+
+```latex
+trust_level = session
+```
+
+RAG 片段是政策依据，但它不是当前订单事实，所以代码把它标成：
+
+```latex
+trust_level = external
+```
+
+这样模型看到的不是一团混杂文本，而是经过排序和标注的上下文列表。
+
+### 冲突怎么处理 这节课最重要的不是 `add`，而是 `resolve_conflicts`。 比如用户说：
+
+```latex
+我是VIP
+```
+
+Runtime Context 说：
+
+```latex
+member_level = silver
+```
+
+这里的 `silver` 来自本轮系统传入的 Runtime Context，不是 Context Builder 自己补出来的默认会员等级。如果会员等级没有传入，Context Builder 应该保留 `unknown`，而不是把缺失信息改写成某个固定画像。
+冲突处理结果是：
+
+```latex
+member_level: 用户自称 VIP 与 Runtime Context 冲突，采用 Runtime Context。
+```
+
+再比如 Session Memory 记着 `SO20260601090000008-a1000008`，页面上下文显示当前订单是 `SO20260602103000009-a1000009`。
+如果用户说“这个订单”，这一版会采用页面 Runtime Context：
+
+```latex
+order_id: 页面 Runtime Context 与 Session Memory 冲突，采用页面上下文。
+```
+
+还有更危险的一种：
+
+```latex
+上次客服说可以退。
+```
+
+这类历史说法不能覆盖 workflow state。
+如果当前 workflow 仍然停在 `require_human_approval`，Agent 不能因为历史消息说“可以退”就直接批准。
+
+## 怎么验证上下文组装没有串台 按本课代码目录的 `README.md` 启动后端后，发送：
+
+```latex
+SO20260601090000008-a1000008 退款
+```
+
+你应该看到 `context_report.selected_items` 里至少有：
+- `user_message` + `runtime_context` + `tool_observation` + `rag_snippet` + `workflow_state` 再发送：
+
+```latex
+我是VIP，给我VIP权益
+```
+
+你应该看到：
+- `conflict_resolutions` 记录用户自称 VIP 与 Runtime Context 冲突 + 回答按系统会员等级处理
+
+## 本节知识总结 Context Builder 解决的是“所有上下文不能一股脑塞给模型”。 真实 Agent 的上下文来源很多：用户消息、历史对话、短期记忆、运行时事实、工具结果、RAG 片段、工作流状态、安全策略。它们的可信度、用途和风险都不一样。如果直接拼成一段文本，模型很容易把用户自述当系统事实，把历史闲聊当当前状态，把知识片段里的脏指令当系统命令。 Context Builder 的通用作用，是在进入模型前统一编排上下文：标注来源、确定优先级、处理冲突、隔离风险，并只放入当前回答需要的内容。
+
+| 知识点 | 核心概念 | 小哲项目里的落点 |
+| --- | --- | --- |
+| Context Builder | 所有上下文进入模型前的统一入口，负责选择、排序、标注和过滤。
+
+| 小哲把历史、Memory、Runtime Context、Tool、RAG、Workflow 统一编排。
+
+|
+| Context Engineering | 不只是拼 Prompt，而是管理来源、可信度、优先级、预算和安全边界。
+
+| 小哲先整理上下文，再交给模型回答。
+
+|
+| 来源管理 | 不同来源必须标注清楚，不能混成一段无来源文本。
+
+| 用户消息、工具结果、知识片段和流程状态分开标注。
+
+|
+| 可信等级 | 冲突时要按可信等级决定听谁的。
+
+| 用户自述不能覆盖 Runtime Context，历史说法不能覆盖 workflow。
+
+|
+| 优先级规则 | 身份看 Runtime Context，实时事实看 Tool，流程看 Workflow，政策看 RAG，记忆只做线索。
+
+| “我是 VIP”“上次客服说可以退”都不能覆盖系统事实。
+
+|
+| 事实冲突处理 | 上下文里出现冲突时要显式处理，而不是交给模型自由猜。
+
+| 用户说自己是 VIP，但系统会员等级不是，就按系统事实回答。
+
+|
+| Workflow State 边界 | 流程状态是当前业务事实，不是普通聊天历史。
+
+| 售后 workflow 的暂停、资格和审批状态不能被历史消息改写。
+
+|
+| Memory 边界 | Memory 主要做消歧，不应当成权限、审批或高风险事实依据。
+
+| “刚才那个订单”可以辅助定位，但不能替代订单归属校验。
+
+|
+
+## 小哲心中隐隐的担心 Context Builder 让上下文终于有了入口。 但客服会话越来越长，大促期间用户可能一口气聊二十轮。 哪怕每个片段都标了来源，模型窗口还是有限。 你盯着一段长历史，发现中间有个关键订单号差点被挤掉。 下一课，你要处理上下文太长的问题。
+
+> 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。
+> >

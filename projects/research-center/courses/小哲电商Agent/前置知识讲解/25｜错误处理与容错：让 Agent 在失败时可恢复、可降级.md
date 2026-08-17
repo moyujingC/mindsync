@@ -1,1 +1,138 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396397419-957b3439-1e35-47fe-8311-4bd93bb6d200.png" title="null" crop="0,0,1,1" id="JPVij" class="ne-image"> 本节总览图：这张图从 `graph node` 分出正常路径和失败路径。失败路径包含工具异常、模型超时、递归过深、外部服务失败和人工审批超时；每条路径进入 retry、fallback、interrupt、END with message 或 checkpoint resume。图中强调容错设计要区分可重试、不可重试和需要人工介入。 ## 课程目标 学完这一节，你应该能说清： + Agent 流程中常见失败类型。 + retry、fallback、interrupt、终止回复分别适合什么场景。 + recursion limit 解决什么问题。 + durable execution 和 checkpoint 对容错有什么帮助。 + 外部副作用为什么要考虑幂等。 --- ## 1. Agent 会在哪里失败 常见失败包括： + 模型请求超时。 + 工具参数错误。 + 订单服务不可用。 + 检索不到相关文档。 + 图循环无法结束。 + 人工审批长时间没有返回。 + 外部动作执行到一半失败。 容错不是最后加一个 `try/except`。你要在流程设计时区分每类失败。 --- ## 2. 可重试和不可重试 | 失败 | 是否适合重试 | 处理 | | --- | --- | --- | | 网络短暂超时 | 适合 | retry | | 订单号格式错误 | 不适合 | 要求用户补充 | | 用户无权限 | 不适合 | 拒绝并说明 | | 检索低相关 | 可改写查询 | rewrite 或 fallback | | 高风险动作 | 不自动重试 | interrupt | 不要对所有错误盲目重试。参数错、权限错、业务规则不允许，重试不会变好。 --- ## 3. RetryPolicy：节点级重试 LangGraph 支持给节点配置重试策略。最小写法是给 `add_node` 传入 `retry_policy`： ```python from langgraph.types import RetryPolicy builder.add_node( "lookup_order", lookup_order, retry_policy=RetryPolicy(max_attempts=3), ) ``` 这表示 `lookup_order` 节点失败时最多尝试 3 次，包括第一次执行。 你也可以限制只对某类临时错误重试： ```python builder.add_node( "lookup_order", lookup_order, retry_policy=RetryPolicy( max_attempts=3, retry_on=(TimeoutError, ConnectionError), ), ) ``` 有时你需要知道当前是第几次尝试。节点函数可以通过 runtime execution info 读取： ```python from langgraph.runtime import Runtime def lookup_order(state: dict, runtime: Runtime) -> dict: if runtime.execution_info.node_attempt > 1: return {"status": "fallback"} return {"status": "primary"} ``` `RetryPolicy` 只适合临时错误，例如网络抖动、接口 5xx、短暂超时。订单号格式错误、用户无权限、业务规则不允许，不应该靠重试解决。 --- ## 4. recursion limit LangGraph 有递归或步数限制，用来防止图无限循环。比如 Agent 一直在： ```latex 模型 -> 工具 -> 模型 -> 工具 ``` 却始终不结束。 可以在运行时配置： ```python graph.invoke( input_data, config={"recursion_limit": 20}, ) ``` 更好的做法是在图内部主动判断剩余步骤或循环次数，提前给出降级回复。 --- ## 5. 容错路径设计图 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396397472-cdc4d63e-e370-44f6-830e-cf389dc32af3.png" title="null" crop="0,0,1,1" id="fx2W5" class="ne-image"> 容错路径决策图：这张图从 `failure` 进入菱形判断：是否临时错误、是否参数错误、是否权限错误、是否高风险、是否超过循环限制。临时错误进入 retry，参数错误进入 ask user，权限错误进入 deny， 高风险进入 interrupt，循环限制进入 fallback answer。每条路径最终都汇入可理解的用户或内部结果。 --- ## 6. checkpoint 对容错的价值 有 checkpoint 后，失败不一定要从头开始。 例如售后流程： ```latex 已识别意图 已查询订单 已检索政策 准备人工审批时服务重启 ``` 恢复后可以从已保存状态继续，而不是重新查所有步骤。 但要注意：如果某个节点有外部副作用，比如发短信、创建退款单，重跑时必须幂等。 --- ## 7. 最小 demo：错误路由 ```python def handle_tool_result(result: dict) -> str: if result["ok"]: return "success" error_type = result["error_type"] if error_type == "TIMEOUT": return "retry" if error_type == "INVALID_ORDER_NO": return "ask_user" if error_type == "PERMISSION_DENIED": return "deny" return "fallback" print(handle_tool_result({"ok": False, "error_type": "INVALID_ORDER_NO"})) ``` 观察点： + 错误先分类，再路由。 + 不同错误进入不同处理路径。 + 不要把所有错误都变成“系统繁忙”。 --- ## 8. 常见错误 ### 错误一：吞掉异常 只写“失败了”会让调试和用户体验都变差。 ### 错误二：错误消息暴露内部细节 不要把数据库异常、接口地址、堆栈信息直接给用户或模型。 ### 错误三：重放非幂等动作 退款、发券、发短信等动作要有业务幂等键。 --- ## 9. 本节知识框架总结 ```latex 容错 -> 区分失败类型 -> retry 处理临时错误 -> RetryPolicy 配置节点级重试 -> runtime.execution_info.node_attempt 可读取当前尝试次数 -> ask user 处理参数缺失 -> deny 处理权限问题 -> interrupt 处理高风险动作 -> fallback 处理低置信度和循环限制 -> checkpoint 支持恢复 -> 外部副作用必须幂等 ``` ## 10. 本节小结 你需要记住： 1. 容错是流程设计，不只是异常捕获。 2. 不同错误要进入不同分支。 3. `RetryPolicy` 适合处理临时错误，不适合业务拒绝。 4. recursion limit 防止无限循环。 5. checkpoint 能帮助恢复，但副作用要幂等。 课后练习： 1. 为订单查询工具设计 4 类错误。 2. 写出每类错误的处理分支。 3. 说明哪些动作必须使用幂等键。 4. 设计一个超过循环次数后的降级回复。
+# 错误处理与容错：让 Agent 在失败时可恢复、可降级
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396397419-957b3439-1e35-47fe-8311-4bd93bb6d200.png" title="null" crop="0,0,1,1" id="JPVij" class="ne-image">
+
+本节总览图：这张图从 `graph node` 分出正常路径和失败路径。失败路径包含工具异常、模型超时、递归过深、外部服务失败和人工审批超时；每条路径进入 retry、fallback、interrupt、END with message 或 checkpoint resume。图中强调容错设计要区分可重试、不可重试和需要人工介入。
+
+## 课程目标
+
+学完这一节，你应该能说清：
+- Agent 流程中常见失败类型。
+- retry、fallback、interrupt、终止回复分别适合什么场景。
+- recursion limit 解决什么问题。
+- durable execution 和 checkpoint 对容错有什么帮助。
+- 外部副作用为什么要考虑幂等。
+
+---
+
+## 1. Agent 会在哪里失败 常见失败包括：
+- 模型请求超时。
+- 工具参数错误。
+- 订单服务不可用。
+- 检索不到相关文档。
+- 图循环无法结束。
+- 人工审批长时间没有返回。
+- 外部动作执行到一半失败。
+容错不是最后加一个 `try/except`。你要在流程设计时区分每类失败。
+
+---
+
+## 2. 可重试和不可重试 | 失败 | 是否适合重试 | 处理 |
+| --- | --- | --- |
+| 网络短暂超时 | 适合 | retry |
+| 订单号格式错误 | 不适合 | 要求用户补充 |
+| 用户无权限 | 不适合 | 拒绝并说明 |
+| 检索低相关 | 可改写查询 | rewrite 或 fallback |
+| 高风险动作 | 不自动重试 | interrupt | 不要对所有错误盲目重试。参数错、权限错、业务规则不允许，重试不会变好。
+
+---
+
+## 3. RetryPolicy：节点级重试 LangGraph 支持给节点配置重试策略。最小写法是给 `add_node` 传入 `retry_policy`：
+
+```python
+from langgraph.types import RetryPolicy builder.add_node( "lookup_order", lookup_order, retry_policy=RetryPolicy(max_attempts=3), )
+```
+
+这表示 `lookup_order` 节点失败时最多尝试 3 次，包括第一次执行。
+你也可以限制只对某类临时错误重试：
+
+```python
+builder.add_node('lookup_order', lookup_order, retry_policy=RetryPolicy(max_attempts=3, retry_on=(TimeoutError, ConnectionError)))
+```
+
+有时你需要知道当前是第几次尝试。节点函数可以通过 runtime execution info 读取：
+
+```python
+from langgraph.runtime import Runtime def lookup_order(state: dict, runtime: Runtime) -> dict: if runtime.execution_info.node_attempt > 1: return {"status": "fallback"} return {"status": "primary"}
+```
+
+`RetryPolicy` 只适合临时错误，例如网络抖动、接口 5xx、短暂超时。订单号格式错误、用户无权限、业务规则不允许，不应该靠重试解决。
+
+---
+
+## 4. recursion limit LangGraph 有递归或步数限制，用来防止图无限循环。比如 Agent 一直在：
+
+```latex
+模型 -> 工具 -> 模型 -> 工具
+```
+
+却始终不结束。
+可以在运行时配置：
+
+```python
+graph.invoke(input_data, config={'recursion_limit': 20})
+```
+
+更好的做法是在图内部主动判断剩余步骤或循环次数，提前给出降级回复。
+
+---
+
+## 5. 容错路径设计图
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396397472-cdc4d63e-e370-44f6-830e-cf389dc32af3.png" title="null" crop="0,0,1,1" id="fx2W5" class="ne-image">
+
+容错路径决策图：这张图从 `failure` 进入菱形判断：是否临时错误、是否参数错误、是否权限错误、是否高风险、是否超过循环限制。临时错误进入 retry，参数错误进入 ask user，权限错误进入 deny， 高风险进入 interrupt，循环限制进入 fallback answer。每条路径最终都汇入可理解的用户或内部结果。
+
+---
+
+## 6. checkpoint 对容错的价值 有 checkpoint 后，失败不一定要从头开始。 例如售后流程：
+
+```latex
+已识别意图 已查询订单 已检索政策 准备人工审批时服务重启
+```
+
+恢复后可以从已保存状态继续，而不是重新查所有步骤。
+但要注意：如果某个节点有外部副作用，比如发短信、创建退款单，重跑时必须幂等。
+
+---
+
+## 7. 最小 demo：错误路由
+
+```python
+def handle_tool_result(result: dict) -> str: if result["ok"]: return "success" error_type = result["error_type"] if error_type == "TIMEOUT": return "retry" if error_type == "INVALID_ORDER_NO": return "ask_user" if error_type == "PERMISSION_DENIED": return "deny" return "fallback" print(handle_tool_result({"ok": False, "error_type": "INVALID_ORDER_NO"}))
+```
+
+观察点：
+- 错误先分类，再路由。
+- 不同错误进入不同处理路径。
+- 不要把所有错误都变成“系统繁忙”。
+
+---
+
+## 8. 常见错误
+
+### 错误一：吞掉异常 只写“失败了”会让调试和用户体验都变差。
+
+### 错误二：错误消息暴露内部细节 不要把数据库异常、接口地址、堆栈信息直接给用户或模型。
+
+### 错误三：重放非幂等动作 退款、发券、发短信等动作要有业务幂等键。
+
+---
+
+## 9. 本节知识框架总结
+
+```latex
+容错 -> 区分失败类型 -> retry 处理临时错误 -> RetryPolicy 配置节点级重试 -> runtime.execution_info.node_attempt 可读取当前尝试次数 -> ask user 处理参数缺失 -> deny 处理权限问题 -> interrupt 处理高风险动作 -> fallback 处理低置信度和循环限制 -> checkpoint 支持恢复 -> 外部副作用必须幂等
+```
+
+## 10. 本节小结 你需要记住：
+1. 容错是流程设计，不只是异常捕获。
+2. 不同错误要进入不同分支。
+3. `RetryPolicy` 适合处理临时错误，不适合业务拒绝。
+4. recursion limit 防止无限循环。
+5. checkpoint 能帮助恢复，但副作用要幂等。
+课后练习：
+1. 为订单查询工具设计 4 类错误。
+2. 写出每类错误的处理分支。
+3. 说明哪些动作必须使用幂等键。
+4. 设计一个超过循环次数后的降级回复。

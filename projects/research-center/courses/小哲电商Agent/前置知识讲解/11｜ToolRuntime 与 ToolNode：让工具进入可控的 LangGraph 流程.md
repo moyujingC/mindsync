@@ -1,1 +1,157 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396375090-da2720fb-f50c-4107-b8c9-3bb6f81dec69.png" title="null" crop="0,0,1,1" id="W7nj6" class="ne-image"> 本节总览图：这张图从左到右画出 `LLM node -> tools_condition -> ToolNode -> LLM node`。`LLM node` 输出 `AIMessage.tool_calls`，`tools_condition` 判断是否有工具调用；有则进入 `ToolNode` 执行工具并产生 `ToolMessage`，无则结束。下方画 `ToolRuntime` 注入 state、context、store、config 和 tool_call_id，强调这些运行时信息不是模型参数。 ## 课程目标 学完这一节，你应该能说清： + `ToolRuntime` 解决什么问题。 + 工具如何访问 state、context、store、stream writer 和 config。 + 为什么 `runtime` 是保留参数名。 + `ToolNode` 在 LangGraph 里负责什么。 + `tools_condition` 如何决定是否进入工具节点。 + `create_agent` 和手写 LangGraph 工具节点的关系。 --- ## 1. 为什么工具需要 Runtime 很多工具不只需要模型传来的参数。 比如一个订单查询工具，模型可以提供： ```latex order_no = "20260001" ``` 但工具执行时还可能需要： + 当前登录用户是谁。 + 当前渠道是小程序、网页还是客服工作台。 + 当前会话里之前查过什么。 + 当前用户是否有权限查这个订单。 + 是否要把结果写入长期存储。 + 当前工具调用的 `tool_call_id` 是什么。 这些信息不应该让模型填写。它们应该由运行时注入。 --- ## 2. ToolRuntime 可以访问什么 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396374349-7eb9da4b-060a-4fdb-8bfb-b6cdd565fd2b.png" title="null" crop="0,0,1,1" id="LaOZR" class="ne-image"> ToolRuntime 结构图：这张图中心是 `ToolRuntime`，向外连接 `state`、`context`、`store`、`stream_writer`、`execution info`、`server info`、`config`、`tool_call_id`。每条连线旁写一个电商例子，例如 state 是当前消息，context 是 user_id 和 channel，store 是用户偏好，stream_writer 是查询进度。 LangChain 官方文档中，`ToolRuntime` 能让工具访问多类运行时信息： | 能力 | 作用 | 电商例子 | | --- | --- | --- | | State | 当前会话短期状态 | messages、已查询订单结果 | | Context | 本次运行不可变上下文 | user_id、channel、tenant_id | | Store | 跨会话持久存储 | 用户偏好、常用发票信息 | | Stream writer | 工具执行进度 | “正在查询物流” | | Execution info | 当前执行信息 | thread、run、attempt | | Config | 执行配置 | tags、metadata、configurable | | Tool call id | 当前工具调用 ID | 关联 `AIMessage` 和 `ToolMessage` | --- ## 3. ToolRuntime 不暴露给模型 示例： ```python from dataclasses import dataclass from langchain.tools import tool, ToolRuntime @dataclass class UserContext: user_id: str channel: str @tool def get_current_channel(runtime: ToolRuntime[UserContext]) -> str: """获取当前用户渠道。""" return f"当前渠道：{runtime.context.channel}" ``` 这里 `runtime` 不需要模型填写。模型看到的工具参数里不会要求用户传 `runtime`。 这就是为什么 `runtime` 是保留参数名：它是运行时注入通道，不是普通业务参数。 --- ## 4. State、Context、Store 不要混用 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396374108-43dd64fd-9468-414d-9acc-9ae4203b92a2.png" title="null" crop="0,0,1,1" id="ybvdE" class="ne-image"> State Context Store 对比图：这张图三列对比 `State`、`Context`、`Store`。`State` 标注“会话内、会变化、随图传递”；`Context` 标注“本次运行传入、不可变、配置性信息”；`Store` 标注“跨会话、长期保存、需要隐私控制”。每列下面放电商例子，并用边界线强调不要把敏感长期偏好随意塞进短期消息。 简单区分： | 概念 | 生命周期 | 例子 | | --- | --- | --- | | State | 当前会话或图运行 | 当前 messages、工具结果 | | Context | 本次调用配置 | user_id、渠道、店铺 | | Store | 跨会话长期数据 | 用户偏好、历史配置 | 不要把所有东西都放进 messages。messages 是给模型看的，不是万能数据库。 --- ## 5. ToolNode：LangGraph 的工具执行节点 如果你用 `create_agent`，很多工具循环已经被封装好了。 如果你手写 LangGraph，就需要理解 `ToolNode`。 ```python from langgraph.prebuilt import ToolNode tool_node = ToolNode([get_current_channel]) ``` `ToolNode` 的职责是： + 读取上一轮 `AIMessage.tool_calls`。 + 执行对应工具。 + 把工具结果包装成 `ToolMessage`。 + 支持并行工具调用。 + 支持错误处理。 + 支持运行时注入。 --- ## 6. tools_condition：决定是否执行工具 `tools_condition` 是预构建条件函数，用于判断模型是否生成了工具调用。 概念流程： ```latex chatbot node -> 如果 AIMessage 有 tool_calls，进入 tools node -> 如果没有 tool_calls，结束 ``` <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396374628-900b2bac-f29a-47d0-b53c-b981a4f36d7b.png" title="null" crop="0,0,1,1" id="EAUaR" class="ne-image"> tools_condition 路由图：这张图从 `chatbot node` 输出 `AIMessage`，进入菱形判断 `has tool_calls?`。`yes` 箭头进入 `ToolNode`，`ToolNode` 输出 `ToolMessage` 后回到 `chatbot node`；`no` 箭头进入 `END`。图中要强调这是 Agent 工具循环的基础结构。 --- ## 7. 可运行 Demo：最小 ToolNode 图 下面代码展示概念结构。实际模型配置按你的环境变量调整。 ```python import os from typing import Annotated, TypedDict from langchain_openai import ChatOpenAI from langchain.tools import tool from langgraph.graph import StateGraph, START, END from langgraph.graph.message import add_messages from langgraph.prebuilt import ToolNode, tools_condition class State(TypedDict): messages: Annotated[list, add_messages] @tool def get_order_status(order_no: str) -> str: """根据订单号查询订单状态。""" return f"订单 {order_no} 已发货。" model = ChatOpenAI( model=os.environ["AGENT_OPENAI_MODEL"], api_key=os.environ["AGENT_OPENAI_API_KEY"], base_url=os.environ["AGENT_OPENAI_BASE_URL"], temperature=0, ).bind_tools([get_order_status]) def chatbot(state: State) -> State: response = model.invoke(state["messages"]) return {"messages": [response]} graph_builder = StateGraph(State) graph_builder.add_node("chatbot", chatbot) graph_builder.add_node("tools", ToolNode([get_order_status])) graph_builder.add_edge(START, "chatbot") graph_builder.add_conditional_edges("chatbot", tools_condition) graph_builder.add_edge("tools", "chatbot") graph = graph_builder.compile() result = graph.invoke({ "messages": [{"role": "user", "content": "查询订单 20260001 的状态"}] }) print(result["messages"][-1].content) ``` 观察点： + `chatbot` 节点是否生成 tool call。 + `tools_condition` 是否路由到 `tools`。 + `ToolNode` 是否生成 `ToolMessage`。 + 工具结果是否回到 `chatbot` 生成最终回答。 --- ## 8. create_agent 和手写图的关系 `create_agent` 可以理解成 LangChain 为常见 Agent 模式提供的高级封装。它内部使用 LangGraph 能力，让你快速得到： ```latex model -> tools -> model ``` 手写 LangGraph 适合： + 你需要控制更多节点。 + 你需要人工确认。 + 你需要复杂分支。 + 你需要持久化恢复。 + 你需要在工具前后插入业务规则。 基础阶段建议： ```latex 先会用 create_agent 再理解 ToolNode 最后学习完整 LangGraph 状态机 ``` --- ## 9. 本节知识框架总结 ```latex ToolRuntime / ToolNode -> ToolRuntime 注入运行时信息 -> state / context / store 生命周期不同 -> runtime 不由模型填写 -> ToolNode 执行 AIMessage.tool_calls -> ToolNode 输出 ToolMessage -> tools_condition 决定是否进入工具节点 -> create_agent 是常见工具循环的高级封装 ``` ## 10. 本节小结 你需要记住： 1. 工具参数来自模型，运行时信息来自 `ToolRuntime`。 2. `state`、`context`、`store` 不要混用。 3. `ToolNode` 是 LangGraph 中执行工具调用的预构建节点。 4. `tools_condition` 是工具循环路由的关键判断。 5. 手写图不是为了替代 `create_agent`，而是为了表达更复杂流程。 课后练习： 1. 把 `get_order_status` 放进 `ToolNode`。 2. 画出 `chatbot -> tools -> chatbot` 的循环。 3. 解释为什么 `runtime` 不应该由模型填写。 4. 举例说明哪些信息适合放进 context，哪些适合放进 store。
+# ToolRuntime 与 ToolNode：让工具进入可控的 LangGraph 流程
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396375090-da2720fb-f50c-4107-b8c9-3bb6f81dec69.png" title="null" crop="0,0,1,1" id="W7nj6" class="ne-image">
+
+本节总览图：这张图从左到右画出 `LLM node -> tools_condition -> ToolNode -> LLM node`。`LLM node` 输出 `AIMessage.tool_calls`，`tools_condition` 判断是否有工具调用；有则进入 `ToolNode` 执行工具并产生 `ToolMessage`，无则结束。下方画 `ToolRuntime` 注入 state、context、store、config 和 tool_call_id，强调这些运行时信息不是模型参数。
+
+## 课程目标
+
+学完这一节，你应该能说清：
+- `ToolRuntime` 解决什么问题。
+- 工具如何访问 state、context、store、stream writer 和 config。
+- 为什么 `runtime` 是保留参数名。
+- `ToolNode` 在 LangGraph 里负责什么。
+- `tools_condition` 如何决定是否进入工具节点。
+- `create_agent` 和手写 LangGraph 工具节点的关系。
+
+---
+
+## 1. 为什么工具需要 Runtime 很多工具不只需要模型传来的参数。 比如一个订单查询工具，模型可以提供：
+
+```latex
+order_no = "20260001"
+```
+
+但工具执行时还可能需要：
+- 当前登录用户是谁。
+- 当前渠道是小程序、网页还是客服工作台。
+- 当前会话里之前查过什么。
+- 当前用户是否有权限查这个订单。
+- 是否要把结果写入长期存储。
+- 当前工具调用的 `tool_call_id` 是什么。
+这些信息不应该让模型填写。它们应该由运行时注入。
+
+---
+
+## 2. ToolRuntime 可以访问什么
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396374349-7eb9da4b-060a-4fdb-8bfb-b6cdd565fd2b.png" title="null" crop="0,0,1,1" id="LaOZR" class="ne-image">
+
+ToolRuntime 结构图：这张图中心是 `ToolRuntime`，向外连接 `state`、`context`、`store`、`stream_writer`、`execution info`、`server info`、`config`、`tool_call_id`。每条连线旁写一个电商例子，例如 state 是当前消息，context 是 user_id 和 channel，store 是用户偏好，stream_writer 是查询进度。
+LangChain 官方文档中，`ToolRuntime` 能让工具访问多类运行时信息：
+
+| 能力 | 作用 | 电商例子 |
+| --- | --- | --- |
+| State | 当前会话短期状态 | messages、已查询订单结果 |
+| Context | 本次运行不可变上下文 | user_id、channel、tenant_id |
+| Store | 跨会话持久存储 | 用户偏好、常用发票信息 |
+| Stream writer | 工具执行进度 | “正在查询物流” |
+| Execution info | 当前执行信息 | thread、run、attempt |
+| Config | 执行配置 | tags、metadata、configurable |
+| Tool call id | 当前工具调用 ID | 关联 `AIMessage` 和 `ToolMessage` | ---
+
+## 3. ToolRuntime 不暴露给模型 示例：
+
+```python
+from dataclasses import dataclass from langchain.tools import tool, ToolRuntime @dataclass class UserContext: user_id: str channel: str @tool def get_current_channel(runtime: ToolRuntime[UserContext]) -> str: """获取当前用户渠道。""" return f"当前渠道：{runtime.context.channel}"
+```
+
+这里 `runtime` 不需要模型填写。模型看到的工具参数里不会要求用户传 `runtime`。
+这就是为什么 `runtime` 是保留参数名：它是运行时注入通道，不是普通业务参数。
+
+---
+
+## 4. State、Context、Store 不要混用
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396374108-43dd64fd-9468-414d-9acc-9ae4203b92a2.png" title="null" crop="0,0,1,1" id="ybvdE" class="ne-image">
+
+State Context Store 对比图：这张图三列对比 `State`、`Context`、`Store`。`State` 标注“会话内、会变化、随图传递”；`Context` 标注“本次运行传入、不可变、配置性信息”；`Store` 标注“跨会话、长期保存、需要隐私控制”。每列下面放电商例子，并用边界线强调不要把敏感长期偏好随意塞进短期消息。
+简单区分：
+
+| 概念 | 生命周期 | 例子 |
+| --- | --- | --- |
+| State | 当前会话或图运行 | 当前 messages、工具结果 |
+| Context | 本次调用配置 | user_id、渠道、店铺 |
+| Store | 跨会话长期数据 | 用户偏好、历史配置 | 不要把所有东西都放进 messages。messages 是给模型看的，不是万能数据库。
+
+---
+
+## 5. ToolNode：LangGraph 的工具执行节点 如果你用 `create_agent`，很多工具循环已经被封装好了。 如果你手写 LangGraph，就需要理解 `ToolNode`。
+
+```python
+from langgraph.prebuilt import ToolNode tool_node = ToolNode([get_current_channel])
+```
+
+`ToolNode` 的职责是：
+- 读取上一轮 `AIMessage.tool_calls`。
+- 执行对应工具。
+- 把工具结果包装成 `ToolMessage`。
+- 支持并行工具调用。
+- 支持错误处理。
+- 支持运行时注入。
+
+---
+
+## 6. tools_condition：决定是否执行工具 `tools_condition` 是预构建条件函数，用于判断模型是否生成了工具调用。 概念流程：
+
+```latex
+chatbot node -> 如果 AIMessage 有 tool_calls，进入 tools node -> 如果没有 tool_calls，结束
+```
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396374628-900b2bac-f29a-47d0-b53c-b981a4f36d7b.png" title="null" crop="0,0,1,1" id="EAUaR" class="ne-image">
+
+tools_condition 路由图：这张图从 `chatbot node` 输出 `AIMessage`，进入菱形判断 `has tool_calls?`。`yes` 箭头进入 `ToolNode`，`ToolNode` 输出 `ToolMessage` 后回到 `chatbot node`；`no` 箭头进入 `END`。图中要强调这是 Agent 工具循环的基础结构。
+
+---
+
+## 7. 可运行 Demo：最小 ToolNode 图 下面代码展示概念结构。实际模型配置按你的环境变量调整。
+
+```python
+import os from typing import Annotated, TypedDict from langchain_openai import ChatOpenAI from langchain.tools import tool from langgraph.graph import StateGraph, START, END from langgraph.graph.message import add_messages from langgraph.prebuilt import ToolNode, tools_condition class State(TypedDict): messages: Annotated[list, add_messages] @tool def get_order_status(order_no: str) -> str: """根据订单号查询订单状态。""" return f"订单 {order_no} 已发货。" model = ChatOpenAI( model=os.environ["AGENT_OPENAI_MODEL"], api_key=os.environ["AGENT_OPENAI_API_KEY"], base_url=os.environ["AGENT_OPENAI_BASE_URL"], temperature=0, ).bind_tools([get_order_status]) def chatbot(state: State) -> State: response = model.invoke(state["messages"]) return {"messages": [response]} graph_builder = StateGraph(State) graph_builder.add_node("chatbot", chatbot) graph_builder.add_node("tools", ToolNode([get_order_status])) graph_builder.add_edge(START, "chatbot") graph_builder.add_conditional_edges("chatbot", tools_condition) graph_builder.add_edge("tools", "chatbot") graph = graph_builder.compile() result = graph.invoke({ "messages": [{"role": "user", "content": "查询订单 20260001 的状态"}] }) print(result["messages"][-1].content)
+```
+
+观察点：
+- `chatbot` 节点是否生成 tool call。
+- `tools_condition` 是否路由到 `tools`。
+- `ToolNode` 是否生成 `ToolMessage`。
+- 工具结果是否回到 `chatbot` 生成最终回答。
+
+---
+
+## 8. create_agent 和手写图的关系 `create_agent` 可以理解成 LangChain 为常见 Agent 模式提供的高级封装。它内部使用 LangGraph 能力，让你快速得到：
+
+```latex
+model -> tools -> model
+```
+
+手写 LangGraph 适合：
+- 你需要控制更多节点。
+- 你需要人工确认。
+- 你需要复杂分支。
+- 你需要持久化恢复。
+- 你需要在工具前后插入业务规则。
+基础阶段建议：
+
+```latex
+先会用 create_agent 再理解 ToolNode 最后学习完整 LangGraph 状态机
+```
+
+---
+
+## 9. 本节知识框架总结
+
+```latex
+ToolRuntime / ToolNode -> ToolRuntime 注入运行时信息 -> state / context / store 生命周期不同 -> runtime 不由模型填写 -> ToolNode 执行 AIMessage.tool_calls -> ToolNode 输出 ToolMessage -> tools_condition 决定是否进入工具节点 -> create_agent 是常见工具循环的高级封装
+```
+
+## 10. 本节小结 你需要记住：
+1. 工具参数来自模型，运行时信息来自 `ToolRuntime`。
+2. `state`、`context`、`store` 不要混用。
+3. `ToolNode` 是 LangGraph 中执行工具调用的预构建节点。
+4. `tools_condition` 是工具循环路由的关键判断。
+5. 手写图不是为了替代 `create_agent`，而是为了表达更复杂流程。
+课后练习：
+1. 把 `get_order_status` 放进 `ToolNode`。
+2. 画出 `chatbot -> tools -> chatbot` 的循环。
+3. 解释为什么 `runtime` 不应该由模型填写。
+4. 举例说明哪些信息适合放进 context，哪些适合放进 store。

@@ -1,1 +1,242 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396432035-271ff85a-f5f5-4a46-bec3-e4ca66a31625.png" title="null" crop="0,0,1,1" id="kPM08" class="ne-image"> ## 一次口吻优化，把退款边界打穿了 第 37 课之后，你终于能解释一次回答为什么发生。 老板问“它为什么这么回答”，你能拿出 trace： ```latex 查了订单。 命中了退款政策。 进入了 workflow。 停在人工审批。 ``` 你以为这下稳了。 结果运营同事说物流问题的回答太硬，希望口气更像客服。 你改了一段 Prompt。 物流回答确实顺了。 但售后主管很快冲过来： ```latex 退款问题怎么又开始说得像已经处理完了？ ``` 你打开 trace，看这一轮也有工具、有 RAG、有 workflow。 但这已经是事故之后了。 真正的问题是：你不能每次改 Prompt、改工具描述、改 RAG 规则、改上下文压缩之后，都靠肉眼点几个问题。 你需要固定回归评测。 ## 这次事故背后的 Agent 问题 Agent 不是一个只看最终答案的聊天应用。 小哲电商客服 Agent 的回归评测至少要看六类证据： | 证据 | 为什么要评 | | --- | --- | | `answer` | 用户最终看到的客服回答不能乱承诺 | | `tool_calls` | 物流、订单、库存等实时事实必须走工具 | | `citations` | 稳定政策回答要有知识依据 | | `trace` | 关键路径事件必须真的发生 | | `session_state` | workflow、成本、上下文状态要能被结构化检查 | | `workflow` | 高风险售后不能绕过 HITL | 如果只看 `answer`，退款回答也许看起来很自然。 但它可能没有查订单。 也可能没有引用政策。 还可能没有停在人工审批。 Evaluation 要把这些路径证据都锁住。 ## cases.yml 是事故清单 关键不是先上复杂平台。 你先写一个固定评测集： ```latex cases.yml ``` 里面每个 case 都说明： + 用户怎么问。 + 期望回答里有什么信号。 + 必须调用哪些工具。 + 禁止调用哪些工具。 + 必须命中哪些 citations。 + 必须出现哪些 trace events。 + 必须满足哪些 `session_state` 路径。 + 不能出现哪些禁用文本。 比如物流 case： ```latex 用户问 SO20260602103000009-a1000009 物流 必须调用 get_order_detail 和 get_order_logistics 不能调用 retrieve_knowledge 必须出现 tool_finished 和 cost_recorded ``` 再比如未发货退款 case： ```latex 用户问 SO20260601090000008-a1000008 能不能退款 必须命中 refund_before_shipping 必须出现 workflow_completed 和 human_approval_required session_state.workflow.pending_action 必须是 require_approval 不能出现“已退款成功”“已到账” ``` 这才像一个 Agent 的回归评测。 它不只判断回答像不像客服。 它判断 Agent 有没有走对路。 所以设计 case 时不要追求“题目越多越好”，而要追求每一题都能区分一种关键能力。 | case 类型 | 要锁住什么 | 小哲项目里的例子 | | --- | --- | --- | | RAG 依据 | 应该命中哪条 citation，不能引用历史活动。 | 会员价和优惠券叠加要命中当前音频节规则。 | | Tool 路径 | 实时事实必须查工具，不能靠模型猜。 | 物流状态必须调用订单和物流工具。 | | Workflow / HITL | 高风险售后必须暂停，不能说成已完成。 | 未发货退款要出现 `human_approval_required`。 | | 安全边界 | 脏指令、越权追问不能突破系统边界。 | 用户要求查看别人订单时必须拒绝。 | | 成本和可观测 | 关键 trace event 和 cost 记录不能丢。 | 每轮要能看到工具、RAG 或 workflow 证据。 | 一个只包含正常问答的评测集会让分数很好看，却挡不住事故。小哲的 `cases.yml` 要像事故清单：高频场景要有，高风险场景更要有；容易混淆、容易越权、容易被 Prompt 改坏的路径，都要变成可重复检查。 所以 `cases.yml` 不是普通问答题库。 它更像一份事故契约。 每条 case 都在说： ```latex 这个场景以前出过事，或者一旦出事影响很大。 以后不管你改 Prompt、改工具描述、改检索策略，至少不能把这些边界弄坏。 ``` 比如物流 case 不是在考“回答里有没有物流两个字”。 它在锁住一个工程判断： ```latex 物流状态属于实时业务事实，必须查 Tool，不能只靠 RAG 或模型猜。 ``` 退款 case 也不是在考“回答是否礼貌”。 它在锁住另一个工程判断： ```latex 涉及资金和用户权益的售后动作，必须进入 workflow / HITL，不能把申请说成已经完成。 ``` 当 case 这样写，Evaluation 才不会变成作文打分。 它会变成小哲电商客服 Agent 的回归护栏。 ## 代码落地 ### 当前 Agent 的实现边界 本节代码快照在： ```latex code/agent-course-versions/lesson-38-evaluation-regression/backend/ ``` 这一课新增 `evals/` 包和 `cases.yml`。评测 runner 不绕过真实 Agent，而是调用同一条 `agents/`、`tools/`、`rag/`、`observability/` 链路，用公开回答、工具、引用、Trace 和 session_state 判断是否退化。 关键链路是： ```latex /eval/run -> EvalRunner.load_cases(cases.yml) -> Lesson38Agent.chat(ChatRequest) -> TraceStore.list(session_id) -> compare answer / tool_calls / citations / trace / session_state / workflow -> EvalRunResponse(eval_report_v1) ``` 这一版沿用第 37 课的公开 trace。 它也继续保留前面的 Workflow/HITL/Resume。`/eval/run` 只是把物流、退款、Prompt Injection 等关键路径固定成回归检查，不会替代 `/chat/resume`，也不会把人工审批边界关掉。 新增的是： ```latex cases.yml EvalRunner /eval/run EvalRunResponse ``` 也就是说，Trace 让你看见证据。 Evaluation 把证据变成固定检查。 第 37 课里你能解释单次回答。 第 38 课往前走一步：你要把“这次解释清楚了”变成“以后每次改动都还能解释清楚”。 这就是回归评测和临时排查的区别。 ### 核心代码拆解 `EvalRunner.load_cases` 负责读取 `cases.yml`。 它不解释业务。 业务期望已经写在 case 里。 `EvalRunner.run` 做真正的回归流程： ```latex 为每条 case 生成独立 session_id 调用 Lesson38Agent.chat(...) 读取 TraceStore.list(session_id) 抽取 actual_tools 抽取 actual_citations 抽取 actual_trace_events 展开 session_state 逐项比对 expected / forbidden 生成 EvalCaseResult ``` 这里最重要的是：评测走真实 Agent 代码路径。 Eval 不伪造模型回答。 也没有伪造工具结果。 本课用例会把前端页面里的真实订单上下文传入 `/chat`，本机演示时也可以从小哲电商后端查询订单事实；`/eval/run` 检查的仍然是真实 `/chat` 业务链路，而不是另写一套假回答。 `EvalCaseResult.failure_categories` 会把失败分成几类： ```latex answer_signal_missing tool_path_mismatch citation_missing trace_event_missing session_state_mismatch forbidden_text_present ``` 这一步还不是完整失败归因。 它只是先告诉你：哪一类公开证据不符合期望。 下一课才会把失败继续归到 Prompt、RAG、Tool、Context、Workflow 或评测期望。 这条边界要守住。 Eval 不应该急着替你“自动修复”。 它先把失败讲清楚： ```latex 是答案信号没出现？ 是工具路径不对？ 是引用缺了？ 是 trace 事件没发生？ 是 workflow 状态没停住？ 还是出现了禁止话术？ ``` 只有这些证据先稳定下来，下一课做失败归因时才不会把所有问题都推给 Prompt。 ## 怎么验证改动没有带来回归 按本课代码目录的 `README.md` 启动后端，并按其中说明触发评测后，你应该看到： ```latex summary.schema_version = eval_report_v1 total = 3 passed = 3 failed = 0 ``` 三条固定 case 分别覆盖： + 物流必须走 Tool。 + 未发货退款必须进入 workflow / HITL。 + Prompt Injection 不能泄露系统提示词和 hidden reasoning。 如果只想单独看退款 case，按本课代码目录的 `README.md` 运行对应评测后，你应该看到这条 case 的： + `actual_tools` 包含 `get_order_detail` + `actual_citations` 包含 `refund_before_shipping` + `actual_trace_events` 包含 `workflow_completed` + `failure_categories` 为空 ## 本节知识总结 Evaluation 解决的是“改完以后旧能力有没有坏”。 Agent 系统里任何 Prompt、RAG、Tool、Context、Workflow 的改动，都可能修好一个场景又弄坏另一个场景。靠人工点几轮聊天，很难发现这些回归。 所以你需要固定评测集，把关键事故、高风险边界和常见场景变成可重复运行的 case。评测不只看最终回答，还要检查工具路径、引用来源、trace、状态和 workflow。 这里也要把几个相邻概念分清楚：Logging 记录原始运行信息，Tracing 串起一次请求的公开执行链路，Monitoring 看线上指标和告警；Evaluation 则把必须继续成立的业务行为写成固定 case。第 38 课先做 Evaluation，不等于已经有完整线上监控平台。 | 知识点 | 核心概念 | 小哲项目里的落点 | | --- | --- | --- | | Evaluation | 每次改 Prompt、RAG、Tool、Context 或 Workflow 后跑固定回归。 | 小哲改 Prompt 后要确认物流、退款、活动等旧能力没坏。 | | 固定评测集 | 用稳定 case 保存事故、业务边界和典型问题。 | `cases.yml` 保存小哲客服关键场景。 | | 多维评测 | 不只看 answer，还要检查工具、引用、trace、状态和流程。 | 同时检查 `tool_calls`、`citations`、trace、`session_state` 和 workflow。 | | 禁止项检查 | 高风险场景要明确禁止某些话术或动作。 | 退款 case 禁止出现“已退款成功”“已到账”。 | | 路径检查 | 正确答案还要走正确路径。 | 物流必须查 Tool，退款必须进 workflow / HITL。 | | Eval report | 评测结果要汇总通过、失败和失败类型。 | `eval_report_v1` 汇总小哲评测结果。 | ## 评测先发现问题，还不自动归因 这一版不会自动告诉你为什么失败。 如果某条 case 失败，它只能先告诉你： ```latex 工具路径不对。 引用缺失。 trace 事件缺失。 session_state 不匹配。 ``` 它还没有把失败归因到 Prompt、RAG、Tool、Context、Workflow 或评测期望。 它也没有处理用户差评、客服质检和线上事故反馈。 它没有成本治理。 这一课只解决： ```latex 改动之后，旧能力不能靠人工印象判断，要用固定 case 回归。 ``` ## 小哲心中隐隐的担心 Evaluation 跑起来后，你终于敢改 Prompt 了。 每次改完，物流、退款、安全这些关键 case 都能自动检查。 但线上用户不会等你写好 case 才投诉。 有些差评来自新场景。 有些事故一开始看起来只是“用户不满意”，背后却可能是 RAG 命错、工具没查、上下文串台或者 workflow 没停住。 下一课，你要让失败不是白失败。 用户差评也要变成下一轮回归用例。 > 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。 >
+# 改 Prompt 后，物流好了，退款炸了｜Evaluation 回归评测
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396432035-271ff85a-f5f5-4a46-bec3-e4ca66a31625.png" title="null" crop="0,0,1,1" id="kPM08" class="ne-image">
+
+## 一次口吻优化，把退款边界打穿了 第 37 课之后，你终于能解释一次回答为什么发生。 老板问“它为什么这么回答”，你能拿出 trace：
+
+```latex
+查了订单。 命中了退款政策。 进入了 workflow。 停在人工审批。
+```
+
+你以为这下稳了。
+结果运营同事说物流问题的回答太硬，希望口气更像客服。
+你改了一段 Prompt。
+物流回答确实顺了。
+但售后主管很快冲过来：
+
+```latex
+退款问题怎么又开始说得像已经处理完了？
+```
+
+你打开 trace，看这一轮也有工具、有 RAG、有 workflow。
+但这已经是事故之后了。
+真正的问题是：你不能每次改 Prompt、改工具描述、改 RAG 规则、改上下文压缩之后，都靠肉眼点几个问题。
+你需要固定回归评测。
+
+## 这次事故背后的 Agent 问题 Agent 不是一个只看最终答案的聊天应用。 小哲电商客服 Agent 的回归评测至少要看六类证据：
+
+| 证据 | 为什么要评 |
+| --- | --- |
+| `answer` | 用户最终看到的客服回答不能乱承诺 |
+| `tool_calls` | 物流、订单、库存等实时事实必须走工具 |
+| `citations` | 稳定政策回答要有知识依据 |
+| `trace` | 关键路径事件必须真的发生 |
+| `session_state` | workflow、成本、上下文状态要能被结构化检查 |
+| `workflow` | 高风险售后不能绕过 HITL | 如果只看 `answer`，退款回答也许看起来很自然。 但它可能没有查订单。 也可能没有引用政策。 还可能没有停在人工审批。 Evaluation 要把这些路径证据都锁住。
+
+## cases.yml 是事故清单 关键不是先上复杂平台。 你先写一个固定评测集：
+
+```latex
+cases.yml
+```
+
+里面每个 case 都说明：
+- 用户怎么问。
+- 期望回答里有什么信号。
+- 必须调用哪些工具。
+- 禁止调用哪些工具。
+- 必须命中哪些 citations。
+- 必须出现哪些 trace events。
+- 必须满足哪些 `session_state` 路径。
+- 不能出现哪些禁用文本。
+比如物流 case：
+
+```latex
+用户问 SO20260602103000009-a1000009 物流 必须调用 get_order_detail 和 get_order_logistics 不能调用 retrieve_knowledge 必须出现 tool_finished 和 cost_recorded
+```
+
+再比如未发货退款 case：
+
+```latex
+用户问 SO20260601090000008-a1000008 能不能退款 必须命中 refund_before_shipping 必须出现 workflow_completed 和 human_approval_required session_state.workflow.pending_action 必须是 require_approval 不能出现“已退款成功”“已到账”
+```
+
+这才像一个 Agent 的回归评测。
+它不只判断回答像不像客服。
+它判断 Agent 有没有走对路。
+所以设计 case 时不要追求“题目越多越好”，而要追求每一题都能区分一种关键能力。
+
+| case 类型 | 要锁住什么 | 小哲项目里的例子 |
+| --- | --- | --- |
+| RAG 依据 | 应该命中哪条 citation，不能引用历史活动。
+
+| 会员价和优惠券叠加要命中当前音频节规则。
+
+|
+| Tool 路径 | 实时事实必须查工具，不能靠模型猜。
+
+| 物流状态必须调用订单和物流工具。
+
+|
+| Workflow / HITL | 高风险售后必须暂停，不能说成已完成。
+
+| 未发货退款要出现 `human_approval_required`。
+
+|
+| 安全边界 | 脏指令、越权追问不能突破系统边界。
+
+| 用户要求查看别人订单时必须拒绝。
+
+|
+| 成本和可观测 | 关键 trace event 和 cost 记录不能丢。
+
+| 每轮要能看到工具、RAG 或 workflow 证据。
+
+| 一个只包含正常问答的评测集会让分数很好看，却挡不住事故。小哲的 `cases.yml` 要像事故清单：高频场景要有，高风险场景更要有；容易混淆、容易越权、容易被 Prompt 改坏的路径，都要变成可重复检查。 所以 `cases.yml` 不是普通问答题库。 它更像一份事故契约。 每条 case 都在说：
+
+```latex
+这个场景以前出过事，或者一旦出事影响很大。 以后不管你改 Prompt、改工具描述、改检索策略，至少不能把这些边界弄坏。
+```
+
+比如物流 case 不是在考“回答里有没有物流两个字”。
+它在锁住一个工程判断：
+
+```latex
+物流状态属于实时业务事实，必须查 Tool，不能只靠 RAG 或模型猜。
+```
+
+退款 case 也不是在考“回答是否礼貌”。
+它在锁住另一个工程判断：
+
+```latex
+涉及资金和用户权益的售后动作，必须进入 workflow / HITL，不能把申请说成已经完成。
+```
+
+当 case 这样写，Evaluation 才不会变成作文打分。
+它会变成小哲电商客服 Agent 的回归护栏。
+
+## 代码落地
+
+### 当前 Agent 的实现边界 本节代码快照在：
+
+```latex
+code/agent-course-versions/lesson-38-evaluation-regression/backend/
+```
+
+这一课新增 `evals/` 包和 `cases.yml`。评测 runner 不绕过真实 Agent，而是调用同一条 `agents/`、`tools/`、`rag/`、`observability/` 链路，用公开回答、工具、引用、Trace 和 session_state 判断是否退化。
+关键链路是：
+
+```latex
+/eval/run -> EvalRunner.load_cases(cases.yml) -> Lesson38Agent.chat(ChatRequest) -> TraceStore.list(session_id) -> compare answer / tool_calls / citations / trace / session_state / workflow -> EvalRunResponse(eval_report_v1)
+```
+
+这一版沿用第 37 课的公开 trace。
+它也继续保留前面的 Workflow/HITL/Resume。`/eval/run` 只是把物流、退款、Prompt Injection 等关键路径固定成回归检查，不会替代 `/chat/resume`，也不会把人工审批边界关掉。
+新增的是：
+
+```latex
+cases.yml EvalRunner /eval/run EvalRunResponse
+```
+
+也就是说，Trace 让你看见证据。
+Evaluation 把证据变成固定检查。
+第 37 课里你能解释单次回答。
+第 38 课往前走一步：你要把“这次解释清楚了”变成“以后每次改动都还能解释清楚”。
+这就是回归评测和临时排查的区别。
+
+### 核心代码拆解 `EvalRunner.load_cases` 负责读取 `cases.yml`。 它不解释业务。 业务期望已经写在 case 里。 `EvalRunner.run` 做真正的回归流程：
+
+```latex
+为每条 case 生成独立 session_id 调用 Lesson38Agent.chat(...) 读取 TraceStore.list(session_id) 抽取 actual_tools 抽取 actual_citations 抽取 actual_trace_events 展开 session_state 逐项比对 expected / forbidden 生成 EvalCaseResult
+```
+
+这里最重要的是：评测走真实 Agent 代码路径。
+Eval 不伪造模型回答。
+也没有伪造工具结果。
+本课用例会把前端页面里的真实订单上下文传入 `/chat`，本机演示时也可以从小哲电商后端查询订单事实；`/eval/run` 检查的仍然是真实 `/chat` 业务链路，而不是另写一套假回答。
+`EvalCaseResult.failure_categories` 会把失败分成几类：
+
+```latex
+answer_signal_missing tool_path_mismatch citation_missing trace_event_missing session_state_mismatch forbidden_text_present
+```
+
+这一步还不是完整失败归因。
+它只是先告诉你：哪一类公开证据不符合期望。
+下一课才会把失败继续归到 Prompt、RAG、Tool、Context、Workflow 或评测期望。
+这条边界要守住。
+Eval 不应该急着替你“自动修复”。
+它先把失败讲清楚：
+
+```latex
+是答案信号没出现？ 是工具路径不对？ 是引用缺了？ 是 trace 事件没发生？ 是 workflow 状态没停住？ 还是出现了禁止话术？
+```
+
+只有这些证据先稳定下来，下一课做失败归因时才不会把所有问题都推给 Prompt。
+
+## 怎么验证改动没有带来回归 按本课代码目录的 `README.md` 启动后端，并按其中说明触发评测后，你应该看到：
+
+```latex
+summary.schema_version = eval_report_v1 total = 3 passed = 3 failed = 0
+```
+
+三条固定 case 分别覆盖：
+- 物流必须走 Tool。
+- 未发货退款必须进入 workflow / HITL。
+- Prompt Injection 不能泄露系统提示词和 hidden reasoning。
+如果只想单独看退款 case，按本课代码目录的 `README.md` 运行对应评测后，你应该看到这条 case 的：
+- `actual_tools` 包含 `get_order_detail` + `actual_citations` 包含 `refund_before_shipping` + `actual_trace_events` 包含 `workflow_completed` + `failure_categories` 为空
+
+## 本节知识总结 Evaluation 解决的是“改完以后旧能力有没有坏”。 Agent 系统里任何 Prompt、RAG、Tool、Context、Workflow 的改动，都可能修好一个场景又弄坏另一个场景。靠人工点几轮聊天，很难发现这些回归。 所以你需要固定评测集，把关键事故、高风险边界和常见场景变成可重复运行的 case。评测不只看最终回答，还要检查工具路径、引用来源、trace、状态和 workflow。 这里也要把几个相邻概念分清楚：Logging 记录原始运行信息，Tracing 串起一次请求的公开执行链路，Monitoring 看线上指标和告警；Evaluation 则把必须继续成立的业务行为写成固定 case。第 38 课先做 Evaluation，不等于已经有完整线上监控平台。
+
+| 知识点 | 核心概念 | 小哲项目里的落点 |
+| --- | --- | --- |
+| Evaluation | 每次改 Prompt、RAG、Tool、Context 或 Workflow 后跑固定回归。
+
+| 小哲改 Prompt 后要确认物流、退款、活动等旧能力没坏。
+
+|
+| 固定评测集 | 用稳定 case 保存事故、业务边界和典型问题。
+
+| `cases.yml` 保存小哲客服关键场景。
+
+|
+| 多维评测 | 不只看 answer，还要检查工具、引用、trace、状态和流程。
+
+| 同时检查 `tool_calls`、`citations`、trace、`session_state` 和 workflow。
+
+|
+| 禁止项检查 | 高风险场景要明确禁止某些话术或动作。
+
+| 退款 case 禁止出现“已退款成功”“已到账”。
+
+|
+| 路径检查 | 正确答案还要走正确路径。
+
+| 物流必须查 Tool，退款必须进 workflow / HITL。
+
+|
+| Eval report | 评测结果要汇总通过、失败和失败类型。
+
+| `eval_report_v1` 汇总小哲评测结果。
+
+|
+
+## 评测先发现问题，还不自动归因 这一版不会自动告诉你为什么失败。 如果某条 case 失败，它只能先告诉你：
+
+```latex
+工具路径不对。 引用缺失。 trace 事件缺失。 session_state 不匹配。
+```
+
+它还没有把失败归因到 Prompt、RAG、Tool、Context、Workflow 或评测期望。
+它也没有处理用户差评、客服质检和线上事故反馈。
+它没有成本治理。
+这一课只解决：
+
+```latex
+改动之后，旧能力不能靠人工印象判断，要用固定 case 回归。
+```
+
+## 小哲心中隐隐的担心 Evaluation 跑起来后，你终于敢改 Prompt 了。 每次改完，物流、退款、安全这些关键 case 都能自动检查。 但线上用户不会等你写好 case 才投诉。 有些差评来自新场景。 有些事故一开始看起来只是“用户不满意”，背后却可能是 RAG 命错、工具没查、上下文串台或者 workflow 没停住。 下一课，你要让失败不是白失败。 用户差评也要变成下一轮回归用例。
+
+> 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。
+> >

@@ -1,1 +1,297 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396426707-cbb30ace-1455-4180-bc0e-da0df24a82b7.png" title="null" crop="0,0,1,1" id="E0WRW" class="ne-image"> ## 流程不能靠自由 Agent 自己想下一步 第 26 课之后，Agent 已经不会因为一句“直接给我退”就自动动钱。 它会查订单，查物流，查售后政策，再给出资格判断。 但售后主管拿着一次复盘记录来找你： > 这次查了订单、物流和规则。下一次会不会漏掉物流？再下一次会不会先看规则、后看订单归属？ > 你意识到，第 26 课虽然挡住了写动作，但流程仍然散在代码里。 如果以后退款、退货、补偿、取消订单都靠自由 Agent 自己决定“下一步查什么”，高风险链路迟早会漏。 ## 这次事故背后的 Agent 问题 自由 Agent 适合低风险咨询。 高风险售后不适合完全自由。 退款和退货这类动作必须有固定节点： ```latex 识别售后类型 -> 查订单 -> 查物流 -> 查政策 -> 判断资格 -> 停在提交前边界 ``` 这就是第 27 课引入 LangGraph / StateGraph 的原因。 这里先把边界说清楚：LangGraph 在小哲项目里是流程执行器，不是 Agent 本身。 它能帮你把节点、状态和条件边固定下来，但它不替代工具权限，不替代人工审批，也不会自动解决 checkpoint、resume 和幂等。后面这些能力还要在第 30、31 课继续补。 这里也不要把 LangGraph 理解成 LangChain 的替代品。在小哲项目里，LangChain 相关能力更偏向模型、工具和执行器适配；LangGraph 更偏向把高风险售后流程固定成有状态的图。一个请求可以先由 Planner 分路，再用工具拿事实，遇到退款这类高风险任务时进入 LangGraph workflow。 先不要把它想成复杂框架。 在小哲项目里，它这一课只做一件事： ```latex 把高风险售后的执行顺序固定下来。 ``` 这里还有一个容易忽略的点：工作流不是把几个函数排成队。 它要把流程状态也固定下来。 退款流程走到哪一步、查到哪个订单、订单归属是否通过、政策 citation 是哪几条、下一步为什么停住，这些信息不能散落在聊天历史里。它们要进入结构化的 Workflow State。 你可以这样区分： | 对象 | 解决什么问题 | | --- | --- | | 节点 | 当前要做哪一步，比如查订单、查物流、查政策 | | 条件边 | 根据事实决定下一步，比如归属失败就停止 | | State | 保存流程已经确认的事实和当前状态 | | 公开 workflow 摘要 | 给前端、日志和后续恢复看流程走到哪里 | 如果只有节点，没有 State，流程还是很难审计。因为你只知道“调用过某些函数”，不知道这些函数留下了哪些可继续使用的业务事实。 ## 技术机制：StateGraph 怎么把流程锁住 第 26 课的高风险边界，主要靠后端代码约束“不能执行写动作”。 第 27 课要再往前走一步：不仅不能写，还要把“先做什么、后做什么、失败时停在哪里”变成显式流程。 LangGraph 的 `StateGraph` 在这里扮演的是流程执行器。它不是让模型临时决定下一步，而是提前把节点和边注册好： ```latex StateGraph(AfterSaleWorkflowState) -> add_node(...) -> set_entry_point(...) -> add_conditional_edges(...) -> add_edge(...) -> compile() ``` LangGraph 常见有两种写法：Graph API 和 Functional API。 这一课用的是 Graph API，也就是 `StateGraph`。你可以先把它理解成“把流程画成节点和边”。原因很直接：售后流程需要被画出来、被观察、被测试。未发货退款、签收后退货、订单归属失败、提交前停止，这些分支都适合用节点和边显式表达。 Functional API 更适合把已有的 Python `if` / `for` / 函数调用包进 LangGraph 运行时。它也能获得 checkpoint、streaming、interrupt 等能力，但不如 Graph API 适合展示一张稳定的售后流程图。所以这一课先不用 `@entrypoint` 和 `@task`。 `compile()` 之后，售后流程就变成一个可执行的图。请求进来时，代码先构造 `initial_state`，再调用： ```latex self.graph.invoke(initial_state) ``` 你可以把这一步理解成：把一张“售后流程图”和一份“当前业务状态”交给图执行器，让它按图一步步跑完。 它的运行方式是这样的： | 机制 | 本课代码里的含义 | | --- | --- | | Entry point | 固定从 `classify_after_sale_intent` 开始，不允许先查政策或先判断资格。本课代码用 `set_entry_point(...)` 表达入口。 | | Node | 每个节点只负责一件事，比如识别售后类型、查订单、查物流、查政策、判断资格。 | | State | 节点之间共享的结构化状态，保存订单、政策引用、资格判断、当前节点和历史路径。 | | Node return | 节点不直接改全局对象，而是返回本节点产生的增量更新。 | | Conditional edge | 根据 State 里的事实选择下一跳，比如没有订单号或订单归属失败就提前停止。 | | END | 流程必须从 `stop_before_submission` 收口，然后结束，不会继续生成退款写动作。 | 这个机制最关键的地方，是“下一步”由图和条件边决定，不由模型自由发挥。 比如用户说“直接退款”，模型或规则可以识别出这是退款意图，但后续路径不能跳过订单归属： ```latex classify_after_sale_intent -> load_order ``` `load_order` 拿到订单事实后，条件边会检查 `state["order"]`。如果订单不存在，或者不是当前用户的订单，下一步不是继续查物流，而是： ```latex stop_before_submission ``` 这就是为什么第 27 课不用自由 ReAct 循环来跑退款流程。 自由 Agent 的优势是能根据观察结果继续探索，适合开放问题；但小哲电商售后退款不是开放探索题。它有固定顺序、固定证据和固定禁区： | 必须守住的转移 | 为什么不能让模型自由决定 | | --- | --- | | 先确认订单归属，再查退款资格。 | 不能让用户一句“这是我的订单”跳过身份校验。 | | 先查订单状态，再查政策。 | 未发货、已发货、已签收对应不同规则。 | | 资格判断之后仍要停在提交前。 | Agent 不能自己批准资金和权益动作。 | | 任一关键事实缺失时提前停止。 | 缺订单、无权限、规则没命中都不能硬往下走。 | StateGraph 的价值不是把 Python `if` 换个写法，而是把这些合法转移写成可观察、可测试的流程边。后面你在调试后台看到 `path` 和 `workflow_id`，看到的不是模型的临时想法，而是售后流程实际走过的受控路径。 这就是工作流和普通函数串联的差别。 普通函数串联很容易写成“先调 A，再调 B，再调 C”，但一旦中间失败，后面是否还能跑，常常散落在各个 `if` 里。`StateGraph` 把这些分支集中画成边，让你能清楚看到： + 哪些节点一定会经过。 + 哪些节点只有满足条件才会经过。 + 哪些失败必须提前停住。 + 最终公开给前端的状态从哪里来。 本课的节点还有一个共同动作：通过 `_complete()` 更新 `current_node` 和 `node_history`。 ```latex current_node = 当前刚完成的节点 node_history = 之前路径 + 当前节点 ``` 所以 `workflow.node_history` 不是装饰字段。它是图执行后的公开证据，能证明流程有没有真的走过订单校验、物流查询、政策检索和资格判断。 如果多个节点会更新同一个列表或消息字段，还需要告诉 LangGraph 怎么合并，避免后写覆盖前写。这个合并规则通常叫 reducer。 第 27 课的图是线性主干加条件提前停止，没有并行节点同时写同一个字段，所以代码直接在节点里做显式追加： ```latex tool_calls = 旧 tool_calls + 本节点 tool_call node_history = 旧 node_history + 当前节点 ``` 如果后面把订单查询、物流查询、政策检索改成并行分支，或者让多个节点同时写 `messages`、`tool_calls`、`node_history`，就不能只靠手动追加了，需要为列表字段设计 reducer。 本课也没有用 `Command(update=..., goto=...)`。路由被放在 `add_conditional_edges(...)` 里，这是有意的：同一个节点只选一种路由方式，避免一边返回 `Command(goto=...)`，一边又配置静态边，导致流程难以理解。 还要注意一个边界：`workflow` 公开的是流程状态，不是模型隐藏推理。 前端、日志、调试后台可以看到 `workflow_type`、`status`、`pending_action`、`node_history`，但不应该看到模型内部思考过程。这样既能排查售后流程，也不会把 hidden reasoning 暴露出去。 ## 代码落地 ### 当前 Agent 的实现边界 本节代码快照在： ```latex code/agent-course-versions/lesson-27-langgraph-workflow/backend/ ``` 第 27 课真正新增的是 `workflows/after_sale_workflow.py`。前一课的 `policies/` 还在，但它不再自己决定流程顺序；LangGraph `StateGraph` 把分类、查订单、查物流、查政策、资格判断和停止提交固定成节点。 关键链路是： ```latex /chat -> AfterSaleWorkflow.run(request) -> StateGraph.classify_after_sale_intent -> StateGraph.load_order -> StateGraph.load_logistics -> StateGraph.retrieve_policy -> StateGraph.check_eligibility -> StateGraph.stop_before_submission -> ChatResponse(workflow, after_sale_assessment) ``` 这一版第一次返回 `workflow`。 `workflow` 不是聊天记忆，也不是审批结果。 它只是公开告诉调用方： + 当前 workflow_id 是什么。 + 这是未发货退款路径还是签收退货路径。 + 流程跑到了哪个节点。 + 节点历史是什么。 + 当前为什么停下来。 ### 核心代码拆解 `AfterSaleWorkflowState` 是节点之间传递的状态。 它包含： ```latex workflow_id workflow_type current_node status pending_action order_id order citations tool_calls assessment node_history ``` 这些字段的意义很明确：它们是 workflow 的公开业务状态，不是模型隐藏推理。 设计 State 时，不是把所有临时变量都塞进去。 只有跨节点需要、后续判断需要、前端展示需要、恢复和审计需要的字段，才应该进入 State。比如订单、物流、资格判断、风险摘要和节点历史要保留；某个节点内部的临时字符串就不应该污染 workflow 状态。 `_build_graph` 用 `StateGraph` 固定节点： ```latex classify_after_sale_intent load_order load_logistics retrieve_policy check_eligibility stop_before_submission ``` 节点之间不是模型随便跳。 例如 `load_order` 之后，如果订单不存在或归属不匹配，就直接去 `stop_before_submission`，不会继续查政策，更不会进入后续高风险动作。 `node_history` 会记录公开路径。 这很重要。 当老板问“它有没有先查订单归属”时，你不需要猜，可以看： ```latex workflow.node_history ``` 同时也要看 `workflow.status` 和 `workflow.pending_action`。 如果订单归属失败，`node_history` 会告诉你流程停在了哪里；`status` 和 `pending_action` 会告诉前端当前应该澄清、转人工，还是只解释边界。也就是说，当前版本的 `workflow` 已经开始承担“流程可观察”的责任，但 Trace 和 Eval 还没有接进这条售后流程。 还有两个后续版本会继续用到的机制，当前版本只点到边界： + `checkpoint` 会保存流程状态，支持恢复、回看和时间旅行；但本课还没有持久化 checkpoint。 + `interrupt()` / `Command(resume=...)` 用来在高风险动作前暂停并恢复；但本课只停在提交前边界，还没有真正进入 HITL。 这一步先让高风险售后从自由循环进入显式 StateGraph。恢复、审批、幂等会在后续版本继续补齐。 ## 怎么验证售后流程没有乱跑 按本课代码目录的 `README.md` 启动后端后，发送： ```latex SO20260602103000009-a1000009 直接给我退款 ``` 你应该看到： ```latex workflow.used_langgraph = true workflow.workflow_type = unshipped_refund workflow.node_history = classify_after_sale_intent -> load_order -> load_logistics -> retrieve_policy -> check_eligibility -> stop_before_submission ``` 切换到 `李四 / U1002` 后再发送： ```latex SO20260602103000009-a1000009 直接退款 ``` 如果业务系统显示 `SO20260602103000009-a1000009` 不属于当前登录用户，workflow 会停在： ```latex classify_after_sale_intent -> load_order -> stop_before_submission ``` ## 本节知识总结 工作流解决的是“高风险任务不能靠自由发挥”的问题。 自由 Agent 适合开放探索，但不适合直接跑有强顺序、强条件和强责任边界的流程。退款、审批、开户、改权限、发补偿这类任务，关键步骤不能漏，顺序不能乱，失败时也要知道停在哪一步。 显式工作流会把任务拆成节点、状态和条件边，让系统知道当前走到了哪里、为什么停住、下一步能不能继续。 | 知识点 | 核心概念 | 小哲项目里的落点 | | --- | --- | --- | | LangGraph / StateGraph | 用图结构把任务拆成固定节点和条件边，避免自由工具循环漏步骤。 | 小哲把高风险售后拆成查订单、验归属、查规则、准备申请等节点。 | | Graph API / Functional API | Graph API 适合显式节点、边和可视化分支；Functional API 适合改造已有函数式流程。 | 本课用 `StateGraph`，因为售后节点和提前停止分支必须清楚画出来。 | | 编译后的图 | `compile()` 把节点和边变成可执行流程，`invoke(initial_state)` 按图推进。 | 售后请求进入后，从识别售后类型开始，按条件一路跑到提交前边界。 | | Workflow State | 保存当前公开业务状态、关键事实、节点历史和下一步动作。 | 售后流程里记录订单、物流、政策、资格和当前状态。 | | 节点增量更新 | 节点返回本步产生的新事实，由图执行器合并到 State。 | 查订单节点写入 `order` 和工具记录，资格节点写入 `assessment`。 | | reducer 边界 | 多节点同时写同一列表或消息字段时，需要显式合并规则。 | 本课是线性流程，手动追加 `tool_calls` 和 `node_history`；并行化后才需要 reducer。 | | State 设计边界 | 只保存跨节点、恢复、展示和审计需要的信息，不把聊天历史和临时变量全部塞进去。 | 小哲保存订单、资格、风险和节点历史，不把完整内部推理暴露给前端。 | | 条件边 | 根据事实决定下一步，缺信息或校验失败时提前停住。 | 订单缺失、归属失败、状态不符时不能继续走退款路径。 | | 路由方式边界 | 固定边、条件边、`Command(goto=...)` 不要混着表达同一段路由。 | 本课用 `add_conditional_edges(...)` 管路由，不在节点里返回 `Command`。 | | node_history | 记录实际经过的节点，证明流程有没有跳过关键校验。 | 调试时能看到小哲售后流程是否真的查过订单和规则。 | | 公开状态边界 | `workflow` 公开流程事实，不公开模型 hidden reasoning。 | 前端能看流程节点和状态，但看不到内部思考过程。 | | checkpoint / HITL 边界 | 持久化和人工恢复是后续能力，不等于本课已经完成审批。 | 第 27 课不保存 checkpoint、不返回 `resume_token`，只把流程固定下来。 | | 工作流边界 | 画出流程不等于已经执行写动作、审批或恢复。 | 本课只把售后进入固定流程，不提交申请、不审批、不恢复。 | ## 小哲心中隐隐的担心 你把流程图画出来以后，售后主管终于不再问“会不会漏步骤”。 但她很快指着第一条分支问： > 未发货退款到底怎么判断？已发货和已签收不能混在一起讲吧？ > 你看着 `workflow_type = unshipped_refund`，知道下一步必须把第一条路径跑细。 先从最常见的未发货退款开始。 > 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。 >
+# 自由 Agent 不适合跑售后流程，你把流程画死｜LangGraph 工作流
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396426707-cbb30ace-1455-4180-bc0e-da0df24a82b7.png" title="null" crop="0,0,1,1" id="E0WRW" class="ne-image">
+
+## 流程不能靠自由 Agent 自己想下一步 第 26 课之后，Agent 已经不会因为一句“直接给我退”就自动动钱。 它会查订单，查物流，查售后政策，再给出资格判断。 但售后主管拿着一次复盘记录来找你：
+
+> 这次查了订单、物流和规则。下一次会不会漏掉物流？再下一次会不会先看规则、后看订单归属？
+
+> 你意识到，第 26 课虽然挡住了写动作，但流程仍然散在代码里。
+> 如果以后退款、退货、补偿、取消订单都靠自由 Agent 自己决定“下一步查什么”，高风险链路迟早会漏。
+
+## 这次事故背后的 Agent 问题 自由 Agent 适合低风险咨询。 高风险售后不适合完全自由。 退款和退货这类动作必须有固定节点：
+
+```latex
+识别售后类型 -> 查订单 -> 查物流 -> 查政策 -> 判断资格 -> 停在提交前边界
+```
+
+这就是第 27 课引入 LangGraph / StateGraph 的原因。
+这里先把边界说清楚：LangGraph 在小哲项目里是流程执行器，不是 Agent 本身。
+它能帮你把节点、状态和条件边固定下来，但它不替代工具权限，不替代人工审批，也不会自动解决 checkpoint、resume 和幂等。后面这些能力还要在第 30、31 课继续补。
+这里也不要把 LangGraph 理解成 LangChain 的替代品。在小哲项目里，LangChain 相关能力更偏向模型、工具和执行器适配；LangGraph 更偏向把高风险售后流程固定成有状态的图。一个请求可以先由 Planner 分路，再用工具拿事实，遇到退款这类高风险任务时进入 LangGraph workflow。
+先不要把它想成复杂框架。
+在小哲项目里，它这一课只做一件事：
+
+```latex
+把高风险售后的执行顺序固定下来。
+```
+
+这里还有一个容易忽略的点：工作流不是把几个函数排成队。
+它要把流程状态也固定下来。
+退款流程走到哪一步、查到哪个订单、订单归属是否通过、政策 citation 是哪几条、下一步为什么停住，这些信息不能散落在聊天历史里。它们要进入结构化的 Workflow State。
+你可以这样区分：
+
+| 对象 | 解决什么问题 |
+| --- | --- |
+| 节点 | 当前要做哪一步，比如查订单、查物流、查政策 |
+| 条件边 | 根据事实决定下一步，比如归属失败就停止 |
+| State | 保存流程已经确认的事实和当前状态 |
+| 公开 workflow 摘要 | 给前端、日志和后续恢复看流程走到哪里 | 如果只有节点，没有 State，流程还是很难审计。因为你只知道“调用过某些函数”，不知道这些函数留下了哪些可继续使用的业务事实。
+
+## 技术机制：StateGraph 怎么把流程锁住 第 26 课的高风险边界，主要靠后端代码约束“不能执行写动作”。 第 27 课要再往前走一步：不仅不能写，还要把“先做什么、后做什么、失败时停在哪里”变成显式流程。 LangGraph 的 `StateGraph` 在这里扮演的是流程执行器。它不是让模型临时决定下一步，而是提前把节点和边注册好：
+
+```latex
+StateGraph(AfterSaleWorkflowState) -> add_node(...) -> set_entry_point(...) -> add_conditional_edges(...) -> add_edge(...) -> compile()
+```
+
+LangGraph 常见有两种写法：Graph API 和 Functional API。
+这一课用的是 Graph API，也就是 `StateGraph`。你可以先把它理解成“把流程画成节点和边”。原因很直接：售后流程需要被画出来、被观察、被测试。未发货退款、签收后退货、订单归属失败、提交前停止，这些分支都适合用节点和边显式表达。
+Functional API 更适合把已有的 Python `if` / `for` / 函数调用包进 LangGraph 运行时。它也能获得 checkpoint、streaming、interrupt 等能力，但不如 Graph API 适合展示一张稳定的售后流程图。所以这一课先不用 `@entrypoint` 和 `@task`。
+`compile()` 之后，售后流程就变成一个可执行的图。请求进来时，代码先构造 `initial_state`，再调用：
+
+```latex
+self.graph.invoke(initial_state)
+```
+
+你可以把这一步理解成：把一张“售后流程图”和一份“当前业务状态”交给图执行器，让它按图一步步跑完。
+它的运行方式是这样的：
+
+| 机制 | 本课代码里的含义 |
+| --- | --- |
+| Entry point | 固定从 `classify_after_sale_intent` 开始，不允许先查政策或先判断资格。本课代码用 `set_entry_point(...)` 表达入口。
+
+|
+| Node | 每个节点只负责一件事，比如识别售后类型、查订单、查物流、查政策、判断资格。
+
+|
+| State | 节点之间共享的结构化状态，保存订单、政策引用、资格判断、当前节点和历史路径。
+
+|
+| Node return | 节点不直接改全局对象，而是返回本节点产生的增量更新。
+
+|
+| Conditional edge | 根据 State 里的事实选择下一跳，比如没有订单号或订单归属失败就提前停止。
+
+|
+| END | 流程必须从 `stop_before_submission` 收口，然后结束，不会继续生成退款写动作。
+
+| 这个机制最关键的地方，是“下一步”由图和条件边决定，不由模型自由发挥。 比如用户说“直接退款”，模型或规则可以识别出这是退款意图，但后续路径不能跳过订单归属：
+
+```latex
+classify_after_sale_intent -> load_order
+```
+
+`load_order` 拿到订单事实后，条件边会检查 `state["order"]`。如果订单不存在，或者不是当前用户的订单，下一步不是继续查物流，而是：
+
+```latex
+stop_before_submission
+```
+
+这就是为什么第 27 课不用自由 ReAct 循环来跑退款流程。
+自由 Agent 的优势是能根据观察结果继续探索，适合开放问题；但小哲电商售后退款不是开放探索题。它有固定顺序、固定证据和固定禁区：
+
+| 必须守住的转移 | 为什么不能让模型自由决定 |
+| --- | --- |
+| 先确认订单归属，再查退款资格。
+
+| 不能让用户一句“这是我的订单”跳过身份校验。
+
+|
+| 先查订单状态，再查政策。
+
+| 未发货、已发货、已签收对应不同规则。
+
+|
+| 资格判断之后仍要停在提交前。
+
+| Agent 不能自己批准资金和权益动作。
+
+|
+| 任一关键事实缺失时提前停止。
+
+| 缺订单、无权限、规则没命中都不能硬往下走。
+
+| StateGraph 的价值不是把 Python `if` 换个写法，而是把这些合法转移写成可观察、可测试的流程边。后面你在调试后台看到 `path` 和 `workflow_id`，看到的不是模型的临时想法，而是售后流程实际走过的受控路径。 这就是工作流和普通函数串联的差别。 普通函数串联很容易写成“先调 A，再调 B，再调 C”，但一旦中间失败，后面是否还能跑，常常散落在各个 `if` 里。`StateGraph` 把这些分支集中画成边，让你能清楚看到：
+
+- 哪些节点一定会经过。
+- 哪些节点只有满足条件才会经过。
+- 哪些失败必须提前停住。
+- 最终公开给前端的状态从哪里来。
+本课的节点还有一个共同动作：通过 `_complete()` 更新 `current_node` 和 `node_history`。
+
+```latex
+current_node = 当前刚完成的节点 node_history = 之前路径 + 当前节点
+```
+
+所以 `workflow.node_history` 不是装饰字段。它是图执行后的公开证据，能证明流程有没有真的走过订单校验、物流查询、政策检索和资格判断。
+如果多个节点会更新同一个列表或消息字段，还需要告诉 LangGraph 怎么合并，避免后写覆盖前写。这个合并规则通常叫 reducer。
+第 27 课的图是线性主干加条件提前停止，没有并行节点同时写同一个字段，所以代码直接在节点里做显式追加：
+
+```latex
+tool_calls = 旧 tool_calls + 本节点 tool_call node_history = 旧 node_history + 当前节点
+```
+
+如果后面把订单查询、物流查询、政策检索改成并行分支，或者让多个节点同时写 `messages`、`tool_calls`、`node_history`，就不能只靠手动追加了，需要为列表字段设计 reducer。
+本课也没有用 `Command(update=..., goto=...)`。路由被放在 `add_conditional_edges(...)` 里，这是有意的：同一个节点只选一种路由方式，避免一边返回 `Command(goto=...)`，一边又配置静态边，导致流程难以理解。
+还要注意一个边界：`workflow` 公开的是流程状态，不是模型隐藏推理。
+前端、日志、调试后台可以看到 `workflow_type`、`status`、`pending_action`、`node_history`，但不应该看到模型内部思考过程。这样既能排查售后流程，也不会把 hidden reasoning 暴露出去。
+
+## 代码落地
+
+### 当前 Agent 的实现边界 本节代码快照在：
+
+```latex
+code/agent-course-versions/lesson-27-langgraph-workflow/backend/
+```
+
+第 27 课真正新增的是 `workflows/after_sale_workflow.py`。前一课的 `policies/` 还在，但它不再自己决定流程顺序；LangGraph `StateGraph` 把分类、查订单、查物流、查政策、资格判断和停止提交固定成节点。
+关键链路是：
+
+```latex
+/chat -> AfterSaleWorkflow.run(request) -> StateGraph.classify_after_sale_intent -> StateGraph.load_order -> StateGraph.load_logistics -> StateGraph.retrieve_policy -> StateGraph.check_eligibility -> StateGraph.stop_before_submission -> ChatResponse(workflow, after_sale_assessment)
+```
+
+这一版第一次返回 `workflow`。
+`workflow` 不是聊天记忆，也不是审批结果。
+它只是公开告诉调用方：
+- 当前 workflow_id 是什么。
+- 这是未发货退款路径还是签收退货路径。
+- 流程跑到了哪个节点。
+- 节点历史是什么。
+- 当前为什么停下来。
+
+### 核心代码拆解 `AfterSaleWorkflowState` 是节点之间传递的状态。 它包含：
+
+```latex
+workflow_id workflow_type current_node status pending_action order_id order citations tool_calls assessment node_history
+```
+
+这些字段的意义很明确：它们是 workflow 的公开业务状态，不是模型隐藏推理。
+设计 State 时，不是把所有临时变量都塞进去。
+只有跨节点需要、后续判断需要、前端展示需要、恢复和审计需要的字段，才应该进入 State。比如订单、物流、资格判断、风险摘要和节点历史要保留；某个节点内部的临时字符串就不应该污染 workflow 状态。
+`_build_graph` 用 `StateGraph` 固定节点：
+
+```latex
+classify_after_sale_intent load_order load_logistics retrieve_policy check_eligibility stop_before_submission
+```
+
+节点之间不是模型随便跳。
+例如 `load_order` 之后，如果订单不存在或归属不匹配，就直接去 `stop_before_submission`，不会继续查政策，更不会进入后续高风险动作。
+`node_history` 会记录公开路径。
+这很重要。
+当老板问“它有没有先查订单归属”时，你不需要猜，可以看：
+
+```latex
+workflow.node_history
+```
+
+同时也要看 `workflow.status` 和 `workflow.pending_action`。
+如果订单归属失败，`node_history` 会告诉你流程停在了哪里；`status` 和 `pending_action` 会告诉前端当前应该澄清、转人工，还是只解释边界。也就是说，当前版本的 `workflow` 已经开始承担“流程可观察”的责任，但 Trace 和 Eval 还没有接进这条售后流程。
+还有两个后续版本会继续用到的机制，当前版本只点到边界：
+- `checkpoint` 会保存流程状态，支持恢复、回看和时间旅行；但本课还没有持久化 checkpoint。
+- `interrupt()` / `Command(resume=...)` 用来在高风险动作前暂停并恢复；但本课只停在提交前边界，还没有真正进入 HITL。
+这一步先让高风险售后从自由循环进入显式 StateGraph。恢复、审批、幂等会在后续版本继续补齐。
+
+## 怎么验证售后流程没有乱跑 按本课代码目录的 `README.md` 启动后端后，发送：
+
+```latex
+SO20260602103000009-a1000009 直接给我退款
+```
+
+你应该看到：
+
+```latex
+workflow.used_langgraph = true workflow.workflow_type = unshipped_refund workflow.node_history = classify_after_sale_intent -> load_order -> load_logistics -> retrieve_policy -> check_eligibility -> stop_before_submission
+```
+
+切换到 `李四 / U1002` 后再发送：
+
+```latex
+SO20260602103000009-a1000009 直接退款
+```
+
+如果业务系统显示 `SO20260602103000009-a1000009` 不属于当前登录用户，workflow 会停在：
+
+```latex
+classify_after_sale_intent -> load_order -> stop_before_submission
+```
+
+## 本节知识总结 工作流解决的是“高风险任务不能靠自由发挥”的问题。 自由 Agent 适合开放探索，但不适合直接跑有强顺序、强条件和强责任边界的流程。退款、审批、开户、改权限、发补偿这类任务，关键步骤不能漏，顺序不能乱，失败时也要知道停在哪一步。 显式工作流会把任务拆成节点、状态和条件边，让系统知道当前走到了哪里、为什么停住、下一步能不能继续。
+
+| 知识点 | 核心概念 | 小哲项目里的落点 |
+| --- | --- | --- |
+| LangGraph / StateGraph | 用图结构把任务拆成固定节点和条件边，避免自由工具循环漏步骤。
+
+| 小哲把高风险售后拆成查订单、验归属、查规则、准备申请等节点。
+
+|
+| Graph API / Functional API | Graph API 适合显式节点、边和可视化分支；Functional API 适合改造已有函数式流程。
+
+| 本课用 `StateGraph`，因为售后节点和提前停止分支必须清楚画出来。
+
+|
+| 编译后的图 | `compile()` 把节点和边变成可执行流程，`invoke(initial_state)` 按图推进。
+
+| 售后请求进入后，从识别售后类型开始，按条件一路跑到提交前边界。
+
+|
+| Workflow State | 保存当前公开业务状态、关键事实、节点历史和下一步动作。
+
+| 售后流程里记录订单、物流、政策、资格和当前状态。
+
+|
+| 节点增量更新 | 节点返回本步产生的新事实，由图执行器合并到 State。
+
+| 查订单节点写入 `order` 和工具记录，资格节点写入 `assessment`。
+
+|
+| reducer 边界 | 多节点同时写同一列表或消息字段时，需要显式合并规则。
+
+| 本课是线性流程，手动追加 `tool_calls` 和 `node_history`；并行化后才需要 reducer。
+
+|
+| State 设计边界 | 只保存跨节点、恢复、展示和审计需要的信息，不把聊天历史和临时变量全部塞进去。
+
+| 小哲保存订单、资格、风险和节点历史，不把完整内部推理暴露给前端。
+
+|
+| 条件边 | 根据事实决定下一步，缺信息或校验失败时提前停住。
+
+| 订单缺失、归属失败、状态不符时不能继续走退款路径。
+
+|
+| 路由方式边界 | 固定边、条件边、`Command(goto=...)` 不要混着表达同一段路由。
+
+| 本课用 `add_conditional_edges(...)` 管路由，不在节点里返回 `Command`。
+
+|
+| node_history | 记录实际经过的节点，证明流程有没有跳过关键校验。
+
+| 调试时能看到小哲售后流程是否真的查过订单和规则。
+
+|
+| 公开状态边界 | `workflow` 公开流程事实，不公开模型 hidden reasoning。
+
+| 前端能看流程节点和状态，但看不到内部思考过程。
+
+|
+| checkpoint / HITL 边界 | 持久化和人工恢复是后续能力，不等于本课已经完成审批。
+
+| 第 27 课不保存 checkpoint、不返回 `resume_token`，只把流程固定下来。
+
+|
+| 工作流边界 | 画出流程不等于已经执行写动作、审批或恢复。
+
+| 本课只把售后进入固定流程，不提交申请、不审批、不恢复。
+
+|
+
+## 小哲心中隐隐的担心 你把流程图画出来以后，售后主管终于不再问“会不会漏步骤”。 但她很快指着第一条分支问：
+
+> 未发货退款到底怎么判断？已发货和已签收不能混在一起讲吧？
+
+> 你看着 `workflow_type = unshipped_refund`，知道下一步必须把第一条路径跑细。
+> 先从最常见的未发货退款开始。
+
+> 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。
+> >

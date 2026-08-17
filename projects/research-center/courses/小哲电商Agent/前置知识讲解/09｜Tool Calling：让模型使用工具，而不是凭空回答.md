@@ -1,1 +1,478 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396371643-a2cd009d-e8f6-4039-83ad-668b009276a2.png" title="null" crop="0,0,1,1" id="QMekQ" class="ne-image"> 本节总览图：这张图从左到右画出 `用户问题 -> Chat model -> tool call -> LangChain 运行时执行工具 -> observation -> Chat model -> 最终回答`。箭头要标清输入输出关系，`tool call` 只表示模型提出调用请求，真正执行发生在运行时；如果模型判断不需要外部事实，则从 Chat model 直接连到最终回答。 ## 课程目标 学完这一节，你应该能说清： + Tool Calling 是什么。 + LangChain 里 Tool 的本质是什么。 + 如何用 `@tool` 创建最简单的工具。 + 为什么类型标注和 docstring 很重要。 + 如何自定义工具名、工具描述和参数 schema。 + 工具如何访问 state、context、store 等运行时信息。 + 工具可以返回哪些类型的结果。 + `create_agent`、`ToolNode`、server-side tool use 分别适合什么场景。 + Tool Calling 在业务系统中的边界是什么。 --- ## 1. 为什么需要 Tool Calling 大模型擅长理解语言和生成回答，但它不知道实时业务事实。 比如电商客户问： ```latex 请帮我查一下订单20260001的物流 ``` 模型本身不知道： + 订单是否存在。 + 是否已经发货。 + 快递公司是谁。 + 最新物流节点是什么。 + 预计什么时候送达。 这些信息在业务系统里，不在模型参数里。 所以正确做法是： ```latex 模型理解问题 -> 判断需要查物流 -> 调用物流查询工具 -> 工具访问业务系统 -> 模型根据工具结果回答用户 ``` 这就是 Tool Calling 的核心价值：**让模型连接外部能力和实时事实**。 --- ## 2. LangChain 官方对 Tool 的定义 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396372479-37517c0d-8d14-4605-913d-f1dd7bfcead5.png" title="null" crop="0,0,1,1" id="zHZTW" class="ne-image"> Tool 结构图：这张图左侧是 Python 函数，拆出 `function name`、`type hints`、`docstring`、可选 `args_schema`；箭头指向右侧的模型可见 Tool 定义，包含 `name`、`description`、`parameters schema`。函数体和真实业务调用放在下方，标注模型看不到函数体，只看到工具定义并生成调用参数。 在 LangChain 中，Tool 扩展了 Agent 的能力。它可以让 Agent： + 获取实时数据。 + 执行代码。 + 查询外部数据库。 + 调用业务系统。 + 在外部世界执行动作。 从底层看，Tool 是： ```latex 一个有明确输入和输出的可调用函数，并被传给 chat model。 模型根据对话上下文决定什么时候调用工具，以及传入什么参数。 ``` 这句话里有三个重点： 1. Tool 本质上是函数。 2. Tool 必须有清晰的输入和输出。 3. 是否调用工具由模型根据上下文决定。 --- ## 3. Tool Calling 的基本流程 典型流程是： ```latex 用户问题 -> 模型判断是否需要工具 -> 模型生成 tool call -> 程序执行工具函数 -> 工具返回 observation -> 模型基于 observation 生成最终回答 ``` 注意：模型不是直接执行 Python 代码。 模型只是生成“我要调用哪个工具、参数是什么”。真正执行工具的是应用程序或 LangChain 运行时。 --- ## 4. 模型如何生成 `tool_calls` 模型能生成 `tool_calls`，是因为 LangChain 会把工具定义传给模型。模型看到的不是 Python 函数体，而是工具的： + name + description + parameters schema 例如 `get_order_logistics(order_no: str)` 会被整理成模型可理解的工具说明。用户问“订单 20260001 到哪了”时，模型根据用户问题、system prompt 和工具说明，生成类似这样的结构化调用请求： ```latex tool name: get_order_logistics args: {"order_no": "20260001"} ``` 所以要记住： ```latex 模型生成 tool_calls。 运行时执行 tool_calls。 ``` 工具名、description 和参数 schema 写得越清楚，模型越容易生成正确的 `tool_calls`。 --- ## 5. 最简单的工具创建方式：`@tool` LangChain 官方推荐的最简单工具创建方式是 `@tool` 装饰器。 ```python from langchain.tools import tool @tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。适合回答订单到哪了、快递状态、预计送达等问题。""" return "物流公司：顺丰速运；状态：运输中；最新节点：包裹已到达上海转运中心。" ``` 这里有三个关键点： + 函数名默认成为工具名。 + 类型标注会生成工具输入 schema。 + docstring 默认成为工具描述，帮助模型判断什么时候使用工具。 官方文档明确强调：**type hints are required**。 也就是说，参数类型不能省略。 不推荐： ```python @tool def get_order_logistics(order_no): """查询物流信息。""" ... ``` 推荐： ```python @tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。适合回答订单到哪了、快递状态、预计送达等问题。""" ... ``` --- ## 6. 工具名要使用 snake_case LangChain 官方提醒：工具名建议使用 `snake_case`。 推荐： ```latex get_order_logistics search_products get_after_sale_policy ``` 不推荐： ```latex Get Order Logistics order logistics 查询物流 ``` 原因是不同模型供应商对工具名支持不完全一致。包含空格、特殊字符或非标准命名时，可能被模型供应商拒绝。 所以课程里统一建议： ```latex 工具名使用英文、数字、下划线，优先 snake_case。 ``` --- ## 7. 自定义工具名和描述 默认情况下，工具名来自函数名。你也可以显式指定工具名： ```python from langchain.tools import tool @tool("order_logistics_lookup") def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。""" return f"订单 {order_no} 正在运输中。" ``` 也可以自定义 description： ```python @tool( "get_order_logistics", description="根据订单号查询物流信息。适合回答订单到哪了、快递状态、预计送达等问题。", ) def logistics(order_no: str) -> str: """查询物流。""" return f"订单 {order_no} 正在运输中。" ``` 什么时候需要自定义？ + 函数名是内部实现名，不适合暴露给模型。 + 你希望工具描述更明确。 + 多个工具功能相近，需要减少模型误调用。 --- ## 8. docstring 为什么重要 模型会根据工具描述决定是否调用工具。 不好的描述： ```python @tool def get_order_logistics(order_no: str) -> str: """查询信息。""" ... ``` 模型不知道这个工具是查订单、查物流、查售后，还是查商品。 更好的描述： ```python @tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。适合回答订单到哪了、快递状态、预计送达等问题。""" ... ``` 好的工具描述应该包含： + 这个工具做什么。 + 什么时候应该用它。 + 关键参数是什么。 + 不要写得过长，但要足够明确。 --- ## 9. 参数 Schema：让模型知道怎么调用工具 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396372300-c86f06b9-585d-4b56-86d2-f9630f2b0857.png" title="null" crop="0,0,1,1" id="Pf67y" class="ne-image"> 工具 Schema 生成图：这张图从左到右画出 `@tool 函数签名`、`Pydantic / JSON Schema`、`LangChain 转换`、`模型可见 schema`。箭头标明：函数名或自定义 name 进入 tool name，docstring 或 description 进入 tool description，参数名和 type hints 进入 parameters，Field description 进入字段说明。图中要标出参数名过于模糊时会导致模型误填参数。 LangChain 会根据函数签名和类型标注生成工具 schema。 例如： ```python @tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。""" ... ``` 模型会看到类似信息： ```json { "name": "get_order_logistics", "description": "根据订单号查询物流信息。", "parameters": { "order_no": { "type": "string" } } } ``` 所以参数名也很重要。 不推荐： ```python @tool def get_info(x: str) -> str: """查询物流。""" ... ``` 推荐： ```python @tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。""" ... ``` `order_no` 比 `x` 更能帮助模型理解要填什么。 --- ## 10. 使用 Pydantic 定义复杂参数 简单工具可以直接用函数参数。复杂工具建议用 Pydantic schema。 ```python from typing import Literal from pydantic import BaseModel, Field from langchain.tools import tool class ProductSearchInput(BaseModel): keyword: str = Field(description="用户想搜索的商品关键词") max_results: int = Field(default=5, description="最多返回的商品数量") sort_by: Literal["price", "stock", "relevance"] = Field( default="relevance", description="排序方式", ) @tool(args_schema=ProductSearchInput) def search_products( keyword: str, max_results: int = 5, sort_by: str = "relevance", ) -> list[dict]: """按关键词搜索商品，适合回答商品推荐、库存查询、商品咨询等问题。""" return [] ``` Pydantic schema 的好处是： + 字段说明更清晰。 + 可以定义默认值。 + 可以限制可选值。 + 工具参数对模型更明确。 --- ## 11. 也可以使用 JSON Schema LangChain 也支持用 JSON Schema 定义参数。 ```python from langchain.tools import tool search_schema = { "type": "object", "properties": { "keyword": {"type": "string"}, "max_results": {"type": "integer"}, }, "required": ["keyword"], } @tool(args_schema=search_schema) def search_products(keyword: str, max_results: int = 5) -> list[dict]: """按关键词搜索商品。""" return [] ``` 基础阶段更推荐 Pydantic，因为可读性更好，也更贴近 Python 工程习惯。 --- ## 12. 保留参数名：不要用 `config` 和 `runtime` LangChain 官方说明：下面这些参数名是保留的，不能当作普通工具参数： | 参数名 | 用途 | | --- | --- | | `config` | 内部传递 `RunnableConfig` | | `runtime` | 传递 `ToolRuntime` | 错误示例： ```python @tool def search_products(runtime: str) -> str: """错误示例：runtime 是保留参数名。""" ... ``` 如果你确实需要访问运行时信息，要使用 `ToolRuntime`。 --- ## 13. ToolRuntime：工具访问运行时信息 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396372820-6c63b1b4-b09b-4fee-ba16-2d6b2a95c12d.png" title="null" crop="0,0,1,1" id="S16nb" class="ne-image"> ToolRuntime 关系图：这张图中心是 `tool function(runtime: ToolRuntime)`，左侧画 `model provided args`，右侧画 `runtime injected args`。`runtime` 再分支连接 `state`、`context`、`store`、`stream_writer`、`config`、`tool_call_id`。图中要用虚线标出 `runtime` 不出现在模型可见 schema 中，由 LangChain / LangGraph 运行时自动注入。 工具不仅可以接收模型传来的参数，也可以访问运行时上下文。 LangChain 官方提供 `ToolRuntime`，它可以访问： | 能力 | 说明 | | --- | --- | | State | 当前会话的短期状态 | | Context | 本次调用传入的不可变上下文 | | Store | 跨会话持久化存储 | | Stream Writer | 工具执行时输出进度 | | Execution Info | 当前执行的 thread、run、attempt 信息 | | Server Info | LangGraph Server 上的 assistant、graph、user 信息 | | Config | 当前执行配置 | | Tool Call ID | 当前工具调用 ID | 这些能力适合进阶学习，不是第一个工具必须掌握，但要知道它们存在。 --- ## 14. 访问短期状态 State 如果工具需要读取当前会话历史，可以用 `runtime.state`。 ```python from langchain.tools import tool, ToolRuntime @tool def get_message_count(runtime: ToolRuntime) -> str: """获取当前会话中的消息数量。""" messages = runtime.state["messages"] return f"当前会话共有 {len(messages)} 条消息。" ``` 注意：`runtime` 不会暴露给模型。 模型只看到需要自己填写的参数，`ToolRuntime` 由运行时自动注入。 --- ## 15. 访问 Context Context 适合放本次运行固定不变的信息，比如： + user_id + session_id + tenant_id + 当前渠道 + 当前客服工作台配置 示例： ```python from dataclasses import dataclass from langchain.agents import create_agent from langchain.tools import tool, ToolRuntime @dataclass class UserContext: user_id: str @tool def get_current_user(runtime: ToolRuntime[UserContext]) -> str: """获取当前用户 ID。""" return runtime.context.user_id agent = create_agent( model, tools=[get_current_user], context_schema=UserContext, ) result = agent.invoke( {"messages": [{"role": "user", "content": "我是谁？"}]}, context=UserContext(user_id="user-001"), ) ``` 电商场景中，Context 可以用来传入当前登录用户、渠道、店铺等信息。 --- ## 16. 访问长期存储 Store Store 用来保存跨会话的长期信息，例如用户偏好。 ```python from typing import Any from langchain.tools import tool, ToolRuntime @tool def save_user_preference( user_id: str, preference: dict[str, Any], runtime: ToolRuntime, ) -> str: """保存用户偏好。""" runtime.store.put(("users",), user_id, preference) return "用户偏好已保存。" ``` 电商例子： + 用户偏好降噪耳机。 + 用户常买数码配件。 + 用户偏好顺丰配送。 + 用户更关注发票。 生产环境中不要随便保存用户数据，需要考虑隐私和合规。 --- ## 17. 工具返回值：字符串、对象、Command LangChain 官方说明，工具可以返回不同类型的值。 ### 返回字符串 适合简单、人类可读的结果。 ```python @tool def get_order_status(order_no: str) -> str: """查询订单状态。""" return "订单已发货。" ``` ### 返回对象 适合结构化数据。 ```python @tool def get_order_logistics(order_no: str) -> dict: """查询订单物流。""" return { "carrier": "顺丰速运", "tracking_no": "SF123456789CN", "status": "IN_TRANSIT", "latest_event": "包裹已到达上海转运中心", } ``` ### 返回 Command 适合工具需要更新 Agent 状态。 例如设置用户偏好、更新会话状态等。这个属于 LangGraph 进阶内容，基础阶段知道有这种能力即可。 --- ## 18. ToolNode：在 LangGraph 工作流中执行工具 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396372712-249e7db7-7c46-48ee-bb7b-2a1a076d71a5.png" title="null" crop="0,0,1,1" id="H4wrY" class="ne-image"> ToolNode 路由图：这张图画出 LangGraph 中的 `LLM node`、`tools_condition`、`ToolNode` 和 `END`。`LLM node` 输出如果包含 tool_calls，箭头经 `tools_condition: tools` 进入 `ToolNode`；`ToolNode` 执行工具后生成 ToolMessage，箭头回到 `LLM node`；如果没有 tool_calls，箭头经 `tools_condition: END` 结束。图中要标明这是 create_agent 工具循环的底层结构之一。 如果你使用 `create_agent`，通常不需要手动处理工具执行。 但如果你在写 LangGraph 工作流，可以使用 `ToolNode`。 ```python from langchain.tools import tool from langgraph.prebuilt import ToolNode @tool def search_products(keyword: str) -> str: """搜索商品。""" return f"搜索结果：{keyword}" tool_node = ToolNode([search_products]) ``` `ToolNode` 是 LangGraph 里预构建的工具执行节点。它可以处理： + 工具执行。 + 并行工具调用。 + 错误处理。 + 状态注入。 对于基础课，理解层次是： ```latex create_agent：适合快速创建带工具的 Agent ToolNode：适合自定义 LangGraph 工作流时执行工具 ``` --- ## 19. tools_condition：根据是否调用工具来路由 在 LangGraph 中，可以用 `tools_condition` 判断模型是否生成了 tool calls。 概念流程： ```latex LLM 节点 -> 如果有 tool calls，进入 ToolNode -> 如果没有 tool calls，结束 -> 工具结果再回到 LLM ``` 这就是很多 Agent 工具循环的底层结构。 基础阶段不要求手写这段图，但要知道： ```latex Agent 不是一次模型调用就结束，而是可能经历“模型 -> 工具 -> 模型”的循环。 ``` --- ## 20. 工具错误处理 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396371974-a105106f-bb1e-4cc2-bf58-f33b73d40cd5.png" title="null" crop="0,0,1,1" id="t1yU1" class="ne-image"> 工具错误处理路径图：这张图从 `tool call` 进入 `tool function`，然后分五个分支：成功返回 `observation`；参数错误返回“请补充或修正参数”；订单不存在返回“未找到业务数据”；HTTP 超时进入“稍后重试或转人工”；权限不足进入“拒绝执行或请求授权”。所有失败分支都回到 Agent 可理解的错误 observation，而不是直接把异常栈返回给用户。 工具可能失败，比如： + 后端服务没启动。 + 订单号不存在。 + 参数格式错误。 + HTTP 请求超时。 + 权限不足。 在 LangGraph 的 `ToolNode` 里，可以配置错误处理策略： ```python from langgraph.prebuilt import ToolNode tool_node = ToolNode(tools, handle_tool_errors=True) ``` 也可以自定义错误消息： ```python tool_node = ToolNode( tools, handle_tool_errors="工具调用失败，请检查输入或稍后再试。", ) ``` 基础课里要建立一个意识： ```latex 用了工具不代表系统不会错。工具失败也需要被设计和展示。 ``` --- ## 21. Prebuilt Tools 和 Server-side Tool Use LangChain 还提供一些预构建工具和工具包，比如搜索、数据库、代码执行等。 此外，一些模型提供商也提供 server-side tool use，例如： + Web search + Code interpreter 这类工具由模型服务商在服务端执行，不需要你自己写工具函数。 但是业务系统里的订单、库存、售后接口，通常还是需要你自己封装工具。因为这些数据在你自己的系统里，不在模型服务商那里。 --- ## 22. 可运行 Demo：LangChain Agent 查询订单物流 下面的 demo 使用当前电商后端接口： ```latex GET http://localhost:8081/api/orders/{orderNo}/logistics ``` 前提： + 电商后端已启动。 + 已配置 `AGENT_OPENAI_API_KEY` + 已配置 `AGENT_OPENAI_BASE_URL` + 已配置 `AGENT_OPENAI_MODEL` ```python import os import requests from langchain.agents import create_agent from langchain.tools import tool from langchain_openai import ChatOpenAI ECOMMERCE_BASE_URL = "http://localhost:8081" @tool def get_order_logistics(order_no: str) -> dict: """根据订单号查询电商订单物流信息。适合回答订单到哪了、快递状态、预计送达等问题。""" response = requests.get( f"{ECOMMERCE_BASE_URL}/api/orders/{order_no}/logistics", timeout=10, ) response.raise_for_status() payload = response.json() if not payload.get("success"): raise ValueError(payload.get("message", "物流查询失败")) return payload["data"] model = ChatOpenAI( model=os.environ["AGENT_OPENAI_MODEL"], api_key=os.environ["AGENT_OPENAI_API_KEY"], base_url=os.environ["AGENT_OPENAI_BASE_URL"], temperature=0, ) agent = create_agent( model=model, tools=[get_order_logistics], system_prompt=( "你是一个电商客服助手。" "订单和物流信息必须通过工具查询，不能编造。" "如果用户没有提供订单号，请要求用户补充订单号。" ), ) result = agent.invoke( { "messages": [ { "role": "user", "content": "请帮我查一下订单20260001的物流", } ] } ) print(result["messages"][-1].content) ``` 观察点： + 模型是否调用了 `get_order_logistics`。 + 参数是否填成 `20260001`。 + 工具是否访问了后端接口。 + 最终回答是否基于工具返回结果。 + 模型有没有编造工具结果之外的信息。 --- ## 23. 再试一个不需要工具的问题 输入： ```latex 你是谁？ ``` 预期： + 不应该调用物流工具。 + 直接回答自己是电商客服助手。 这说明 Tool Calling 不是“每轮都调用工具”，而是： ```latex 模型判断需要外部事实时才调用工具。 ``` --- ## 24. 本节知识框架总结 这一节完整知识框架如下： ```latex Tool Calling -> 为什么需要工具 -> Tool 是有输入输出的函数 -> @tool 是最简单创建方式 -> 类型标注生成 schema -> docstring 指导模型何时使用 -> 工具名建议 snake_case -> 可自定义 name / description -> 复杂参数可用 Pydantic 或 JSON Schema -> config / runtime 是保留参数名 -> ToolRuntime 可访问 state / context / store -> 工具可返回 string / object / Command -> create_agent 可直接使用工具 -> ToolNode 用于 LangGraph 工具执行 -> tools_condition 用于工具路由 -> 工具错误需要处理 -> 可使用 prebuilt tools 或 server-side tools ``` ## 25. 本节小结 你需要记住： 1. Tool Calling 是 Agent 连接外部事实和外部能力的核心机制。 2. LangChain 中最简单的工具创建方式是 `@tool`。 3. 类型标注、函数名、docstring 会影响工具 schema 和模型调用效果。 4. 复杂工具可以用 Pydantic 或 JSON Schema 定义参数。 5. `ToolRuntime` 让工具访问 state、context、store 等运行时信息。 6. `create_agent` 适合快速创建带工具的 Agent。 7. `ToolNode` 适合在 LangGraph 中手动控制工具执行。 8. 工具调用不能替代权限、审批、审计和错误处理。 课后练习： 1. 用 `@tool` 写一个 `get_order_detail(order_no: str)`。 2. 让 Agent 回答：`请查询订单20260002的状态`。 3. 再写一个 `search_products(keyword: str)`。 4. 比较两个工具的 docstring，观察模型是否会选错工具。
+# Tool Calling：让模型使用工具，而不是凭空回答
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396371643-a2cd009d-e8f6-4039-83ad-668b009276a2.png" title="null" crop="0,0,1,1" id="QMekQ" class="ne-image">
+
+本节总览图：这张图从左到右画出 `用户问题 -> Chat model -> tool call -> LangChain 运行时执行工具 -> observation -> Chat model -> 最终回答`。箭头要标清输入输出关系，`tool call` 只表示模型提出调用请求，真正执行发生在运行时；如果模型判断不需要外部事实，则从 Chat model 直接连到最终回答。
+
+## 课程目标
+
+学完这一节，你应该能说清：
+- Tool Calling 是什么。
+- LangChain 里 Tool 的本质是什么。
+- 如何用 `@tool` 创建最简单的工具。
+- 为什么类型标注和 docstring 很重要。
+- 如何自定义工具名、工具描述和参数 schema。
+- 工具如何访问 state、context、store 等运行时信息。
+- 工具可以返回哪些类型的结果。
+- `create_agent`、`ToolNode`、server-side tool use 分别适合什么场景。
+- Tool Calling 在业务系统中的边界是什么。
+
+---
+
+## 1. 为什么需要 Tool Calling 大模型擅长理解语言和生成回答，但它不知道实时业务事实。 比如电商客户问：
+
+```latex
+请帮我查一下订单20260001的物流
+```
+
+模型本身不知道：
+- 订单是否存在。
+- 是否已经发货。
+- 快递公司是谁。
+- 最新物流节点是什么。
+- 预计什么时候送达。
+这些信息在业务系统里，不在模型参数里。
+所以正确做法是：
+
+```latex
+模型理解问题 -> 判断需要查物流 -> 调用物流查询工具 -> 工具访问业务系统 -> 模型根据工具结果回答用户
+```
+
+这就是 Tool Calling 的核心价值：**让模型连接外部能力和实时事实**。
+
+---
+
+## 2. LangChain 官方对 Tool 的定义
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396372479-37517c0d-8d14-4605-913d-f1dd7bfcead5.png" title="null" crop="0,0,1,1" id="zHZTW" class="ne-image">
+
+Tool 结构图：这张图左侧是 Python 函数，拆出 `function name`、`type hints`、`docstring`、可选 `args_schema`；箭头指向右侧的模型可见 Tool 定义，包含 `name`、`description`、`parameters schema`。函数体和真实业务调用放在下方，标注模型看不到函数体，只看到工具定义并生成调用参数。
+在 LangChain 中，Tool 扩展了 Agent 的能力。它可以让 Agent：
+- 获取实时数据。
+- 执行代码。
+- 查询外部数据库。
+- 调用业务系统。
+- 在外部世界执行动作。
+从底层看，Tool 是：
+
+```latex
+一个有明确输入和输出的可调用函数，并被传给 chat model。 模型根据对话上下文决定什么时候调用工具，以及传入什么参数。
+```
+
+这句话里有三个重点：
+1. Tool 本质上是函数。
+2. Tool 必须有清晰的输入和输出。
+3. 是否调用工具由模型根据上下文决定。
+
+---
+
+## 3. Tool Calling 的基本流程 典型流程是：
+
+```latex
+用户问题 -> 模型判断是否需要工具 -> 模型生成 tool call -> 程序执行工具函数 -> 工具返回 observation -> 模型基于 observation 生成最终回答
+```
+
+注意：模型不是直接执行 Python 代码。
+模型只是生成“我要调用哪个工具、参数是什么”。真正执行工具的是应用程序或 LangChain 运行时。
+
+---
+
+## 4. 模型如何生成 `tool_calls` 模型能生成 `tool_calls`，是因为 LangChain 会把工具定义传给模型。模型看到的不是 Python 函数体，而是工具的：
+- name + description + parameters schema 例如 `get_order_logistics(order_no: str)` 会被整理成模型可理解的工具说明。用户问“订单 20260001 到哪了”时，模型根据用户问题、system prompt 和工具说明，生成类似这样的结构化调用请求：
+
+```latex
+tool name: get_order_logistics args: {"order_no": "20260001"}
+```
+
+所以要记住：
+
+```latex
+模型生成 tool_calls。 运行时执行 tool_calls。
+```
+
+工具名、description 和参数 schema 写得越清楚，模型越容易生成正确的 `tool_calls`。
+
+---
+
+## 5. 最简单的工具创建方式：`@tool` LangChain 官方推荐的最简单工具创建方式是 `@tool` 装饰器。
+
+```python
+from langchain.tools import tool @tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。适合回答订单到哪了、快递状态、预计送达等问题。""" return "物流公司：顺丰速运；状态：运输中；最新节点：包裹已到达上海转运中心。"
+```
+
+这里有三个关键点：
+- 函数名默认成为工具名。
+- 类型标注会生成工具输入 schema。
+- docstring 默认成为工具描述，帮助模型判断什么时候使用工具。
+官方文档明确强调：**type hints are required**。
+也就是说，参数类型不能省略。
+不推荐：
+
+```python
+@tool def get_order_logistics(order_no): """查询物流信息。""" ...
+```
+
+推荐：
+
+```python
+@tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。适合回答订单到哪了、快递状态、预计送达等问题。""" ...
+```
+
+---
+
+## 6. 工具名要使用 snake_case LangChain 官方提醒：工具名建议使用 `snake_case`。 推荐：
+
+```latex
+get_order_logistics search_products get_after_sale_policy
+```
+
+不推荐：
+
+```latex
+Get Order Logistics order logistics 查询物流
+```
+
+原因是不同模型供应商对工具名支持不完全一致。包含空格、特殊字符或非标准命名时，可能被模型供应商拒绝。
+所以课程里统一建议：
+
+```latex
+工具名使用英文、数字、下划线，优先 snake_case。
+```
+
+---
+
+## 7. 自定义工具名和描述 默认情况下，工具名来自函数名。你也可以显式指定工具名：
+
+```python
+from langchain.tools import tool @tool("order_logistics_lookup") def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。""" return f"订单 {order_no} 正在运输中。"
+```
+
+也可以自定义 description：
+
+```python
+@tool( "get_order_logistics", description="根据订单号查询物流信息。适合回答订单到哪了、快递状态、预计送达等问题。", ) def logistics(order_no: str) -> str: """查询物流。""" return f"订单 {order_no} 正在运输中。"
+```
+
+什么时候需要自定义？
+- 函数名是内部实现名，不适合暴露给模型。
+- 你希望工具描述更明确。
+- 多个工具功能相近，需要减少模型误调用。
+
+---
+
+## 8. docstring 为什么重要 模型会根据工具描述决定是否调用工具。 不好的描述：
+
+```python
+@tool def get_order_logistics(order_no: str) -> str: """查询信息。""" ...
+```
+
+模型不知道这个工具是查订单、查物流、查售后，还是查商品。
+更好的描述：
+
+```python
+@tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。适合回答订单到哪了、快递状态、预计送达等问题。""" ...
+```
+
+好的工具描述应该包含：
+- 这个工具做什么。
+- 什么时候应该用它。
+- 关键参数是什么。
+- 不要写得过长，但要足够明确。
+
+---
+
+## 9. 参数 Schema：让模型知道怎么调用工具
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396372300-c86f06b9-585d-4b56-86d2-f9630f2b0857.png" title="null" crop="0,0,1,1" id="Pf67y" class="ne-image">
+
+工具 Schema 生成图：这张图从左到右画出 `@tool 函数签名`、`Pydantic / JSON Schema`、`LangChain 转换`、`模型可见 schema`。箭头标明：函数名或自定义 name 进入 tool name，docstring 或 description 进入 tool description，参数名和 type hints 进入 parameters，Field description 进入字段说明。图中要标出参数名过于模糊时会导致模型误填参数。
+LangChain 会根据函数签名和类型标注生成工具 schema。
+例如：
+
+```python
+@tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。""" ...
+```
+
+模型会看到类似信息：
+
+```json
+{
+  "name": "get_order_logistics",
+  "description": "根据订单号查询物流信息。",
+  "parameters": {
+    "order_no": {
+      "type": "string"
+    }
+  }
+}
+```
+
+所以参数名也很重要。
+不推荐：
+
+```python
+@tool def get_info(x: str) -> str: """查询物流。""" ...
+```
+
+推荐：
+
+```python
+@tool def get_order_logistics(order_no: str) -> str: """根据订单号查询物流信息。""" ...
+```
+
+`order_no` 比 `x` 更能帮助模型理解要填什么。
+
+---
+
+## 10. 使用 Pydantic 定义复杂参数 简单工具可以直接用函数参数。复杂工具建议用 Pydantic schema。
+
+```python
+from typing import Literal from pydantic import BaseModel, Field from langchain.tools import tool class ProductSearchInput(BaseModel): keyword: str = Field(description="用户想搜索的商品关键词") max_results: int = Field(default=5, description="最多返回的商品数量") sort_by: Literal["price", "stock", "relevance"] = Field( default="relevance", description="排序方式", ) @tool(args_schema=ProductSearchInput) def search_products( keyword: str, max_results: int = 5, sort_by: str = "relevance", ) -> list[dict]: """按关键词搜索商品，适合回答商品推荐、库存查询、商品咨询等问题。""" return []
+```
+
+Pydantic schema 的好处是：
+- 字段说明更清晰。
+- 可以定义默认值。
+- 可以限制可选值。
+- 工具参数对模型更明确。
+
+---
+
+## 11. 也可以使用 JSON Schema LangChain 也支持用 JSON Schema 定义参数。
+
+```python
+from langchain.tools import tool search_schema = { "type": "object", "properties": { "keyword": {"type": "string"}, "max_results": {"type": "integer"}, }, "required": ["keyword"], } @tool(args_schema=search_schema) def search_products(keyword: str, max_results: int = 5) -> list[dict]: """按关键词搜索商品。""" return []
+```
+
+基础阶段更推荐 Pydantic，因为可读性更好，也更贴近 Python 工程习惯。
+
+---
+
+## 12. 保留参数名：不要用 `config` 和 `runtime` LangChain 官方说明：下面这些参数名是保留的，不能当作普通工具参数：
+
+| 参数名 | 用途 |
+| --- | --- |
+| `config` | 内部传递 `RunnableConfig` |
+| `runtime` | 传递 `ToolRuntime` | 错误示例：
+
+```python
+@tool def search_products(runtime: str) -> str: """错误示例：runtime 是保留参数名。""" ...
+```
+
+如果你确实需要访问运行时信息，要使用 `ToolRuntime`。
+
+---
+
+## 13. ToolRuntime：工具访问运行时信息
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396372820-6c63b1b4-b09b-4fee-ba16-2d6b2a95c12d.png" title="null" crop="0,0,1,1" id="S16nb" class="ne-image">
+
+ToolRuntime 关系图：这张图中心是 `tool function(runtime: ToolRuntime)`，左侧画 `model provided args`，右侧画 `runtime injected args`。`runtime` 再分支连接 `state`、`context`、`store`、`stream_writer`、`config`、`tool_call_id`。图中要用虚线标出 `runtime` 不出现在模型可见 schema 中，由 LangChain / LangGraph 运行时自动注入。
+工具不仅可以接收模型传来的参数，也可以访问运行时上下文。
+LangChain 官方提供 `ToolRuntime`，它可以访问：
+
+| 能力 | 说明 |
+| --- | --- |
+| State | 当前会话的短期状态 |
+| Context | 本次调用传入的不可变上下文 |
+| Store | 跨会话持久化存储 |
+| Stream Writer | 工具执行时输出进度 |
+| Execution Info | 当前执行的 thread、run、attempt 信息 |
+| Server Info | LangGraph Server 上的 assistant、graph、user 信息 |
+| Config | 当前执行配置 |
+| Tool Call ID | 当前工具调用 ID | 这些能力适合进阶学习，不是第一个工具必须掌握，但要知道它们存在。
+
+---
+
+## 14. 访问短期状态 State 如果工具需要读取当前会话历史，可以用 `runtime.state`。
+
+```python
+from langchain.tools import tool, ToolRuntime @tool def get_message_count(runtime: ToolRuntime) -> str: """获取当前会话中的消息数量。""" messages = runtime.state["messages"] return f"当前会话共有 {len(messages)} 条消息。"
+```
+
+注意：`runtime` 不会暴露给模型。
+模型只看到需要自己填写的参数，`ToolRuntime` 由运行时自动注入。
+
+---
+
+## 15. 访问 Context Context 适合放本次运行固定不变的信息，比如：
+- user_id + session_id + tenant_id + 当前渠道 + 当前客服工作台配置 示例：
+
+```python
+from dataclasses import dataclass from langchain.agents import create_agent from langchain.tools import tool, ToolRuntime @dataclass class UserContext: user_id: str @tool def get_current_user(runtime: ToolRuntime[UserContext]) -> str: """获取当前用户 ID。""" return runtime.context.user_id agent = create_agent( model, tools=[get_current_user], context_schema=UserContext, ) result = agent.invoke( {"messages": [{"role": "user", "content": "我是谁？"}]}, context=UserContext(user_id="user-001"), )
+```
+
+电商场景中，Context 可以用来传入当前登录用户、渠道、店铺等信息。
+
+---
+
+## 16. 访问长期存储 Store Store 用来保存跨会话的长期信息，例如用户偏好。
+
+```python
+from typing import Any from langchain.tools import tool, ToolRuntime @tool def save_user_preference( user_id: str, preference: dict[str, Any], runtime: ToolRuntime, ) -> str: """保存用户偏好。""" runtime.store.put(("users",), user_id, preference) return "用户偏好已保存。"
+```
+
+电商例子：
+- 用户偏好降噪耳机。
+- 用户常买数码配件。
+- 用户偏好顺丰配送。
+- 用户更关注发票。
+生产环境中不要随便保存用户数据，需要考虑隐私和合规。
+
+---
+
+## 17. 工具返回值：字符串、对象、Command LangChain 官方说明，工具可以返回不同类型的值。
+
+### 返回字符串 适合简单、人类可读的结果。
+
+```python
+@tool def get_order_status(order_no: str) -> str: """查询订单状态。""" return "订单已发货。"
+```
+
+### 返回对象 适合结构化数据。
+
+```python
+@tool def get_order_logistics(order_no: str) -> dict: """查询订单物流。""" return { "carrier": "顺丰速运", "tracking_no": "SF123456789CN", "status": "IN_TRANSIT", "latest_event": "包裹已到达上海转运中心", }
+```
+
+### 返回 Command 适合工具需要更新 Agent 状态。 例如设置用户偏好、更新会话状态等。这个属于 LangGraph 进阶内容，基础阶段知道有这种能力即可。
+
+---
+
+## 18. ToolNode：在 LangGraph 工作流中执行工具
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396372712-249e7db7-7c46-48ee-bb7b-2a1a076d71a5.png" title="null" crop="0,0,1,1" id="H4wrY" class="ne-image">
+
+ToolNode 路由图：这张图画出 LangGraph 中的 `LLM node`、`tools_condition`、`ToolNode` 和 `END`。`LLM node` 输出如果包含 tool_calls，箭头经 `tools_condition: tools` 进入 `ToolNode`；`ToolNode` 执行工具后生成 ToolMessage，箭头回到 `LLM node`；如果没有 tool_calls，箭头经 `tools_condition: END` 结束。图中要标明这是 create_agent 工具循环的底层结构之一。
+如果你使用 `create_agent`，通常不需要手动处理工具执行。
+但如果你在写 LangGraph 工作流，可以使用 `ToolNode`。
+
+```python
+from langchain.tools import tool from langgraph.prebuilt import ToolNode @tool def search_products(keyword: str) -> str: """搜索商品。""" return f"搜索结果：{keyword}" tool_node = ToolNode([search_products])
+```
+
+`ToolNode` 是 LangGraph 里预构建的工具执行节点。它可以处理：
+- 工具执行。
+- 并行工具调用。
+- 错误处理。
+- 状态注入。
+对于基础课，理解层次是：
+
+```latex
+create_agent：适合快速创建带工具的 Agent ToolNode：适合自定义 LangGraph 工作流时执行工具
+```
+
+---
+
+## 19. tools_condition：根据是否调用工具来路由 在 LangGraph 中，可以用 `tools_condition` 判断模型是否生成了 tool calls。 概念流程：
+
+```latex
+LLM 节点 -> 如果有 tool calls，进入 ToolNode -> 如果没有 tool calls，结束 -> 工具结果再回到 LLM
+```
+
+这就是很多 Agent 工具循环的底层结构。
+基础阶段不要求手写这段图，但要知道：
+
+```latex
+Agent 不是一次模型调用就结束，而是可能经历“模型 -> 工具 -> 模型”的循环。
+```
+
+---
+
+## 20. 工具错误处理
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396371974-a105106f-bb1e-4cc2-bf58-f33b73d40cd5.png" title="null" crop="0,0,1,1" id="t1yU1" class="ne-image">
+
+工具错误处理路径图：这张图从 `tool call` 进入 `tool function`，然后分五个分支：成功返回 `observation`；参数错误返回“请补充或修正参数”；订单不存在返回“未找到业务数据”；HTTP 超时进入“稍后重试或转人工”；权限不足进入“拒绝执行或请求授权”。所有失败分支都回到 Agent 可理解的错误 observation，而不是直接把异常栈返回给用户。
+工具可能失败，比如：
+- 后端服务没启动。
+- 订单号不存在。
+- 参数格式错误。
+- HTTP 请求超时。
+- 权限不足。
+在 LangGraph 的 `ToolNode` 里，可以配置错误处理策略：
+
+```python
+from langgraph.prebuilt import ToolNode tool_node = ToolNode(tools, handle_tool_errors=True)
+```
+
+也可以自定义错误消息：
+
+```python
+tool_node = ToolNode(tools, handle_tool_errors='工具调用失败，请检查输入或稍后再试。')
+```
+
+基础课里要建立一个意识：
+
+```latex
+用了工具不代表系统不会错。工具失败也需要被设计和展示。
+```
+
+---
+
+## 21. Prebuilt Tools 和 Server-side Tool Use LangChain 还提供一些预构建工具和工具包，比如搜索、数据库、代码执行等。 此外，一些模型提供商也提供 server-side tool use，例如：
+- Web search + Code interpreter 这类工具由模型服务商在服务端执行，不需要你自己写工具函数。
+但是业务系统里的订单、库存、售后接口，通常还是需要你自己封装工具。因为这些数据在你自己的系统里，不在模型服务商那里。
+
+---
+
+## 22. 可运行 Demo：LangChain Agent 查询订单物流 下面的 demo 使用当前电商后端接口：
+
+```latex
+GET http://localhost:8081/api/orders/{orderNo}/logistics
+```
+
+前提：
+- 电商后端已启动。
+- 已配置 `AGENT_OPENAI_API_KEY` + 已配置 `AGENT_OPENAI_BASE_URL` + 已配置 `AGENT_OPENAI_MODEL`
+
+```python
+import os import requests from langchain.agents import create_agent from langchain.tools import tool from langchain_openai import ChatOpenAI ECOMMERCE_BASE_URL = "http://localhost:8081" @tool def get_order_logistics(order_no: str) -> dict: """根据订单号查询电商订单物流信息。适合回答订单到哪了、快递状态、预计送达等问题。""" response = requests.get( f"{ECOMMERCE_BASE_URL}/api/orders/{order_no}/logistics", timeout=10, ) response.raise_for_status() payload = response.json() if not payload.get("success"): raise ValueError(payload.get("message", "物流查询失败")) return payload["data"] model = ChatOpenAI( model=os.environ["AGENT_OPENAI_MODEL"], api_key=os.environ["AGENT_OPENAI_API_KEY"], base_url=os.environ["AGENT_OPENAI_BASE_URL"], temperature=0, ) agent = create_agent( model=model, tools=[get_order_logistics], system_prompt=( "你是一个电商客服助手。" "订单和物流信息必须通过工具查询，不能编造。" "如果用户没有提供订单号，请要求用户补充订单号。" ), ) result = agent.invoke( { "messages": [ { "role": "user", "content": "请帮我查一下订单20260001的物流", } ] } ) print(result["messages"][-1].content)
+```
+
+观察点：
+- 模型是否调用了 `get_order_logistics`。
+- 参数是否填成 `20260001`。
+- 工具是否访问了后端接口。
+- 最终回答是否基于工具返回结果。
+- 模型有没有编造工具结果之外的信息。
+
+---
+
+## 23. 再试一个不需要工具的问题 输入：
+
+```latex
+你是谁？
+```
+
+预期：
+- 不应该调用物流工具。
+- 直接回答自己是电商客服助手。
+这说明 Tool Calling 不是“每轮都调用工具”，而是：
+
+```latex
+模型判断需要外部事实时才调用工具。
+```
+
+---
+
+## 24. 本节知识框架总结 这一节完整知识框架如下：
+
+```latex
+Tool Calling -> 为什么需要工具 -> Tool 是有输入输出的函数 -> @tool 是最简单创建方式 -> 类型标注生成 schema -> docstring 指导模型何时使用 -> 工具名建议 snake_case -> 可自定义 name / description -> 复杂参数可用 Pydantic 或 JSON Schema -> config / runtime 是保留参数名 -> ToolRuntime 可访问 state / context / store -> 工具可返回 string / object / Command -> create_agent 可直接使用工具 -> ToolNode 用于 LangGraph 工具执行 -> tools_condition 用于工具路由 -> 工具错误需要处理 -> 可使用 prebuilt tools 或 server-side tools
+```
+
+## 25. 本节小结 你需要记住：
+1. Tool Calling 是 Agent 连接外部事实和外部能力的核心机制。
+2. LangChain 中最简单的工具创建方式是 `@tool`。
+3. 类型标注、函数名、docstring 会影响工具 schema 和模型调用效果。
+4. 复杂工具可以用 Pydantic 或 JSON Schema 定义参数。
+5. `ToolRuntime` 让工具访问 state、context、store 等运行时信息。
+6. `create_agent` 适合快速创建带工具的 Agent。
+7. `ToolNode` 适合在 LangGraph 中手动控制工具执行。
+8. 工具调用不能替代权限、审批、审计和错误处理。
+课后练习：
+1. 用 `@tool` 写一个 `get_order_detail(order_no: str)`。
+2. 让 Agent 回答：`请查询订单20260002的状态`。
+3. 再写一个 `search_products(keyword: str)`。
+4. 比较两个工具的 docstring，观察模型是否会选错工具。

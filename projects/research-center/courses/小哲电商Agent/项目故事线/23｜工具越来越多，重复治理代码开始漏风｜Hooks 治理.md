@@ -1,1 +1,242 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396439727-48a073e0-3769-4749-ad99-d1cda73a9790.png" title="null" crop="0,0,1,1" id="syiMJ" class="ne-image"> <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396424239-d84c3066-0ad6-44a5-8b12-4d0f13c4b597.png" title="null" crop="0,0,1,1" id="xScVg" class="ne-image"> ## 第六幕开始时的 Agent 形态 到第六幕开始时，Agent 已经能查实时业务事实，也能把工具结果整理成 Observation。但工具越来越多以后，参数校验、脱敏、降级和工具来源开始分散。 这一幕只收拢工具治理和入口路由：Hooks、MCP 风格工具来源、TaskPlanner 和 RoutePlan。它还不真正跑退款 workflow，也不让 MCP 放行高风险动作。 ## 工具箱越多，事故不再只发生在工具本身 第 22 课结束时，小哲电商客服 Agent 已经能查订单、物流、库存，也能把商品实时事实和稳定知识合起来回答。 老板终于不再一听到“AI 客服”就皱眉。 但开发小弟把工具代码摊给你看时，你又沉默了。 物流工具里有参数校验。 退款进度工具里也有参数校验。 库存工具里有错误处理。 订单工具里也有错误处理。 有些工具会把内部字段压成 Observation，有些工具忘了压；有些地方记了日志摘要，有些地方把原始异常直接丢出去；有些工具做了手机号脱敏，有些工具只靠“应该不会出现”硬撑。 工具越来越多以后，真正危险的不是某一个工具不会查。 真正危险的是： ```latex 同一类治理逻辑，被散落在每个工具里重复写。 ``` 重复越多，漏风越多。 ## 这次事故背后的 Agent 问题 前几课你已经把工具链路一段一段补起来了： | 课次 | 解决的问题 | | --- | --- | | 第 18 课 | 工具有名字、参数和身份边界 | | 第 19 课 | 缺参数时先澄清 | | 第 20 课 | ToolResult 压缩成 Observation | | 第 21 课 | 工具超时和模型不可用时降级 | | 第 22 课 | Tool 和 RAG 可以联合回答商品咨询 | 这些能力都对。 但如果每个工具都自己处理一遍参数校验、异常归一、脱敏摘要和完成记录，工具数量一多，系统就会开始不一致。 所以这里要做的不是再加一个新工具。 这一课要给工具链路加统一治理点。 这个治理点就是 Hooks。 ## 技术机制 ### Hooks 先别想复杂 你可以先把 Hooks 理解成“工具生命周期上的固定卡口”。 它和通用 AOP 不完全是一回事。AOP 更像给任意代码位置加横切逻辑；这一课的 Hooks 只绑定 Agent 工具链路里的固定生命周期点，目的是让工具调用前、调用后、异常和完成摘要都能被课程观察和评测稳定检查。 这一课只用四个卡口： | Hook | 在小哲项目里做什么 | | --- | --- | | `pre_tool_call` | 工具执行前，统一检查参数、可信运行时身份和脱敏摘要 | | `post_tool_call` | 工具执行后，统一清洗 Observation，不把原始内部结果交给模型 | | `on_error` | 工具或模型异常时，统一归一成降级信号 | | `on_completion` | 本轮请求结束时，统一生成公开安全摘要 | 注意这里的“公开安全摘要”不是完整 Trace。 它只是告诉你： + 哪个 Hook 执行了。 + 目标工具是谁。 + 参数摘要有没有脱敏。 + 是否发生降级。 + 本轮碰过哪些工具。 它不输出隐藏推理链，也不把完整内部日志暴露给调试后台。 ### Hook 和 HITL 不是一回事 这节课还有一个边界必须先立住。 Hooks 能记录“这里命中了高风险边界”。 但 Hooks 不能批准退款。 Hooks 能把工具超时归一成降级。 但 Hooks 不能让售后主管点同意。 HITL 是人工确认、人工审批、人工补充信息的流程能力。它会出现在后面高风险售后课程里。 这一课的 Hooks 只是工具链路治理： ```latex 看住工具怎么被调用，怎么返回，怎么失败，怎么留下安全摘要。 ``` 不要把它理解成“有 Hook 以后，退款审批就自动解决了”。 ## 代码落地 ### 这一版 Agent 怎么改 本节代码快照在： ```latex code/agent-course-versions/lesson-23-hooks-governance/backend/ ``` 从这一课开始，代码不再继续把治理逻辑塞进一个 `main.py`。`main.py` 只保留启动入口，真正的变化拆到 `hooks/manager.py`、`observability/observation.py`、`models/answer_client.py` 和 `degradation/fallbacks.py` 里：Hooks 管生命周期，Observation 管安全摘要，模型层根据干净 Observation 组织回答，降级模块管异常口径。 关键链路是： ```latex /chat -> classify_intent(user_message) -> classify_risk(intent, user_message) -> pre_tool_clarification(ChatRequest, intent) -> plan_tool_action(ChatRequest, intent) -> HookManager.pre_tool_call(action, request, spec) -> execute_tool_action(action, current_user_id) -> build_observation(tool_result) -> HookManager.post_tool_call(observation) -> HookManager.on_error(...) when needed -> HookManager.on_completion(...) -> ChatResponse(hook_events, hook_completion) ``` 你会发现，工具本身还在。 物流、库存、退款进度这些只读工具还按原来的方式执行。 变化在工具外围： + 工具执行前先经过 `pre_tool_call`。 + 工具返回后先经过 `post_tool_call`。 + 超时、模型不可用等异常走 `on_error`。 + 每轮请求最后走 `on_completion`。 这就像你终于在工具链路外面加了一圈统一门禁。 每个工具不用再各写一遍治理代码。 ### `pre_tool_call` 管调用前的规矩 第 23 课的 `HookManager.pre_tool_call` 会做三件事。 第一，检查工具必填参数。 物流工具必须有 `order_id`，库存工具必须有 `sku`。工具 schema 里已经写了这些要求，Hook 在真正执行前再统一看一遍。 第二，记录可信运行时身份。 订单归属不能靠用户自己说，也不能靠模型猜。Hook 的安全摘要会记录 `runtime_user_id`，提醒你这次工具调用是绑定系统确认身份的。 第三，脱敏运行时上下文。 如果调用方传来的页面上下文里混进手机号、邮箱或 token，Hook 只把脱敏后的摘要写入 `hook_events`。 这样调试后台能看到治理发生了，但不会看到敏感原文。 ### `post_tool_call` 管工具结果回到模型前的规矩 第 20 课已经讲过，ToolResult 不能原样塞回模型。 第 23 课再往前走一步： ```latex Observation 也要经过统一安全摘要。 ``` `post_tool_call` 会记录： + 工具名。 + 工具状态。 + Observation 摘要预览。 + 保留了哪些事实字段。 + 省略了哪些内部字段。 + 是否发现外部文本污染。 这里的重点不是让 Hook 重写业务结果。 重点是：每个工具返回模型前，都要走同一条治理规则。 ### `on_error` 和 `on_completion` 让治理能收口 工具链路最怕两种情况。 一种是服务抖动，比如物流工具超时。 另一种是本轮请求结束以后，你只知道“好像处理完了”，却不知道治理点有没有走过。 所以这一版有两个收口 Hook： ```latex on_error -> 把 timeout / model_unavailable 等异常归一成可解释的降级信号 on_completion -> 汇总本轮触碰过的工具、脱敏次数、降级次数和风险命中 ``` `on_completion` 不是业务结果。 它只是公开治理摘要。 它能告诉你“这轮工具链路治理走完了”，不能告诉你“退款审批通过了”。 ### Hook 不是日志，而是治理证据 很多系统一开始会把 Hook 理解成“多打一行日志”。 这还不够。 Hook 的结果要能被前端调试、Trace 和后续评测稳定读取，所以它应该生成结构化的 `HookResult`，而不是随手写一段字符串。 一个可用的 Hook 结果至少要回答： | 字段 | 说明 | | --- | --- | | `hook_type` | 这次走的是 `pre_tool_call`、`post_tool_call`、`on_error` 还是 `on_completion`。 | | `target_name` | 这次治理的是哪个工具或哪轮请求。 | | `result` | 本次治理结果是 allowed、redacted、degraded 还是 completed。 | | `safe_summary` | 给前端和 Trace 看的公开摘要，不能包含隐私原文、内部堆栈或隐藏推理。 | | `redacted` / `degraded` | 是否发生脱敏或降级，便于后续回归检查。 | 这样后面做 Trace 和 Evaluation 时，就不用去模型回答里猜“治理有没有发生”。 它们可以直接检查公开事件： ```latex hook_executed -> hook_type = on_error -> degraded = true -> safe_summary = 工具超时，已进入降级 ``` 这也是 Hooks 和普通日志最大的区别：日志偏排障，Hook 结果还要成为系统行为是否安全的可验证证据。 ### 为什么不在每个工具里各写一遍治理 工具少的时候，你可能会把参数校验、脱敏、超时处理和审计摘要都写在每个工具函数里。 小哲电商工具箱一多，这种写法很快漏风： | 分散写法 | 事故风险 | | --- | --- | | 物流工具脱敏了，库存工具忘了脱敏。 | 内部字段可能被模型看到。 | | 退款进度工具记录了安全摘要，商品工具只写普通日志。 | Trace 和 Eval 读不到统一证据。 | | 每个工具自己处理异常。 | 同样的 timeout 在不同工具里变成不同口径。 | | 新增工具时复制旧代码。 | 旧的风险判断、字段过滤和回退话术一起被复制。 | Hooks 的工程价值就在这里：把工具生命周期上的共同治理点集中起来。`pre_tool_call` 管调用前，`post_tool_call` 管结果进入模型前，`on_error` 管异常归一，`on_completion` 管本轮公开摘要。工具仍然负责业务事实，Hook 负责统一门禁和证据。 所以 Hook 不是给工具加装饰，也不是替工具执行业务。它是在工具越来越多时，把“每个工具都必须遵守的安全动作”从散落代码里收回来。 ### 关键工具失败要更保守 工具超时也不能一律处理成“稍后再试”。 你要先看这个工具对当前回答有多关键： | 工具类型 | 例子 | 失败后怎么收口 | | --- | --- | --- | | 非关键工具 | 推荐补充、营销权益、非必要 FAQ 补充 | 可以跳过或降级，只基于已确认事实回答。 | | 关键工具 | 订单归属、物流状态、退款资格、审批状态 | 不能跳过事实确认，要重试、澄清、保持流程暂停或转人工。 | 比如商品推荐里优惠补充查不到，可以先说明“当前只基于库存和商品信息推荐”。但退款资格查不到时，Agent 不能说“应该可以退”，因为这会把未知事实包装成业务结论。 ## 怎么验证老板能闭嘴 按本课代码目录的 `README.md` 启动后端后，发送： ```latex 查一下 SO20260602103000009-a1000009 的物流到哪了 ``` 你应该看到： + `hook_events[0].hook_type = pre_tool_call` + `hook_events[1].hook_type = post_tool_call` + `hook_events[2].hook_type = on_completion` + `hook_completion.touched_tools = ["get_order_logistics"]` + `tool_calls[0].observation.summary` 是安全 Observation 摘要 再发送： ```latex 查一下 SO20260602103000009-a1000009 的物流到哪了 ``` 第 23 课的自动化测试会对这条真实订单形状的物流查询做故障注入，让物流读取抛出 `timeout`，用来验证 Hooks 的 `on_error` 分支。业务事实本身仍然来自小哲电商后端和页面运行时上下文，不再维护本地假订单表。 你应该看到： + 只读工具重试后仍失败。 + `on_error` 记录 `error_category = timeout`。 + `degraded = true`。 + 回答明确说不能编造包裹位置。 ## 本节知识总结 Hooks 是把横切治理逻辑从业务代码里抽出来的办法。 当工具越来越多时，每个工具都可能需要参数校验、身份检查、脱敏、错误处理、结果压缩和安全摘要。如果这些逻辑散落在每个工具函数里，后面一定会出现重复、漏写和口径不一致。 Hooks 的通用价值，是在关键生命周期点统一插入治理逻辑：工具调用前做检查，工具调用后整理结果，异常时统一降级，完成时生成公开摘要。它不改变业务工具本身要做什么，但让工具链路更可控。 | 知识点 | 核心概念 | 小哲项目里的落点 | | --- | --- | --- | | Hooks 治理 | 把参数校验、脱敏、降级、摘要等横切逻辑从单个工具里抽出来统一管理。 | 小哲用 `HookManager` 管住订单、物流、库存等工具调用链路。 | | `pre_tool_call` | 工具执行前校验参数、身份、权限和敏感字段。 | 调用小哲工具前统一检查 runtime 身份摘要和参数边界。 | | `post_tool_call` | 工具执行后把原始结果整理成模型可用、用户安全的 Observation。 | 订单和物流结果不会原样塞给模型，而是生成安全摘要。 | | `on_error` | 异常要被归类成可处理的降级信号，不能让链路静默失败。 | 工具或模型异常会变成客服可解释的降级结果。 | | `on_completion` | 一轮结束时生成公开执行摘要，便于调试和解释。 | 小哲只展示公开安全摘要，不输出隐藏推理链。 | | HookResult | Hook 结果要结构化，成为 Trace 和 Evaluation 可检查的治理证据。 | `hook_executed` 记录 hook_type、safe_summary、redacted、degraded。 | | 关键工具失败 | 不同工具失败后的风险不同，不能统一兜底。 | 订单归属或退款资格失败时不能猜结论，要更保守地转人工或暂停。 | | Hook / HITL 边界 | Hook 只能治理调用链路，不能替代人工审批或高风险业务决策。 | Hook 可以拦截和记录退款相关工具，但不能批准退款。 | ## 小哲心中隐隐的担心 你现在终于把工具链路的治理点收拢了。 但新的问题又露头了。 这些工具定义、参数 schema、边界说明和 Observation 口径，现在仍然只服务这一版小哲电商客服 Agent。 如果以后运营 Agent、售后主管助手、内部质检 Agent 都要用同一批工具，难道每个 Agent 都复制一份工具说明？ 小哲心里隐隐觉得： > 工具链路管住了，但工具能力不能永远绑死在这一版 Agent 里。 > > 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。 >
+# 工具越来越多，重复治理代码开始漏风｜Hooks 治理
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396439727-48a073e0-3769-4749-ad99-d1cda73a9790.png" title="null" crop="0,0,1,1" id="syiMJ" class="ne-image">
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396424239-d84c3066-0ad6-44a5-8b12-4d0f13c4b597.png" title="null" crop="0,0,1,1" id="xScVg" class="ne-image">
+
+## 第六幕开始时的 Agent 形态 到第六幕开始时，Agent 已经能查实时业务事实，也能把工具结果整理成 Observation。但工具越来越多以后，参数校验、脱敏、降级和工具来源开始分散。 这一幕只收拢工具治理和入口路由：Hooks、MCP 风格工具来源、TaskPlanner 和 RoutePlan。它还不真正跑退款 workflow，也不让 MCP 放行高风险动作。
+
+## 工具箱越多，事故不再只发生在工具本身 第 22 课结束时，小哲电商客服 Agent 已经能查订单、物流、库存，也能把商品实时事实和稳定知识合起来回答。 老板终于不再一听到“AI 客服”就皱眉。 但开发小弟把工具代码摊给你看时，你又沉默了。 物流工具里有参数校验。 退款进度工具里也有参数校验。 库存工具里有错误处理。 订单工具里也有错误处理。 有些工具会把内部字段压成 Observation，有些工具忘了压；有些地方记了日志摘要，有些地方把原始异常直接丢出去；有些工具做了手机号脱敏，有些工具只靠“应该不会出现”硬撑。 工具越来越多以后，真正危险的不是某一个工具不会查。 真正危险的是：
+
+```latex
+同一类治理逻辑，被散落在每个工具里重复写。
+```
+
+重复越多，漏风越多。
+
+## 这次事故背后的 Agent 问题 前几课你已经把工具链路一段一段补起来了：
+
+| 课次 | 解决的问题 |
+| --- | --- |
+| 第 18 课 | 工具有名字、参数和身份边界 |
+| 第 19 课 | 缺参数时先澄清 |
+| 第 20 课 | ToolResult 压缩成 Observation |
+| 第 21 课 | 工具超时和模型不可用时降级 |
+| 第 22 课 | Tool 和 RAG 可以联合回答商品咨询 | 这些能力都对。 但如果每个工具都自己处理一遍参数校验、异常归一、脱敏摘要和完成记录，工具数量一多，系统就会开始不一致。 所以这里要做的不是再加一个新工具。 这一课要给工具链路加统一治理点。 这个治理点就是 Hooks。
+
+## 技术机制
+
+### Hooks 先别想复杂 你可以先把 Hooks 理解成“工具生命周期上的固定卡口”。 它和通用 AOP 不完全是一回事。AOP 更像给任意代码位置加横切逻辑；这一课的 Hooks 只绑定 Agent 工具链路里的固定生命周期点，目的是让工具调用前、调用后、异常和完成摘要都能被课程观察和评测稳定检查。 这一课只用四个卡口：
+
+| Hook | 在小哲项目里做什么 |
+| --- | --- |
+| `pre_tool_call` | 工具执行前，统一检查参数、可信运行时身份和脱敏摘要 |
+| `post_tool_call` | 工具执行后，统一清洗 Observation，不把原始内部结果交给模型 |
+| `on_error` | 工具或模型异常时，统一归一成降级信号 |
+| `on_completion` | 本轮请求结束时，统一生成公开安全摘要 | 注意这里的“公开安全摘要”不是完整 Trace。 它只是告诉你：
+
+- 哪个 Hook 执行了。
+- 目标工具是谁。
+- 参数摘要有没有脱敏。
+- 是否发生降级。
+- 本轮碰过哪些工具。
+它不输出隐藏推理链，也不把完整内部日志暴露给调试后台。
+
+### Hook 和 HITL 不是一回事 这节课还有一个边界必须先立住。 Hooks 能记录“这里命中了高风险边界”。 但 Hooks 不能批准退款。 Hooks 能把工具超时归一成降级。 但 Hooks 不能让售后主管点同意。 HITL 是人工确认、人工审批、人工补充信息的流程能力。它会出现在后面高风险售后课程里。 这一课的 Hooks 只是工具链路治理：
+
+```latex
+看住工具怎么被调用，怎么返回，怎么失败，怎么留下安全摘要。
+```
+
+不要把它理解成“有 Hook 以后，退款审批就自动解决了”。
+
+## 代码落地
+
+### 这一版 Agent 怎么改 本节代码快照在：
+
+```latex
+code/agent-course-versions/lesson-23-hooks-governance/backend/
+```
+
+从这一课开始，代码不再继续把治理逻辑塞进一个 `main.py`。`main.py` 只保留启动入口，真正的变化拆到 `hooks/manager.py`、`observability/observation.py`、`models/answer_client.py` 和 `degradation/fallbacks.py` 里：Hooks 管生命周期，Observation 管安全摘要，模型层根据干净 Observation 组织回答，降级模块管异常口径。
+关键链路是：
+
+```latex
+/chat -> classify_intent(user_message) -> classify_risk(intent, user_message) -> pre_tool_clarification(ChatRequest, intent) -> plan_tool_action(ChatRequest, intent) -> HookManager.pre_tool_call(action, request, spec) -> execute_tool_action(action, current_user_id) -> build_observation(tool_result) -> HookManager.post_tool_call(observation) -> HookManager.on_error(...) when needed -> HookManager.on_completion(...) -> ChatResponse(hook_events, hook_completion)
+```
+
+你会发现，工具本身还在。
+物流、库存、退款进度这些只读工具还按原来的方式执行。
+变化在工具外围：
+- 工具执行前先经过 `pre_tool_call`。
+- 工具返回后先经过 `post_tool_call`。
+- 超时、模型不可用等异常走 `on_error`。
+- 每轮请求最后走 `on_completion`。
+这就像你终于在工具链路外面加了一圈统一门禁。
+每个工具不用再各写一遍治理代码。
+
+### `pre_tool_call` 管调用前的规矩 第 23 课的 `HookManager.pre_tool_call` 会做三件事。 第一，检查工具必填参数。 物流工具必须有 `order_id`，库存工具必须有 `sku`。工具 schema 里已经写了这些要求，Hook 在真正执行前再统一看一遍。 第二，记录可信运行时身份。 订单归属不能靠用户自己说，也不能靠模型猜。Hook 的安全摘要会记录 `runtime_user_id`，提醒你这次工具调用是绑定系统确认身份的。 第三，脱敏运行时上下文。 如果调用方传来的页面上下文里混进手机号、邮箱或 token，Hook 只把脱敏后的摘要写入 `hook_events`。 这样调试后台能看到治理发生了，但不会看到敏感原文。
+
+### `post_tool_call` 管工具结果回到模型前的规矩 第 20 课已经讲过，ToolResult 不能原样塞回模型。 第 23 课再往前走一步：
+
+```latex
+Observation 也要经过统一安全摘要。
+```
+
+`post_tool_call` 会记录：
+- 工具名。
+- 工具状态。
+- Observation 摘要预览。
+- 保留了哪些事实字段。
+- 省略了哪些内部字段。
+- 是否发现外部文本污染。
+这里的重点不是让 Hook 重写业务结果。
+重点是：每个工具返回模型前，都要走同一条治理规则。
+
+### `on_error` 和 `on_completion` 让治理能收口 工具链路最怕两种情况。 一种是服务抖动，比如物流工具超时。 另一种是本轮请求结束以后，你只知道“好像处理完了”，却不知道治理点有没有走过。 所以这一版有两个收口 Hook：
+
+```latex
+on_error -> 把 timeout / model_unavailable 等异常归一成可解释的降级信号 on_completion -> 汇总本轮触碰过的工具、脱敏次数、降级次数和风险命中
+```
+
+`on_completion` 不是业务结果。
+它只是公开治理摘要。
+它能告诉你“这轮工具链路治理走完了”，不能告诉你“退款审批通过了”。
+
+### Hook 不是日志，而是治理证据 很多系统一开始会把 Hook 理解成“多打一行日志”。 这还不够。 Hook 的结果要能被前端调试、Trace 和后续评测稳定读取，所以它应该生成结构化的 `HookResult`，而不是随手写一段字符串。 一个可用的 Hook 结果至少要回答：
+
+| 字段 | 说明 |
+| --- | --- |
+| `hook_type` | 这次走的是 `pre_tool_call`、`post_tool_call`、`on_error` 还是 `on_completion`。
+
+|
+| `target_name` | 这次治理的是哪个工具或哪轮请求。
+
+|
+| `result` | 本次治理结果是 allowed、redacted、degraded 还是 completed。
+
+|
+| `safe_summary` | 给前端和 Trace 看的公开摘要，不能包含隐私原文、内部堆栈或隐藏推理。
+
+|
+| `redacted` / `degraded` | 是否发生脱敏或降级，便于后续回归检查。
+
+| 这样后面做 Trace 和 Evaluation 时，就不用去模型回答里猜“治理有没有发生”。 它们可以直接检查公开事件：
+
+```latex
+hook_executed -> hook_type = on_error -> degraded = true -> safe_summary = 工具超时，已进入降级
+```
+
+这也是 Hooks 和普通日志最大的区别：日志偏排障，Hook 结果还要成为系统行为是否安全的可验证证据。
+
+### 为什么不在每个工具里各写一遍治理 工具少的时候，你可能会把参数校验、脱敏、超时处理和审计摘要都写在每个工具函数里。 小哲电商工具箱一多，这种写法很快漏风：
+
+| 分散写法 | 事故风险 |
+| --- | --- |
+| 物流工具脱敏了，库存工具忘了脱敏。
+
+| 内部字段可能被模型看到。
+
+|
+| 退款进度工具记录了安全摘要，商品工具只写普通日志。
+
+| Trace 和 Eval 读不到统一证据。
+
+|
+| 每个工具自己处理异常。
+
+| 同样的 timeout 在不同工具里变成不同口径。
+
+|
+| 新增工具时复制旧代码。
+
+| 旧的风险判断、字段过滤和回退话术一起被复制。
+
+| Hooks 的工程价值就在这里：把工具生命周期上的共同治理点集中起来。`pre_tool_call` 管调用前，`post_tool_call` 管结果进入模型前，`on_error` 管异常归一，`on_completion` 管本轮公开摘要。工具仍然负责业务事实，Hook 负责统一门禁和证据。 所以 Hook 不是给工具加装饰，也不是替工具执行业务。它是在工具越来越多时，把“每个工具都必须遵守的安全动作”从散落代码里收回来。
+
+### 关键工具失败要更保守 工具超时也不能一律处理成“稍后再试”。 你要先看这个工具对当前回答有多关键：
+
+| 工具类型 | 例子 | 失败后怎么收口 |
+| --- | --- | --- |
+| 非关键工具 | 推荐补充、营销权益、非必要 FAQ 补充 | 可以跳过或降级，只基于已确认事实回答。
+
+|
+| 关键工具 | 订单归属、物流状态、退款资格、审批状态 | 不能跳过事实确认，要重试、澄清、保持流程暂停或转人工。
+
+| 比如商品推荐里优惠补充查不到，可以先说明“当前只基于库存和商品信息推荐”。但退款资格查不到时，Agent 不能说“应该可以退”，因为这会把未知事实包装成业务结论。
+
+## 怎么验证老板能闭嘴 按本课代码目录的 `README.md` 启动后端后，发送：
+
+```latex
+查一下 SO20260602103000009-a1000009 的物流到哪了
+```
+
+你应该看到：
+- `hook_events[0].hook_type = pre_tool_call` + `hook_events[1].hook_type = post_tool_call` + `hook_events[2].hook_type = on_completion` + `hook_completion.touched_tools = ["get_order_logistics"]` + `tool_calls[0].observation.summary` 是安全 Observation 摘要 再发送：
+
+```latex
+查一下 SO20260602103000009-a1000009 的物流到哪了
+```
+
+第 23 课的自动化测试会对这条真实订单形状的物流查询做故障注入，让物流读取抛出 `timeout`，用来验证 Hooks 的 `on_error` 分支。业务事实本身仍然来自小哲电商后端和页面运行时上下文，不再维护本地假订单表。
+你应该看到：
+- 只读工具重试后仍失败。
+- `on_error` 记录 `error_category = timeout`。
+- `degraded = true`。
+- 回答明确说不能编造包裹位置。
+
+## 本节知识总结 Hooks 是把横切治理逻辑从业务代码里抽出来的办法。 当工具越来越多时，每个工具都可能需要参数校验、身份检查、脱敏、错误处理、结果压缩和安全摘要。如果这些逻辑散落在每个工具函数里，后面一定会出现重复、漏写和口径不一致。 Hooks 的通用价值，是在关键生命周期点统一插入治理逻辑：工具调用前做检查，工具调用后整理结果，异常时统一降级，完成时生成公开摘要。它不改变业务工具本身要做什么，但让工具链路更可控。
+
+| 知识点 | 核心概念 | 小哲项目里的落点 |
+| --- | --- | --- |
+| Hooks 治理 | 把参数校验、脱敏、降级、摘要等横切逻辑从单个工具里抽出来统一管理。
+
+| 小哲用 `HookManager` 管住订单、物流、库存等工具调用链路。
+
+|
+| `pre_tool_call` | 工具执行前校验参数、身份、权限和敏感字段。
+
+| 调用小哲工具前统一检查 runtime 身份摘要和参数边界。
+
+|
+| `post_tool_call` | 工具执行后把原始结果整理成模型可用、用户安全的 Observation。
+
+| 订单和物流结果不会原样塞给模型，而是生成安全摘要。
+
+|
+| `on_error` | 异常要被归类成可处理的降级信号，不能让链路静默失败。
+
+| 工具或模型异常会变成客服可解释的降级结果。
+
+|
+| `on_completion`  |
+
+一轮结束时生成公开执行摘要，便于调试和解释。
+
+| 小哲只展示公开安全摘要，不输出隐藏推理链。
+
+|
+| HookResult | Hook 结果要结构化，成为 Trace 和 Evaluation 可检查的治理证据。
+
+| `hook_executed` 记录 hook_type、safe_summary、redacted、degraded。
+
+|
+| 关键工具失败 | 不同工具失败后的风险不同，不能统一兜底。
+
+| 订单归属或退款资格失败时不能猜结论，要更保守地转人工或暂停。
+
+|
+| Hook / HITL 边界 | Hook 只能治理调用链路，不能替代人工审批或高风险业务决策。
+
+| Hook 可以拦截和记录退款相关工具，但不能批准退款。
+
+|
+
+## 小哲心中隐隐的担心 你现在终于把工具链路的治理点收拢了。 但新的问题又露头了。 这些工具定义、参数 schema、边界说明和 Observation 口径，现在仍然只服务这一版小哲电商客服 Agent。 如果以后运营 Agent、售后主管助手、内部质检 Agent 都要用同一批工具，难道每个 Agent 都复制一份工具说明？
+
+小哲心里隐隐觉得：
+
+> 工具链路管住了，但工具能力不能永远绑死在这一版 Agent 里。
+
+> > 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。
+> >

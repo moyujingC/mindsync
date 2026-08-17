@@ -1,1 +1,278 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396440936-a244cb4b-fd5a-4f21-9330-ce09aaaa3e3a.png" title="null" crop="0,0,1,1" id="RbkXE" class="ne-image"> <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396430884-f43dabb1-41b3-4bef-b9a6-df7836c5bc29.png" title="null" crop="0,0,1,1" id="nA0vS" class="ne-image"> ## 第九幕开始时的 Agent 形态 到第九幕开始时，Agent 已经有 RAG、Tool、Workflow、HITL、Memory、Runtime Context 和安全边界。但系统能跑，不代表事故发生时能解释、能回归、能归因、能看成本。 这一幕只补证据治理：Trace、Evaluation、失败归因、反馈闭环和成本治理。它不新增一个更自由的 Agent，而是让已有链路变得可复盘、可检查、可持续改进。 ## 老板不问答案，问证据链 第 36 课之后，小哲电商 Agent 已经知道哪些上下文可信、哪些文本可能被污染、哪些内部信息不能泄露。 你终于觉得系统像个受控 Agent 了。 结果老板在调试后台里看到一条退款回复： ```latex SO20260601090000008-a1000008 可以进入未发货退款申请判断，但资金动作必须等待人工审批。 ``` 老板没问“回答对不对”。 他问： ```latex 它为什么这么回答？ ``` 你下意识想说： ```latex 大模型觉得应该这样。 ``` 话刚到嘴边，你自己先停住了。 现在这个 Agent 已经有 Runtime Context、Memory、Context Builder、上下文压缩、Prompt Injection 防护、Tool、RAG、Workflow 和 HITL。 如果你只能说“大模型觉得”，那前面这些工程能力在事故复盘时就全都看不见。 ## 这次事故背后的 Agent 问题 最终回答只是结果，不是过程。 小哲电商客服 Agent 出问题时，你至少要回答这些问题： | 问题 | 不能靠什么猜 | | --- | --- | | 它拿到了哪个登录用户？ | 不能从用户自称猜 | | 它有没有查订单？ | 不能从回答口吻猜 | | 它有没有命中退款政策？ | 不能从“根据规则”四个字猜 | | 它有没有进入 workflow？ | 不能从自然语言里硬抠 | | 它有没有要求人工审批？ | 不能看模型语气像不像谨慎 | | 它有没有被 Prompt Injection 挡住？ | 不能只看拒答话术 | | 本轮成本路径重不重？ | 不能月底账单来了再回忆 | 这就是 Trace 要解决的问题。 Trace 不是把日志一股脑倒给前端。 Trace 也不是 hidden CoT。 它是 Agent 后端整理出来的公开执行摘要。 ## Trace 不是 hidden CoT 这一点要先说死。 第 06 课里你已经见过 CoT：它是让模型在复杂问题里先按步骤组织判断的推理增强方法。 有些模型或供应商会返回 `reasoning_content` / CoT 类字段。课程调试后台可以在受控学习模式下展示这类内容，帮助你观察模型中间思考里有没有敏感信息或不可靠判断。 但 Trace 不是 CoT。 CoT 关注的是模型怎么组织中间推理；Trace 关注的是系统实际发生了什么。调试后台能看 CoT，不代表用户能看，也不代表 CoT 可以进入公开 Trace、Eval 断言或对外日志。 在小哲电商里，老板要复盘的不是模型脑子里每一个草稿念头，而是这些公开事实： 小哲电商 Agent 的 Trace 只能展示这些东西： + 公开的事件名。 + 工具名和安全参数摘要。 + RAG 命中数量和引用标识。 + Runtime Context 的脱敏摘要。 + Context Builder 的来源摘要。 + Workflow / HITL 的公开状态。 + Hook 是否执行、是否脱敏、是否降级。 + Cost 路径和粗略计数。 它不能展示： + 系统提示词原文。 + hidden reasoning。 + `reasoning_content` / CoT 原文。 + 内部密钥。 + 用户手机号、地址等隐私原文。 + 工具原始负载和内部堆栈。 如果 Trace 把 hidden CoT 或 `reasoning_content` 原文暴露出来，它就不是可观测，而是又制造了一个泄露入口。 这几类东西也不要混在一起： | 名称 | 主要给谁看 | 回答什么问题 | 不能做什么 | | --- | --- | --- | --- | | Log | 研发和运维 | 程序哪里报错、接口耗时多少、堆栈是什么。 | 不能直接给业务方或用户看，里面可能有内部细节。 | | Trace | 研发、运营、审核和调试后台 | 这一轮 Agent 实际走过哪些公开步骤。 | 不能在公开 Trace 里展示 hidden CoT、密钥、隐私原文或工具原始负载。 | | CoT / hidden reasoning | 调试学习模式里的教学调试材料。 | 模型可能怎样组织中间判断。 | 不能当作业务事实证据，不能发给用户，也不能进入公开 Trace / Eval 断言。 | | Evaluation | 开发和质检 | 改动后关键场景和路径有没有回归。 | 不能替代 Trace；它要读取 Trace、tool_calls、citations 和 workflow 状态来检查。 | 一句话记住：Log 偏排障，Trace 偏复盘，CoT 只能在受控调试学习模式里看，Evaluation 把关键路径变成可重复检查。 如果再往生产走，还会多一个东西：Metrics。 Metrics 不解释某一轮为什么这么回答，它看趋势： | 指标 | 小哲电商要观察什么 | | --- | --- | | 延迟 | 物流、RAG、模型生成分别耗时多少，大促时有没有变慢。 | | 成功率 | 工具调用成功率、RAG 命中率、workflow 暂停/恢复成功率。 | | 降级率 | timeout、低置信、安全拒绝和转人工有没有突然升高。 | | 成本 | 不同路径消耗多少 token，是否超过预算。 | 所以 Trace 和 Metrics 要配合看。Trace 帮你复盘某一单投诉的路径，Metrics 帮你发现“最近物流工具错误率突然上升”这种整体趋势。两者都不能泄露 hidden reasoning、密钥和隐私原文。 ## 代码落地 ### 当前 Agent 的实现边界 本节代码快照在： ```latex code/agent-course-versions/lesson-37-trace-observability/backend/ ``` 这一课在安全防护之后新增 `observability/` 包。TraceStore 负责统一事件结构和敏感字段清洗，`tools/` 的执行函数开始写入工具开始、完成和失败事件；`api/` 只提供查询入口。这样 Trace 成为后续 Eval、反馈归因和成本治理都能复用的基础设施。 关键链路是： ```latex /chat -> classify_intent(user_message) -> TraceStore.add(runtime_context_built) -> TraceStore.add(context_built) -> get_order_detail(...) / get_order_logistics(...) -> retrieve refund policy when needed -> build workflow / HITL summary when needed -> TraceStore.add(cost_recorded) -> ChatResponse(session_state.trace) /sessions/{session_id}/trace -> TraceStore.list(session_id) -> list[TraceEvent] ``` 这一版新增的不是一个更聪明的回答器。 它新增的是一条能复盘的证据链。 你可以把这条证据链理解成四层。 第一层是入口证据。 它说明这轮请求是谁发起的、系统相信哪些运行时身份、哪些用户说法只能当成普通文本。 第二层是事实证据。 它说明 Agent 有没有真的查订单、查物流、检索政策，而不是靠模型语气装得很像。 第三层是控制证据。 它说明高风险售后有没有进入 workflow，是否停在 HITL，安全拦截和治理 Hook 有没有执行。 第四层是结果证据。 它说明最终回答、引用、工具调用和成本摘要之间能不能对上。 Trace 要做的不是把所有细节摊开。 它要做的是让这四层证据能彼此对账。 ### 核心代码拆解 第一个关键对象是 `TraceEvent`。 它的核心字段是： ```latex event_type schema_version category stage status target ids summary signals safety payload ``` `event_type` 让你知道发生了什么，例如： ```latex runtime_context_built context_built rag_pre_retrieved tool_finished workflow_completed human_approval_required cost_recorded ``` `category` 把事件归到稳定模块： ```latex runtime_context / context / rag / tool / workflow / hitl / hook / cost ``` 这样后面的调试后台和 Eval 不用猜字符串。 这也是为什么第 37 课要先做 trace schema。 如果每个模块都随手写日志，后面你想评测、归因、控成本时，就只能继续写一堆临时解析规则。 稳定的 trace schema 让小哲电商客服 Agent 后面的能力都能站在同一批公开证据上。 第二个关键对象是 `TraceEventNormalizer`。 它做三件事。 第一，把不同模块写来的事件整理成同一套 `trace_event_v1`。 第二，把手机号、地址、密钥、系统提示词、hidden reasoning 这类内容脱敏或替换。 第三，在 `safety` 里明确记录： ```latex public_trace = true hidden_cot_exposed = false ``` 这不是装饰字段。 它是在提醒你：Trace 的边界也是安全边界。 这里有一个很容易误解的点。 Trace 不是“为了让老板看得开心”。 Trace 是为了让团队在事故发生后少猜一点。 当回答出错时，你先看 trace 事件缺了哪一环，再决定查 Prompt、RAG、Tool、Context 还是 Workflow。 如果没有这一层公开证据，下一课的 Evaluation 就只能检查最终答案，后面的失败归因也会变成拍脑袋。 第三个关键对象是 `TraceStore`。 它按 `session_id` 保存事件。 同一轮 `/chat` 里，Agent 会先记录 Runtime Context，再记录 Context，再根据问题记录 Tool、RAG、Workflow、HITL、Hook 和 Cost。 第 37 课不是重写一套客服 Agent，而是在前面已经完成的 Workflow/HITL/Resume 基础上补 Trace。暂停在人工审批的售后流程仍然可以通过 `/chat/resume` 恢复；Trace 只是把这条恢复前后的公开证据记录下来。 最后你可以通过： ```latex /sessions/{session_id}/trace ``` 把这一轮公开执行摘要拿出来。 ## 怎么验证回答链路说得清楚 按本课代码目录的 `README.md` 启动后端后，发送： ```latex SO20260601090000008-a1000008 还没发货，我现在能退款吗？ ``` 你应该看到响应里仍然有： + `answer` + `citations` + `tool_calls` + `session_state.workflow` + `session_state.trace` 再请求： ```latex /sessions/lesson37/trace ``` 你应该看到这些公开事件： ```latex runtime_context_built context_built tool_finished rag_pre_retrieved workflow_completed human_approval_required cost_recorded final_answer_generated ``` 老板再问“它为什么这么回答”时，你就能解释： ```latex 它先确认运行时用户，再查订单归属，再命中未发货退款政策，然后进入售后 workflow，并停在人工审批边界。 ``` 这句话不是你猜的。 它来自 trace、tool_calls、citations 和 workflow 状态。 ## 本节知识总结 Trace 解决的是“Agent 为什么这么回答”必须能复盘。 Agent 不是一个只输出最终答案的黑盒。一次回答背后可能有意图识别、RAG 检索、工具调用、上下文构建、工作流判断、降级和安全拦截。出问题时，团队不能只说“大模型觉得”，而要能拿出公开、脱敏、可审计的执行事件。 Trace 的通用原则是：记录关键步骤和公开摘要，不记录隐藏推理链，不泄露敏感信息。 | 知识点 | 核心概念 | 小哲项目里的落点 | | --- | --- | --- | | Trace | 把一次 Agent 执行过程记录成公开可复盘事件。 | 小哲能解释一次回答经过了哪些关键步骤。 | | trace schema | 用稳定字段承载事件名、类别、阶段、目标、摘要和安全边界。 | trace 事件可被调试后台、评测和事故复盘读取。 | | Tool Trace | 证明实时事实是否真的查过。 | 物流回答能看到订单或物流工具调用事件。 | | RAG Trace | 证明政策依据是否被检索、命中和注入。 | 活动回答能看到小哲规则检索事件。 | | Workflow / HITL Trace | 证明高风险动作是否进入受控流程和人工审批。 | 退款请求能看到 workflow 暂停和 HITL 等待事件。 | | Hook Trace | 证明脱敏、降级和治理逻辑是否执行。 | 小哲能看到参数校验、脱敏、错误降级等治理事件。 | | Cost Trace | 成本路径也要先记录，后面才能治理。 | `cost_recorded` 为后续成本分层留证据。 | | CoT | 帮助模型在复杂问题里分步骤组织判断，但不等于系统运行证据。 | 可以作为教学概念理解模型推理增强，不能替代工具、RAG、Workflow 或 Trace。 | | hidden CoT 边界 | 公开 Trace 只展示执行摘要，不展示隐藏推理链。 | 调试学习模式可以看模型返回的 CoT / `reasoning_content`，但它不能进入用户回答或公开证据链。 | ## 小哲心中隐隐的担心 Trace 上线后，老板终于不再只盯着最终回答。 他能看到工具查了什么、RAG 命中了什么、workflow 停在哪里。 但第二天，你改了一段 Prompt。 物流问题好了。 退款问题炸了。 你突然发现：能复盘一次事故，还不等于每次改动后都不会把旧能力打坏。 下一课，你要把这些 trace、tool_calls、citations 和 workflow 状态写进固定评测。 > 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。 >
+# 老板问：它为什么这么回答？你不能只说“大模型觉得”｜Trace 可观测
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396440936-a244cb4b-fd5a-4f21-9330-ce09aaaa3e3a.png" title="null" crop="0,0,1,1" id="RbkXE" class="ne-image">
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396430884-f43dabb1-41b3-4bef-b9a6-df7836c5bc29.png" title="null" crop="0,0,1,1" id="nA0vS" class="ne-image">
+
+## 第九幕开始时的 Agent 形态 到第九幕开始时，Agent 已经有 RAG、Tool、Workflow、HITL、Memory、Runtime Context 和安全边界。但系统能跑，不代表事故发生时能解释、能回归、能归因、能看成本。 这一幕只补证据治理：Trace、Evaluation、失败归因、反馈闭环和成本治理。它不新增一个更自由的 Agent，而是让已有链路变得可复盘、可检查、可持续改进。
+
+## 老板不问答案，问证据链 第 36 课之后，小哲电商 Agent 已经知道哪些上下文可信、哪些文本可能被污染、哪些内部信息不能泄露。 你终于觉得系统像个受控 Agent 了。 结果老板在调试后台里看到一条退款回复：
+
+```latex
+SO20260601090000008-a1000008 可以进入未发货退款申请判断，但资金动作必须等待人工审批。
+```
+
+老板没问“回答对不对”。
+他问：
+
+```latex
+它为什么这么回答？
+```
+
+你下意识想说：
+
+```latex
+大模型觉得应该这样。
+```
+
+话刚到嘴边，你自己先停住了。
+现在这个 Agent 已经有 Runtime Context、Memory、Context Builder、上下文压缩、Prompt Injection 防护、Tool、RAG、Workflow 和 HITL。
+如果你只能说“大模型觉得”，那前面这些工程能力在事故复盘时就全都看不见。
+
+## 这次事故背后的 Agent 问题 最终回答只是结果，不是过程。 小哲电商客服 Agent 出问题时，你至少要回答这些问题：
+
+| 问题 | 不能靠什么猜 |
+| --- | --- |
+| 它拿到了哪个登录用户？
+
+| 不能从用户自称猜 |
+| 它有没有查订单？
+
+| 不能从回答口吻猜 |
+| 它有没有命中退款政策？
+
+| 不能从“根据规则”四个字猜 |
+| 它有没有进入 workflow？
+
+| 不能从自然语言里硬抠 |
+| 它有没有要求人工审批？
+
+| 不能看模型语气像不像谨慎 |
+| 它有没有被 Prompt Injection 挡住？
+
+| 不能只看拒答话术 |
+| 本轮成本路径重不重？
+
+| 不能月底账单来了再回忆 | 这就是 Trace 要解决的问题。 Trace 不是把日志一股脑倒给前端。 Trace 也不是 hidden CoT。 它是 Agent 后端整理出来的公开执行摘要。
+
+## Trace 不是 hidden CoT 这一点要先说死。 第 06 课里你已经见过 CoT：它是让模型在复杂问题里先按步骤组织判断的推理增强方法。 有些模型或供应商会返回 `reasoning_content` / CoT 类字段。课程调试后台可以在受控学习模式下展示这类内容，帮助你观察模型中间思考里有没有敏感信息或不可靠判断。 但 Trace 不是 CoT。 CoT 关注的是模型怎么组织中间推理；Trace 关注的是系统实际发生了什么。调试后台能看 CoT，不代表用户能看，也不代表 CoT 可以进入公开 Trace、Eval 断言或对外日志。 在小哲电商里，老板要复盘的不是模型脑子里每一个草稿念头，而是这些公开事实： 小哲电商 Agent 的 Trace 只能展示这些东西：
+- 公开的事件名。
+- 工具名和安全参数摘要。
+- RAG 命中数量和引用标识。
+- Runtime Context 的脱敏摘要。
+- Context Builder 的来源摘要。
+- Workflow / HITL 的公开状态。
+- Hook 是否执行、是否脱敏、是否降级。
+- Cost 路径和粗略计数。
+它不能展示：
+- 系统提示词原文。
+- hidden reasoning。
+- `reasoning_content` / CoT 原文。
+- 内部密钥。
+- 用户手机号、地址等隐私原文。
+- 工具原始负载和内部堆栈。
+如果 Trace 把 hidden CoT 或 `reasoning_content` 原文暴露出来，它就不是可观测，而是又制造了一个泄露入口。
+这几类东西也不要混在一起：
+
+| 名称 | 主要给谁看 | 回答什么问题 | 不能做什么 |
+| --- | --- | --- | --- |
+| Log | 研发和运维 | 程序哪里报错、接口耗时多少、堆栈是什么。
+
+| 不能直接给业务方或用户看，里面可能有内部细节。
+
+|
+| Trace | 研发、运营、审核和调试后台 | 这一轮 Agent 实际走过哪些公开步骤。
+
+| 不能在公开 Trace 里展示 hidden CoT、密钥、隐私原文或工具原始负载。
+
+|
+| CoT / hidden reasoning | 调试学习模式里的教学调试材料。
+
+| 模型可能怎样组织中间判断。
+
+| 不能当作业务事实证据，不能发给用户，也不能进入公开 Trace / Eval 断言。
+
+|
+| Evaluation | 开发和质检 | 改动后关键场景和路径有没有回归。
+
+| 不能替代 Trace；它要读取 Trace、tool_calls、citations 和 workflow 状态来检查。
+
+| 一句话记住：Log 偏排障，Trace 偏复盘，CoT 只能在受控调试学习模式里看，Evaluation 把关键路径变成可重复检查。 如果再往生产走，还会多一个东西：Metrics。 Metrics 不解释某一轮为什么这么回答，它看趋势：
+
+| 指标 | 小哲电商要观察什么 |
+| --- | --- |
+| 延迟 | 物流、RAG、模型生成分别耗时多少，大促时有没有变慢。
+
+|
+| 成功率 | 工具调用成功率、RAG 命中率、workflow 暂停/恢复成功率。
+
+|
+| 降级率 | timeout、低置信、安全拒绝和转人工有没有突然升高。
+
+|
+| 成本 | 不同路径消耗多少 token，是否超过预算。
+
+| 所以 Trace 和 Metrics 要配合看。Trace 帮你复盘某一单投诉的路径，Metrics 帮你发现“最近物流工具错误率突然上升”这种整体趋势。两者都不能泄露 hidden reasoning、密钥和隐私原文。
+
+## 代码落地
+
+### 当前 Agent 的实现边界 本节代码快照在：
+
+```latex
+code/agent-course-versions/lesson-37-trace-observability/backend/
+```
+
+这一课在安全防护之后新增 `observability/` 包。TraceStore 负责统一事件结构和敏感字段清洗，`tools/` 的执行函数开始写入工具开始、完成和失败事件；`api/` 只提供查询入口。这样 Trace 成为后续 Eval、反馈归因和成本治理都能复用的基础设施。
+关键链路是：
+
+```latex
+/chat -> classify_intent(user_message) -> TraceStore.add(runtime_context_built) -> TraceStore.add(context_built) -> get_order_detail(...) / get_order_logistics(...) -> retrieve refund policy when needed -> build workflow / HITL summary when needed -> TraceStore.add(cost_recorded) -> ChatResponse(session_state.trace) /sessions/{session_id}/trace -> TraceStore.list(session_id) -> list[TraceEvent]
+```
+
+这一版新增的不是一个更聪明的回答器。
+它新增的是一条能复盘的证据链。
+你可以把这条证据链理解成四层。
+第一层是入口证据。
+它说明这轮请求是谁发起的、系统相信哪些运行时身份、哪些用户说法只能当成普通文本。
+第二层是事实证据。
+它说明 Agent 有没有真的查订单、查物流、检索政策，而不是靠模型语气装得很像。
+第三层是控制证据。
+它说明高风险售后有没有进入 workflow，是否停在 HITL，安全拦截和治理 Hook 有没有执行。
+第四层是结果证据。
+它说明最终回答、引用、工具调用和成本摘要之间能不能对上。
+Trace 要做的不是把所有细节摊开。
+它要做的是让这四层证据能彼此对账。
+
+### 核心代码拆解 第一个关键对象是 `TraceEvent`。 它的核心字段是：
+
+```latex
+event_type schema_version category stage status target ids summary signals safety payload
+```
+
+`event_type` 让你知道发生了什么，例如：
+
+```latex
+runtime_context_built context_built rag_pre_retrieved tool_finished workflow_completed human_approval_required cost_recorded
+```
+
+`category` 把事件归到稳定模块：
+
+```latex
+runtime_context / context / rag / tool / workflow / hitl / hook / cost
+```
+
+这样后面的调试后台和 Eval 不用猜字符串。
+这也是为什么第 37 课要先做 trace schema。
+如果每个模块都随手写日志，后面你想评测、归因、控成本时，就只能继续写一堆临时解析规则。
+稳定的 trace schema 让小哲电商客服 Agent 后面的能力都能站在同一批公开证据上。
+第二个关键对象是 `TraceEventNormalizer`。
+它做三件事。
+第一，把不同模块写来的事件整理成同一套 `trace_event_v1`。
+第二，把手机号、地址、密钥、系统提示词、hidden reasoning 这类内容脱敏或替换。
+第三，在 `safety` 里明确记录：
+
+```latex
+public_trace = true hidden_cot_exposed = false
+```
+
+这不是装饰字段。
+它是在提醒你：Trace 的边界也是安全边界。
+这里有一个很容易误解的点。
+Trace 不是“为了让老板看得开心”。
+Trace 是为了让团队在事故发生后少猜一点。
+当回答出错时，你先看 trace 事件缺了哪一环，再决定查 Prompt、RAG、Tool、Context 还是 Workflow。
+如果没有这一层公开证据，下一课的 Evaluation 就只能检查最终答案，后面的失败归因也会变成拍脑袋。
+第三个关键对象是 `TraceStore`。
+它按 `session_id` 保存事件。
+同一轮 `/chat` 里，Agent 会先记录 Runtime Context，再记录 Context，再根据问题记录 Tool、RAG、Workflow、HITL、Hook 和 Cost。
+第 37 课不是重写一套客服 Agent，而是在前面已经完成的 Workflow/HITL/Resume 基础上补 Trace。暂停在人工审批的售后流程仍然可以通过 `/chat/resume` 恢复；Trace 只是把这条恢复前后的公开证据记录下来。
+最后你可以通过：
+
+```latex
+/sessions/{session_id}/trace
+```
+
+把这一轮公开执行摘要拿出来。
+
+## 怎么验证回答链路说得清楚 按本课代码目录的 `README.md` 启动后端后，发送：
+
+```latex
+SO20260601090000008-a1000008 还没发货，我现在能退款吗？
+```
+
+你应该看到响应里仍然有：
+- `answer` + `citations` + `tool_calls` + `session_state.workflow` + `session_state.trace` 再请求：
+
+```latex
+/sessions/lesson37/trace
+```
+
+你应该看到这些公开事件：
+
+```latex
+runtime_context_built context_built tool_finished rag_pre_retrieved workflow_completed human_approval_required cost_recorded final_answer_generated
+```
+
+老板再问“它为什么这么回答”时，你就能解释：
+
+```latex
+它先确认运行时用户，再查订单归属，再命中未发货退款政策，然后进入售后 workflow，并停在人工审批边界。
+```
+
+这句话不是你猜的。
+它来自 trace、tool_calls、citations 和 workflow 状态。
+
+## 本节知识总结 Trace 解决的是“Agent 为什么这么回答”必须能复盘。 Agent 不是一个只输出最终答案的黑盒。一次回答背后可能有意图识别、RAG 检索、工具调用、上下文构建、工作流判断、降级和安全拦截。出问题时，团队不能只说“大模型觉得”，而要能拿出公开、脱敏、可审计的执行事件。 Trace 的通用原则是：记录关键步骤和公开摘要，不记录隐藏推理链，不泄露敏感信息。
+
+| 知识点 | 核心概念 | 小哲项目里的落点 |
+| --- | --- | --- |
+| Trace | 把一次 Agent 执行过程记录成公开可复盘事件。
+
+| 小哲能解释一次回答经过了哪些关键步骤。
+
+|
+| trace schema | 用稳定字段承载事件名、类别、阶段、目标、摘要和安全边界。
+
+| trace 事件可被调试后台、评测和事故复盘读取。
+
+|
+| Tool Trace | 证明实时事实是否真的查过。
+
+| 物流回答能看到订单或物流工具调用事件。
+
+|
+| RAG Trace | 证明政策依据是否被检索、命中和注入。
+
+| 活动回答能看到小哲规则检索事件。
+
+|
+| Workflow / HITL Trace | 证明高风险动作是否进入受控流程和人工审批。
+
+| 退款请求能看到 workflow 暂停和 HITL 等待事件。
+
+|
+| Hook Trace | 证明脱敏、降级和治理逻辑是否执行。
+
+| 小哲能看到参数校验、脱敏、错误降级等治理事件。
+
+|
+| Cost Trace | 成本路径也要先记录，后面才能治理。
+
+| `cost_recorded` 为后续成本分层留证据。
+
+|
+| CoT | 帮助模型在复杂问题里分步骤组织判断，但不等于系统运行证据。
+
+| 可以作为教学概念理解模型推理增强，不能替代工具、RAG、Workflow 或 Trace。
+
+|
+| hidden CoT 边界 | 公开 Trace 只展示执行摘要，不展示隐藏推理链。
+
+| 调试学习模式可以看模型返回的 CoT / `reasoning_content`，但它不能进入用户回答或公开证据链。
+
+|
+
+## 小哲心中隐隐的担心 Trace 上线后，老板终于不再只盯着最终回答。 他能看到工具查了什么、RAG 命中了什么、workflow 停在哪里。 但第二天，你改了一段 Prompt。 物流问题好了。 退款问题炸了。 你突然发现：能复盘一次事故，还不等于每次改动后都不会把旧能力打坏。 下一课，你要把这些 trace、tool_calls、citations 和 workflow 状态写进固定评测。
+
+> 代码同步说明：从本课开始，课程快照会尽量使用真实 OpenAI 兼容大模型生成最终客服话术。Tool、RAG、Workflow、Runtime Context 和安全模块先产出受控事实与边界，模型负责把这些事实组织成自然回复；只有模型不可用、测试隔离、低置信或安全边界触发时，才回退到确定性话术。
+> >

@@ -1,1 +1,179 @@
-<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396370443-e2ca56db-c49b-4b73-ab11-6c9b3c429fe1.png" title="null" crop="0,0,1,1" id="RBtgL" class="ne-image"> 本节总览图：这张图从左到右画出 `用户问题 -> Agent stream -> 前端或命令行展示`，中间分三条流：`updates` 返回每个 Agent / Graph step 后的节点 state updates，例如 `{"model": {"messages": [...]}}`、`{"tools": {"messages": [...]}}`，这些更新可用于展示模型节点和工具节点的执行过程；`messages` 显示 token 和消息块；`custom` 显示工具自定义进度。图中要强调 streaming 不是只让文字一个字一个字出现，还可以展示 Agent 正在调用哪个工具、工具是否完成。 ## 课程目标 学完这一节，你应该能说清： + Streaming 为什么影响 Agent 用户体验。 + LangChain 支持哪些 `stream_mode`。 + `updates`、`messages`、`custom` 分别适合展示什么。 + token streaming 和节点 state updates 的区别。 + 工具调用流式展示时应该看哪些事件。 + 为什么不是所有内部过程都应该展示给用户。 --- ## 1. 为什么需要 Streaming Agent 和普通聊天最大的体验差异是：Agent 可能要做事。 比如用户问： ```latex 帮我查一下订单 20260001 的物流，再看一下如果今天不到能不能退运费。 ``` 系统可能经历： ```latex 理解问题 -> 查询订单 -> 查询物流 -> 检索售后政策 -> 汇总回答 ``` 如果界面一直空白，用户会觉得系统卡住了。Streaming 的目标是让用户知道： + 模型正在生成回复。 + Agent 正在查询订单。 + 工具调用已经完成。 + 当前还在等待哪个环节。 --- ## 2. 官方支持的 stream_mode LangChain streaming 文档中常用的模式有： | stream_mode | 作用 | | --- | --- | | `updates` | 流式输出每个 Agent / Graph step 后的 state updates，返回值按节点名组织，例如 `{"model": {"messages": [...]}}` | | `messages` | 流式输出 LLM token、消息块和相关 metadata | | `custom` | 输出自定义进度信息，比如工具内部进度 | 你可以只用一个模式，也可以组合多个模式。 ```python for chunk in agent.stream( {"messages": [{"role": "user", "content": "查询订单 20260001 的物流"}]}, stream_mode="updates", ): print(chunk) ``` 或者： ```python for chunk in agent.stream( {"messages": [{"role": "user", "content": "查询订单 20260001 的物流"}]}, stream_mode=["messages", "updates"], ): print(chunk) ``` 上面的写法使用默认流式输出格式，适合基础课练习。LangGraph `>= 1.1` 支持传入 `version="v2"` 得到统一的 `StreamPart` 格式；如果你使用的是新版 LangGraph，可以按官方文档打开这个选项。 --- ## 3. `updates`：看节点 state updates <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396371570-fc493933-2f26-42f7-9ab8-67d58582301e.png" title="null" crop="0,0,1,1" id="GEdw2" class="ne-image"> updates state updates 图：这张图画出 `model node -> tools node -> model node` 的执行路径。每个节点下方画一条 state update，模型节点返回类似 `{"model": {"messages": [AIMessage(...)]}}`，其中可能包含 tool call；工具节点返回类似 `{"tools": {"messages": [ToolMessage(...)]}}`；最后模型节点再返回最终 `AIMessage`。箭头要强调 updates 的本质是节点对 state 的更新，不是逐 token 文本，也不是独立的进度条事件。 `updates` 的关键是： ```latex 节点执行完成 -> 节点返回 state update -> stream 把这个 update 按节点名发出来 ``` 在默认格式里，单一 `stream_mode="updates"` 通常会直接返回节点更新，例如： ```python { "model": { "messages": [...] } } ``` 如果工具节点执行完成，则可能看到： ```python { "tools": { "messages": [...] } } ``` 如果使用 LangGraph `>= 1.1` 并传入 `version="v2"`，chunk 会进入统一的 `StreamPart` 格式，通常包含 `type` 和 `data` 字段。基础课先按默认格式理解。 所以更严谨地说：`updates` 返回的是 **节点级 state updates**。这些更新常被用来展示 Agent 执行过程，但它本身不是普通意义上的 progress event。 `updates` 适合展示： + 模型是否决定调用工具。 + 调用了哪个工具。 + 工具是否返回结果。 + Agent 是否进入下一轮模型调用。 这对客服工作台很重要。人工客服不只想看到最后答案，也想知道 AI 是否真的查了订单，而不是编了一个物流状态。 --- ## 4. `messages`：看模型 token 和消息块 `messages` 更接近普通聊天产品里的“打字机效果”。它会流式输出 LLM 生成的 token 或内容块，同时带上 metadata。 适合展示： + 最终回复逐步出现。 + 模型正在生成 tool call 参数。 + reasoning 或标准化 content blocks。 + token 来源的节点 metadata。 但要注意：不是所有模型都会以完全相同的方式输出 token。LangChain 会尽量把不同供应商的格式标准化。 --- ## 5. `custom`：工具内部进度 有些工具执行时间较长，例如： + 批量查询多个订单。 + 批量检索商品资料。 + 生成一份售后处理摘要。 + 调用外部服务等待返回。 这时可以让工具输出自定义进度。 概念上可以理解为： ```latex 工具开始执行 -> 已查询订单 -> 已查询物流 -> 已匹配售后政策 -> 工具返回最终结果 ``` 官方文档提醒：如果你在工具里使用 LangGraph 的 stream writer，这个工具就依赖 LangGraph 编译后的 graph 运行时上下文，不能随便脱离这个 graph 单独调用。 --- ## 6. 可运行 Demo：打印节点 state updates 下面使用 LangChain 提供的 Agent 构建函数 `create_agent` 为例，演示如何打印 `stream_mode="updates"` 返回的节点 state updates。 前提： + 已配置 `AGENT_OPENAI_API_KEY` + 已配置 `AGENT_OPENAI_BASE_URL` + 已配置 `AGENT_OPENAI_MODEL` ```python import os from langchain.agents import create_agent from langchain.tools import tool from langchain_openai import ChatOpenAI @tool def get_order_status(order_no: str) -> str: """根据订单号查询订单状态。""" return f"订单 {order_no} 已发货，物流状态为运输中。" model = ChatOpenAI( model=os.environ["AGENT_OPENAI_MODEL"], api_key=os.environ["AGENT_OPENAI_API_KEY"], base_url=os.environ["AGENT_OPENAI_BASE_URL"], temperature=0, ) agent = create_agent( model=model, tools=[get_order_status], system_prompt="你是电商客服助手。订单状态必须通过工具查询。", ) for chunk in agent.stream( {"messages": [{"role": "user", "content": "帮我查一下订单 20260001 的状态"}]}, stream_mode="updates", ): print(chunk) ``` 观察点： + 是否先出现模型节点更新。 + 模型节点里是否包含 tool call。 + 是否出现工具节点返回。 + 最后是否再次进入模型节点生成最终回答。 + 每个 chunk 是否按节点名组织，例如 `model`、`tools`。 + 节点名下面的内容是否是该节点写入 state 的字段，例如 `messages`。 --- ## 7. token 流和 state updates 不要混为一谈 <img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396371210-fb3ef54c-b910-42f6-9288-17e8e1459432.png" title="null" crop="0,0,1,1" id="Rfz4O" class="ne-image"> token 流与 state updates 对比图：这张图左右分栏。左侧是 `messages`，画出一个最终回复被拆成多个 token 或 content block；右侧是 `updates`，画出模型节点、工具节点、模型节点依次产生 state update，每个 update 按节点名包裹。中间标注两者可以同时使用，但数据本质不同：`messages` 是 token / message chunks，`updates` 是节点 state updates，可用于推断“任务执行到哪里”。 很多产品只做 token streaming，用户能看到文字逐步出现，但看不到 Agent 有没有查工具。对于有工具调用的业务系统，基于 state updates 展示执行过程通常同样重要。 建议： + 面向用户的聊天窗口展示最终回复 token。 + 面向客服或调试人员的侧边栏展示工具调用过程。 + 高风险工具调用不要把内部敏感参数完整展示给普通用户。 --- ## 8. 常见错误 ### 错误一：只展示最终答案 如果 Agent 要查询外部系统，只展示最终答案会降低信任。至少在内部调试或客服工作台显示工具调用过程。 ### 错误二：把所有内部信息都展示给用户 工具参数、系统提示词、权限信息、内部错误栈不应该原样暴露给用户。 ### 错误三：把 Streaming 当作性能优化 Streaming 改善的是感知体验和过程透明度，不一定让总耗时变短。 ### 错误四：把 `updates` 理解成普通进度条事件 `updates` 返回的是节点 state updates。你可以根据 `model`、`tools` 等节点更新推断执行过程，但不要把它理解成固定格式的百分比进度或普通 progress event。 --- ## 9. 本节知识框架总结 ```latex Streaming -> updates：每个 Agent / Graph step 后的节点 state updates，可用于展示执行过程 -> messages：LLM token / message chunks -> custom：自定义工具进度 -> 可以组合多个 stream_mode -> 展示过程要区分用户视角和内部调试视角 -> 不暴露敏感参数、系统提示词和内部错误栈 ``` ## 10. 本节小结 你需要记住： 1. Agent streaming 不只是文字逐字输出。 2. `updates` 返回节点 state updates，可用于展示执行过程；`messages` 用来看模型输出；`custom` 用来看自定义进度。 3. 有工具调用时，过程透明度会显著影响用户信任。 4. 流式展示要控制边界，不能暴露敏感内部信息。 课后练习： 1. 把第 9 课的订单物流工具放进 agent，并用 `stream_mode="updates"` 打印节点 state updates。 2. 再用 `stream_mode="messages"` 观察最终回答 token。 3. 设计一个客服工作台里“AI 正在查询订单”的展示文案。 4. 列出哪些 streaming 信息不应该展示给普通用户。
+# Streaming：让用户看到回复和执行过程正在发生
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396370443-e2ca56db-c49b-4b73-ab11-6c9b3c429fe1.png" title="null" crop="0,0,1,1" id="RBtgL" class="ne-image">
+
+本节总览图：这张图从左到右画出 `用户问题 -> Agent stream -> 前端或命令行展示`，中间分三条流：`updates` 返回每个 Agent / Graph step 后的节点 state updates，例如 `{"model": {"messages": [...]}}`、`{"tools": {"messages": [...]}}`，这些更新可用于展示模型节点和工具节点的执行过程；`messages` 显示 token 和消息块；`custom` 显示工具自定义进度。图中要强调 streaming 不是只让文字一个字一个字出现，还可以展示 Agent 正在调用哪个工具、工具是否完成。
+
+## 课程目标
+
+学完这一节，你应该能说清：
+- Streaming 为什么影响 Agent 用户体验。
+- LangChain 支持哪些 `stream_mode`。
+- `updates`、`messages`、`custom` 分别适合展示什么。
+- token streaming 和节点 state updates 的区别。
+- 工具调用流式展示时应该看哪些事件。
+- 为什么不是所有内部过程都应该展示给用户。
+
+---
+
+## 1. 为什么需要 Streaming Agent 和普通聊天最大的体验差异是：Agent 可能要做事。 比如用户问：
+
+```latex
+帮我查一下订单 20260001 的物流，再看一下如果今天不到能不能退运费。
+```
+
+系统可能经历：
+
+```latex
+理解问题 -> 查询订单 -> 查询物流 -> 检索售后政策 -> 汇总回答
+```
+
+如果界面一直空白，用户会觉得系统卡住了。Streaming 的目标是让用户知道：
+- 模型正在生成回复。
+- Agent 正在查询订单。
+- 工具调用已经完成。
+- 当前还在等待哪个环节。
+
+---
+
+## 2. 官方支持的 stream_mode LangChain streaming 文档中常用的模式有：
+
+| stream_mode | 作用 |
+| --- | --- |
+| `updates` | 流式输出每个 Agent / Graph step 后的 state updates，返回值按节点名组织，例如 `{"model": {"messages": [...]}}` |
+| `messages` | 流式输出 LLM token、消息块和相关 metadata |
+| `custom` | 输出自定义进度信息，比如工具内部进度 | 你可以只用一个模式，也可以组合多个模式。
+
+```python
+for chunk in agent.stream({'messages': [{'role': 'user', 'content': '查询订单 20260001 的物流'}]}, stream_mode='updates'):
+    print(chunk)
+```
+
+或者：
+
+```python
+for chunk in agent.stream({'messages': [{'role': 'user', 'content': '查询订单 20260001 的物流'}]}, stream_mode=['messages', 'updates']):
+    print(chunk)
+```
+
+上面的写法使用默认流式输出格式，适合基础课练习。LangGraph `>= 1.1` 支持传入 `version="v2"` 得到统一的 `StreamPart` 格式；如果你使用的是新版 LangGraph，可以按官方文档打开这个选项。
+
+---
+
+## 3. `updates`：看节点 state updates
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396371570-fc493933-2f26-42f7-9ab8-67d58582301e.png" title="null" crop="0,0,1,1" id="GEdw2" class="ne-image">
+
+updates state updates 图：这张图画出 `model node -> tools node -> model node` 的执行路径。每个节点下方画一条 state update，模型节点返回类似 `{"model": {"messages": [AIMessage(...)]}}`，其中可能包含 tool call；工具节点返回类似 `{"tools": {"messages": [ToolMessage(...)]}}`；最后模型节点再返回最终 `AIMessage`。箭头要强调 updates 的本质是节点对 state 的更新，不是逐 token 文本，也不是独立的进度条事件。
+`updates` 的关键是：
+
+```latex
+节点执行完成 -> 节点返回 state update -> stream 把这个 update 按节点名发出来
+```
+
+在默认格式里，单一 `stream_mode="updates"` 通常会直接返回节点更新，例如：
+
+```python
+{'model': {'messages': [...]}}
+```
+
+如果工具节点执行完成，则可能看到：
+
+```python
+{'tools': {'messages': [...]}}
+```
+
+如果使用 LangGraph `>= 1.1` 并传入 `version="v2"`，chunk 会进入统一的 `StreamPart` 格式，通常包含 `type` 和 `data` 字段。基础课先按默认格式理解。
+所以更严谨地说：`updates` 返回的是 **节点级 state updates**。这些更新常被用来展示 Agent 执行过程，但它本身不是普通意义上的 progress event。
+`updates` 适合展示：
+- 模型是否决定调用工具。
+- 调用了哪个工具。
+- 工具是否返回结果。
+- Agent 是否进入下一轮模型调用。
+这对客服工作台很重要。人工客服不只想看到最后答案，也想知道 AI 是否真的查了订单，而不是编了一个物流状态。
+
+---
+
+## 4. `messages`：看模型 token 和消息块 `messages` 更接近普通聊天产品里的“打字机效果”。它会流式输出 LLM 生成的 token 或内容块，同时带上 metadata。 适合展示：
+- 最终回复逐步出现。
+- 模型正在生成 tool call 参数。
+- reasoning 或标准化 content blocks。
+- token 来源的节点 metadata。
+但要注意：不是所有模型都会以完全相同的方式输出 token。LangChain 会尽量把不同供应商的格式标准化。
+
+---
+
+## 5. `custom`：工具内部进度 有些工具执行时间较长，例如：
+- 批量查询多个订单。
+- 批量检索商品资料。
+- 生成一份售后处理摘要。
+- 调用外部服务等待返回。
+这时可以让工具输出自定义进度。
+概念上可以理解为：
+
+```latex
+工具开始执行 -> 已查询订单 -> 已查询物流 -> 已匹配售后政策 -> 工具返回最终结果
+```
+
+官方文档提醒：如果你在工具里使用 LangGraph 的 stream writer，这个工具就依赖 LangGraph 编译后的 graph 运行时上下文，不能随便脱离这个 graph 单独调用。
+
+---
+
+## 6. 可运行 Demo：打印节点 state updates 下面使用 LangChain 提供的 Agent 构建函数 `create_agent` 为例，演示如何打印 `stream_mode="updates"` 返回的节点 state updates。 前提：
+- 已配置 `AGENT_OPENAI_API_KEY` + 已配置 `AGENT_OPENAI_BASE_URL` + 已配置 `AGENT_OPENAI_MODEL`
+
+```python
+import os from langchain.agents import create_agent from langchain.tools import tool from langchain_openai import ChatOpenAI @tool def get_order_status(order_no: str) -> str: """根据订单号查询订单状态。""" return f"订单 {order_no} 已发货，物流状态为运输中。" model = ChatOpenAI( model=os.environ["AGENT_OPENAI_MODEL"], api_key=os.environ["AGENT_OPENAI_API_KEY"], base_url=os.environ["AGENT_OPENAI_BASE_URL"], temperature=0, ) agent = create_agent( model=model, tools=[get_order_status], system_prompt="你是电商客服助手。订单状态必须通过工具查询。", ) for chunk in agent.stream( {"messages": [{"role": "user", "content": "帮我查一下订单 20260001 的状态"}]}, stream_mode="updates", ): print(chunk)
+```
+
+观察点：
+- 是否先出现模型节点更新。
+- 模型节点里是否包含 tool call。
+- 是否出现工具节点返回。
+- 最后是否再次进入模型节点生成最终回答。
+- 每个 chunk 是否按节点名组织，例如 `model`、`tools`。
+- 节点名下面的内容是否是该节点写入 state 的字段，例如 `messages`。
+
+---
+
+## 7. token 流和 state updates 不要混为一谈
+
+<img src="https://cdn.nlark.com/yuque/0/2026/png/28539630/1783396371210-fb3ef54c-b910-42f6-9288-17e8e1459432.png" title="null" crop="0,0,1,1" id="Rfz4O" class="ne-image">
+
+token 流与 state updates 对比图：这张图左右分栏。左侧是 `messages`，画出一个最终回复被拆成多个 token 或 content block；右侧是 `updates`，画出模型节点、工具节点、模型节点依次产生 state update，每个 update 按节点名包裹。中间标注两者可以同时使用，但数据本质不同：`messages` 是 token / message chunks，`updates` 是节点 state updates，可用于推断“任务执行到哪里”。
+很多产品只做 token streaming，用户能看到文字逐步出现，但看不到 Agent 有没有查工具。对于有工具调用的业务系统，基于 state updates 展示执行过程通常同样重要。
+建议：
+- 面向用户的聊天窗口展示最终回复 token。
+- 面向客服或调试人员的侧边栏展示工具调用过程。
+- 高风险工具调用不要把内部敏感参数完整展示给普通用户。
+
+---
+
+## 8. 常见错误
+
+### 错误一：只展示最终答案 如果 Agent 要查询外部系统，只展示最终答案会降低信任。至少在内部调试或客服工作台显示工具调用过程。
+
+### 错误二：把所有内部信息都展示给用户 工具参数、系统提示词、权限信息、内部错误栈不应该原样暴露给用户。
+
+### 错误三：把 Streaming 当作性能优化 Streaming 改善的是感知体验和过程透明度，不一定让总耗时变短。
+
+### 错误四：把 `updates` 理解成普通进度条事件 `updates` 返回的是节点 state updates。你可以根据 `model`、`tools` 等节点更新推断执行过程，但不要把它理解成固定格式的百分比进度或普通 progress event。
+
+---
+
+## 9. 本节知识框架总结
+
+```latex
+Streaming -> updates：每个 Agent / Graph step 后的节点 state updates，可用于展示执行过程 -> messages：LLM token / message chunks -> custom：自定义工具进度 -> 可以组合多个 stream_mode -> 展示过程要区分用户视角和内部调试视角 -> 不暴露敏感参数、系统提示词和内部错误栈
+```
+
+## 10. 本节小结 你需要记住：
+1. Agent streaming 不只是文字逐字输出。
+2. `updates` 返回节点 state updates，可用于展示执行过程；`messages` 用来看模型输出；`custom` 用来看自定义进度。
+3. 有工具调用时，过程透明度会显著影响用户信任。
+4. 流式展示要控制边界，不能暴露敏感内部信息。
+课后练习：
+1. 把第 9 课的订单物流工具放进 agent，并用 `stream_mode="updates"` 打印节点 state updates。
+2. 再用 `stream_mode="messages"` 观察最终回答 token。
+3. 设计一个客服工作台里“AI 正在查询订单”的展示文案。
+4. 列出哪些 streaming 信息不应该展示给普通用户。
