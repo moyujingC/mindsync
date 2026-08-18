@@ -19,6 +19,7 @@ from typing import Any
 from api.schemas import ChatRequest, HistoryMessage
 from config.settings import load_course_env, wecom_kf_config
 from integrations.wecom_kf.client import WecomKfClient
+from integrations.wecom_kf.collector import HumanReplyCollector
 from integrations.wecom_kf.crypto import WecomCryptoError, decrypt, verify_signature, verify_url as crypto_verify_url
 
 logger = logging.getLogger("wecom_kf")
@@ -36,6 +37,8 @@ class WecomKfHandler:
         self._lock = threading.Lock()
         self._seen_msgids: set[str] = set()
         self._history: dict[str, deque[HistoryMessage]] = {}
+        self._handoff: dict[str, str] = {}
+        self._collector = HumanReplyCollector()
 
     def _client_for(self, cfg: dict[str, Any]) -> WecomKfClient:
         if self._client is None:
@@ -93,6 +96,9 @@ class WecomKfHandler:
                 for msg in data.get("msg_list", []):
                     if msg.get("origin") == 3 and msg.get("msgtype") == "text":
                         self._handle_customer_text(client, msg)
+                    elif msg.get("origin") == 5 and msg.get("msgtype") == "text" and msg.get("servicer_userid"):
+                        # 人工在企业微信客户端回复客户的消息，收集作迭代素材
+                        self._handle_human_reply(msg)
                 if not data.get("has_more"):
                     break
                 cursor = data.get("next_cursor")
@@ -130,7 +136,40 @@ class WecomKfHandler:
         answer = response.answer
         if answer:
             client.send_text(open_kfid, external_userid, answer)
+        if response.session_state.get("next_action") == "transfer_to_human":
+            with self._lock:
+                self._handoff[session_id] = response.session_state.get("intent")
         with self._lock:
             hist = self._history.setdefault(session_id, deque(maxlen=_HISTORY_SIZE))
             hist.append(HistoryMessage(role="user", content=content))
             hist.append(HistoryMessage(role="assistant", content=answer))
+
+    def _handle_human_reply(self, msg: dict[str, Any]) -> None:
+        """收集人工回复：带会话历史快照与转人工意图，写 JSONL 供迭代。"""
+        msgid = msg.get("msgid", "")
+        with self._lock:
+            if msgid and msgid in self._seen_msgids:
+                return
+            if msgid:
+                self._seen_msgids.add(msgid)
+                if len(self._seen_msgids) > _SEEN_MSGID_LIMIT:
+                    self._seen_msgids.clear()
+        open_kfid = msg.get("open_kfid", "")
+        external_userid = msg.get("external_userid", "")
+        servicer_userid = msg.get("servicer_userid", "")
+        content = (msg.get("text") or {}).get("content", "")
+        if not content or not external_userid:
+            return
+        session_id = f"{open_kfid}:{external_userid}"
+        with self._lock:
+            history = [{"role": h.role, "content": h.content} for h in self._history.get(session_id, ())]
+            handoff_intent = self._handoff.get(session_id)
+        self._collector.record(
+            session_id=session_id,
+            open_kfid=open_kfid,
+            external_userid=external_userid,
+            servicer_userid=servicer_userid,
+            human_reply=content,
+            history=history,
+            handoff_intent=handoff_intent,
+        )

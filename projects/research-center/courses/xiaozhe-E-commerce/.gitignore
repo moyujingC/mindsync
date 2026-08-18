@@ -29,3 +29,6 @@ downloads/
 test-results/
 playwright-report/
 coverage/
+
+# WeCom Kf collected conversation data (privacy)
+agent-course-versions/project-b/backend/data/
