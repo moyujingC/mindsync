@@ -83,3 +83,18 @@ class WecomKfClient:
         data = self._post("/cgi-bin/kf/send_msg", payload)
         if data.get("errcode", 0) != 0:
             raise RuntimeError(f"send_msg 失败: {data}")
+
+    def transfer_to_servicer(self, open_kfid: str, external_userid: str, servicer_userid: str) -> None:
+        """把会话转给指定接待人员（service_state=3 由人工接待）。
+
+        注意：转人工后 API 不能再 send_msg，故需先发话术再调用本方法。
+        """
+        payload = {
+            "open_kfid": open_kfid,
+            "external_userid": external_userid,
+            "service_state": 3,
+            "servicer_userid": servicer_userid,
+        }
+        data = self._post("/cgi-bin/kf/service_state/trans", payload)
+        if data.get("errcode", 0) != 0:
+            raise RuntimeError(f"service_state/trans 失败: {data}")

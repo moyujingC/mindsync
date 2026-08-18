@@ -3,9 +3,9 @@
 链路：回调 POST 收到加密事件（kf_msg_or_event）-> 验签解密拿到 Token/OpenKfId
 -> 后台线程 sync_msg 拉取客户消息 -> agent.chat 生成回复 -> send_msg 回客户。
 
-注意：本阶段只发话术、不自动转人工。微信客服账号设为「通过 API 管理」后，
-人工在企微客户端看不到 API 接待的会话，转接需在企微后台手动操作，
-或后续补 service_state/trans 自动转接（TODO）。
+转人工：agent 判 transfer_to_human 时，先发话术，再调 service_state/trans
+自动转给配置的接待人员（WECOM_KF_SERVICER_USERID）；转人工后 agent 对该会话
+只收集消息、不再回复（由人工在企微客户端接手）。
 """
 
 from __future__ import annotations
@@ -38,6 +38,7 @@ class WecomKfHandler:
         self._seen_msgids: set[str] = set()
         self._history: dict[str, deque[HistoryMessage]] = {}
         self._handoff: dict[str, str] = {}
+        self._transferred: set[str] = set()
         self._collector = ConversationCollector()
 
     def _client_for(self, cfg: dict[str, Any]) -> WecomKfClient:
@@ -95,7 +96,7 @@ class WecomKfHandler:
                 data = client.sync_msg(kf_token, open_kfid, cursor)
                 for msg in data.get("msg_list", []):
                     if msg.get("origin") == 3 and msg.get("msgtype") == "text":
-                        self._handle_customer_text(client, msg)
+                        self._handle_customer_text(client, msg, cfg.get("servicer_userid"))
                     elif msg.get("origin") == 5 and msg.get("msgtype") == "text" and msg.get("servicer_userid"):
                         # 人工在企业微信客户端回复客户的消息，收集作迭代素材
                         self._handle_human_reply(msg)
@@ -105,7 +106,7 @@ class WecomKfHandler:
         except Exception:
             logger.exception("微信客服消息处理失败")
 
-    def _handle_customer_text(self, client: WecomKfClient, msg: dict[str, Any]) -> None:
+    def _handle_customer_text(self, client: WecomKfClient, msg: dict[str, Any], servicer_userid: str | None) -> None:
         msgid = msg.get("msgid", "")
         with self._lock:
             if msgid and msgid in self._seen_msgids:
@@ -120,6 +121,16 @@ class WecomKfHandler:
         if not content or not external_userid:
             return
         session_id = f"{open_kfid}:{external_userid}"
+        if session_id in self._transferred:
+            # 已转人工，agent 只收集客户消息、不再回复，避免重复转接
+            self._collector.record(
+                sender="customer",
+                session_id=session_id,
+                open_kfid=open_kfid,
+                external_userid=external_userid,
+                content=content,
+            )
+            return
         with self._lock:
             history = list(self._history.get(session_id, ()))
         response = self._agent.chat(
@@ -153,6 +164,14 @@ class WecomKfHandler:
         if response.session_state.get("next_action") == "transfer_to_human":
             with self._lock:
                 self._handoff[session_id] = response.session_state.get("intent")
+            if servicer_userid:
+                # 先发话术（上方已 send_text），再转人工；转人工后 API 不能再发消息
+                try:
+                    client.transfer_to_servicer(open_kfid, external_userid, servicer_userid)
+                    with self._lock:
+                        self._transferred.add(session_id)
+                except Exception:
+                    logger.exception("自动转人工失败 session=%s", session_id)
         with self._lock:
             hist = self._history.setdefault(session_id, deque(maxlen=_HISTORY_SIZE))
             hist.append(HistoryMessage(role="user", content=content))

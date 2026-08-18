@@ -80,4 +80,5 @@ def wecom_kf_config() -> dict[str, Any]:
         "token": os.getenv("WECOM_KF_TOKEN", "").strip(),
         "aes_key": os.getenv("WECOM_KF_AES_KEY", "").strip(),
         "open_kfid": os.getenv("WECOM_KF_OPEN_ID", "").strip() or None,
+        "servicer_userid": os.getenv("WECOM_KF_SERVICER_USERID", "").strip() or None,
     }
