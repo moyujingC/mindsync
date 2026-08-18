@@ -1,0 +1,18 @@
+# Claude Code → DeepSeek 官方 API 的 LiteLLM 配置模板
+#
+# 实际运行配置由 shared/tools/claude-code-deepseek-proxy.mjs 根据
+# DeepSeek /models 的实时结果生成到 tmp/claude-code-deepseek/。
+# 本文件只记录安全边界和最小配置形状，不包含任何密钥。
+
+model_list:
+  - model_name: deepseek-model-from-live-catalog
+    litellm_params:
+      model: deepseek/deepseek-model-from-live-catalog
+      api_base: https://api.deepseek.com
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+litellm_settings:
+  drop_params: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

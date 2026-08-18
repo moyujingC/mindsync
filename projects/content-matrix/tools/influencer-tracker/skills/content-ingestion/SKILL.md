@@ -14,8 +14,8 @@ description: 将公开链接、授权手工文本或结构化内容安全入库�
 - 必填：`platform`、`url`、`title`。
 - 建议：`creatorName`、`externalId`、`publishedAt`、`description`、`contentType`。
 - 评论只在研究目的明确需要时提供；不得把评论正文放入标题或简介字段。
-- 清理后的转写稿使用 `refinedTextPath` 引用本地文件，不写入飞书正文。
-- 合法取得的本地音频或视频先经 `media:transcribe` 或 `media:process` 生成字幕和清理稿；不得由该组件下载平台媒体、上传原媒体，或将媒体正文写入飞书。
+- 清理后的转写稿使用 `refinedTextPath` 引用本地文件；L2 工作流完成后，清理稿可写入对应飞书内容原行的“文字稿”字段，供日常阅读。
+- 合法取得的本地音频或视频先经 `media:transcribe` 或 `media:process` 生成字幕和清理稿；不得由该组件上传原媒体或将原始媒体、完整 API 响应写入飞书。
 - 中文平台名会规范化为 TikHub 内部 ID；唯一键使用内部 ID，但去重兼容历史中文唯一键。
 
 ## 执行规则

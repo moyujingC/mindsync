@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Engineer
-> last_updated：2026-05-06
+> last_updated：2026-08-06
 > source_of_truth：projects/relayhub/tasks/README.md
 
 这里放 `RelayHub` 的实现计划和阶段任务。
@@ -21,6 +21,8 @@
 - 进入本目录前，先从 [PROJECT.md](../PROJECT.md) 与 [specs/README.md](../specs/README.md) 确认当前项目口径
 
 当前窗口任务链：
+
+- [2026-08-06-v1-VS-Code-Claude-Code-DeepSeek-官方直连接入实施任务.md](./2026-08-06-v1-VS-Code-Claude-Code-DeepSeek-官方直连接入实施任务.md)
 
 - [2026-04-27-v1-VS-Code-Claude-Code-主路径收口实施任务.md](./2026-04-27-v1-VS-Code-Claude-Code-主路径收口实施任务.md)
 - [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化实施任务.md](./2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化实施任务.md)

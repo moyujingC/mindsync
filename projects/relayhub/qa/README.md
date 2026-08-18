@@ -3,7 +3,7 @@
 > 状态：current
 > 版本：0.1.0
 > owner：Engineer
-> last_updated：2026-05-06
+> last_updated：2026-08-06
 > source_of_truth：projects/relayhub/qa/README.md
 
 
@@ -22,6 +22,8 @@
 - 若要判断当前窗口验证口径，优先看当前窗口 QA 链
 
 当前窗口 QA 链：
+
+- [2026-08-06-v1-VS-Code-Claude-Code-DeepSeek-官方直连接入-qa-basis.md](./2026-08-06-v1-VS-Code-Claude-Code-DeepSeek-官方直连接入-qa-basis.md)
 
 - [2026-04-27-v1-VS-Code-Claude-Code-主路径收口-qa-basis.md](./2026-04-27-v1-VS-Code-Claude-Code-主路径收口-qa-basis.md)
 - [2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化-qa-basis.md](./2026-04-27-v1-VS-Code-Claude-Code-环境注入模板化-qa-basis.md)
