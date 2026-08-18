@@ -15,6 +15,7 @@ from observability.trace import public_trace_summary, record_initial_chat_trace,
 from rag.knowledge import (
     concept_faq_result,
     crisis_result,
+    ethics_boundary_result,
     intake_collect_result,
     low_confidence_result,
     pricing_result,
@@ -122,6 +123,12 @@ class Lesson41Agent:
             risk_level: RiskLevel = "high"
             next_action: NextAction = "answer_user"
             needs_human_approval = False
+        elif intent == "ethics_boundary":
+            knowledge_result = ethics_boundary_result(request.session_id)
+            record_trace_events(request.session_id, knowledge_result.trace_events)
+            answer, citations = knowledge_result.answer, knowledge_result.citations
+            risk_level, next_action = knowledge_result.risk_level, knowledge_result.next_action
+            needs_human_approval = knowledge_result.needs_human_approval
         elif intent == "transfer_human":
             knowledge_result = transfer_human_result(request.session_id)
             record_trace_events(request.session_id, knowledge_result.trace_events)
@@ -383,7 +390,7 @@ class Lesson41Agent:
             skip_reason = "runtime_context_direct_answer"
         elif next_action == "ask_clarification":
             skip_reason = "clarification_required"
-        elif intent in {"security_request", "low_confidence_query", "crisis", "transfer_human", "intake_collect"}:
+        elif intent in {"security_request", "low_confidence_query", "crisis", "transfer_human", "intake_collect", "ethics_boundary"}:
             skip_reason = "safety_or_boundary"
         elif degraded:
             skip_reason = "degraded_path"

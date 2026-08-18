@@ -144,6 +144,32 @@ def transfer_human_result(session_id: str) -> KnowledgePathResult:
     )
 
 
+def ethics_boundary_result(session_id: str) -> KnowledgePathResult:
+    """伦理边界外：不诊断、不承诺疗效，明确拒绝并转人工。"""
+    answer = (
+        "我是一名 AI 接待助理，不做诊断，也不承诺疗效。"
+        "关于你的具体情况，建议你联系专业心理咨询师进行评估。"
+        "我可以帮你转人工，咨询师会在 24 小时内回复你。"
+    )
+    return KnowledgePathResult(
+        answer=answer,
+        citations=[],
+        risk_level="medium",
+        next_action="transfer_to_human",
+        needs_human_approval=False,
+        trace_events=(
+            (
+                "ethics_boundary_triggered",
+                {
+                    "session_id": session_id,
+                    "pending_action": "transfer_to_human",
+                    "status": "no_diagnosis_no_efficacy_promise",
+                },
+            ),
+        ),
+    )
+
+
 def crisis_result(session_id: str) -> KnowledgePathResult:
     """危机熔断：固定话术给求助方向，立即转人工，不进行任何干预。"""
     answer = (

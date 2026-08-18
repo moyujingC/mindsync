@@ -86,6 +86,7 @@ class RouteModelClient:
             "intake_collect",
             "transfer_human",
             "crisis",
+            "ethics_boundary",
             "low_confidence_query",
             "security_request",
             "unknown",

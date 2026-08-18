@@ -36,6 +36,17 @@ def classify_guard_intent(user_message: str) -> Intent | None:
     # 安全拦截：索取内部信息 / 注入攻击
     if any(term in user_message for term in ["系统提示词", "hidden reasoning", "隐藏推理", "工具 schema", "内部策略"]):
         return "security_request"
+    # 伦理边界：诊断请求 / 疗效承诺（不诊断、不承诺疗效红线，确定性转人工）
+    if any(
+        term in user_message
+        for term in [
+            "我是不是", "是不是得了", "是不是有", "确诊", "诊断",
+            "抑郁症", "焦虑症", "躁郁", "双相", "强迫症", "创伤后应激", "ptsd", "PTSD",
+            "能治好", "治得好", "治不好", "根治", "痊愈", "治愈", "疗效",
+            "有用吗", "有效吗", "管用吗", "见效",
+        ]
+    ):
+        return "ethics_boundary"
     # 明确转人工
     if any(
         term in user_message
@@ -95,6 +106,8 @@ def build_route_plan(
         risk_level = "high"
     elif intent == "security_request":
         risk_level = "high"
+    elif intent == "ethics_boundary":
+        risk_level = "medium"
     return RoutePlan(
         intent=intent,
         needs_rag=bool(knowledge_domains),

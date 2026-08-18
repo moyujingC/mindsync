@@ -32,6 +32,7 @@ class TraceEventNormalizer:
         "hook_executed": "hook",
         "prompt_security_blocked": "prompt",
         "rag_low_confidence_fallback": "rag",
+        "ethics_boundary_triggered": "hitl",
         "degradation_triggered": "degradation",
         "model_route_planned": "model",
         "model_answer_generated": "model",
