@@ -68,3 +68,16 @@ def openai_model_name() -> str:
 def embedding_model_name() -> str:
     """返回知识检索使用的真实 Embedding 模型名称。"""
     return os.getenv("AGENT_EMBEDDING_MODEL", "BAAI/bge-m3")
+
+
+def wecom_kf_config() -> dict[str, Any]:
+    """返回企业微信「微信客服」接入配置；缺关键项时 enabled=False。"""
+    enabled = os.getenv("WECOM_KF_ENABLED", "false").strip().lower() in {"1", "true", "yes", "on"}
+    return {
+        "enabled": enabled,
+        "corp_id": os.getenv("WECOM_KF_CORP_ID", "").strip(),
+        "secret": os.getenv("WECOM_KF_SECRET", "").strip(),
+        "token": os.getenv("WECOM_KF_TOKEN", "").strip(),
+        "aes_key": os.getenv("WECOM_KF_AES_KEY", "").strip(),
+        "open_kfid": os.getenv("WECOM_KF_OPEN_ID", "").strip() or None,
+    }

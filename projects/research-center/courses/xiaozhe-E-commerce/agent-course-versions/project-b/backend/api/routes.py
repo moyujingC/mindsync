@@ -4,18 +4,22 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 from agents.customer_service_agent import Lesson41Agent
 from api.schemas import *
 from config.settings import CASES_PATH, load_agent_capabilities
 from evals.runner import EvalRunner
 from feedback.attribution import FailureAttributor, build_backfilled_case
+from integrations.wecom_kf.crypto import WecomCryptoError
+from integrations.wecom_kf.handler import WecomKfHandler
 from observability.trace import trace_store
 from state.session_state import BACKFILLED_CASES, FEEDBACK_RECORDS
 
 agent = Lesson41Agent()
+wecom_handler = WecomKfHandler(agent)
 eval_runner = EvalRunner(agent, CASES_PATH)
 eval_runner.backfilled_cases = BACKFILLED_CASES
 failure_attributor = FailureAttributor()
@@ -82,3 +86,26 @@ def submit_feedback(request: FeedbackRequest) -> FeedbackSubmitResponse:
     )
     FEEDBACK_RECORDS.append(record)
     return FeedbackSubmitResponse(record=record, eval_report=eval_report)
+
+
+@app.get("/wecom/kf/callback")
+def wecom_kf_verify(msg_signature: str, timestamp: str, nonce: str, echostr: str) -> PlainTextResponse:
+    """企业微信「微信客服」回调 URL 验证：解密 echostr 原样回显。"""
+    try:
+        plain = wecom_handler.verify_url(msg_signature, timestamp, nonce, echostr)
+        return PlainTextResponse(plain)
+    except WecomCryptoError as exc:
+        return PlainTextResponse(str(exc), status_code=400)
+
+
+@app.post("/wecom/kf/callback")
+async def wecom_kf_event(request: Request) -> PlainTextResponse:
+    """企业微信「微信客服」消息事件回调：验签解密后后台处理，立即返回。"""
+    body = (await request.body()).decode("utf-8")
+    wecom_handler.handle_event(
+        body,
+        request.query_params.get("msg_signature", ""),
+        request.query_params.get("timestamp", ""),
+        request.query_params.get("nonce", ""),
+    )
+    return PlainTextResponse("success")
