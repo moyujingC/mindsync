@@ -19,7 +19,7 @@ from typing import Any
 from api.schemas import ChatRequest, HistoryMessage
 from config.settings import load_course_env, wecom_kf_config
 from integrations.wecom_kf.client import WecomKfClient
-from integrations.wecom_kf.collector import HumanReplyCollector
+from integrations.wecom_kf.collector import ConversationCollector
 from integrations.wecom_kf.crypto import WecomCryptoError, decrypt, verify_signature, verify_url as crypto_verify_url
 
 logger = logging.getLogger("wecom_kf")
@@ -38,7 +38,7 @@ class WecomKfHandler:
         self._seen_msgids: set[str] = set()
         self._history: dict[str, deque[HistoryMessage]] = {}
         self._handoff: dict[str, str] = {}
-        self._collector = HumanReplyCollector()
+        self._collector = ConversationCollector()
 
     def _client_for(self, cfg: dict[str, Any]) -> WecomKfClient:
         if self._client is None:
@@ -134,7 +134,21 @@ class WecomKfHandler:
             )
         )
         answer = response.answer
+        self._collector.record(
+            sender="customer",
+            session_id=session_id,
+            open_kfid=open_kfid,
+            external_userid=external_userid,
+            content=content,
+        )
         if answer:
+            self._collector.record(
+                sender="agent",
+                session_id=session_id,
+                open_kfid=open_kfid,
+                external_userid=external_userid,
+                content=answer,
+            )
             client.send_text(open_kfid, external_userid, answer)
         if response.session_state.get("next_action") == "transfer_to_human":
             with self._lock:
@@ -162,14 +176,13 @@ class WecomKfHandler:
             return
         session_id = f"{open_kfid}:{external_userid}"
         with self._lock:
-            history = [{"role": h.role, "content": h.content} for h in self._history.get(session_id, ())]
             handoff_intent = self._handoff.get(session_id)
         self._collector.record(
+            sender="human",
             session_id=session_id,
             open_kfid=open_kfid,
             external_userid=external_userid,
+            content=content,
             servicer_userid=servicer_userid,
-            human_reply=content,
-            history=history,
             handoff_intent=handoff_intent,
         )
