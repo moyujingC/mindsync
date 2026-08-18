@@ -163,7 +163,25 @@ stateDiagram-v2
 5. 真实渠道接入（冷启动，起号后一周内完成接入为验收点）
 6. 真实危机干预机制（只有熔断转介话术，词库需专业核验后才可上真实流量）
 
-## 7. 开放问题（带入 spec 阶段）
+## 7. 骨架实现蓝本（v0.3 决策）
+
+**蓝本：小哲电商客服 Agent 课程**（`projects/research-center/courses/xiaozhe-E-commerce/`），技术栈 LangChain 1.2 + LangGraph 1.1 + FastAPI + ChromaDB。
+
+- 技术选型与 framing 已定决策零冲突：框架级组装（非 Dify/RAGFlow 平台）、ChromaDB 单库起步
+- lesson-41（final-rehearsal）最终版模块化程度高，与五层骨架一一对应：`rag/` → L1-L3，`safety/` + `hooks/` → L4，`evals/` + `feedback/` → L5；另有 `workflows/`（状态机）、`observability/`（trace）、`models/router_client.py`（意图路由）
+- 模型默认走 OpenAI 兼容接口（硅基流动 Qwen 系列），嵌入默认 BGE-M3/Qwen3-Embedding，命中简报候选
+
+**改造路径 = 先改跑通**（复制删改，3-5 天验证骨架，求职前逐步重写替换）：
+
+1. 复制 lesson-41 → 项目 B 工作区
+2. 删电商 Tool 层：`integrations/ecommerce_client.py`、`tools/`、`mcp_catalog/`（项目 B 无实时业务事实）
+3. `workflows/after_sale_graph.py` 换成疗愈「初访→留资→转人工」流程
+4. 换语料：`rag/documents.py` + `rag/knowledge.py`（电商政策 → 疗愈产品/企业服务）
+5. 加护栏：`safety/source_guard.py` 加疗愈伦理红线（不诊断/不承诺疗效/危机熔断）
+
+改造映射精确清单在 spec 阶段固化为迁移任务清单。
+
+## 8. 开放问题（带入 spec 阶段）
 
 1. 技术选型对照实验的具体设计：同一份语料、同一批测试题，框架版 vs 平台版比什么指标
 2. 是否在 monorepo 建独立项目工作区：建议 spec 稳定后再建，前期工作物暂存 `ai-service-studio/specs/`
@@ -173,7 +191,7 @@ stateDiagram-v2
 6. B1/B2 共享骨架的组件边界划分：哪些组件进能力包、哪些留在场景适配层（architecture 阶段回答）
 7. 适配层初版内容：解读案子与工作流的介绍/价格/流程，届时以你指定的文档为 source of truth（内容可迭代，不阻塞骨架开发）
 
-## 8. 风险与联动检查点
+## 9. 风险与联动检查点
 
 **主要风险（不变）**：起号（项目 A）是所有变现线与真实流量线的共同瓶颈。项目 B 的工程价值不依赖流量，照常推进；若 A 长期停滞，B 将长期只有模拟流量。
 
@@ -185,7 +203,7 @@ stateDiagram-v2
 - 双场景并行推进时，骨架组件不要过早抽象——先让一条线跑通，再从两条线的重复中提取共享组件
 - 适配层内容会不断迭代，注意把「内容更新」和「骨架改版」分开管理：内容更新不触发骨架回归，避免每次改 FAQ 都重跑评测
 
-## 9. 下一步（SDD 流程）
+## 10. 下一步（SDD 流程）
 
 1. 本 framing 确认后，先跑通骨架：产出 B2 正式 spec（状态话术、初访字段、摘要 schema、评测集 v1 题目）
 2. 适配层初版内容由本人主导（解读案子/工作流的介绍、价格、流程，以指定文档为准），不阻塞骨架开发
