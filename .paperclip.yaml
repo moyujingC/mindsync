@@ -125,10 +125,6 @@ goals:
     projects:
       - "23e694d1-e3c2-4de7-aaa9-021d7651f1e1"
 
-  - id: "2b3c2d54-0d90-4cb7-bbc8-2d2b73a4c901"
-    title: "RelayHub能力建设"
-    projects:
-      - "relayhub"
 
 # Project 配置
 projects:
@@ -172,12 +168,6 @@ projects:
     repository: "https://github.com/MindSyncHub/mindsync"
     source_subdirectory: "projects/xinran-jobhunt"
 
-  - id: "relayhub"
-    name: "RelayHub"
-    goal_id: "2b3c2d54-0d90-4cb7-bbc8-2d2b73a4c901"
-    directory: "projects/relayhub"
-    repository: "https://github.com/MindSyncHub/mindsync"
-    source_subdirectory: "projects/relayhub"
 
 # 同步配置
 sync:

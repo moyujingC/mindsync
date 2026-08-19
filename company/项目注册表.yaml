@@ -1,5 +1,5 @@
 version: 0.1.0
-last_updated: 2026-08-05
+last_updated: 2026-08-20
 source_of_truth: company/项目注册表.yaml
 description: >
   知行工坊公司对象注册表。这里是公司内项目、共享能力与品牌/IP 对象的唯一权威清单；
@@ -119,20 +119,6 @@ objects:
       - "承接跨项目研究、方法论沉淀与知识资产治理"
       - "作为多个 Agent 的共享能力底座"
       - "为各产品项目提供可复用洞察和研究输入"
-
-  - id: "relayhub"
-    name: "RelayHub"
-    slug: "relayhub"
-    kind: "capability"
-    status: "active"
-    goal: "模型接入、评测与优化决策能力建设"
-    company_entry: "company/projects/RelayHub/PROJECT.md"
-    workspace_entry: "projects/relayhub/PROJECT.md"
-    runtime_directory: "projects/relayhub"
-    purpose:
-      - "承接公司级共享模型接入、路由与观测能力建设"
-      - "提供个人开发版 relay、产品生产版 relay 与旁路 eval 的统一底座"
-      - "为中转站续费决策、国产模型替代判断和任务级优化提供正式评测入口"
 
   - id: "automation-platform"
     name: "Automation Platform"
