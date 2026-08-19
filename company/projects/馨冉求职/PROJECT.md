@@ -72,9 +72,9 @@
 当前阶段的执行细节不在公司侧维护，默认进入项目工作区：
 
 - [projects/xinran-jobhunt/PROJECT.md](../../../projects/xinran-jobhunt/PROJECT.md)
-- [AI 产品经理版中文简历](../../../projects/xinran-jobhunt/崔兴-AI产品经理.md)
-- [AI 转型咨询顾问版中文简历](../../../projects/xinran-jobhunt/崔兴-AI转型咨询顾问.md)
-- [FDE 版中文简历](../../../projects/xinran-jobhunt/崔兴-FDE.md)
+- AI 产品经理版中文简历
+- AI 转型咨询顾问版中文简历
+- FDE 版中文简历
 - [个人职业叙事作品集网站](../../../projects/xinran-jobhunt/个人职业叙事作品集网站/README.md)
 
 当前不再在仓库内维护投递台账、岗位池或招聘平台操作材料，相关动作直接在外部招聘 App 中处理。

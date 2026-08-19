@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 深度拆解：Purpose —— 畅销书作家 Mark Manson 打造的“反共识” AI 人生教练
 
 **分析日期**：2026年5月12日

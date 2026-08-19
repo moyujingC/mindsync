@@ -1,3 +1,5 @@
+> 状态：historical-reference
+
 好的，请查收这份基于你曼陀罗画作的财富议题 Lite 报告。
 
 ***

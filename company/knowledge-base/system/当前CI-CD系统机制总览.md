@@ -153,7 +153,7 @@ MVP 链路当前使用：
 
 项目级 runbook 见：
 
-- [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](../../../projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+- projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md
 - [projects/aimandala/deploy/paperclip-automation/README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
 
 MVP 链路仍会通过 SSH 访问 dev / prod 目标机，但不依赖 automation 节点上的 self-hosted runner 执行 CI。
@@ -318,4 +318,4 @@ MVP 链路没有 Paperclip 状态流。MVP 链路的状态先看 GitHub Actions 
   - 历史任务文件名：`2026-04-12-ci-cd-实施计划.md`
     入口见 [projects/aimandala/docs/tasks/README.md](../../../projects/aimandala/docs/tasks/README.md)
 - 运维手册：
-  - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](../../../projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+  - projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md

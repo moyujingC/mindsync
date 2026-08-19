@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 25 课代码：TaskPlanner 与 RoutePlan
 
 这一版在 Tool、RAG、Hooks 和 MCP 之后加入 TaskPlanner。它先生成 `RoutePlan`，判断本轮要走 RAG、Tool、Tool + RAG，还是把高风险售后请求分流给后续受控路径；轻路径执行读取小哲电商后端和页面运行时上下文里的真实业务事实。

@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 曼陀罗财富议题解读：当外放的能量被切分
 
 ## 画面证据总览

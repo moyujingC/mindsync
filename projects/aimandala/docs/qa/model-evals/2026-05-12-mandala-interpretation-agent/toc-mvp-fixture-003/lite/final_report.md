@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 你的曼陀罗解读报告
 
 你好，感谢你分享了这幅用心绘制的曼陀罗。

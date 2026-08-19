@@ -45,15 +45,15 @@
 - [2026-04-19-server-automation-task-template-semantics-repair-plan.md](./2026-04-19-server-automation-task-template-semantics-repair-plan.md)
 - [2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md](./2026-04-19-server-automation-workspace-materialization-diagnosis-plan.md)
 - [2026-04-19-paperclip-native-execution-routing-plan.md](./2026-04-19-paperclip-native-execution-routing-plan.md)
-- [2026-04-16-mvp-上线前质量收口总任务草案.md](./2026-04-16-mvp-上线前质量收口总任务草案.md)
-- [2026-04-16-ci-cd-临时运营口径-runbook.md](./2026-04-16-ci-cd-临时运营口径-runbook.md)
-- [2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md](./2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md)
-- [2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md](./2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md)
-- [2026-04-13-miniapp-gray-checklist.md](./2026-04-13-miniapp-gray-checklist.md)
-- [2026-04-13-miniapp-gray-config-manifest.md](./2026-04-13-miniapp-gray-config-manifest.md)
-- [2026-04-13-paperclip-automation-节点实施计划.md](./2026-04-13-paperclip-automation-节点实施计划.md)
-- [2026-04-12-ci-cd-实施计划.md](./2026-04-12-ci-cd-实施计划.md)
-- [2026-04-12-v22-knowledge-workbench-execution-plan.md](./2026-04-12-v22-knowledge-workbench-execution-plan.md)
+- 2026-04-16-mvp-上线前质量收口总任务草案.md
+- 2026-04-16-ci-cd-临时运营口径-runbook.md
+- 2026-04-14-mvp-公开首发收口与小程序渐进并入实施计划.md
+- 2026-04-15-miniapp-batch-e-真实微信宿主与独立购买收束实施计划.md
+- 2026-04-13-miniapp-gray-checklist.md
+- 2026-04-13-miniapp-gray-config-manifest.md
+- 2026-04-13-paperclip-automation-节点实施计划.md
+- 2026-04-12-ci-cd-实施计划.md
+- 2026-04-12-v22-knowledge-workbench-execution-plan.md
 
 说明：
 

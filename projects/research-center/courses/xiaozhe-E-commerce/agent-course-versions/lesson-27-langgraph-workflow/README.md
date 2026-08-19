@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 27 课代码：LangGraph 售后工作流
 
 这一版把高风险售后从自由 Agent 路径里拆出来，用 LangGraph `StateGraph` 固定节点顺序，并在节点里读取小哲电商后端和运行时上下文里的真实订单、物流事实。

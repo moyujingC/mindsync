@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # foundation_image_reading 审核运行索引
 
 > 生成日期：2026-05-22

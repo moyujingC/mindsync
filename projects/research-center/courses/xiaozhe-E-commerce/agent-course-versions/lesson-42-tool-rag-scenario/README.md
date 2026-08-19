@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 42 课代码说明：Tool 与 RAG 场景验证
 
 本课不新增 Agent 能力，复用第 41 课综合演练版：

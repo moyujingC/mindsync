@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 财富议题：价值酝酿中的流动试探
 
 ## 画面证据总览

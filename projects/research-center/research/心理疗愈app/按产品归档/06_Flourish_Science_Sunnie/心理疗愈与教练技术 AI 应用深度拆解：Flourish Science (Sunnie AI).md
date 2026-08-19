@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 心理疗愈与教练技术 AI 应用深度拆解：Flourish Science (Sunnie AI)
 
 > **分析日期**：2026年5月21日  

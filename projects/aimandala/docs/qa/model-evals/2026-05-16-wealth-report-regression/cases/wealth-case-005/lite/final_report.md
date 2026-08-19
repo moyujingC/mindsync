@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 曼陀罗解读报告：财富议题
 
 ## 一、画面速写

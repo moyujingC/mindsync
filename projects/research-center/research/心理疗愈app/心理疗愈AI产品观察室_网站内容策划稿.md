@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 心理疗愈 AI 产品观察室：网站内容策划稿
 
 > 用途：供 Figma Make、v0、Lovable 等工具生成网站原型时使用。  

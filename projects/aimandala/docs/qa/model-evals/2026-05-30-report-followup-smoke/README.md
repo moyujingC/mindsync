@@ -1,3 +1,7 @@
+> 状态：current
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # Report Followup Smoke
 
 ## Summary

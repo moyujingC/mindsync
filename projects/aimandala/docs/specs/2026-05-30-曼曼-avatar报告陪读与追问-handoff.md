@@ -130,7 +130,7 @@
 - [04-Lite-Pro报告分流与交付口径.md](../疗愈体系知识库/30-应用适配/10-aimandala/04-Lite-Pro报告分流与交付口径.md)：Lite / Pro 关系和交付边界。
 - [07-报告语言风格指南.md](../疗愈体系知识库/30-应用适配/10-aimandala/07-报告语言风格指南.md)：报告应像稳定、有经验的疗愈师陪用户看画，但不诊断、不承诺疗愈。
 - [10-aimandala-解读报告生成最小包.md](../疗愈体系知识库/60-运行时知识包/10-aimandala-解读报告生成最小包.md)：报告生成运行时最小包。
-- [2026-04-05-pro-report-chat-minimum-boundary.md](../../notes/2026-04-05-pro-report-chat-minimum-boundary.md)：Pro report chat 的最小边界，即围绕本次报告解释、追问和温和延展。
+- 2026-04-05-pro-report-chat-minimum-boundary.md：Pro report chat 的最小边界，即围绕本次报告解释、追问和温和延展。
 
 ### 4.3 当前相关实现文件
 
@@ -139,8 +139,8 @@
 - [quality_gate.py](../toC/app/backend/app/core/mandala_interpretation_agent/quality_gate.py)：当前报告质量门。
 - [protocol.py](../toC/app/backend/app/core/safety/protocol.py)：当前 safety 协议入口。
 - [routes.py](../toC/app/backend/app/api/routes.py)：当前 API 路由。
-- [pro-report-prompt.md](../toC/app/backend/app/core/mandala_interpretation_agent/prompt_packs/topic-report-v1.0.0/pro-report-prompt.md)：Pro 报告输出 prompt。
-- [lite-report-prompt.md](../toC/app/backend/app/core/mandala_interpretation_agent/prompt_packs/topic-report-v1.0.0/lite-report-prompt.md)：Lite 报告输出 prompt。
+- [pro-report-prompt.md](../../toC/app/backend/app/core/mandala_interpretation_agent/prompt_packs/topic-report-v1.0.0/pro-report-prompt.md)：Pro 报告输出 prompt。
+- [lite-report-prompt.md](../../toC/app/backend/app/core/mandala_interpretation_agent/prompt_packs/topic-report-v1.0.0/lite-report-prompt.md)：Lite 报告输出 prompt。
 
 ## 5. 下游任务定义
 

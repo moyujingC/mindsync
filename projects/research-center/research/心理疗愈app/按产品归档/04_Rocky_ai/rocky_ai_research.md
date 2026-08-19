@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # Rocky.ai 深度调研笔记
 
 ## 1. 核心定位与卖点

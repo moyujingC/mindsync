@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 财富议题：当承载变成了惯性，价值需要更轻地流向世界
 
 ## 画面证据总览

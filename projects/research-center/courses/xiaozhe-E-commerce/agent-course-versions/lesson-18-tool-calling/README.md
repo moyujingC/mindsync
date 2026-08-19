@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 18 课代码：Tool Calling
 
 这一版把第 17 课的真实业务事实服务包装成 LangChain 工具箱，让 Agent 用 `create_agent` 生成明确的 Action / Observation，查询订单物流、商品库存和退款进度。第 16/17 课已经完成的稳定知识 RAG 仍然保留：活动规则、售后规则这类非实时问题继续走 Hybrid RAG 和 citations。

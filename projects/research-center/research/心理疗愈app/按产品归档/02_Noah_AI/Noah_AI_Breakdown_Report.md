@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 心理疗愈 AI 应用深度拆解报告：Noah AI (heynoah.ai)
 
 ## 1. 产品概述与核心卖点

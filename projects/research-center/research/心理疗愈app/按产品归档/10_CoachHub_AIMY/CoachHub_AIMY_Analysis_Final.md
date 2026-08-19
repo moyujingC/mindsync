@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # AI 心理疗愈与教练技术应用深度拆解：CoachHub AIMY™
 
 > **分析日期**：2026年3月24日

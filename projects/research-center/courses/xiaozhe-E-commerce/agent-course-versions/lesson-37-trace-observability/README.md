@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 37 课代码：Trace 可观测
 
 这一版在第八幕安全边界之后增加公开 Trace。Agent 会保留前序 Workflow/HITL/`/chat/resume` 能力，并把 Runtime Context、Context、Tool、RAG、Workflow/HITL、Hooks 和 Cost 记录成 `trace_event_v1`，供调试和评测复盘。

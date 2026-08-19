@@ -1,3 +1,7 @@
+> 状态：current
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # BOSS 长图简历
 
 三张 PNG 均由当前 active 附件简历生成，适合在 BOSS 直聘聊天中作为图片附件发送：

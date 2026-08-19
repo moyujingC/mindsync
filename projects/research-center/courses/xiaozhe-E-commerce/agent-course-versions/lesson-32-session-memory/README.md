@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 32 课代码：Session Memory
 
 这一版给 Agent 加上短期 Session Memory。它只记当前会话里已经被业务系统确认过的最近订单、最近商品、最近意图和低风险偏好；手机号、地址、审批令牌、系统提示词请求和用户自称不会写入记忆。第 31 课已经完成的 Workflow/HITL/Resume 继续保留，Memory 只能辅助消歧，不能覆盖 checkpoint、resume_token 和冻结字段。

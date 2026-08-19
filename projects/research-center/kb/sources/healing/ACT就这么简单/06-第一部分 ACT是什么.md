@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第一部分 ACT是什么
 
 > 来源：ACTJiu Zhe Yao Jian Dan _Jie Na Cheng Nuo Liao Fa Jian Ming Shi Cao Shou Ce (Yuan Shu Di 2Ban )_split_005.html

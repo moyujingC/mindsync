@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 24 课代码：MCP 与 Tool Use
 
 第 24 课只以本目录里的独立课程快照作为观察路径。

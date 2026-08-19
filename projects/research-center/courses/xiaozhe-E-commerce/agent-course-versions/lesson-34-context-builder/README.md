@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 34 课代码：Context Builder
 
 这一版保留 Workflow/HITL/Resume，并把用户消息、Runtime Context、Session Memory、工具 Observation、RAG 片段和 Workflow State 放进 Context Builder。每个上下文片段都带来源、可信度、是否允许进入模型，以及遇到冲突时的处理决定。

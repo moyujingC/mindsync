@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 每日AI心理疗愈应用拆解：Ash (Slingshot AI)
 
 **作者**：Manus AI

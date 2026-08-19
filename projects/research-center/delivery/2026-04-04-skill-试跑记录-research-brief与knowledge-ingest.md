@@ -25,7 +25,7 @@
 ## 2. 输出位置
 
 - [Skill 体系商业化与产品化边界研究 Brief](../tasks/2026-04-04-Skill体系商业化与产品化边界研究-brief.md)
-- [Claude Code 启发下的 Skill 与协作方法知识条目](../kb/2026-04-04-Claude-Code启发下的Skill与协作方法知识条目.md)
+- Claude Code 启发下的 Skill 与协作方法知识条目
 
 ## 3. 按 Skill 走的过程
 

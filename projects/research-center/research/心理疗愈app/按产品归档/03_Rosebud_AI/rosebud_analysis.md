@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 【每日 AI 心理应用拆解】Rosebud AI：从“数字日记”到“AI 心理导师”的进化
 
 ## 1. 产品定位与核心价值

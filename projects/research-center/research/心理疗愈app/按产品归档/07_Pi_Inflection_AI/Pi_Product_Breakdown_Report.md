@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # Pi (Inflection AI) 产品拆解报告
 
 ## 引言

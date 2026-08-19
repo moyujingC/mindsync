@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 38 课代码：Evaluation 回归评测
 
 这一版在公开 Trace 之上增加 `/eval/run`。Eval 会读取本课 `cases.yml`，调用真实 Agent 链路，再检查 `answer`、`tool_calls`、`citations`、`trace`、`session_state` 和 `workflow`。前序 Workflow/HITL/`/chat/resume` 继续保留，评测只是新增回归检查入口。

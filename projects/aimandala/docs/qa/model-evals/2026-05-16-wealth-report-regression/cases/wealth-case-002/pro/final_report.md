@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 财富议题：从紧绷守护到有序流动
 
 ## 画面证据总览

@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 2026 AI 心理疗愈/教练应用深度拆解报告：星云星空 (Xingyun Xingkong)
 
 > **拆解人：** Manus

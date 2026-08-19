@@ -1,3 +1,5 @@
+> 状态：historical-reference
+
 ### 画面识别与描述
 
 #### 三圈边界确认

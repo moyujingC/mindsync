@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # Yuna Health：重塑职场心理健康的 AI 疗愈先锋
 
 ## 产品概览与定位

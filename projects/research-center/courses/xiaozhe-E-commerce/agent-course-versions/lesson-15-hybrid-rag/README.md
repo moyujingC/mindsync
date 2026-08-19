@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 15 课代码：Hybrid RAG
 
 这一版代码把 RAG 检索拆成两层：`pre_retrieval_plan` 先判断知识场景并限制召回范围，`retrieve_knowledge` 再组合向量召回和关键词召回。它解决的是长尾售后词、规则关键词和相似场景混在一起时，单靠向量相似度不够稳的问题。

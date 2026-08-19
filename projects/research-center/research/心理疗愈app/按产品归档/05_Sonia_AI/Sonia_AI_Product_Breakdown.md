@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # Sonia AI 产品全方位拆解报告
 
 ## 1. 产品简介

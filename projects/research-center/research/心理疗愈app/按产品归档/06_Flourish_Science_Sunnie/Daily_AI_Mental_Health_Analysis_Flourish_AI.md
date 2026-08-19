@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 每日 AI 心理应用深度拆解：Flourish AI (Sunnie)
 
 在 AI 与心理疗愈结合的浪潮中，[Flourish Science](https://www.myflourish.ai/) 凭借其深厚的学术背景和“抗完美主义”的产品设计理念脱颖而出。其核心 AI 助手 **Sunnie** 被定位为用户的“24/7 心理健康与问责伙伴”，旨在通过积极心理学（Positive Psychology）的力量，帮助用户在快节奏的生活中建立心理韧性。

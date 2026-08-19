@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 心理疗愈 AI 产品观察室：Aimandala 技术反哺矩阵
 
 > 日期：2026-06-06  

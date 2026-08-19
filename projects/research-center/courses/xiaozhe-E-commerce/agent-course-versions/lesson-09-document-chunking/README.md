@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 09 课代码：文档切片与 Metadata
 
 这一版代码把上一课“粗读 Markdown 章节”的做法推进成规范化切片。

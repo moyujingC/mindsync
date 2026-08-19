@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 财富有生机的流动，但需要更稳定地接住
 
 ## 整体直觉

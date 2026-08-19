@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 20 课代码：ToolResult 与 Observation
 
 这一版从小哲电商后端和页面运行时上下文读取订单、物流、商品事实，再把工具内部返回的 `ToolResult` 压缩成 `Observation`，避免把原始 payload、完整物流轨迹、促销描述和其他不该进入回答上下文的字段直接塞回模型。稳定知识问题仍走 Hybrid RAG 和 citations，不伪装成工具 Observation。

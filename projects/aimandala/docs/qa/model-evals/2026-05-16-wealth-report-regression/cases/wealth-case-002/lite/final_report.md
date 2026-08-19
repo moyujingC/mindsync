@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 财富议题：在秩序保护下谨慎流动的曼陀罗解读
 
 **画面证据速写**

@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # AI心理疗愈与教练技术应用拆解报告：Rocky.ai
 
 ## 1. 产品概述

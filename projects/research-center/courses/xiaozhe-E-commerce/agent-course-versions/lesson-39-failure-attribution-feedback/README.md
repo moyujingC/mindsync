@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 39 课代码：失败归因与反馈闭环
 
 这一版在 Eval 基础上增加反馈提交和失败归因。用户差评会绑定同一会话的 Trace 和对应 Eval case，再归因到 Prompt、RAG、Tool、Context、Workflow 或测试期望。前序 Workflow/HITL/`/chat/resume` 继续保留，反馈闭环只是在事故之后补证据和回归 case。

@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # HA7CH AI Native School 🎓
 
 ![HA7CH School](assets/brand/ha7ch-school-logo.png)

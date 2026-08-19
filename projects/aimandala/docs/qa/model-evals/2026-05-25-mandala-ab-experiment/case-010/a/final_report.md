@@ -1,3 +1,5 @@
+> 状态：historical-reference
+
 好的，我们一起来看看这幅曼陀罗。
 
 ### 整体直觉

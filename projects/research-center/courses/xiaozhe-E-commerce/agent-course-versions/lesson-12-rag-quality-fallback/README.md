@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 12 课代码：RAG 质量评测与低置信兜底
 
 这一版代码沿用第 11 课已经出现的模型回答、`citations` 和 `cost_summary`，再补两件事：

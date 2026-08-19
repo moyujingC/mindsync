@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # @ha7ch/school
 
 一条命令把 [HA7CH AI Native School](https://school.ha7ch.com) 装进你的 Claude Code / Codex skill 目录。

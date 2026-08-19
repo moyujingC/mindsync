@@ -1,3 +1,5 @@
+> 状态：historical-reference
+
 好的，我们先一起看看这幅画。
 
 ### 整体直觉

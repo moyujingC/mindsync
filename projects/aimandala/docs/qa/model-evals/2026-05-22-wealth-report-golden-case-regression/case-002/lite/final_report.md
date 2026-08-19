@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 财富议题曼陀罗解读：行动与评估之间的资源流动
 
 **画面证据速写**

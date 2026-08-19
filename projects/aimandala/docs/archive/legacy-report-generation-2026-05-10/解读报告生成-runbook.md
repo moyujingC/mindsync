@@ -81,8 +81,8 @@
 
 正式入口：
 
-1. [../sources/知识库构建/三圈五行流派解读方法与步骤.md](../sources/知识库构建/三圈五行流派解读方法与步骤.md)
-2. [../specs/2026-05-10-三圈五行流派解读方法实施规格.md](../specs/2026-05-10-三圈五行流派解读方法实施规格.md)
+1. ../sources/知识库构建/三圈五行流派解读方法与步骤.md
+2. ../specs/2026-05-10-三圈五行流派解读方法实施规格.md
 
 方法层回答：
 
@@ -98,10 +98,10 @@
 
 正式入口：
 
-1. [../sources/知识库构建/README.md](../sources/知识库构建/README.md)
-2. [../sources/知识库构建/当前正式依据与使用说明.md](../sources/知识库构建/当前正式依据与使用说明.md)
-3. [../sources/知识库构建/运行时知识库文件清单.md](../sources/知识库构建/运行时知识库文件清单.md)
-4. [../sources/知识库构建/V2运行时映射清单.md](../sources/知识库构建/V2运行时映射清单.md)
+1. [../sources/知识库构建/README.md](../../../../README.md)
+2. ../sources/知识库构建/当前正式依据与使用说明.md
+3. ../sources/知识库构建/运行时知识库文件清单.md
+4. ../sources/知识库构建/V2运行时映射清单.md
 
 知识层回答：
 
@@ -116,10 +116,10 @@
 
 正式入口：
 
-1. [../sources/知识库构建/第13步Lite报告生成Prompt.md](../sources/知识库构建/第13步Lite报告生成Prompt.md)
-2. [../sources/知识库构建/第14步Pro报告生成Prompt.md](../sources/知识库构建/第14步Pro报告生成Prompt.md)
-3. [../sources/知识库构建/Lite报告写作规范.md](../sources/知识库构建/Lite报告写作规范.md)
-4. [../sources/知识库构建/Pro报告写作规范.md](../sources/知识库构建/Pro报告写作规范.md)
+1. ../sources/知识库构建/第13步Lite报告生成Prompt.md
+2. ../sources/知识库构建/第14步Pro报告生成Prompt.md
+3. ../sources/知识库构建/Lite报告写作规范.md
+4. ../sources/知识库构建/Pro报告写作规范.md
 5. `projects/aimandala/toC/app/backend/app/core/prompt/builder_v2.py`
 
 prompt 层回答：
@@ -214,7 +214,7 @@ prompt 层回答：
 
 ### 5.4 旧链路混入
 
-先跑 [../qa/2026-05-10-三圈五行流派解读方法实施QA基线.md](../qa/2026-05-10-三圈五行流派解读方法实施QA基线.md) 里的 legacy keyword gate（旧链路关键词门禁）。
+先跑 ../qa/2026-05-10-三圈五行流派解读方法实施QA基线.md 里的 legacy keyword gate（旧链路关键词门禁）。
 
 预期结果：除 QA 基线明确允许的例外文件外，active 默认路径无命中。
 
@@ -263,7 +263,7 @@ PYTHONPATH=projects/aimandala/toC/app/backend pytest -q \
 
 ## 9. 相关入口
 
-1. 方法真值源：[../sources/知识库构建/三圈五行流派解读方法与步骤.md](../sources/知识库构建/三圈五行流派解读方法与步骤.md)
-2. 实施规格：[../specs/2026-05-10-三圈五行流派解读方法实施规格.md](../specs/2026-05-10-三圈五行流派解读方法实施规格.md)
-3. QA 基线：[../qa/2026-05-10-三圈五行流派解读方法实施QA基线.md](../qa/2026-05-10-三圈五行流派解读方法实施QA基线.md)
-4. 知识资料入口：[../sources/知识库构建/README.md](../sources/知识库构建/README.md)
+1. 方法真值源：../sources/知识库构建/三圈五行流派解读方法与步骤.md
+2. 实施规格：../specs/2026-05-10-三圈五行流派解读方法实施规格.md
+3. QA 基线：../qa/2026-05-10-三圈五行流派解读方法实施QA基线.md
+4. 知识资料入口：[../sources/知识库构建/README.md](../../../../README.md)

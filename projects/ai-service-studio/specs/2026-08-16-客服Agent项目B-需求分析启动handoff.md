@@ -1,3 +1,7 @@
+> 状态：current
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 客服 Agent 项目（项目 B）需求分析启动 Handoff
 
 > 日期：2026-08-16

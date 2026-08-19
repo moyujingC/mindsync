@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 财富议题：层层叠叠的花环里，谁在替你承受重量
 
 ## 画面证据总览

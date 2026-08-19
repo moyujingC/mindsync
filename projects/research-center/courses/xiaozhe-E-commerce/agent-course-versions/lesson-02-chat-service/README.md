@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 02 课代码：Agent 对话接口｜`/chat` 后端服务
 
 这一版代码只验证一件事：小哲电商客服 Agent 已经有了稳定的 `/chat` 入口。电商系统或独立的小哲电商客服 Agent 调试后台，都可以通过 `http://localhost:8000/chat` 调用这一版 Agent。

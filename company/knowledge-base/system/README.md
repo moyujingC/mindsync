@@ -46,7 +46,7 @@
 如果你要理解当前 checkout / worktree 是否真正形成长期治理闭环，除了项目级 runbook 外，还应配合看：
 
 - [projects/aimandala/docs/specs/2026-05-03-observe-only-checkout-治理规格.md](../../../projects/aimandala/docs/specs/2026-05-03-observe-only-checkout-治理规格.md)
-- [projects/aimandala/docs/runbooks/2026-05-03-observe-only-checkout-治理-runbook.md](../../../projects/aimandala/docs/runbooks/2026-05-03-observe-only-checkout-治理-runbook.md)
+- projects/aimandala/docs/runbooks/2026-05-03-observe-only-checkout-治理-runbook.md
 
 ## 3. 推荐阅读顺序
 

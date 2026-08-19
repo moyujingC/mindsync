@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 财富议题：内在价值已具色彩，现实交换却显谨慎
 
 ## 画面证据速写

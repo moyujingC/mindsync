@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 35 课代码：上下文压缩与 Sliding Window
 
 这一版保留 Workflow/HITL/Resume，并在 Context Builder 之后增加压缩和窗口选择。它保留可信系统上下文、当前订单工具事实、RAG 政策片段和 workflow 状态；最近消息通过 Sliding Window 保留；中间历史如果命中当前订单号，也会因为相关性被保留。

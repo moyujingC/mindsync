@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 10 课代码：Embedding 与向量检索
 
 这一版代码让小哲电商 Agent 第一次用“向量相似度”检索知识片段。

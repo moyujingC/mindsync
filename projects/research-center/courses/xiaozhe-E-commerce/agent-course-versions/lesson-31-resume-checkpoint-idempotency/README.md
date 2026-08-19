@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 31 课代码：Resume、Checkpoint 与幂等
 
 这一版在 HITL 暂停点保存 checkpoint，并开放 `/chat/resume`。恢复时必须校验 `workflow_id`、`resume_token`、冻结字段、业务事实二次校验和幂等键。

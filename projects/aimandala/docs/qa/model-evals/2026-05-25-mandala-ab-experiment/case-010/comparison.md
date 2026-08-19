@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # case-010 A/B 对照
 
 - 案例：case-010 【案例10】 用五行感知法+相生相克法解读财富提升（完整解读）

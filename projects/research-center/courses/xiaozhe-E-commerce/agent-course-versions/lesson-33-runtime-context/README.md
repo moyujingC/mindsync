@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 33 课代码：Runtime Context
 
 这一版在保留 Workflow/HITL/Resume 的基础上，把用户身份、会员等级、风险等级和页面上下文放进可信 Runtime Context。用户在消息里自称 VIP 只能算用户文本，不能覆盖系统登录态。

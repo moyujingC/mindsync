@@ -1,3 +1,5 @@
+> 状态：historical-reference
+
 好的，请看这份为你准备的财富议题解读报告。
 
 ***

@@ -1,3 +1,5 @@
+> 状态：historical-reference
+
 好的，我们一起从这张画里看看你的财富状态。
 
 ---

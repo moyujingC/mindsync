@@ -146,7 +146,7 @@
 
 - 文档：
   - [projects/aimandala/deploy/paperclip-automation/README.md](../../../../projects/aimandala/deploy/paperclip-automation/README.md)
-  - [projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md](../../../../projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md)
+  - projects/aimandala/docs/tasks/2026-04-10-服务器部署与运维手册.md
   - 需要时补到 [company/Paperclip-Agent-模型配置总表.md](../../../../company/Paperclip-Agent-模型配置总表.md) 或系统知识库
 - 配置：
   - 如后续决定显式版本钉住，需要补充 `Paperclip` 主仓 tag / ref 口径

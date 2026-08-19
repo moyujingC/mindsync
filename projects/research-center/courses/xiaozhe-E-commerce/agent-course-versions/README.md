@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 小哲电商 Agent 生死局代码快照目录
 
 本目录保存“小哲电商 Agent 生死局”课程里的每个 Agent 版本快照。发布后，本目录位于发布包根目录的 `code/agent-course-versions/`。代码快照只放当前 lesson 的 Agent 本地脚本或 Agent 后端；小哲电商客服 Agent 调试后台、商城、管理后台和电商客服网关都是外部调用方，不复制进每节课目录。

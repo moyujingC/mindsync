@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 06 课代码：Prompt 模板与注册表
 
 这一版代码把上一课那面越来越高的 Prompt 墙拆成多个可管理的 Prompt 片段。

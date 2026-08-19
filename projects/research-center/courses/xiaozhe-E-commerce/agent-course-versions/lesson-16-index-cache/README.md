@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 16 课代码：索引更新与 RAG 缓存
 
 这一版代码沿用第 15 课的 Hybrid RAG，再新增本地知识索引和 RAG 检索缓存。

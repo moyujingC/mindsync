@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 财富议题：温柔被切成小块时，资源很难稳稳聚拢
 
 ## 画面证据总览

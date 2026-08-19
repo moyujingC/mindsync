@@ -1,3 +1,5 @@
+> 状态：historical-reference
+
 好的，这是你的财富议题解读报告。
 
 ---

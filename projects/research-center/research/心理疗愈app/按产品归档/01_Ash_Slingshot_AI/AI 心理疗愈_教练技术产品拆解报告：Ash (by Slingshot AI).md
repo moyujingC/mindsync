@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # AI 心理疗愈/教练技术产品拆解报告：Ash (by Slingshot AI)
 
 ## 一、 产品概览

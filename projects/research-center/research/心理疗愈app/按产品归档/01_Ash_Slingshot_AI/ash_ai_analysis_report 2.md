@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # AI 心理疗愈应用深度拆解：Ash (by Slingshot AI)
 
 在心理健康领域，AI 的应用正从简单的“话术模板”向“深度共情与模式识别”进化。今天为您拆解的产品是 **Ash**，由 **Slingshot AI** 实验室开发。它是全球首个基于“心理学基础模型（Foundation Model for Psychology）”构建的 AI 疗愈助手，并于 2025 年获得了由 a16z 领投的近 1 亿美元融资。

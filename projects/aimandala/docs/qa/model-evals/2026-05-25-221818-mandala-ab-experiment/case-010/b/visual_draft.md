@@ -1,3 +1,5 @@
+> 状态：historical-reference
+
 {
   "agent_variant": "single_pass_e2e",
   "mode": "internal_visual_reasoning",

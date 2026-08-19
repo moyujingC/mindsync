@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 41 课代码：大促前夜总演习
 
 这一版是第十幕的阶段性最终 Agent。它沿用第九幕后的 Trace、Evaluation、失败归因和成本治理能力，并把前面课程已经出现过的 Tool、RAG、Workflow/HITL、Resume、降级和安全拒绝放到同一个大促验证入口里。

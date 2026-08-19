@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # Chapter005.xhtml
 
 ## 第一篇 理论篇

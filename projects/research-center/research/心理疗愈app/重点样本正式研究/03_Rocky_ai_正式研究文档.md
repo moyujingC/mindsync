@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # Rocky.ai 正式研究文档
 
 > 日期：2026-06-07  

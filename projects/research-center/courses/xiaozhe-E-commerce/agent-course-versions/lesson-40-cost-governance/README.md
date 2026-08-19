@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 40 课代码：成本治理
 
 这一版在可观测、评测和反馈闭环之后增加 `cost_summary_v1`。它区分轻路径、重路径和常见命中缓存，统计模型调用、RAG/Tool 次数、上下文 token、Prompt 片段和 Observation 压缩。前序 Workflow/HITL/`/chat/resume` 继续保留，成本治理不能为了省钱跳过恢复和审批边界。

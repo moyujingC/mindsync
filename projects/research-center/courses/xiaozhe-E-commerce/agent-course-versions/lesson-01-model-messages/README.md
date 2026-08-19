@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 01 课代码：Message 输入输出｜本地模型调用
 
 这一版代码只验证一件事：小哲电商客服 Agent 能在本地终端把一组 `messages` 交给模型，并从模型响应里取出 `assistant message`。

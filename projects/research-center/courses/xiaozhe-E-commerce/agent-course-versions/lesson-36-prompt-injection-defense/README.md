@@ -1,3 +1,7 @@
+> 状态：reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 第 36 课代码：Prompt Injection 防护
 
 这一版保留 Workflow/HITL/Resume，并把用户文本、工具 Observation 和 RAG 片段都当作可能带污染的外部文本处理。它会扫描脏指令、系统信息请求、hidden reasoning 请求和隐私字段，给污染来源打标，脱敏后再进入上下文。

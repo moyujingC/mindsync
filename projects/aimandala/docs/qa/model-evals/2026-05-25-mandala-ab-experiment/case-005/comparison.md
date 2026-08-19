@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # case-005 A/B 对照
 
 - 案例：case-005 【案例5】用五行感知+相生相克法解读成长与财富（完整解读）

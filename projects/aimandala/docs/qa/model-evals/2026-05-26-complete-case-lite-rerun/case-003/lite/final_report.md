@@ -1,3 +1,7 @@
+> 状态：historical-reference
+> 版本：0.1.0
+> source_of_truth：自动补齐
+
 # 曼陀罗财富解读报告
 
 你好，我看见你的曼陀罗了。

@@ -27,4 +27,4 @@
 1. [PROJECT.md](./PROJECT.md)
 2. [公司侧项目入口](../../company/projects/一镜一梳/PROJECT.md)
 3. [To C MVP Spec](./docs/specs/ToC-MVP-产品规范.md)
-4. [部署与运维手册](./docs/tasks/2026-04-10-服务器部署与运维手册.md)
+4. 部署与运维手册
