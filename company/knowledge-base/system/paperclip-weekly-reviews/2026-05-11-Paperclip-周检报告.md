@@ -53,14 +53,14 @@
 
 - 影响项：仓内部署基线仍写 `v2026.416.0`，但按当前周检策略，推荐目标已应切到 `v2026.428.0`
 - 命中的本地系统层：
-  - [/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md)
-  - [/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md)
+  - [/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md](../../../../projects/aimandala/deploy/paperclip-automation/README.md)
+  - [/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md](../../../projects/Automation/PROJECT.md)
 - 若不处理的风险：后续会继续混淆“最低安全线”“已验证运行线”“当前推荐目标线”
 
 - 影响项：`v2026.427.0` / `v2026.428.0` 的恢复、审阅、线程与归属控制改进，已经碰到 `MindSync` 当前任务治理主链
 - 命中的本地系统层：
-  - [/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md](/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md)
-  - [/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md)
+  - [/Users/xinran/Downloads/dev/mindsync/company/任务审阅与状态流转规范.md](../../../任务审阅与状态流转规范.md)
+  - [/Users/xinran/Downloads/dev/mindsync/company/Paperclip任务系统优化方案.md](../../../Paperclip任务系统优化方案.md)
   - [/Users/xinran/Downloads/dev/mindsync/.paperclip.yaml](/Users/xinran/Downloads/dev/mindsync/.paperclip.yaml)
 - 若不处理的风险：本地规则会继续重压在自定义脚本和文档上，而不是明确判断哪些已可交给上游控制面
 
@@ -68,8 +68,8 @@
 
 - 影响项：本周 merged 的 secrets / vault 与 sandbox/provider 路线，说明上游正在补“运行环境治理”和“密钥治理”
 - 命中的本地系统层：
-  - [/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
-  - [/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md](/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md)
+  - [/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md](../../../Paperclip-Agent-模型配置总表.md)
+  - [/Users/xinran/Downloads/dev/mindsync/company/服务器与基础设施入口.md](../../../服务器与基础设施入口.md)
 - 建议处理窗口：先完成版本治理与升级验证，再决定是否单独立项评估 secrets / sandbox 原生能力
 
 ### 4.3 低影响或暂不影响
@@ -130,11 +130,11 @@
 ## 8. 需要同步更新的本地 artifact
 
 - 文档：
-  - [/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md](/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md)
-  - [/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md](/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md)
+  - [/Users/xinran/Downloads/dev/mindsync/projects/aimandala/deploy/paperclip-automation/README.md](../../../../projects/aimandala/deploy/paperclip-automation/README.md)
+  - [/Users/xinran/Downloads/dev/mindsync/company/projects/Automation/PROJECT.md](../../../projects/Automation/PROJECT.md)
 - 如后续正式升级，再决定是否回写：
-  - [/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md](/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md)
-  - [/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-设计机制与使用说明.md](/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-设计机制与使用说明.md)
+  - [/Users/xinran/Downloads/dev/mindsync/company/Paperclip-Agent-模型配置总表.md](../../../Paperclip-Agent-模型配置总表.md)
+  - [/Users/xinran/Downloads/dev/mindsync/company/knowledge-base/system/Paperclip-设计机制与使用说明.md](../Paperclip-设计机制与使用说明.md)
 
 ## 9. 风险接受记录
 

@@ -87,7 +87,7 @@
 
 正式研究稿：
 
-- [01_Ash_Slingshot_AI_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/01_Ash_Slingshot_AI_正式研究文档.md)
+- [01_Ash_Slingshot_AI_正式研究文档.md](./重点样本正式研究/01_Ash_Slingshot_AI_正式研究文档.md)
 
 归档来源目录：
 
@@ -126,7 +126,7 @@
 
 正式研究稿：
 
-- [02_Rosebud_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/02_Rosebud_正式研究文档.md)
+- [02_Rosebud_正式研究文档.md](./重点样本正式研究/02_Rosebud_正式研究文档.md)
 
 归档来源目录：
 
@@ -161,7 +161,7 @@
 
 正式研究稿：
 
-- [03_Rocky_ai_正式研究文档.md](/Users/xinran/Downloads/dev/mindsync/projects/research-center/research/心理疗愈app/重点样本正式研究/03_Rocky_ai_正式研究文档.md)
+- [03_Rocky_ai_正式研究文档.md](./重点样本正式研究/03_Rocky_ai_正式研究文档.md)
 
 归档来源目录：
 

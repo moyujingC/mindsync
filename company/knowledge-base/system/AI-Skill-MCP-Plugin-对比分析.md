@@ -10,9 +10,9 @@
 
 它衔接三篇机制文档：
 
-- [AI-Skill-系统性讨论.md](company/knowledge-base/system/AI-Skill-系统性讨论.md)
-- [AI-MCP-系统性讨论.md](company/knowledge-base/system/AI-MCP-系统性讨论.md)
-- [AI-Plugin-系统性讨论.md](company/knowledge-base/system/AI-Plugin-系统性讨论.md)
+- [AI-Skill-系统性讨论.md](./AI-Skill-系统性讨论.md)
+- [AI-MCP-系统性讨论.md](./AI-MCP-系统性讨论.md)
+- [AI-Plugin-系统性讨论.md](./AI-Plugin-系统性讨论.md)
 
 ## 1. 一句话区分
 
@@ -367,7 +367,7 @@ skill、MCP、plugin 的分工可以收束成一句话：
 
 ## 11. 参考来源
 
-- [AI-Skill-系统性讨论.md](company/knowledge-base/system/AI-Skill-系统性讨论.md)
+- [AI-Skill-系统性讨论.md](./AI-Skill-系统性讨论.md)
 - [What is the Model Context Protocol (MCP)?](https://modelcontextprotocol.io/docs/getting-started/intro)
 - [MCP Architecture](https://modelcontextprotocol.io/specification/2024-11-05/architecture)
 - [Claude Code: Create plugins](https://code.claude.com/docs/en/plugins)
