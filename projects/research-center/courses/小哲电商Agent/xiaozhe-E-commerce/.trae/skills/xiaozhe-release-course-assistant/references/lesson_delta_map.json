@@ -1,0 +1,278 @@
+{
+  "01": {
+    "title": "Message 输入输出",
+    "delta": "建立项目起点：先用本地脚本看清 system/user/assistant message 如何进出模型。",
+    "focus": ["lesson-01-model-messages/main.py", "agent-course-versions/course.env.example"],
+    "observe": ["终端里的 assistant message", "模型 Key 是否正确读取"]
+  },
+  "02": {
+    "title": "Chat 服务",
+    "delta": "从本地脚本升级为可被调试台调用的 `/chat` Agent 后端。",
+    "focus": ["backend/main.py", "backend/api/routes.py", "backend/api/schemas.py"],
+    "observe": ["HTTP `/chat` 是否返回 answer", "早期能力面板置灰是正常现象"]
+  },
+  "03": {
+    "title": "客服边界",
+    "delta": "让第一版 LLM 客服进入小哲电商公司客服角色，同时暴露没有业务事实依据的边界。",
+    "focus": ["backend/agents/customer_service_agent.py", "backend/models/llm_client.py"],
+    "observe": ["回答是否保持客服身份", "业务事实不足时是否避免乱承诺"]
+  },
+  "04": {
+    "title": "意图结构化",
+    "delta": "在自由文本回答旁边加入结构化意图和风险字段，为后续路由做准备。",
+    "focus": ["backend/api/schemas.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["intent/risk 等结构化字段", "调试台是否能显示路径判断"]
+  },
+  "05": {
+    "title": "Prompt 边界",
+    "delta": "加入客服身份、事实优先级和回答边界，同时显露把规则全塞进 Prompt 的维护压力。",
+    "focus": ["backend/prompts", "backend/agents/customer_service_agent.py"],
+    "observe": ["高风险承诺是否受限", "Prompt 变长后成本和冲突压力"]
+  },
+  "06": {
+    "title": "Prompt Registry",
+    "delta": "把一整堵 Prompt 拆成可选择、可组合、可管理的片段。",
+    "focus": ["backend/prompts", "backend/agents/customer_service_agent.py"],
+    "observe": ["selected fragments", "Prompt 片段启用和优先级"]
+  },
+  "07": {
+    "title": "Token 观察",
+    "delta": "在 Prompt Registry 基础上让每轮 token 和估算成本可见。",
+    "focus": ["backend/cost", "backend/agents/customer_service_agent.py"],
+    "observe": ["cost_summary", "Prompt 片段带来的成本变化"]
+  },
+  "08": {
+    "title": "RAG 思路",
+    "delta": "从全量 Prompt 转向只把相关稳定知识交给模型。",
+    "focus": ["backend/rag", "backend/knowledge_chunks.json", "backend/agents/customer_service_agent.py"],
+    "observe": ["是否出现 RAG 路径", "回答是否依赖检索片段"]
+  },
+  "09": {
+    "title": "文档切片与 Metadata",
+    "delta": "把售后规则拆成带来源和标签的 chunk，为可控检索打基础。",
+    "focus": ["backend/rag", "backend/knowledge_chunks.json"],
+    "observe": ["chunk 内容和 metadata", "source/section 等来源信息"]
+  },
+  "10": {
+    "title": "Embedding 检索",
+    "delta": "引入向量表示和 top_k 相似度召回，完成第一版知识检索。",
+    "focus": ["backend/embeddings", "backend/rag/knowledge_base.py"],
+    "observe": ["retrieved chunks", "向量检索得分或相似度"]
+  },
+  "11": {
+    "title": "RAG Citations",
+    "delta": "把检索依据公开给调试台，回答不再只是模型口头说有依据。",
+    "focus": ["backend/rag", "backend/api/schemas.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["citations", "引用来源能否支撑最终回答"]
+  },
+  "12": {
+    "title": "RAG 质量兜底",
+    "delta": "承认命中不等于命对，加入低置信和无可靠证据时的保守回答。",
+    "focus": ["backend/rag", "backend/agents/customer_service_agent.py"],
+    "observe": ["fallback reason", "低置信问题是否避免硬编"]
+  },
+  "13": {
+    "title": "查询改写",
+    "delta": "把用户口语化问题改写成更适合检索的 query，但保留原始问题用于回答。",
+    "focus": ["backend/rag/planning.py", "backend/rag/hybrid_retrieval.py"],
+    "observe": ["rewritten query", "改写后召回是否更贴近场景"]
+  },
+  "14": {
+    "title": "Reranker",
+    "delta": "在初步召回后增加重排，处理 top_k 第一名不一定最适合的问题。",
+    "focus": ["backend/rag", "backend/agents/customer_service_agent.py"],
+    "observe": ["rerank score/reason", "候选顺序变化"]
+  },
+  "15": {
+    "title": "Hybrid RAG",
+    "delta": "组合向量、关键词和规则/场景信号，降低单一路径召回错配。",
+    "focus": ["backend/rag/hybrid_retrieval.py", "backend/rag/planning.py"],
+    "observe": ["hybrid retrieval evidence", "vector/keyword/scene 信号"]
+  },
+  "16": {
+    "title": "索引与缓存",
+    "delta": "面对知识增长，加入索引版本、重建和缓存边界。",
+    "focus": ["backend/rag/index_cache.py", "backend/rag/knowledge_base.py"],
+    "observe": ["index/cache 字段", "知识版本和缓存命中"]
+  },
+  "17": {
+    "title": "实时业务事实",
+    "delta": "订单、物流、库存等实时事实从业务后端查询，不再靠 RAG 或模型猜。",
+    "focus": ["backend/integrations/ecommerce_client.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["业务接口事实", "订单/物流回答是否来自实时查询"]
+  },
+  "18": {
+    "title": "Tool Calling",
+    "delta": "把业务事实接口包装成只读工具箱，让模型提出结构化工具调用，后端负责校验和执行。",
+    "focus": ["backend/tools/contracts.py", "backend/tools/langchain_tools.py", "backend/tools/tool_runtime.py"],
+    "observe": ["tool_calls", "工具参数", "runtime_user_id 身份边界"]
+  },
+  "19": {
+    "title": "缺参澄清",
+    "delta": "当用户没说订单号或候选不唯一时，不装懂，先澄清。",
+    "focus": ["backend/tools/planning.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["clarification response", "缺参和多候选处理"]
+  },
+  "20": {
+    "title": "ToolResult 与 Observation",
+    "delta": "把内部 ToolResult 压缩成可给模型看的 Observation，控制脱敏、摘要和下一步动作。",
+    "focus": ["backend/observability/observation.py", "backend/tools/tool_runtime.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["observation summary", "next_action", "tool_calls 中的安全摘要"]
+  },
+  "21": {
+    "title": "错误分类与降级",
+    "delta": "给模型/工具失败分类，加入重试、模板兜底和高风险动作保守边界。",
+    "focus": ["backend/tools/tool_runtime.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["degradation reason", "工具超时或模型失败时的保守回答"]
+  },
+  "22": {
+    "title": "Tool + RAG 商品回答",
+    "delta": "商品咨询同时看实时库存价格和稳定商品知识，避免只靠一边。",
+    "focus": ["backend/tools", "backend/rag", "backend/agents/customer_service_agent.py"],
+    "observe": ["tool_calls + citations", "库存价格和知识依据是否同时出现"]
+  },
+  "23": {
+    "title": "Hooks 治理",
+    "delta": "把工具调用前校验、调用后安全摘要、错误降级和完成摘要收拢到 Hooks。",
+    "focus": ["backend/hooks", "backend/tools", "backend/agents/customer_service_agent.py"],
+    "observe": ["hook/governance path", "工具前后治理信号"]
+  },
+  "24": {
+    "title": "MCP 与 Tool Use",
+    "delta": "把工具边界从单个 Agent 版本扩展到 MCP-style Tool/Resource/Prompt 组织方式。",
+    "focus": ["backend/mcp", "backend/tools", "backend/hooks"],
+    "observe": ["MCP-style 目录", "资源/Prompt 绑定", "Tool Use 边界"]
+  },
+  "25": {
+    "title": "TaskPlanner 与 RoutePlan",
+    "delta": "在 RAG、Tool、Workflow 都具备后，新增统一路线规划，判断一句话该走哪条路。",
+    "focus": ["backend/planner", "backend/api/schemas.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["RoutePlan", "RAG/Tool/Workflow/Mixed 路径"]
+  },
+  "26": {
+    "title": "高风险动作边界",
+    "delta": "退款诉求只做资格判断和风险说明，不直接执行退款、取消或补偿。",
+    "focus": ["backend/workflows", "backend/agents/customer_service_agent.py"],
+    "observe": ["risk boundary", "高风险动作是否被拦住"]
+  },
+  "27": {
+    "title": "LangGraph Workflow",
+    "delta": "用固定 Workflow 节点约束售后流程，不让自由 Agent 任意跳步骤。",
+    "focus": ["backend/workflows", "backend/agents/customer_service_agent.py"],
+    "observe": ["workflow state", "节点历史", "流程顺序"]
+  },
+  "28": {
+    "title": "未发货退款流程",
+    "delta": "拆出未发货退款路径，先查订单再查政策，再判断是否可准备申请。",
+    "focus": ["backend/workflows", "backend/tools", "backend/agents/customer_service_agent.py"],
+    "observe": ["workflow nodes", "订单状态和政策依据"]
+  },
+  "29": {
+    "title": "签收后退货流程",
+    "delta": "加入签收后退货判断，重点看签收时间、商品可退属性、原因和政策。",
+    "focus": ["backend/workflows", "backend/tools", "backend/agents/customer_service_agent.py"],
+    "observe": ["return decision", "时间/商品/原因/政策门槛"]
+  },
+  "30": {
+    "title": "HITL 人工审批",
+    "delta": "资格通过后只创建待人工审批申请，Agent 不能自己批准。",
+    "focus": ["backend/workflows", "backend/api/routes.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["resume_token", "pending approval", "人工审批边界"]
+  },
+  "31": {
+    "title": "Resume、Checkpoint 与幂等",
+    "delta": "开放审批恢复，并用 checkpoint、冻结字段复核和幂等键保护重复提交。",
+    "focus": ["backend/state", "backend/workflows", "backend/api/routes.py"],
+    "observe": ["checkpoint", "idempotency", "resume_token 校验"]
+  },
+  "32": {
+    "title": "Session Memory",
+    "delta": "加入短期会话记忆，只保存低风险、可复用的近期引用。",
+    "focus": ["backend/state", "backend/memory", "backend/agents/customer_service_agent.py"],
+    "observe": ["session memory 字段", "最近订单/商品/意图"]
+  },
+  "33": {
+    "title": "Runtime Context",
+    "delta": "引入可信运行时上下文，用户自称不能覆盖系统身份、会员等级和风险等级。",
+    "focus": ["backend/tools/runtime_context.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["runtime_context", "可信身份与用户自称冲突"]
+  },
+  "34": {
+    "title": "Context Builder",
+    "delta": "把历史消息、Runtime Context、Session Memory、Tool Observation、RAG 片段和 Workflow State 分层组织。",
+    "focus": ["backend/context_builder.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["context summary", "来源/可信度/冲突处理"]
+  },
+  "35": {
+    "title": "上下文压缩",
+    "delta": "用压缩、Sliding Window 和相关性选择，避免旧历史挤掉当前事实和流程边界。",
+    "focus": ["backend/compression.py", "backend/agents/customer_service_agent.py"],
+    "observe": ["compression summary", "保留当前事实和 workflow 边界"]
+  },
+  "36": {
+    "title": "Prompt Injection 防护",
+    "delta": "扫描用户、工具和 RAG 外部文本，隔离脏指令并保护系统信息。",
+    "focus": ["backend/safety", "backend/agents/customer_service_agent.py"],
+    "observe": ["safety decision", "污染文本隔离", "不暴露 hidden reasoning"]
+  },
+  "37": {
+    "title": "Trace 可观测",
+    "delta": "把关键执行链路记录成公开 Trace，让回答原因可复盘但不暴露隐藏推理。",
+    "focus": ["backend/observability", "backend/agents/customer_service_agent.py"],
+    "observe": ["trace_event_v1", "public_trace_only", "hidden_cot_exposed=false"]
+  },
+  "38": {
+    "title": "Evaluation 回归评测",
+    "delta": "加入 `/eval/run` 和固定 cases，检查回答、工具、引用、trace、workflow 等是否回归。",
+    "focus": ["backend/evals", "backend/cases.yml", "backend/api/routes.py"],
+    "observe": ["eval_report_v1", "case 通过/失败原因"]
+  },
+  "39": {
+    "title": "失败归因与反馈闭环",
+    "delta": "把用户反馈绑定到 trace/eval，并把事故沉淀为新的评测用例。",
+    "focus": ["backend/feedback", "backend/evals", "backend/observability"],
+    "observe": ["feedback records", "failure attribution", "eval case 回填"]
+  },
+  "40": {
+    "title": "成本治理",
+    "delta": "返回成本摘要，区分轻路径、重路径、缓存命中、Prompt 片段和 Observation 压缩。",
+    "focus": ["backend/cost", "backend/agents/customer_service_agent.py"],
+    "observe": ["cost_summary", "light/heavy path", "model_calls"]
+  },
+  "41": {
+    "title": "最终总演习",
+    "delta": "把模型优先路由、真实 Embedding Hybrid RAG、Tool、Workflow/HITL、Resume、Trace、Eval、反馈、成本、降级和安全拒答串成综合版本；高风险规则只保留为业务护栏。",
+    "focus": ["backend/agents/customer_service_agent.py", "backend/prompts/route_contract.md", "backend/rag/hybrid_retrieval.py", "backend/cases.yml", "backend/agent_capabilities.json"],
+    "observe": ["session_state.model 中的模型调用与回退原因", "rag.embedding 的在线或显式离线模式", "商品 Tool 事实与平台通用规则分层", "route/RAG/tool/workflow/trace/eval/cost 综合信号", "第 42-45 课复用本运行时"]
+  },
+  "42": {
+    "title": "Tool/RAG 场景验证",
+    "delta": "不新增主线后端，复用第 41 课验证实时商品事实走 Tool、平台通用活动规则走 RAG，并明确通用规则不等于当前 SKU 已确认优惠。",
+    "focus": ["scenario_tool_rag.json", "README.md", "../lesson-41-final-rehearsal/backend"],
+    "observe": ["expected_tools", "expected_citations", "expected_cost_path", "以商品页和结算页为准的适用边界"]
+  },
+  "43": {
+    "title": "退款 HITL 场景验证",
+    "delta": "不新增主线后端，复用第 41 课验证退款 Workflow、HITL、resume、checkpoint 和幂等。",
+    "focus": ["scenario_refund_hitl.json", "README.md", "../lesson-41-final-rehearsal/backend"],
+    "observe": ["workflow", "resume_token", "checkpoint/idempotency"]
+  },
+  "44": {
+    "title": "降级与安全场景验证",
+    "delta": "不新增主线后端，复用第 41 课通过显式故障注入验证降级，同时验证低置信兜底、安全拒答和公开 trace。",
+    "focus": ["scenario_degradation_security.json", "README.md", "../lesson-41-final-rehearsal/backend"],
+    "observe": ["safe fallback", "refusal", "trace evidence", "degradation source=explicit_course_fault_injection"]
+  },
+  "45": {
+    "title": "生产交付边界",
+    "delta": "不新增主线后端，补充上线边界、灰度、回滚、转人工和验收证据表达。",
+    "focus": ["production_delivery_checklist.json", "README.md", "../lesson-41-final-rehearsal/backend"],
+    "observe": ["交付清单", "上线前不能承诺的边界"]
+  },
+  "46": {
+    "title": "增强路线图与项目收束",
+    "delta": "不新增后端，整理后续生产增强方向和项目表达方式。",
+    "focus": ["advanced_roadmap.json", "project_wrap_up.json", "README.md"],
+    "observe": ["路线图", "项目亮点", "不要夸大成完整企业系统"]
+  }
+}
