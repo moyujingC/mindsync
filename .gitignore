@@ -53,6 +53,12 @@ __pycache__/
 *.tar.gz
 *.rar
 
+# Course recordings and packaged materials (课程录屏与打包资料)
+projects/research-center/courses/2026年企业级AI编程实战营/**/*.sz
+projects/research-center/courses/2026年企业级AI编程实战营/**/*.zip
+projects/research-center/courses/AI业务流架构师训练营/**/*.sz
+projects/research-center/courses/AI业务流架构师训练营/**/*.zip
+
 # External dependencies (managed separately)
 external/*/
 !external/.gitkeep
