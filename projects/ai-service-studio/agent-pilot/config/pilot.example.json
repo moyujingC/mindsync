@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0",
+  "mode": "offline_simulation",
+  "hermes_gateway": {
+    "enabled": false,
+    "base_url": "http://127.0.0.1:9119",
+    "api_key_env": "HERMES_GATEWAY_API_KEY",
+    "model": ""
+  },
+  "feishu": {
+    "enabled": false,
+    "cli_command": "feishu-cli",
+    "profile_env": "FEISHU_PROFILE",
+    "app_token_env": "FEISHU_PILOT_APP_TOKEN",
+    "table_id_env": "FEISHU_PILOT_TABLE_ID",
+    "max_records": 5,
+    "write_enabled": false,
+    "read_command": [],
+    "write_command": []
+  }
+}

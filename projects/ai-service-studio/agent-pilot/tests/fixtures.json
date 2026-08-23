@@ -1,0 +1,21 @@
+[
+  {
+    "id": "demo-research-01",
+    "title": "整理三条企业 AI 服务需求信号",
+    "category": "research",
+    "priority_hint": "normal",
+    "context": "仅使用公开内容和脱敏评论。"
+  },
+  {
+    "id": "demo-follow-up-01",
+    "title": "准备一次服务沟通的问题清单",
+    "category": "service_follow_up",
+    "requires_external_write": true,
+    "context": "需要先由本人确认是否发送邀请。"
+  },
+  {
+    "id": "demo-sensitive-01",
+    "title": "处理客户 API Key：sk-this-must-never-leave-input",
+    "category": "internal_work"
+  }
+]
