@@ -45,10 +45,10 @@
 
 ## 运行时身份与隔离
 
-服务器上的 Hermes Profile 名称是 `moyujingcontent`，目录为：
+服务器上的 Hermes Profile 展示名是 `myjContentAgent`；Hermes 运行时将其规范化为小写 ID `myjcontentagent`，目录为：
 
 ```text
-/opt/content-matrix-inbox/hermes-home/profiles/moyujingcontent
+/opt/content-matrix-inbox/hermes-home/profiles/myjcontentagent
 ```
 
 它独立于现有 `content-matrix` 情报 Agent：不复制后者的凭证、Skill、会话、记忆、飞书应用或日志。服务器已部署本目录的 `SOUL.md`，Profile 自己的 `cli` 与 `feishu` 工具集均配置为空；Gateway 停止，尚未配置模型或飞书机器人。

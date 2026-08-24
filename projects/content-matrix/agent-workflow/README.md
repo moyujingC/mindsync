@@ -31,7 +31,7 @@
 
 | 岗位 | 当前状态 | 本地定义 | 运行时身份 |
 | --- | --- | --- | --- |
-| [内容访谈与结构助手](moyujing-content-interviewer/README.md) | 隔离配置完成，待模型与飞书机器人 | `agent-workflow/moyujing-content-interviewer/` | Hermes Profile：`moyujingcontent` |
+| [内容访谈与结构助手](moyujing-content-interviewer/README.md) | 隔离配置完成，待模型与飞书机器人 | `agent-workflow/moyujing-content-interviewer/` | 展示名：`myjContentAgent`；Hermes Profile：`myjcontentagent` |
 
 ## 后续 Skill 提炼规则
 
