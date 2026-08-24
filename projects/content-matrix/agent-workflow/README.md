@@ -10,16 +10,16 @@
 
 这里维护“墨予镜公众号内容生产”这条工作流中的 Agent 岗位、交接合同、运行记录和后续 Skill 提炼依据。
 
-当前只有第一个岗位：内容访谈与结构助手。后续 Agent 必须在前一岗位和人工生产动作已经跑通后再增加。
+当前只有第一个岗位：内容访谈与草稿助手。后续 Agent 必须在前一岗位和人工生产动作已经跑通后再增加。
 
 ## 当前工作流假设
 
 ```text
 主题卡 / 已确认公开证据
-  -> 内容访谈与结构助手
-  -> 本人补充和确认观点
-  -> 编辑助手
+  -> 内容访谈与草稿助手（对话确认观点与结构）
+  -> 草稿
   -> 人工质量门
+  -> 不通过：回到同一 Agent 深聊并修订草稿
   -> 排版助手
   -> 人工发布
   -> 发布回流表
@@ -31,7 +31,7 @@
 
 | 岗位 | 当前状态 | 本地定义 | 运行时身份 |
 | --- | --- | --- | --- |
-| [内容访谈与结构助手](moyujing-content-interviewer/README.md) | 隔离配置完成，待模型与飞书机器人 | `agent-workflow/moyujing-content-interviewer/` | 展示名：`myjContentAgent`；Hermes Profile：`myjcontentagent` |
+| [内容访谈与草稿助手](moyujing-content-interviewer/README.md) | 隔离配置完成，待模型与飞书机器人 | `agent-workflow/moyujing-content-interviewer/` | 展示名：`myjContentAgent`；Hermes Profile：`myjcontentagent` |
 
 ## 后续 Skill 提炼规则
 
