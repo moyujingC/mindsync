@@ -100,8 +100,9 @@
 当前优先行业是 [心理与疗愈](industries/psychology-healing/README.md)。
 
 ## 4. 当前直接编辑入口
-- [HA7CH AI 原生与 FDE 学校参考](references/2026-08-12-HA7CH-AI原生与FDE学校参考.md)
-- [HA7CH AI Native School 开源项目原文](references/2026-08-12-HA7CH-AI原生与FDE学校-原文.md)
+- [HA7CH AI 原生与 FDE 学校参考](../research-center/kb/sources/ai/2026-08-12-HA7CH-AI原生与FDE学校参考.md)
+- [HA7CH AI Native School 开源项目原文](../research-center/kb/sources/ai/2026-08-12-HA7CH-AI原生与FDE学校-原文.md)
+- [HA7CH AI Native School 完整课程仓库](../research-center/courses/HA7CH-AI-Native-School/)
 - [老板自研 ERP 与反向 FDE 参考](references/2026-08-05-老板自研ERP与反向FDE参考.md)
 - [老板自研 ERP 与反向 FDE 原文](references/2026-08-05-老板自研ERP与反向FDE-原文.md)
 - [FDE 现场闭环产品化参考](references/2026-07-30-FDE现场闭环产品化参考.md)

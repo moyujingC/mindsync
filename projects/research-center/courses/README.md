@@ -35,10 +35,25 @@
 | 连载中 | [Agent 驾驭工程之美](./2026-08-18-Agent%20驾驭工程之美/) | Harness、Agent 操控循环、Skill（技能）封装 | 5 / 35 讲 |
 | 连载中 | [2026 年企业级 AI 编程实战营](./2026年企业级AI编程实战营/) | SDD（规格驱动开发）、Harness、Agent OS、工程协作与实现 | 110 份课程材料 |
 | 连载中 | [AI 业务流架构师训练营](./AI业务流架构师训练营/) | OpenClaw、业务流自动化、Skill、记忆、模型路由与跨系统集成 | 110 份课程材料 |
+| 连载中 | [HA7CH AI Native School](./HA7CH-AI-Native-School/) | AI Native、FDE（Forward Deployed Engineer，前线部署工程）、GitHub 协作与一号位沟通 | 上游 GitHub 仓库（Git 子模块） |
 
 已完结课程后续如出现平台加餐或补充内容，仍可继续收录到原目录；状态变更时一并更新本表。
 
 `2026-08-25-DeepSeek Harness 前沿工程实践/` 已建立为课程目录，当前尚未收录文件，因此暂不进入课程索引；首次收录材料时补充课程状态、主题和数量。
+
+### 外部课程仓库的更新
+
+`HA7CH-AI-Native-School/` 是上游 `https://github.com/HA7CH/ha7ch-school` 的 Git 子模块，当前跟踪 `master`。更新到上游最新版本：
+
+```bash
+git -C projects/research-center/courses/HA7CH-AI-Native-School fetch origin master
+git -C projects/research-center/courses/HA7CH-AI-Native-School checkout master
+git -C projects/research-center/courses/HA7CH-AI-Native-School pull --ff-only origin master
+git add projects/research-center/courses/HA7CH-AI-Native-School
+git commit -m "chore(courses): update HA7CH school"
+```
+
+父仓库只记录子模块提交指针；更新后需提交父仓库，其他工作区再运行 `git submodule update --init --recursive` 获取相同版本。
 
 ## 单门课程的默认结构
 

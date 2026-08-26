@@ -1,0 +1,4 @@
+[submodule "projects/research-center/courses/HA7CH-AI-Native-School"]
+	path = projects/research-center/courses/HA7CH-AI-Native-School
+	url = https://github.com/HA7CH/ha7ch-school
+	branch = master
