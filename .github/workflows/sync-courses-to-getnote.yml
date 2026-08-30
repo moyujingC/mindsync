@@ -1,0 +1,72 @@
+name: sync-courses-to-getnote
+
+on:
+  workflow_dispatch:
+    inputs:
+      course:
+        description: "Sync only one course directory (leave empty for all)"
+        required: false
+        default: ""
+        type: string
+      max_notes:
+        description: "Maximum notes to create per course (leave empty for no limit)"
+        required: false
+        default: ""
+        type: string
+      dry_run:
+        description: "Dry run (no API calls)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Sync courses to Get笔记
+    runs-on:
+      - self-hosted
+      - linux
+      - mindsync-ci
+    timeout-minutes: 180
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Verify Python
+        run: |
+          set -euo pipefail
+          python3 --version
+
+      - name: Build arguments
+        id: args
+        run: |
+          set -euo pipefail
+          ARGS=""
+          if [[ -n "${{ github.event.inputs.course }}" ]]; then
+            ARGS="$ARGS --course '${{ github.event.inputs.course }}'"
+          fi
+          if [[ -n "${{ github.event.inputs.max_notes }}" ]]; then
+            ARGS="$ARGS --max-notes ${{ github.event.inputs.max_notes }}"
+          fi
+          if [[ "${{ github.event.inputs.dry_run }}" == "true" ]]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          printf 'args=%s\n' "$ARGS" >> "$GITHUB_OUTPUT"
+
+      - name: Sync to Get笔记
+        env:
+          GETNOTE_API_KEY: ${{ secrets.GETNOTE_API_KEY }}
+          GETNOTE_CLIENT_ID: ${{ secrets.GETNOTE_CLIENT_ID }}
+        run: |
+          set -euo pipefail
+          python3 shared/tools/sync-courses-to-getnote.py ${{ steps.args.outputs.args }}
+
+      - name: Upload manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: getnote-sync-manifest
+          path: projects/research-center/courses/_getnote_sync/manifest.json
+          if-no-files-found: ignore

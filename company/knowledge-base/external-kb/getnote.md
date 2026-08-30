@@ -63,9 +63,10 @@ claude_skill_path: ~/.claude/skills/getnote
 - `shared/tools/import-local-videos-to-getnote.py`
 - `shared/tools/import-social-links-to-getnote.py`
 - `shared/tools/import-xiaohongshu-2026-to-getnote.py`
+- `shared/tools/sync-courses-to-getnote.py` — 将 `projects/research-center/courses/` 中的 Markdown 课程内容同步到 Get笔记，每个课程一个知识库，每个 Markdown 文件一条笔记
 - `shared/tools/getnote-setup.sh`
 
-这些脚本属于**项目/任务级工具**，不在本方案中展开；需要使用时直接阅读脚本头部注释。
+这些脚本属于**项目/任务级工具**，不在本方案中展开；需要使用时直接阅读脚本头部注释或 `--help`。
 
 ## 4. 配置方式
 
@@ -134,11 +135,38 @@ https://www.biji.com/checkout?product_alias=6AydVpYeKl
 - 需要与项目 spec、task、qa 形成引用关系
 - 需要版本控制、代码审阅或多人协作
 
-### 6.3 当前未解决的问题
+### 6.3 课程资料同步
 
-- **双向同步**：尚未建立 Get笔记 ↔ `mindsync` 的自动双向同步机制
-- **内容路由**：从 Get笔记同步到 `projects/<slug>/kb/` 时，需要按主题/项目分类的规则
-- **去重与更新**：批量导入时如何避免重复、如何识别已变更的笔记
+`shared/tools/sync-courses-to-getnote.py` 会把 `projects/research-center/courses/` 中的 Markdown 课程内容同步到 Get笔记：
+
+- 所有课程共享一个知识库：`研究中心课程目录`
+- 每门课程在知识库中创建一个父笔记，相当于课程文件夹
+- 每个 Markdown 章节作为子笔记挂到对应课程的父笔记下
+- 只同步 Markdown 文件，跳过 PDF、视频、`.sz`、代码等二进制内容
+- 增量同步：基于文件 sha256 + mtime，已同步的文件不会重复创建
+- 标签统一为 `研究中心`、`课程`
+
+运行方式：
+
+```bash
+# 只发现文件，不调用 API
+python3 shared/tools/sync-courses-to-getnote.py --dry-run
+
+# 同步单个课程（最多 5 条笔记）
+python3 shared/tools/sync-courses-to-getnote.py --course "2026-07-28-FDE业务落地实战" --max-notes 5
+
+# 同步全部课程
+python3 shared/tools/sync-courses-to-getnote.py
+```
+
+环境变量要求：`GETNOTE_API_KEY`、`GETNOTE_CLIENT_ID`。
+
+### 6.4 当前未完全解决的问题
+
+- **课程资料同步的运行方式**：当前为手动触发脚本；如需要定时运行，可配置 launchd 或 GitHub Actions 定时触发。
+- **双向同步**：尚未建立 Get笔记 ↔ `mindsync` 的自动双向同步机制。
+- **内容路由**：从 Get笔记同步到 `projects/<slug>/kb/` 时，需要按主题/项目分类的规则。
+- **去重与更新**：已变化文件目前不会自动更新，只同步新增文件。
 
 这些问题将在后续专项任务中逐步解决，不在本方案中一次性落地。
 
