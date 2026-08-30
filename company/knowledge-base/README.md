@@ -1,9 +1,9 @@
 # 公司知识库
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：Research & Knowledge Lead
-> last_updated：2026-04-15
+> last_updated：2026-08-30
 > source_of_truth：company/knowledge-base/README.md
 
 这份索引用于收口 `墨予镜` 的公司级知识库入口。
@@ -33,20 +33,27 @@
   - 产品方法论与产品研究模板
 - `system/`
   - Paperclip、MindSync、CI/CD 等系统机制分析与使用说明
+- `external-kb/`
+  - 外挂知识库注册表与接入方案
 
 ## 4. 当前重点入口
 
 - [system/README.md](../../company/knowledge-base/system/README.md)
 - [product/方法论/产品可行性研究报告标准模板.md](../../company/knowledge-base/product/方法论/产品可行性研究报告标准模板.md)
+- [external-kb/README.md](../../company/knowledge-base/external-kb/README.md)
 
 ## 5. 与项目文档的分工
 
 - 公司知识库：
   - 回答“这套系统是什么、为什么这样设计、应该如何理解和使用”
+- 外挂知识库：
+  - 回答“这个外部知识源是什么、当前如何接入、入口在哪里、有什么限制”
 - 项目文档：
   - 回答“这个项目具体怎么做、现在做到哪一步、如何部署、如何验证”
 
 如果一个问题只在某个项目里成立，就不要直接提升到公司知识库。
+
+如果一个问题涉及外部知识源与 `MindSync` 的长期接入关系，优先放入 `external-kb/`，而不是塞进某个项目的临时 runbook。
 
 ## 6. 与私人执行助理自动复盘的边界
 
