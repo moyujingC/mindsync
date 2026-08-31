@@ -1,4 +1,0 @@
-interface:
-  display_name: "小哲模拟面试官"
-  short_description: "学完小哲电商 Agent 课程后，做一场完整的模拟面试并生成评分报告"
-  default_prompt: "使用 $xiaozhe-mock-interview（小哲模拟面试官）开始一场模拟面试，我按社招 1-3 年标准来。"

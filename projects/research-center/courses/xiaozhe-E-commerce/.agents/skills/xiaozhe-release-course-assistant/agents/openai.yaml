@@ -1,4 +1,0 @@
-interface:
-  display_name: "小哲课程助手"
-  short_description: "安装、启动、检查、排障、导读小哲课程包"
-  default_prompt: "使用 $xiaozhe-release-course-assistant（小哲课程助手）说明小哲电商课程包第 18 课相比上一课新增了什么。"

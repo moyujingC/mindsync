@@ -1,4 +1,0 @@
-agent:
-  service:
-    # 仅供 course-debug Profile 的本地课程联调；生产 Profile 不提供默认服务令牌。
-    auth-token: ${AGENT_SERVICE_AUTH_TOKEN:course-debug-agent-service}
