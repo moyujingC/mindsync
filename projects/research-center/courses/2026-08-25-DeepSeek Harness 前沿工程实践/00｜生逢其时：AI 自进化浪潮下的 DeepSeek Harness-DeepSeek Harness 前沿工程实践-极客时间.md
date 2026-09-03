@@ -1,39 +1,3 @@
-DeepSeek Harness 前沿工程实践
-
-张嘉熙
-
-PayPal 高级软件工程师
-
-243 人已学习
-
-查看详情
-
-课程目录
-
-已更新 2 讲/共 24 讲
-
-开篇词 (1讲)
-
-
-
-时长 12:06
-
-基础篇 (1讲)
-
-
-
-时长 08:27
-
-张嘉熙
-
-
-
-00:00
-
-1.0x **
-
-讲述：张嘉熙AI版大小：4.16M时长：12:06
-
 <audio title="开篇词｜生逢其时：AI 自进化浪潮下的 DeepSeek Harness" src="https://res001.geekbang.org/media/audio/64/78/640cb65ddccfb3b0ea3125b6976fa978/ld/ld.m3u8"></audio>
 
 你好，我是张嘉熙。欢迎你加入《DeepSeek Harness 前沿工程实践》。

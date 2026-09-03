@@ -1,39 +1,3 @@
-DeepSeek Harness 前沿工程实践
-
-张嘉熙
-
-PayPal 高级软件工程师
-
-243 人已学习
-
-查看详情
-
-课程目录
-
-已更新 2 讲/共 24 讲
-
-开篇词 (1讲)
-
-
-
-时长 12:06
-
-基础篇 (1讲)
-
-
-
-时长 08:27
-
-张嘉熙
-
-
-
-00:00
-
-1.0x **
-
-讲述：张嘉熙AI版大小：9.66M时长：08:27
-
 <audio title="01｜时之可逆：Context、插件与可撤销的 Effect" src="https://res001.geekbang.org/media/tts_audio/20260825/tts-15976-25-1009728/ld/ld.m3u8"></audio>
 
 你好，我是张嘉熙。欢迎来到《DeepSeek Harness 前沿工程实践》的第一讲。这一讲我们来聊聊 Cordis。

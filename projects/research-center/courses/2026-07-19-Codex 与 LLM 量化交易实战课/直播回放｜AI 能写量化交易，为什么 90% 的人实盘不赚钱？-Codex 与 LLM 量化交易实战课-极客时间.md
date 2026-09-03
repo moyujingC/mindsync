@@ -1,15 +1,5 @@
 <video src="https://media001.geekbang.org/a0a20ae584e671f180c56733a78e0402/1f0368f3ada64049ab6803633122e33e-d839ddfe0f385bc4cc218c95447c54ab-sd.m3u8" controls="">Sorry, your browser doesn't support embedded videos.</video>
 
-00:00 / 00:00
-
-1.0x
-
-网页全屏
-
-全屏
-
-00:00
-
 你好，我是袁从德，欢迎来到《Codex 与 LLM 量化交易实战课》。今天我们不只是讨论怎么去选股、什么股票会涨，我们更多地会去讨论为什么 AI 能写交易策略，回测结果也很漂亮，但仍然不可信。我们通过现场拆解同一条三七均线策略，从「看起来有效」走到「可复查」的整个正确链。整个课程的最终交付是一个可运行、可复查的 AI 量化研究系统。
 
 ## 1\. 核心方法论

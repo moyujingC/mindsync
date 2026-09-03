@@ -1,15 +1,5 @@
 <video src="https://media001.geekbang.org/a0c515f37f6971f1833c6732b78e0402/118db47d73814271bc85dacf9c5a2a24-d660cdefd6bcbee43858160931157deb-sd.m3u8" controls="">Sorry, your browser doesn't support embedded videos.</video>
 
-00:00 / 00:00
-
-1.0x
-
-网页全屏
-
-全屏
-
-00:00
-
 【直播时间】2026 年 7 月 13 日
 
 【分享大纲】

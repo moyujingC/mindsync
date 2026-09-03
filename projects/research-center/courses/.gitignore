@@ -18,3 +18,11 @@ node_modules/
 dist/
 build/
 *.log
+
+# 加密视频缓存与本地媒体（体积大，不入库，仅保留在本地）
+*.sz
+*.mp4
+*.zip
+
+# 独立 Git 仓库（配套代码，本地保留）
+2026-08-17-Codex AI 工程交付行动营/CodexFDE/
