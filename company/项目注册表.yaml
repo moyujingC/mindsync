@@ -1,5 +1,5 @@
 version: 0.1.0
-last_updated: 2026-09-03
+last_updated: 2026-08-20
 source_of_truth: company/项目注册表.yaml
 description: >
   知行工坊公司对象注册表。这里是公司内项目、共享能力与品牌/IP 对象的唯一权威清单；
@@ -105,20 +105,6 @@ objects:
       - "承接面向普通用户的疗愈与成长课程产品线"
       - "将 AI 心理学、曼陀罗疗愈、中国传统文化与教练技术转译为可学习、可练习、可复用的课程"
       - "与一镜一梳共享曼陀罗疗愈知识资产，但交付形态聚焦课程、练习与陪伴"
-
-  - id: "0e356eb4-79ac-4e5f-888f-9efa81181f06"
-    name: "HealerBench 疗愈师 AI 工作台"
-    slug: "healerbench"
-    kind: "product"
-    status: "draft"
-    goal: "疗愈师 AI 工作台 MVP 验证：知识库底座 + 四个工作流"
-    company_entry: "company/projects/HealerBench/PROJECT.md"
-    workspace_entry: "projects/healerbench/PROJECT.md"
-    runtime_directory: "projects/healerbench"
-    purpose:
-      - "面向身心灵疗愈从业者的 AI 工作台，覆盖客服、初访、个案准备、督导复盘四个场景"
-      - "以垂直领域 RAG 知识库为底座，沉淀疗愈行业 know-how 与个案方法论"
-      - "作为 FDE（Forward Deployed Engineer，驻场交付工程师）能力的核心验证项目，验证知识密集型服务业 AI 落地方法论"
 
   - id: "research-center"
     name: "研究中心"
