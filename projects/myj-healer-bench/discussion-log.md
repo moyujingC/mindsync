@@ -77,3 +77,28 @@
 3. **情绪向好率问题的意外进展**：ACCEPTANCE 来访者端已用"理解度提升自评（前后测）+ 安全感/启发感 rubric 评分"实现了我提案的 A+B 组合的产品内化版本。
 4. **文档卫生问题**：AGENTS.md 文档索引表和 ROADMAP 状态表中 PRD/ACCEPTANCE 版本号过期（标 v0.1.0 待更新，实际文件已是 v1.2.0）。
 5. **待确认**：healer-bench 与 Miro 的确切关系（Miro 内嵌评估系统 → 独立化为 benchmark？）；18 份文档中哪些已过用户审核、哪些仍是 AI 提案；命名与仓库落位。
+
+### 决策 6（本轮拍板）：miro 就是 myj-healer-bench，文档落位 ~/Downloads/dev/miro
+
+- **结论**：
+  - miro 是 myj-healer-bench 的英文代号（暂用），不是两个项目。
+  - 18 份文档用户基本审核过，**暂不写代码，继续打磨文档**。
+  - 文档从 ~/Downloads/docs/ 移至 ~/Downloads/dev/miro/，文件名去掉复杂后缀，结构按 AGENTS.md 三层结构归位。
+- **新结构**（2026-09-09 执行）：
+  ```
+  miro/
+  ├── AGENTS.md / DECISIONS.md / ROADMAP.md
+  ├── docs/
+  │   ├── PRODUCT-VISION / PRD / ARCHITECTURE / ACCEPTANCE
+  │   ├── KNOWLEDGE-BASE / SYSTEM_CORE / ONTOLOGY / TOPICS
+  │   ├── specs/（WF-REPORT-GEN / WF-REPORT-QA）
+  │   └── mandala/（mandala-5e / visual-signal-map / state-healing-map / report-template / cases/case-004）
+  │       ↑ 曼陀罗领域文档打磨中，成熟后按 ARCHITECTURE 拆入 plugins/mandala/
+  ├── plugins/mandala/（空，待内容）
+  ├── skills/（空）/ state/（空）
+  ```
+- **遗留打磨点**（已发现，待做）：
+  1. AGENTS.md 文档索引表版本号过期（PRD/ACCEPTANCE 标 v0.1.0，实际 v1.2.0）
+  2. ROADMAP 状态表同样过期（PRD/ACCEPTANCE 标"骨架版待更新"）
+  3. AGENTS.md §2 目录结构图缺 ROADMAP.md（§3 索引表却有）
+  4. 评估体系差距（对照课程调研）：安全对抗集未与评估集联动、judge 人工一致率未要求、成本指标缺失

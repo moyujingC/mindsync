@@ -1,18 +1,23 @@
 # myj-healer-bench 项目讨论区
 
-> 状态：draft
+> 状态：current
 > 创建：2026-09-03
+> 重要：2026-09-09 起，myj-healer-bench 的正式项目代号定为 **miro**（暂用），项目文档与后续代码统一在 `~/Downloads/dev/miro`。
 
 ## 这是什么
 
-`myj-healer-bench` 是一个为求职服务的项目：一个面向**疗愈/陪伴类 AI** 的评测基准（benchmark）。
+`myj-healer-bench`（代号 miro，暂用）是一个为求职服务的项目：为**疗愈/陪伴类 AI**（首个落地形态：曼陀罗疗愈 AI 工作台"一镜一梳"）构建评测基准（benchmark）与产品本体。
 
-本项目采用"以终为始"策略：先搞清楚目标 JD 对项目经历的要求，再反推项目应该长什么样、做到什么程度。
+本项目采用"以终为始"策略：先搞清楚目标岗位（AI 产品经理 + FDE 双线）对项目经历的要求，再反推项目应该长什么样、做到什么程度。
+
+## 当前阶段
+
+文档打磨期（2026-09-09）：18 份 SDD 文档已基本审核，落位 `~/Downloads/dev/miro`，**暂不写代码**，继续打磨文档。
 
 ## 目录边界（重要）
 
 - **本文件夹**（`mindsync/projects/myj-healer-bench/`）：只放项目讨论、调研、设计、迭代记录。
-- **实际项目代码**：创建在 workspace 之外，即 `~/Downloads/dev/myj-healer-bench`（待创建，讨论成熟后再落地）。
+- **项目本体**：`~/Downloads/dev/miro/`（docs 已就位，代码未开始）。
 
 ## 与既有工作的关系
 
