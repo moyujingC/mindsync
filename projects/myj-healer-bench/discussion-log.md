@@ -223,3 +223,16 @@
 - **治理原则**：EVAL-SUITE 管"怎么测"，ACCEPTANCE §6.1 管"测什么"，评测不改指标值。
 - 落地：miro commit 11e7be3（本地不推远端）：新建 EVAL-SUITE v0.1.0；ACCEPTANCE v1.3.2、KNOWLEDGE-BASE v0.2.4、AGENTS v1.3.11、ROADMAP v1.4.4、DECISIONS v1.3.9（新增 **D-030**）。
 - **五批全部完成**。剩余：共创期任务（TOPICS 解读入口重写、表现态矩阵、红线评审、黄金集标注、状态级来源复验、case-004 状态链重构、report-template ch5 九宫重构）；P11 技术栈 + P6 CodeAgent 攻击面暂缓（用户指定）。
+
+### 决策 19（2026-09-10 第十二轮：文档组织治理执行完成）
+
+- **起因**：用户提出三个问题——文档名全大写不好看、文件夹结构看不懂、plugins/ 是否与 Agent 领域术语冲突。启动四路代理集群审查（命名规范/结构考古/plugins 语义/改名影响面）。
+- **关键发现**：①项目自己在 v1.2.1 已定过小写化调子但只改了一半（三种命名风格并存）；②plugins/ 与 Claude Code Plugins 冲突且 plugin.json 与其清单撞名（目录为空，改名成本近零）；③AGENTS.md 结构图缺 3 个新成员；④skills/ 全库零文档支撑；⑤FW-MANDALA-5E 等存量断链。
+- **裁定（用户逐项拍板，D-031）**：
+  1. **全库小写化**：15 个大写文件 git mv 为 kebab-case；**AGENTS.md 例外**（multi-agent 生态固定入口名）；SYSTEM_CORE 顺带消除下划线混用
+  2. **命名规约**（入 AGENTS.md §2）：文件名小写；正文大写代号（"见 ACCEPTANCE §6.1"）是概念名保持大写；工作流 ID（WF-REPORT-GEN/QA）保持大写；changelog 历史不改（沿 v1.2.1 先例）
+  3. **plugins/ → schools/**：用户问"心理学领域的现成用词"，核实后取**"学派"= schools**（精神分析学派/行为主义学派，schools of thought/psychotherapy；modalities 因与 ML multimodal 冲突排除）；plugin.json → manifest.json
+  4. **skills/ 删除**：零文档支撑，将来重建零成本
+  5. **结构图修正**：补 referral-redlines/eval-suite/cases/、state/ gitignore 标注、"根目录=治理、docs/=知识"划分原则、mandala 暂存区迁移判据
+- **顺手修复**：FW-MANDALA-5E/VISUAL-SIGNAL-MAP 存量断链活引用 6 处（changelog 内不改）。
+- 落地：miro commit b516b07（本地不推远端）：19 文件变更（15 rename + schools rename + skills 删除 + 4 内容修改），AGENTS.md v1.3.12、decisions.md v1.3.10（D-001~D-031）、roadmap.md v1.4.5，全库版本级联。
