@@ -214,3 +214,12 @@
 - 落地：miro commit cfa64b8（本地不推远端）：ONTOLOGY v1.3.2、TOPICS v1.3.4、state-healing-map v0.3.3、SYSTEM_CORE v1.0.4、report-template v0.2.3、REFERRAL-REDLINES v0.1.0（新）、cases/index v0.1.0（新）、AGENTS v1.3.10、ROADMAP v1.4.3、DECISIONS v1.3.8（新增 **D-029**）。
 - **共创期新增三项待办**（已入 ROADMAP）：①表现态矩阵（含 8 议题最小集）；②REFERRAL-REDLINES 红线逐条评审；③11 例案例逐状态来源复验。
 - **剩余**：第五批 评估体系增强（14 项 backlog，逐条大白话解释后再动手）；P11 技术栈 + P6 CodeAgent 攻击面暂缓。
+
+### 决策 18（2026-09-10 第十一轮：第五批评估体系增强执行完成）
+
+- **A1 关键澄清（用户）**：11 例案例**全部拆解提炼**进知识库（非原文整段入库），因案例与数据不足故全量用于建库；知识库另有一部分为 AI 生成、经疗愈师初步验证。严格讲"知识库不包含 11 例原文"。
+- **A1 裁定（调整版）**：案例全量建库不动 → 改为**知识单元级来源标注**（`source: case-XXX` / `ai-generated · healer-validated`，落 KNOWLEDGE-BASE §3.2）+ **评估检索按来源过滤**（考 case-X 画作时排除同源单元）；提炼≠原文、泄漏间接，残余风险在 EVAL-SUITE 如实披露；案例 ≥20 例后切换建库/考试分集。
+- **其余分派（用户全部同意）**：立即落地 9 项（A2 judge 独立 / A3 可复现协议 / B1 分桶报告 / B3 防改考卷绑定 M-NNN 变更登记 / B5 UAT 两阶段"比例指标只认 ≥10 人试点批" / C1 成本指标 M-071、M-072 待试点定基线 / D3 危机双侧覆盖 SAFE-IN-001~003）；B4 黄金集多人标注列共创期；B2 多轮测试 / D1 发布门禁 / D2 judge 一致率 ≥80% 为上线前启动条件；C2 最强模型标杆 / C3 本体论 RAG 消融为试点期实验（无显著差异 → 回炉知识库而非改故事）。
+- **治理原则**：EVAL-SUITE 管"怎么测"，ACCEPTANCE §6.1 管"测什么"，评测不改指标值。
+- 落地：miro commit 11e7be3（本地不推远端）：新建 EVAL-SUITE v0.1.0；ACCEPTANCE v1.3.2、KNOWLEDGE-BASE v0.2.4、AGENTS v1.3.11、ROADMAP v1.4.4、DECISIONS v1.3.9（新增 **D-030**）。
+- **五批全部完成**。剩余：共创期任务（TOPICS 解读入口重写、表现态矩阵、红线评审、黄金集标注、状态级来源复验、case-004 状态链重构、report-template ch5 九宫重构）；P11 技术栈 + P6 CodeAgent 攻击面暂缓（用户指定）。
