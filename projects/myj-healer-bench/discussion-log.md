@@ -204,3 +204,13 @@
   8. 附带回扫：KNOWLEDGE-BASE §9.2 满意度 ">7/10" → ≥3.5 分（M-070），/10 残留清零
 - 落地：miro commit 28f9b75（本地不推远端）：ACCEPTANCE v1.3.1、PRD v1.3.1、PRODUCT-VISION v1.2.2、WF-REPORT-QA v1.0.1、KNOWLEDGE-BASE v0.2.3、state-healing-map v0.3.2、AGENTS v1.3.9、ROADMAP v1.4.2、DECISIONS v1.3.7（新增 **D-028**）。
 - **剩余批次**：第四批 内容层修（临床标签/验证措辞/议题表现态数据）；第五批 评估体系增强（14 项 backlog，逐条大白话解释后再动手）；共创期 TOPICS 解读入口重写 + case-004 状态链重构 + report-template ch5 九宫重构；P11 技术栈 + P6 CodeAgent 攻击面暂缓。
+
+### 决策 17（2026-09-10 第十轮：第四批内容层修执行完成）
+
+- **问题一（临床标签）——A+B 轻量组合获批**：ONTOLOGY 三张状态表 + TOPICS 移除疾病名（焦虑障碍/ADHD/躯体化，只留理论概念名）；新建 **REFERRAL-REDLINES.md v0.1.0**（转介红线 6 条初始版：自伤自杀/精神病性迹象/严重躯体未就医/物质依赖/未成年人危机/急性重大事件，各配转介话术；仅疗愈师可见、永不进报告/问答生成链路；共创评审待确认）。
+- **问题二（验证措辞）——核实+落地**：11 例案例经用户确认真实存在，位于上游 `projects/aimandala/docs/疗愈体系知识库/70-评估与案例/10-完整解读案例11例/`（cases/ + assets/ + 00-案例总索引.md）；miro 建 **docs/mandala/cases/index.md** 登记清单+议题分布（财富 7/成长 5/情感 2/事业 1）+ 诚实声明（人工解读案例，验证"人能写报告"非"系统能生成"）。23 个状态逐条标注：仅 case-004 支撑的 S-017/S-001/S-003 标"初步验证"，其余 20 个诚实标"待验证"。**门槛量化**（state-healing-map §1.3）：已验证=≥3 例一致或权威文献；初步验证=1-2 例或案例+理论互证；待验证=纯理论推导。SYSTEM_CORE 降措辞（"观察显示…高度相关性"→"初步观察提示…存在相关性（样本有限待复验）"；"抑郁状态"→"持续低落"）。
+- **问题三（表现态）——三建议全采纳**：report-template 第 6 章如实标注"状态×议题表现态矩阵不存在，矩阵落地前共鸣场景为模型自由生成、无知识库锚定"（报告链路最薄一环，关联 M-060）；共创期产出表现态矩阵落 TOPICS（与解读入口重写合并排期）；MVP 前填 8 外圈议题最小集。
+- **附带修正**：state-healing-map 覆盖度表 21→23（表现层 7→9）。
+- 落地：miro commit cfa64b8（本地不推远端）：ONTOLOGY v1.3.2、TOPICS v1.3.4、state-healing-map v0.3.3、SYSTEM_CORE v1.0.4、report-template v0.2.3、REFERRAL-REDLINES v0.1.0（新）、cases/index v0.1.0（新）、AGENTS v1.3.10、ROADMAP v1.4.3、DECISIONS v1.3.8（新增 **D-029**）。
+- **共创期新增三项待办**（已入 ROADMAP）：①表现态矩阵（含 8 议题最小集）；②REFERRAL-REDLINES 红线逐条评审；③11 例案例逐状态来源复验。
+- **剩余**：第五批 评估体系增强（14 项 backlog，逐条大白话解释后再动手）；P11 技术栈 + P6 CodeAgent 攻击面暂缓。
