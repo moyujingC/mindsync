@@ -182,3 +182,9 @@
 - **全库改写完成**（miro commit deb8ba9，本地不推远端）：PRD v1.3.0、WF-REPORT-QA v1.0.0（解读参谋 + 应答准备两场景，问答不直接面对来访者）、ACCEPTANCE v1.3.0、ARCHITECTURE v0.6.0、KNOWLEDGE-BASE v0.2.2（client_accessible 可见性规则 → relay_risk 转述风险分级；content_client → content_lay）、PRODUCT-VISION v1.2.1、report-template v0.2.2、state-healing-map 转述口径、AGENTS v1.3.7、ROADMAP v1.4.0、DECISIONS v1.3.5（新增 **D-026**）。
 - **产品形态定稿**：疗愈师单端工作台 = 报告生成 + 问答助手（自己问透 + 辅助应答）+ PDF 交付；来访者在产品外、经由疗愈师获得服务。FDE"产品+轻陪跑"叙事与此完全一致。
 - **剩余待办**：解读入口逐条重写、土虚金弱立档 + case-004 重构（共创期）；指标口径全文统一（第三批）；内容层修（第四批）；评估体系增强（第五批，等文档打磨完）。
+
+### 决策 15（2026-09-10 第八轮：土虚金弱定位澄清与删除）
+
+- **澄清**：土虚金弱**不是** 20 种标准失衡模式之一——它本质是"相生不及"（土弱不生金），属于 D-017 裁定的"暂不纳入 10 种"。此前"立档"提议默认了为个案开口子，被用户质疑后纠正。
+- **结论（方案 A）**：TOPICS 乾宫删条目；case-004 降级为"待观察线索——土生金不足（相生不及类）"，正式模式待按标准库重选；未来如需扩展模式，走 mandala-5e 立档 + 共创评审的**准入流程**，不得个案级临时造模式。
+- 落地：miro commit（DECISIONS v1.3.6 新增 **D-027**；TOPICS v1.3.3、AGENTS v1.3.8、ROADMAP v1.4.1）。
