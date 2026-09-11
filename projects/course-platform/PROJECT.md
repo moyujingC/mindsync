@@ -1,7 +1,7 @@
 # 墨予镜课程平台项目工作区
 
 > 状态：draft
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：CEO / Engineer
 > last_updated：2026-09-11
 > source_of_truth：projects/course-platform/PROJECT.md
@@ -32,7 +32,7 @@
 
 ## 4. 目录约定
 
-- `specs/`：平台部署、品牌定制、集成方案的正式定义
+- `specs/`：平台规格，按四层组织（设计层/控制层/工程层/验收层），入口见 [specs/README.md](./specs/README.md)
 - `docs/`：平台使用说明、后台操作手册
 - `runbook/`：部署、运维、故障处理记录
 - 源码目录（fork 的 ai-shifu 代码）在确定 fork 方案后建立
