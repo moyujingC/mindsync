@@ -73,3 +73,6 @@ projects/content-matrix/accounts/墨予镜/小红书出图/
 # 抓取的公众号原文快照（中间产物，风格已抽成 styles/*.json）
 projects/content-matrix/accounts/墨予镜/reference-samples/*/content.html
 projects/content-matrix/accounts/墨予镜/reference-samples/*/meta.json
+
+# 墨予镜课程平台：ai-shifu 源码为独立 git 仓库，不嵌入 mindsync
+projects/course-platform/app/
