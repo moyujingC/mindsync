@@ -1,9 +1,9 @@
 # 墨予镜课程平台项目工作区
 
 > 状态：draft
-> 版本：0.1.2
+> 版本：0.1.4
 > owner：CEO / Engineer
-> last_updated：2026-09-11
+> last_updated：2026-09-12
 > source_of_truth：projects/course-platform/PROJECT.md
 
 这是 `墨予镜课程平台` 在 Monorepo 中的项目工作区入口。
@@ -30,14 +30,14 @@
 
 `spec`。首门上线课程预计为 `曼陀罗自我疗愈入门`（内容侧见 healing-courses）。
 
-进度：平台本地全栈已跑通（MySQL/Redis/后端/前端，见工程层第 6 节实操备忘），控制层状态位于 `source-ready → local-running` 之间；剩余阻塞项是配置真实 DeepSeek API Key 后完成一轮互动学习复验。fork 方案待定（当前 app/ 为上游仓库的直接克隆，未改 remote）。
+进度：平台本地全栈已跑通（MySQL/Redis/后端/前端，见工程层第 6 节实操备忘），控制层状态已达 `local-running`（2026-09-12 复验通过，见验收层记录）：真实 DeepSeek Key 下 Demo 课完整跑通一轮互动学习。代码仓库已迁出 Monorepo 并完成 fork：/Users/xinran/Downloads/dev/ai-shifu（origin=MindSyncHub/ai-shifu，upstream=ai-shifu/ai-shifu）。下一步：品牌定制（branded）。
 
 ## 4. 目录约定
 
 - `specs/`：平台规格，按四层组织（设计层/控制层/工程层/验收层），入口见 [specs/README.md](./specs/README.md)
 - `docs/`：平台使用说明、后台操作手册
 - `runbook/`：部署、运维、故障处理记录
-- 源码目录 `app/`：上游 ai-shifu 的直接克隆（含独立 git 仓库，mindsync 侧已 gitignore；fork 方案确定后改 remote）
+- 代码仓库在 Monorepo 外：`/Users/xinran/Downloads/dev/ai-shifu`（ai-shifu fork，独立 git 仓库；mindsync 侧不嵌代码，映射登记见 company/项目与仓库映射.md）
 
 ## 5. 协作边界
 
