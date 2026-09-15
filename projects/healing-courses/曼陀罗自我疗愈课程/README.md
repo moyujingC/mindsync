@@ -16,13 +16,23 @@
 
 - [曼陀罗自我疗愈入门课程输入稿](../docs/曼陀罗自我疗愈入门课程输入稿.md)
 
-### 曼陀罗知识库（一镜一梳，可复用底座）
+### 曼陀罗知识库（最新版，维护于 miro 仓库）
 
-- 知识库入口：[10-曼陀罗](../aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/README.md)
-- 解读流程：[00-曼陀罗基础层解读流程](../aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/00-曼陀罗基础层解读流程.md)
-- 画面信号总目录：[01-画面信号总目录](../aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/01-画面信号总目录.md)
+miro 仓库路径：`/Users/xinran/Downloads/dev/miro/docs/knowledge/mandala/`（以下用相对链接 `../../../../miro/...` 跨仓指向，仅本机有效）
+
+- 五行解读体系：[mandala-5e.md](../../../../miro/docs/knowledge/mandala/mandala-5e.md) — 核心解读引擎
+- 状态讲解层：[state-explanation.md](../../../../miro/docs/knowledge/mandala/state-explanation.md) — 面向来访者的状态讲解语料，课程"自我观察"部分可直接改写使用
+- 状态→疗愈方案映射：[state-healing-map.md](../../../../miro/docs/knowledge/mandala/state-healing-map.md)
+- 画面信号识别规则：[visual-signal-map.md](../../../../miro/docs/knowledge/mandala/visual-signal-map.md) — 画完后"看什么、怎么看"的规则
+- 状态因果图谱：[causal-graph.md](../../../../miro/docs/knowledge/mandala/causal-graph.md)
+- 组合模式库：[combination-patterns.md](../../../../miro/docs/knowledge/mandala/combination-patterns.md)
+- 阴阳解读法（候选·待验证）：[yin-yang-interpretation.md](../../../../miro/docs/knowledge/mandala/yin-yang-interpretation.md)
+- 11 例完整解读案例（含原画）：[cases/index.md](../../../../miro/docs/knowledge/mandala/cases/index.md) — 真实案例素材，课程举例可用
+
+### 手册原文（仍在 mindsync 的 aimandala 知识库，miro 未收录）
+
 - 曼陀罗解读手册原文：[90-来源原文/01-曼陀罗解读手册原文](../aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/90-来源原文/01-曼陀罗解读手册原文.md)
-- 曼陀罗绘画使用手册原文（绘画带练参考）：[90-来源原文/02-曼陀罗绘画使用手册原文](../aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/90-来源原文/02-曼陀罗绘画使用手册原文.md)
+- 曼陀罗绘画使用手册原文（绘画带练设计的主要参考）：[90-来源原文/02-曼陀罗绘画使用手册原文](../aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/90-来源原文/02-曼陀罗绘画使用手册原文.md)
 
 ### 市场研究
 
