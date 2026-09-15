@@ -35,6 +35,10 @@ miro 仓库路径：`/Users/xinran/Downloads/dev/miro/docs/knowledge/mandala/`�
 - [曼陀罗绘画使用手册原文](../aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/90-来源原文/02-曼陀罗绘画使用手册原文.md)
 - [参考公众号合集（983 篇原文）](../../../../miro/参考公众号/) — 同一作者的公众号文章，课程选题、案例、金句素材源；文件为哈希命名，暂无索引，检索用 `grep -r "关键词" /Users/xinran/Downloads/dev/miro/参考公众号/`
 
+### 通用素材（不限于曼陀罗课，所有课程可能用得到）
+
+- [疗愈师实用手册（他人所著，在线文档）](https://www.workbuddy.cn/space/d/EmzC3354Rre4qLpqX27yJQ?source=2) — 需登录访问，内容待读
+
 ### 市场研究
 
 - [中国大陆职场女性曼陀罗艺术疗愈课程市场需求分析报告](../research/中国大陆职场女性曼陀罗艺术疗愈课程市场需求分析报告.md)
