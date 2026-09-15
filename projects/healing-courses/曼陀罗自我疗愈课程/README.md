@@ -29,10 +29,9 @@ miro 仓库路径：`/Users/xinran/Downloads/dev/miro/docs/knowledge/mandala/`�
 - 阴阳解读法（候选·待验证）：[yin-yang-interpretation.md](../../../../miro/docs/knowledge/mandala/yin-yang-interpretation.md)
 - 11 例完整解读案例（含原画）：[cases/index.md](../../../../miro/docs/knowledge/mandala/cases/index.md) — 真实案例素材，课程举例可用
 
-### 手册原文（仍在 mindsync 的 aimandala 知识库，miro 未收录）
+### 手册原文
 
-- 曼陀罗解读手册原文：[90-来源原文/01-曼陀罗解读手册原文](../aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/90-来源原文/01-曼陀罗解读手册原文.md)
-- 曼陀罗绘画使用手册原文（绘画带练设计的主要参考）：[90-来源原文/02-曼陀罗绘画使用手册原文](../aimandala/docs/疗愈体系知识库/20-疗愈体系/20-流派层/10-曼陀罗/90-来源原文/02-曼陀罗绘画使用手册原文.md)
+（链接由用户直接提供，待补充）
 
 ### 市场研究
 
