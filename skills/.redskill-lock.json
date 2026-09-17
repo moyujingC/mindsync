@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "skills": {
+    "guizang-material-illustration": {
+      "name": "guizang-material-illustration",
+      "version": "1.0.0",
+      "source": "redskill",
+      "install_dir": "/Users/xinran/Downloads/dev/mindsync/skills/guizang-material-illustration",
+      "installed_at": "1789651997017",
+      "sha256": "ea0615600c76071d2a53e59ec372f2a2fc27a143e39f991cbb2c8cf4be1c266c"
+    }
+  }
+}
