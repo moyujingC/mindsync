@@ -1,3 +1,6 @@
 # HiStyle 原始素材与运行时截获（版权资产，仅本地留存，不入 git）
 raw/
 runtime-capture/
+
+# 引擎密钥（本地 only）
+engine/.env

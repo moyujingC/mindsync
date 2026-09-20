@@ -1,0 +1,7 @@
+{
+  "name": "typeset-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": { "juice": "^11.1.1" }
+}
