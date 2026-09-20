@@ -32,6 +32,7 @@
 - [x] HiStyle 静态资产全量归档（77 风格 × 3 版本样章）
 - [x] 架构拆解（见 teardown/HiStyle-架构拆解.md）
 - [x] 运行时截获看守工具（tools/watch-runtime.mjs）
-- [ ] 运行时截获：等 HiStyle 做一次真实生成
-- [ ] 选定 1-2 套风格做复刻终验（候选见 content-matrix 会话，8 套预览已出）
+- [x] 运行时截获：已收兵（api-key 模式无本地落点，五路线失败记录见 teardown）
+- [ ] 选定 1-2 套风格做复刻终验（8 套预览已出，等 CEO 拍板）
+- [ ] 合规规则反推：preview vs wechat 成品 diff 分析（原料在本地 sqlite）
 - [ ] 自研排版引擎 M1（CLI：md → 公众号 HTML，风格库驱动）

@@ -2,11 +2,12 @@
 // claude-workspace-* 立即快照到 runtime-capture/（提示词、AGENTS 指令、会话日志都在里面）。
 // 用法：node tools/watch-runtime.mjs [最长运行分钟，默认 30]
 import { readdirSync, statSync, cpSync, existsSync, mkdirSync, writeFileSync, appendFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import os from "node:os";
 
 const WATCH_DIR = os.tmpdir();
-const OUT_ROOT = new URL("../runtime-capture/", import.meta.url).pathname;
+const OUT_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../runtime-capture/");
 const PATTERNS = ["histyle-codex-home-", "histyle-codex-workspace-", "histyle-claude-workspace-"];
 const maxMin = Number(process.argv[2] || 30);
 mkdirSync(OUT_ROOT, { recursive: true });

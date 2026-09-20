@@ -59,3 +59,24 @@ Electron 壳 + 调用用户本机自装的 Codex CLI（烧用户自己的 API Ke
 
 1. 「烧用户自己的 key」有两种实现：本地 agent（重，体验依赖用户环境）vs 服务器中继（轻，但服务器能看用量甚至内容——信任问题）。
 2. 收费闸门 = generation-permit + device-proof（设备证明），客户端只负责签名与记账。
+
+## 运行时截获：五条路线的战果（2026-09-21 收兵）
+
+目标：api-key 模式下截获 `/api/prompts/resolve` 的提示词响应。**未达成**，五条路线全部失败，记录备查：
+
+| 路线 | 失败原因 |
+| --- | --- |
+| 临时目录截获 | api-key 模式无本地 agent，提示词不过本地磁盘（codex/claude 本地模式才有临时目录） |
+| 进程树间谍 v2-v4 | 生成期间无任何本地 agent 子进程；全量进程 diff 证实计算在服务器 |
+| CDP 调试端口 | 应用过滤 `--remote-debugging-port`，注入即拒绝启动 |
+| 代理环境变量 + mitmproxy | 主进程 API 走 undici（Node 底层），不吃系统/环境代理 |
+| asar 补丁注入 | 撞 ElectronAsarIntegrity 完整性校验；哈希算法未破解即收兵 |
+
+关键情报（对自研有参考价值）：
+1. **Electron Fuse** 禁用了 NODE_OPTIONS，预载脚本注入无门。
+2. **asar 完整性校验** = Info.plist 里 ElectronAsarIntegrity 的 SHA256，与文件 sha256 不同（按头部区域计算，具体算法未还原）。
+3. macOS 系统保护禁止修改 /Applications 下已签名 app 的包内容（Operation not permitted），必须复制副本修改。
+4. `device-proof-helper` 对 `/api/prompts/resolve` 请求做设备证明签名（防重放/防模拟客户端）。
+5. api-key 模式 = 服务器中继用户 key 调 LLM，本地只见元数据；内容隐私性弱于本地 agent 模式。
+
+结论：提示词不可得也不必要——开源版提示词自研，合规规则用本地成品 diff 反推（preview vs wechat 两版 inline_html 均在 sqlite）。
