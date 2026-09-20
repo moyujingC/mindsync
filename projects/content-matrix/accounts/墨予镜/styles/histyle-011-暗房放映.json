@@ -1,0 +1,357 @@
+{
+  "name": "histyle-011-暗房放映",
+  "source": "HiStyle 011 暗房放映·奶油巨字（个人复刻，内部使用）",
+  "blocks": [
+    {
+      "role": "paragraph",
+      "count": 37,
+      "skeleton": "<div class=\"slug on\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; line-height: 1.4; letter-spacing: 0.12px; color: #ECE4B4;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 108
+    },
+    {
+      "role": "paragraph",
+      "count": 30,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; margin-top: 10px;\">{{text}}</p>",
+      "listItem": null,
+      "textLen": 2290
+    },
+    {
+      "role": "heading",
+      "count": 23,
+      "skeleton": "<div class=\"huge-num\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 112px; line-height: 0.92; letter-spacing: -4.5px; font-family: -apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif; padding-left: 16px; padding-right: 16px; margin-left: -6px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 43
+    },
+    {
+      "role": "heading",
+      "count": 23,
+      "skeleton": "<div class=\"big\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 37px; line-height: 1.22; letter-spacing: 0.37px; padding-left: 16px; padding-right: 16px; margin-top: 4px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 161
+    },
+    {
+      "role": "paragraph",
+      "count": 22,
+      "skeleton": "<div class=\"blk-lg\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 52px; padding-left: 16px; padding-right: 16px;\"><p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px;\">{{text}}</p></div>",
+      "listItem": null,
+      "textLen": 1461
+    },
+    {
+      "role": "paragraph",
+      "count": 17,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 20px; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px;\">{{text}}</p>",
+      "listItem": null,
+      "textLen": 941
+    },
+    {
+      "role": "paragraph",
+      "count": 14,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px;\">{{text}}</p>",
+      "listItem": null,
+      "textLen": 1111
+    },
+    {
+      "role": "paragraph",
+      "count": 13,
+      "skeleton": "<div class=\"slug\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; line-height: 1.4; letter-spacing: 0.12px; color: rgba(236,228,180,0.65); padding-left: 16px; padding-right: 16px; margin-top: 20px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 170
+    },
+    {
+      "role": "paragraph",
+      "count": 11,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px;\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; line-height: 1.3; display: block; font-size: 16px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 230
+    },
+    {
+      "role": "heading",
+      "count": 10,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px;\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.3; display: block;\">{{text}}</span><span class=\"v\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; line-height: 1.7; color: rgba(236,228,180,0.66); display: block; margin-top: 6px; letter-spacing: -0.1px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 206
+    },
+    {
+      "role": "heading",
+      "count": 9,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px;\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.3; display: block;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 301
+    },
+    {
+      "role": "paragraph",
+      "count": 5,
+      "skeleton": "<div class=\"slug\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; line-height: 1.4; letter-spacing: 0.12px; color: rgba(236,228,180,0.65); margin-bottom: 10px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 24
+    },
+    {
+      "role": "heading",
+      "count": 5,
+      "skeleton": "<div class=\"sub\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 21px; letter-spacing: 0.21px; line-height: 1.35;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 252
+    },
+    {
+      "role": "heading",
+      "count": 5,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px; border-bottom: 1px solid rgba(236,228,180,0.28);\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.3; display: block;\">{{text}}</span><span class=\"v\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; line-height: 1.7; color: rgba(236,228,180,0.66); display: block; margin-top: 6px; letter-spacing: -0.1px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 97
+    },
+    {
+      "role": "paragraph",
+      "count": 5,
+      "skeleton": "<div class=\"slug on\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; line-height: 1.4; letter-spacing: 0.12px; padding-left: 16px; padding-right: 16px; color: #ECE4B4; margin-top: 20px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 29
+    },
+    {
+      "role": "heading",
+      "count": 5,
+      "skeleton": "<div class=\"big\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 37px; line-height: 1.22; letter-spacing: 0.37px; padding-left: 16px; padding-right: 16px; margin-top: 14px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 34
+    },
+    {
+      "role": "paragraph",
+      "count": 4,
+      "skeleton": "<div class=\"slug\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; line-height: 1.4; letter-spacing: 0.12px; color: rgba(236,228,180,0.75);\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 20
+    },
+    {
+      "role": "heading",
+      "count": 4,
+      "skeleton": "<div class=\"sub\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 21px; line-height: 1.3; letter-spacing: 0.21px; color: #ECE4B4; margin-top: 14px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 160
+    },
+    {
+      "role": "paragraph",
+      "count": 4,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; margin-top: 26px;\">{{text}}</p>",
+      "listItem": null,
+      "textLen": 178
+    },
+    {
+      "role": "paragraph",
+      "count": 4,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; margin-top: 14px;\">{{text}}</p>",
+      "listItem": null,
+      "textLen": 261
+    },
+    {
+      "role": "paragraph",
+      "count": 4,
+      "skeleton": "<div class=\"slug on\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; line-height: 1.4; letter-spacing: 0.12px; color: #ECE4B4; margin-bottom: 24px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 52
+    },
+    {
+      "role": "heading",
+      "count": 4,
+      "skeleton": "<div class=\"huge\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 56px; letter-spacing: 0.5px; line-height: 1.08;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 40
+    },
+    {
+      "role": "list",
+      "count": 3,
+      "skeleton": "<ul class=\"plain\" style=\"margin: 0; padding: 0; box-sizing: border-box; list-style: none; margin-top: 18px;\">{{items}}</ul>",
+      "listItem": "<li style=\"margin: 0; padding: 0; box-sizing: border-box; padding-left: 18px; position: relative; margin-top: 12px; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px;\">{{text}}</li>",
+      "textLen": 211
+    },
+    {
+      "role": "list",
+      "count": 3,
+      "skeleton": "<ul class=\"steps\" style=\"margin: 0; padding: 0; box-sizing: border-box; list-style: none;\">{{items}}</ul>",
+      "listItem": "<li style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 22px; display: block; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px;\"><span class=\"n\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; letter-spacing: 0.5px; color: rgba(236,228,180,0.6); display: block; margin-bottom: 2px;\">{{text}}</span><span class=\"t\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.35; display: block;\">{{text}}</span><span class=\"d\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 4px; font-size: 15px; line-height: 1.85; color: rgba(236,228,180,0.68); letter-spacing: -0.2px;\">{{text}}</span></li>",
+      "textLen": 262
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px;\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.3; display: block;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 213
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px;\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.3; display: block;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 136
+    },
+    {
+      "role": "heading",
+      "count": 3,
+      "skeleton": "<div class=\"sub\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 21px; line-height: 1.3; letter-spacing: 0.21px; margin-top: 8px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 66
+    },
+    {
+      "role": "heading",
+      "count": 2,
+      "skeleton": "<div class=\"sub\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 21px; line-height: 1.3; letter-spacing: 0.21px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 22
+    },
+    {
+      "role": "heading",
+      "count": 2,
+      "skeleton": "<div class=\"param\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 20px 0;\"><span class=\"num\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 34px; line-height: 1.05; letter-spacing: -1px; display: block;\">{{text}}</span><span class=\"lbl\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; color: rgba(236,228,180,0.62); display: block; margin-top: 8px; line-height: 1.6;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 73
+    },
+    {
+      "role": "heading",
+      "count": 2,
+      "skeleton": "<div class=\"blk-lg\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 52px; padding-left: 16px; padding-right: 16px;\"><div class=\"sub\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 21px; line-height: 1.3; letter-spacing: 0.21px;\">{{text}}</div></div>",
+      "listItem": null,
+      "textLen": 30
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"huge\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 56px; line-height: 1.07; letter-spacing: 0.5px; margin-top: 28px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 12
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"sub\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 21px; line-height: 1.3; letter-spacing: 0.21px; margin-top: 36px; color: rgba(236,228,180,0.7);\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 6
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"svgwrap\" style=\"margin: 0; box-sizing: border-box; margin-top: 36px; padding: 0 16px;\"><svg viewBox=\"0 0 380 96\" width=\"100%\" height=\"96\" aria-hidden=\"true\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block;\">{{text}}</svg></div>",
+      "listItem": null,
+      "textLen": 109
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"param\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 20px 0; border-bottom: 1px solid rgba(236,228,180,0.28);\"><span class=\"num\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 34px; line-height: 1.05; letter-spacing: -1px; display: block;\">{{text}}</span><span class=\"lbl\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; color: rgba(236,228,180,0.62); display: block; margin-top: 8px; line-height: 1.6;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 35
+    },
+    {
+      "role": "list",
+      "count": 1,
+      "skeleton": "<ul class=\"steps\" style=\"margin: 0; padding: 0; box-sizing: border-box; list-style: none; margin-top: 12px;\">{{items}}</ul>",
+      "listItem": "<li style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 22px; display: block; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px;\"><span class=\"n\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; letter-spacing: 0.5px; color: rgba(236,228,180,0.6); display: block; margin-bottom: 2px;\">{{text}}</span><span class=\"t\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.35; display: block;\">{{text}}</span><span class=\"d\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 4px; font-size: 15px; line-height: 1.85; color: rgba(236,228,180,0.68); letter-spacing: -0.2px;\">{{text}}</span></li>",
+      "textLen": 44
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px; border-bottom: 1px solid rgba(236,228,180,0.28);\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.3; display: block;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 70
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div style=\"margin: 0; box-sizing: border-box; padding: 0 16px;\"><pre style=\"margin: 0; box-sizing: border-box; background: #000000; padding: 20px 16px; margin-top: 28px; overflow-x: auto; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 13px; line-height: 1.75; color: rgba(236,228,180,0.85); letter-spacing: 0;\">{{text}}</pre></div>",
+      "listItem": null,
+      "textLen": 181
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"svgwrap\" style=\"margin: 0; box-sizing: border-box; margin-top: 36px; padding: 0 16px;\"><svg viewBox=\"0 0 380 210\" width=\"100%\" height=\"210\" aria-hidden=\"true\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block;\">{{text}}</svg></div>",
+      "listItem": null,
+      "textLen": 62
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; margin-top: 28px;\">{{text}}</p>",
+      "listItem": null,
+      "textLen": 47
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px; border-bottom: 1px solid rgba(236,228,180,0.28);\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.3; display: block;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 34
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"blk-lg\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 52px; padding-left: 16px; padding-right: 16px;\"><div class=\"huge\" style=\"margin: 0; padding: 0; box-sizing: border-box; line-height: 1.07; letter-spacing: 0.5px; font-size: 48px;\">{{text}}</div></div>",
+      "listItem": null,
+      "textLen": 13
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"huge\" style=\"margin: 0; padding: 0; box-sizing: border-box; line-height: 1.07; letter-spacing: 0.5px; font-size: 52px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 10
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"slug\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; line-height: 1.4; letter-spacing: 0.12px; color: rgba(236,228,180,0.75); margin-top: 28px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 14
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px; border-bottom: 1px solid rgba(236,228,180,0.28);\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; line-height: 1.3; display: block; font-size: 16px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 19
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; margin-top: 18px; color: #ECE4B4;\">{{text}}</p>",
+      "listItem": null,
+      "textLen": 66
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"row\" style=\"margin: 0; box-sizing: border-box; border-top: 1px solid rgba(236,228,180,0.28); padding: 16px 0 18px; border-bottom: 1px solid rgba(236,228,180,0.28);\"><span class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; line-height: 1.3; display: block;\">{{text}}</span><span class=\"kv\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-top: 8px; font-size: 14px; line-height: 1.7; letter-spacing: -0.1px;\">{{text}}</span></div>",
+      "listItem": null,
+      "textLen": 30
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"slug\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; line-height: 1.4; letter-spacing: 0.12px; color: rgba(236,228,180,0.65); padding-left: 16px; padding-right: 16px; margin-top: 16px;\">{{text}}</div>",
+      "listItem": null,
+      "textLen": 7
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"olive\" style=\"margin: 0; box-sizing: border-box; background: #4F4D3C; padding: 44px 16px; margin-top: 56px; padding-top: 60px; padding-bottom: 60px;\"><div class=\"sub\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 21px; line-height: 1.3; letter-spacing: 0.21px; color: #ECE4B4;\">{{text}}</div></div>",
+      "listItem": null,
+      "textLen": 28
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"ending\" style=\"margin: 0; box-sizing: border-box; margin-top: 130px; padding: 0 16px; text-align: left;\"><div class=\"slug\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; line-height: 1.4; letter-spacing: 0.12px; color: rgba(236,228,180,0.65); margin-top: 80px;\">{{text}}</div></div>",
+      "listItem": null,
+      "textLen": 26
+    }
+  ],
+  "inline": {
+    "em": {
+      "color": "rgba(236,228,180,0.5)",
+      "weight": null,
+      "background": null
+    }
+  },
+  "container": "<div style=\"padding: 0; box-sizing: border-box; background: #090909; color: #ECE4B4; max-width: 600px; margin: 0 auto; font-family: -apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif; font-weight: 400; overflow-x: hidden; padding-bottom: 120px;\">{{content}}</div>"
+}

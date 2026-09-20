@@ -331,9 +331,11 @@ export function extractSkeletonLibrary(html, meta = {}) {
     if (!skel.includes("{{text}}") && !skel.includes("{{img}}") && !skel.includes("{{items}}")) continue;
 
     if (!groupMap.has(skel)) {
-      groupMap.set(skel, { role, count: 0, skeleton: skel, listItem });
+      groupMap.set(skel, { role, count: 0, skeleton: skel, listItem, textLen: 0 });
     }
-    groupMap.get(skel).count += 1;
+    const g = groupMap.get(skel);
+    g.count += 1;
+    g.textLen += ((b.text || "") + "").trim().length;
   }
 
   lib.blocks = [...groupMap.values()].sort((a, b) => b.count - a.count);
@@ -378,9 +380,13 @@ export function fillListSkeleton(containerSkel, itemSkel, items = []) {
   return containerSkel.replace("{{items}}", itemsHtml);
 }
 
-// 从骨架库取某角色的变体（取 count 最多的）。返回 { role, count, skeleton, listItem }。
+// 从骨架库取某角色的变体。paragraph 取平均文本最长的（装饰性小标签出现次数多但不是正文）；
+// 其余角色取 count 最多的。返回 { role, count, skeleton, listItem }。
 export function pickSkeleton(lib, role) {
   const candidates = lib.blocks.filter((b) => b.role === role);
   if (!candidates.length) return null;
+  if (role === "paragraph") {
+    return [...candidates].sort((a, b) => (b.textLen / b.count) - (a.textLen / a.count))[0];
+  }
   return candidates[0];
 }
