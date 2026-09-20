@@ -1,0 +1,337 @@
+{
+  "name": "histyle-010-静白图册",
+  "source": "",
+  "blocks": [
+    {
+      "role": "paragraph",
+      "count": 63,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 0; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 22,
+      "skeleton": "<h3 class=\"ch-title\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 36px; line-height: 1.2; font-weight: 700; color: #333333;\">{{text}}</h3>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 20,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 17px; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 13,
+      "skeleton": "<h4 style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 19px; font-weight: 600; line-height: 1.4; color: #333333; margin-bottom: 8px;\">{{text}}</h4>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 11,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333; margin-top: 33px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"label\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #767676; margin-bottom: 13px; display: flex; align-items: center; gap: 8px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"tag t-sym\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px; color: #767676;\"><span class=\"sq\" style=\"margin: 0; padding: 0; box-sizing: border-box; width: 6px; height: 6px; border-radius: 2px; display: inline-block; background: #808080;\"></span>{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"tag t-why\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px; color: #767676;\"><span class=\"sq\" style=\"margin: 0; padding: 0; box-sizing: border-box; width: 6px; height: 6px; border-radius: 2px; display: inline-block; background: #2c70dd;\"></span>{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"tag t-fix\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 8px; color: #767676;\"><span class=\"sq\" style=\"margin: 0; padding: 0; box-sizing: border-box; width: 6px; height: 6px; border-radius: 2px; display: inline-block; background: #24b26d;\"></span>{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"gt\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: flex; align-items: baseline; justify-content: space-between; gap: 13px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"gd\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 400; line-height: 1.8; color: #545454; letter-spacing: -0.2px; margin-top: 6px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 8,
+      "skeleton": "<div class=\"rk\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #767676;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 7,
+      "skeleton": "<div class=\"li\" style=\"margin: 0; box-sizing: border-box; display: flex; gap: 13px; align-items: flex-start; padding: 14px 0; border-top: 1px solid #e5e7eb;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 7,
+      "skeleton": "<div class=\"rd\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 400; color: #545454; line-height: 1.8; letter-spacing: -0.2px; margin-top: 6px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 7,
+      "skeleton": "<div class=\"rv txt\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-weight: 700; color: #333333; line-height: 1.35; margin-top: 4px; letter-spacing: -0.5px; font-family: -apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif; font-size: 19px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 6,
+      "skeleton": "<div class=\"it\" style=\"margin: 0; box-sizing: border-box; display: flex; gap: 13px; padding: 15px 16px; align-items: flex-start; background: #f9f9fb; border-top: 1px solid #e5e7eb;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 5,
+      "skeleton": "<div class=\"it\" style=\"margin: 0; box-sizing: border-box; display: flex; gap: 13px; padding: 15px 16px; align-items: flex-start; border-top: 1px solid #e5e7eb;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"li\" style=\"margin: 0; box-sizing: border-box; display: flex; gap: 13px; align-items: flex-start; padding: 14px 0;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"quote\" style=\"margin: 0; box-sizing: border-box; background: #f9f9fb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 29px 16px; margin-top: 38px;\"><svg class=\"mark\" width=\"24\" height=\"18\" viewBox=\"0 0 24 18\" fill=\"none\" aria-hidden=\"true\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-bottom: 13px;\"></svg><p style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 0; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333;\">{{text}}</p></div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 3,
+      "skeleton": "<div class=\"rv\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 22px; font-weight: 700; color: #333333; line-height: 1.35; margin-top: 4px; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; letter-spacing: -0.5px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 2,
+      "skeleton": "<div class=\"svgwrap\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 29px;\">{{text}}<p class=\"cap\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 0; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333;\">{{text}}</p></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 2,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333; margin-top: 38px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 2,
+      "skeleton": "<div class=\"step\" style=\"margin: 0; box-sizing: border-box; display: flex; gap: 13px; align-items: flex-start; padding: 17px 0; border-top: 1px solid #e5e7eb;\"><span class=\"n\" style=\"margin: 0; padding: 0; box-sizing: border-box; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 9999px; border: 1px solid #333333; color: #333333; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; margin-top: 3px;\">{{text}}</span>{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 2,
+      "skeleton": "<div class=\"step\" style=\"margin: 0; box-sizing: border-box; display: flex; gap: 13px; align-items: flex-start; padding: 17px 0; border-top: 1px solid #e5e7eb; padding-bottom: 0;\"><span class=\"n\" style=\"margin: 0; padding: 0; box-sizing: border-box; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 9999px; border: 1px solid #333333; color: #333333; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; margin-top: 3px;\">{{text}}</span>{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 2,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; color: #333333; margin-top: 29px; font-size: 22px; font-weight: 700; line-height: 1.6; letter-spacing: -0.4px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 2,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333; margin-top: 29px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 2,
+      "skeleton": "<h2 class=\"part\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 44px; line-height: 1.15; font-weight: 700; color: #333333;\">{{text}}</h2>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 2,
+      "skeleton": "<p class=\"part-desc\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 17px; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 2,
+      "skeleton": "<div class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #767676;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 2,
+      "skeleton": "<div class=\"v\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 22px; font-weight: 700; color: #333333; margin-top: 6px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 2,
+      "skeleton": "<h3 class=\"ch-title\" style=\"margin: 0; padding: 0; box-sizing: border-box; line-height: 1.2; font-weight: 700; color: #333333; font-size: 22px;\">{{text}}</h3>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<h1 class=\"display\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 56px; line-height: 1.07; font-weight: 700; color: #333333;\">{{text}}</h1>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p class=\"hero-sub\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 17px; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p class=\"hero-lede\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"hero-meta\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 38px; display: flex; gap: 8px; flex-wrap: nowrap;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"step\" style=\"margin: 0; box-sizing: border-box; display: flex; gap: 13px; align-items: flex-start; padding: 17px 0; padding-top: 0;\"><span class=\"n fill\" style=\"margin: 0; padding: 0; box-sizing: border-box; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 9999px; border: 1px solid #333333; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; margin-top: 3px; background: #333333; color: #ffffff; border-color: #333333;\">{{text}}</span>{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333; margin-top: 17px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"step\" style=\"margin: 0; box-sizing: border-box; display: flex; gap: 13px; align-items: flex-start; padding: 17px 0; padding-top: 0;\"><span class=\"n\" style=\"margin: 0; padding: 0; box-sizing: border-box; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 9999px; border: 1px solid #333333; color: #333333; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; margin-top: 3px;\">{{text}}</span>{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "pre",
+      "count": 1,
+      "skeleton": "<pre style=\"margin: 0; box-sizing: border-box; background: #eff0f6; border: 1px solid #e5e7eb; border-radius: 12px; padding: 17px 16px; overflow-x: auto; margin-top: 21px;\">{{text}}</pre>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333; margin-top: 21px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"svgwrap\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 0;\">{{text}}<p class=\"cap\" style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 0; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #333333;\">{{text}}</p></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"rk\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #24b26d;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"rk\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #2c70dd;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"punch\" style=\"margin: 0; box-sizing: border-box; background: #333333; border-radius: 12px; padding: 50px 16px; margin-top: 50px; text-align: center;\"><div class=\"big\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 44px; line-height: 1.25; font-weight: 700; color: #ffffff;\">{{text}}</div></div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"big\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 44px; line-height: 1.25; font-weight: 700; color: #ffffff;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"small\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 400; color: #b9b9b9; margin-top: 17px; line-height: 1.8;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"part-tag\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #767676; display: flex; align-items: center; gap: 8px; margin-bottom: 13px;\"><span class=\"dot b\" style=\"margin: 0; padding: 0; box-sizing: border-box; width: 6px; height: 6px; border-radius: 9999px; display: inline-block; background: #2c70dd;\"></span>{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"cap\" style=\"margin: 0; padding: 0; box-sizing: border-box; line-height: 1.7; font-size: 13px; font-weight: 500; margin-top: 13px; color: #b9b9b9;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"part-tag\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #767676; display: flex; align-items: center; gap: 8px; margin-bottom: 13px;\"><span class=\"dot\" style=\"margin: 0; padding: 0; box-sizing: border-box; width: 6px; height: 6px; border-radius: 9999px; background: #24b26d; display: inline-block;\"></span>{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"it\" style=\"margin: 0; box-sizing: border-box; display: flex; gap: 13px; padding: 15px 16px; align-items: flex-start;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"k\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #767676; margin-bottom: 17px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<h2 style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 36px; line-height: 1.25; font-weight: 700; color: #333333;\">{{text}}</h2>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"punch\" style=\"margin: 0; box-sizing: border-box; background: #333333; border-radius: 12px; padding: 50px 16px; text-align: center; margin-top: 50px;\"><div class=\"big\" style=\"margin: 0; padding: 0; box-sizing: border-box; line-height: 1.25; font-weight: 700; color: #ffffff; font-size: 36px;\">{{text}}</div></div>",
+      "listItem": null
+    }
+  ],
+  "inline": {
+    "strong": {
+      "color": "#333333",
+      "weight": "700",
+      "background": null
+    },
+    "b": {
+      "color": null,
+      "weight": "700",
+      "background": null
+    }
+  },
+  "container": "<div style=\"padding: 0; box-sizing: border-box; background: #ffffff; max-width: 600px; margin: 0 auto; font-family: -apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif; color: #333333; overflow-x: hidden;\">{{content}}</div>"
+}

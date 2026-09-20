@@ -1,0 +1,338 @@
+{
+  "name": "histyle-043-深海终端",
+  "source": "",
+  "blocks": [
+    {
+      "role": "paragraph",
+      "count": 46,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 30,
+      "skeleton": "<div class=\"cl\" style=\"margin: 0; box-sizing: border-box; display: inline-block; font-size: 12px; font-weight: 500; letter-spacing: 0.6px; color: #cfe0ff; background: #12244f; border-radius: 9999px; padding: 4px 12px; margin-bottom: 10px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 22,
+      "skeleton": "<div class=\"lead\" style=\"margin: 0; padding: 0; box-sizing: border-box;\"><p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</p></div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 20,
+      "skeleton": "<div class=\"chapter\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px;\">{{text}}<div class=\"chapter-title\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 28px; line-height: 1.25; letter-spacing: -0.56px; font-weight: 600; color: #ffffff;\">{{text}}</div></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 14,
+      "skeleton": "<div class=\"rk\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; font-weight: 600; color: #ffffff; letter-spacing: -0.2px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 12,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 24px; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 12,
+      "skeleton": "<div class=\"cn\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 12px; color: #2862d7; flex: 0 0 auto; width: 20px; margin-top: 6px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 12,
+      "skeleton": "<div class=\"ct\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 350; line-height: 1.85; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"txt\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 350; line-height: 1.9; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"n\" style=\"margin: 0; padding: 0; box-sizing: border-box; flex: 0 0 auto; width: 28px; height: 28px; border-radius: 9999px; background: #12244f; color: #cfe0ff; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 13px; display: flex; align-items: center; justify-content: center;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"t\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 600; color: #ffffff; letter-spacing: -0.2px; line-height: 1.6;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"d\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; font-weight: 350; line-height: 1.85; color: #c7c9d1; margin-top: 4px; letter-spacing: -0.2px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"tn\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 600; color: #ffffff; letter-spacing: -0.2px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"tc\" style=\"margin: 0; box-sizing: border-box; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 11px; color: #85a6e9; background: #12244f; border-radius: 9999px; padding: 3px 10px; white-space: nowrap;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 10,
+      "skeleton": "<div class=\"td\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; font-weight: 350; line-height: 1.8; color: #abaebb; margin-top: 8px; letter-spacing: -0.2px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 9,
+      "skeleton": "<div class=\"fl\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 11px; font-weight: 500; letter-spacing: 1.1px; text-transform: uppercase; color: #6f7b93;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 9,
+      "skeleton": "<div class=\"fv\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; font-weight: 350; line-height: 1.8; color: #c7c9d1; margin-top: 3px; letter-spacing: -0.2px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 8,
+      "skeleton": "<div class=\"sec-label\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; font-weight: 500; letter-spacing: 1.4px; text-transform: uppercase; color: #abaebb;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 7,
+      "skeleton": "<div class=\"rd\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; font-weight: 350; line-height: 1.8; color: #abaebb; margin-top: 8px; letter-spacing: -0.2px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 5,
+      "skeleton": "<div class=\"card-label\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: #abaebb; margin-bottom: 12px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 4,
+      "skeleton": "<div class=\"eyebrow\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; font-weight: 500; letter-spacing: 1.6px; color: #abaebb; text-transform: uppercase;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 4,
+      "skeleton": "<div class=\"rd\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; font-weight: 350; line-height: 1.8; margin-top: 8px; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 4,
+      "skeleton": "<h2 style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 36px; line-height: 1.13; letter-spacing: -0.72px; font-weight: 500; color: #ffffff; margin-top: 16px;\">{{text}}</h2>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 4,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; margin-top: 20px; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"quote\" style=\"margin: 0; box-sizing: border-box; background: #0d172b; border: 1px solid #24375a; border-radius: 12px; padding: 24px 16px; box-shadow: rgba(0,0,0,0.5) 0px 4px 30px 0px;\"><p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</p></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"rv\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 15px; color: #85a6e9; margin-top: 6px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"rk\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-weight: 600; letter-spacing: -0.2px; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; color: #85a6e9; font-size: 15px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"rd\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-weight: 350; line-height: 1.8; letter-spacing: -0.2px; margin-top: 6px; color: #c7c9d1; font-size: 15px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"fl\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 11px; font-weight: 500; letter-spacing: 1.1px; text-transform: uppercase; color: #93a9d8;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 3,
+      "skeleton": "<div class=\"fv\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; font-weight: 350; line-height: 1.8; margin-top: 3px; letter-spacing: -0.2px; color: #dbe6ff;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 2,
+      "skeleton": "<div class=\"card-hl\" style=\"margin: 0; box-sizing: border-box; background: #12244f; border: 1px solid #1e2b48; border-radius: 12px; padding: 20px 16px;\"><p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</p></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 2,
+      "skeleton": "<div class=\"tc\" style=\"margin: 0; box-sizing: border-box; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 11px; color: #8798c1; background: #151e32; border-radius: 9999px; padding: 3px 10px; white-space: nowrap;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 2,
+      "skeleton": "<div class=\"h3\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 20px; font-weight: 600; line-height: 1.38; letter-spacing: -0.54px; color: #ffffff;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<h1 style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 48px; line-height: 1.13; letter-spacing: -1.2px; font-weight: 500; color: #ffffff; margin-top: 20px;\">{{text}}</h1>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"hero-quote\" style=\"margin: 0; box-sizing: border-box; background: #0d172b; border: 1px solid #172540; border-radius: 12px; padding: 24px 16px; box-shadow: rgba(0,0,0,0.5) 0px 4px 30px 0px;\"><svg class=\"qmark\" width=\"22\" height=\"16\" viewBox=\"0 0 22 16\" fill=\"none\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-bottom: 12px;\"></svg><p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</p></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"card card-lift\" style=\"margin: 0; box-sizing: border-box; background: #0d172b; border: 1px solid #172540; border-radius: 12px; padding: 20px 16px; box-shadow: rgba(0,0,0,0.5) 0px 4px 30px 0px;\"><div class=\"card-label\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: #abaebb; margin-bottom: 12px;\">{{text}}</div><svg width=\"100%\" viewBox=\"0 0 520 96\" fill=\"none\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block;\">{{text}}</svg></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"card card-lift\" style=\"margin: 0; box-sizing: border-box; background: #0d172b; border: 1px solid #172540; border-radius: 12px; padding: 20px 16px; box-shadow: rgba(0,0,0,0.5) 0px 4px 30px 0px;\"><svg width=\"100%\" viewBox=\"0 0 520 110\" fill=\"none\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block;\">{{text}}</svg></div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"card-hl\" style=\"margin: 0; box-sizing: border-box; background: #12244f; border: 1px solid #1e2b48; border-radius: 12px; padding: 20px 16px;\"><p style=\"margin: 0; padding: 0; box-sizing: border-box; line-height: 1.95; font-size: 20px; font-weight: 600; color: #ffffff; letter-spacing: -0.4px;\">{{text}}</p></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 14px; font-weight: 600; color: #ffffff; letter-spacing: -0.2px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "pre",
+      "count": 1,
+      "skeleton": "<pre style=\"margin: 0; box-sizing: border-box; padding: 16px; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 13px; line-height: 1.65; color: #c7c9d1; overflow-x: auto;\">{{text}}</pre>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"card card-lift\" style=\"margin: 0; box-sizing: border-box; background: #0d172b; border: 1px solid #172540; border-radius: 12px; padding: 20px 16px; box-shadow: rgba(0,0,0,0.5) 0px 4px 30px 0px;\"><svg width=\"100%\" viewBox=\"0 0 520 92\" fill=\"none\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block;\">{{text}}</svg></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"card\" style=\"margin: 0; box-sizing: border-box; background: #0d172b; border: 1px solid #172540; border-radius: 12px; padding: 20px 16px;\"><p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #c7c9d1;\">{{text}}</p></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"tc\" style=\"margin: 0; box-sizing: border-box; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 11px; color: #cfe0ff; background: #12244f; border-radius: 9999px; padding: 3px 10px; white-space: nowrap;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"tc\" style=\"margin: 0; box-sizing: border-box; font-family: 'SF Mono',SFMono-Regular,Menlo,Consolas,monospace; font-size: 11px; color: #ffb0e6; background: #3a1b33; border-radius: 9999px; padding: 3px 10px; white-space: nowrap;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div style=\"margin: 0; box-sizing: border-box; flex: 1; min-width: 0; background: #0d172b; border: 1px solid #172540; border-radius: 12px; padding: 16px 12px; text-align: center;\"><div class=\"dk\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #ffffff;\">{{text}}</div></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div style=\"margin: 0; box-sizing: border-box; flex: 1; min-width: 0; border: 1px solid #172540; border-radius: 12px; padding: 16px 12px; text-align: center; background: #12244f; border-color: #1e2b48;\"><div class=\"dk\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #ffffff;\">{{text}}</div></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 600; color: #ffffff;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; color: #c7c9d1; margin-top: 6px;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 600; color: #abaebb;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<p style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 16px; font-weight: 350; line-height: 1.95; letter-spacing: -0.2px; margin-top: 6px; color: #abaebb;\">{{text}}</p>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"big\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 36px; line-height: 1.3; letter-spacing: -0.72px; font-weight: 600; color: #ffffff;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"after\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 15px; font-weight: 350; line-height: 1.9; color: #abaebb; margin-top: 24px; letter-spacing: -0.2px;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"chapter\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px;\"><div class=\"chapter-title\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 28px; line-height: 1.25; letter-spacing: -0.56px; font-weight: 600; color: #ffffff;\">{{text}}</div></div>",
+      "listItem": null
+    },
+    {
+      "role": "paragraph",
+      "count": 1,
+      "skeleton": "<div class=\"card-label\" style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 12px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 12px; color: #93a9d8;\">{{text}}</div>",
+      "listItem": null
+    },
+    {
+      "role": "heading",
+      "count": 1,
+      "skeleton": "<div class=\"foot\" style=\"margin: 0; box-sizing: border-box; background: #0b0c0e; padding: 64px 16px 96px; position: relative; overflow: hidden;\"><div class=\"foot-inner\" style=\"margin: 0; padding: 0; box-sizing: border-box; position: relative; z-index: 2;\"><svg width=\"26\" height=\"18\" viewBox=\"0 0 22 16\" fill=\"none\" style=\"margin: 0; padding: 0; box-sizing: border-box; display: block; margin-bottom: 16px;\"></svg><div style=\"margin: 0; padding: 0; box-sizing: border-box; font-size: 24px; line-height: 1.6; letter-spacing: -0.5px; font-weight: 500; color: #ffffff;\">{{text}}</div></div></div>",
+      "listItem": null
+    }
+  ],
+  "inline": {},
+  "container": "<div style=\"padding: 0; box-sizing: border-box; background: #0e111b; max-width: 600px; margin: 0 auto; font-family: -apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif; color: #c7c9d1; overflow: hidden; position: relative;\">{{content}}</div>"
+}
