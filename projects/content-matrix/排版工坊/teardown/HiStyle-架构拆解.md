@@ -46,3 +46,16 @@ Electron 壳 + 调用用户本机自装的 Codex CLI（烧用户自己的 API Ke
 1. 收费模式 = 生成许可闸（permit）+ 服务器持有提示词/风格文档。技术全在客户端，资产全在服务器。
 2. 它的风格 = 样章 HTML（few-shot 参考）+ 风格文档，由 agent 自由发挥生成版式——这就是「每次生成版式都不同」的原因，也是它好看的来源（生成式）与不稳的来源。
 3. 我们的差异化路线：风格 = 可复刻骨架库（确定性渲染，所见即所得）+ 可选生成式装饰层。复刻任意公众号链接是它没有的能力。
+
+## 运行时模式（2026-09-21 运行时截获补全）
+
+主进程代码确认 4 种运行时：`claude` / `codex` / `chatgpt`（三种 local-cli 本地 agent 模式）/ `api-key`（服务器中转模式）。
+
+- **api-key 模式**（用户当前配置）：本地无 agent 进程。生成时只见 `device-proof-helper sign`（对 `POST /api/prompts/resolve` 做设备证明签名），随后由 histyle.top 服务器拿用户配置的 key（api.deepseek.com）中继完成生成。提示词全程不落本地磁盘。ai_runs.runtime_id='api-key'。
+- **codex/claude 模式**：本地拉起 agent CLI，提示词写入 `$TMPDIR/histyle-codex-home-*`（用完即删，仅在生成窗口内可读）。
+- 证据：两次生成窗口内全量进程 diff 无任何 agent 子进程；device-proof-helper 签名内容含 `/api/prompts/resolve`。
+
+### 对自研产品的启示
+
+1. 「烧用户自己的 key」有两种实现：本地 agent（重，体验依赖用户环境）vs 服务器中继（轻，但服务器能看用量甚至内容——信任问题）。
+2. 收费闸门 = generation-permit + device-proof（设备证明），客户端只负责签名与记账。
