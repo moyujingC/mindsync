@@ -1,5 +1,7 @@
-// 把成稿渲染成公众号草稿 HTML，并直发到公众号草稿箱。
-// 用法：node scripts/publish-draft.mjs <成稿.md> <styles/风格名.json> [封面图.png]
+// 把成稿发到公众号草稿箱。两种模式：
+//   骨架版：node scripts/publish-draft.mjs <成稿.md> <styles/风格名.json> [封面图.png]
+//   生成式：node scripts/publish-draft.mjs <成稿.md> <排版工坊产出的成品.html> [封面图.png]
+// 生成式模式跳过骨架渲染，直接把成品 HTML 作为正文（正文里的本地配图仍会传微信图床）。
 // 封面图缺省时用 小红书出图/墨予镜-mdnice/full-01.png（竖版，建议后续换横版 900×383）。
 // 凭证从同目录 .env 读（WECHAT_APP_ID / WECHAT_APP_SECRET），不入 git。
 
@@ -163,10 +165,20 @@ async function addDraft(token, article) {
 async function main() {
   const env = loadEnv();
   const md = readFileSync(mdPath, "utf8");
-  const spec = JSON.parse(readFileSync(specPath, "utf8"));
 
-  const { title, body } = extractArticle(md);
-  const html = renderArticleBody(body, spec);
+  let title, html, styleName;
+  if (specPath.endsWith(".html")) {
+    // 生成式模式：第二个参数是排版工坊产出的成品 HTML
+    ({ title, body: html } = extractArticle(md));
+    if (!title) throw new Error("成稿缺少 # 标题行，无法作为草稿标题");
+    html = readFileSync(specPath, "utf8");
+    styleName = specPath;
+  } else {
+    const spec = JSON.parse(readFileSync(specPath, "utf8"));
+    ({ title, body } = extractArticle(md));
+    html = renderArticleBody(body, spec);
+    styleName = spec.name;
+  }
 
   const token = await getAccessToken(env);
   console.log(`✓ access_token 获取成功`);
@@ -190,7 +202,7 @@ async function main() {
 
   console.log(`✓ 已发到公众号草稿箱`);
   console.log(`  标题：${title}`);
-  console.log(`  风格：${spec.name}`);
+  console.log(`  风格：${styleName}`);
   console.log(`  草稿 media_id：${draftId}`);
 }
 
