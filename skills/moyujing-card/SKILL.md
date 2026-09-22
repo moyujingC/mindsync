@@ -31,8 +31,9 @@ description: Generate Xiaohongshu/Rednote 3:4 knowledge card sets (cover + conte
 2. **分块**：把内容映射成卡片。每张卡一个核心问题或一个论点；超出的内容移到下一张，禁止塞满。
 3. **生成 cards.json**：优先用规划器 `node scripts/plan_cards.mjs <成稿.md> --out <任务目录>/cards.json [--theme theme-light] [--max-cards 8]`（LLM 拆稿，key 读排版工坊 engine/.env）；有特殊拆法需求时手写 JSON（契约见 render_cards.mjs 头注释）。content 字段只用模板定义的组件 class。
 4. **渲染**：`node scripts/render_cards.mjs cards.json <out目录>`（依赖 skill 内 node_modules 的 playwright，Chromium 用系统缓存）。
-5. **QA**：逐张跑 references/qa-checklist.md，不合格改 JSON 重渲。
-6. **交付**：路径清单 + 缩略拼图（可选）。
+5. **出双主题**（可选）：浅色定稿后，复制 cards.json 改每张 `"theme": "theme-dark"`，渲到 `<out目录>-dark` 并列存放（浅色给企业/决策者向，深色给 Builder/从业者向）。
+6. **QA**：逐张跑 references/qa-checklist.md，不合格改 JSON 重渲。
+7. **交付**：路径清单 + 缩略拼图（可选）。
 
 ## 禁忌
 
