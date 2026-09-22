@@ -17,4 +17,4 @@
 | wx-cover-02 | /Users/xinran/Downloads/dev/mindsync/projects/content-matrix/accounts/墨予镜/公众号封面/FDE-到底是个啥-cover-assets/wx-cover-02.png | 深绿 #1d3a2f + 暖金 #c9a227 |
 | wx-cover-03 | /Users/xinran/Downloads/dev/mindsync/projects/content-matrix/accounts/墨予镜/公众号封面/FDE-到底是个啥-cover-assets/wx-cover-03.png | 墨黑 #22262a + 金赭 #8a6d1f |
 
-选定：待用户挑选
+选定：wx-cover-01（深青+金赭，账号兜底默认配色）
