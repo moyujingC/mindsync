@@ -24,7 +24,6 @@ const watermark = arg("watermark", "墨予镜");
 const tplName = arg("template", "cover-v1");
 const name = arg("name", "wx-cover-01");
 
-const FONT_URL = dataUrl(join(SKILL, "assets/fonts/Muyao-Softbrush.ttf"), "font/ttf");
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 let bgImage = "", artDisplay = "none", veil = Number(arg("veil", "-1"));
 const artArg = arg("art"), genArt = arg("gen-art");
@@ -47,7 +46,6 @@ const html = readFileSync(join(SKILL, "templates", tplName + ".html"), "utf8")
   .replace("{{BG_IMAGE}}", bgImage)
   .replace("{{ART_DISPLAY}}", artDisplay)
   .replace("{{VEIL_OPACITY}}", String(veil))
-  .replace("{{FONT_URL}}", FONT_URL)
   .replace("{{WATERMARK}}", esc(watermark))
   .replace("{{TITLE}}", esc(title))
   .replace("{{SUBTITLE}}", esc(subtitle))

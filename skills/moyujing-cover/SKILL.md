@@ -30,10 +30,9 @@ description: Generate WeChat official account cover images (900×383) for finish
 
 ## 模板结构（templates/cover-v1.html）
 
-顶部金赭条纹 → 居中「墨予镜」低对比水印 → 手写体白色主标题 → 灰蓝底副标题块 → 底部金赭日期徽章。配色全部走 CSS 变量，候选差异仅配色不同。
+顶部金赭条纹 → 居中「墨予镜」低对比水印 → 黑体白色主标题 → 灰蓝底副标题块 → 底部金赭日期徽章。配色全部走 CSS 变量，候选差异仅配色不同。
 
-- 主标题字体：沐瑶软笔手写体（`assets/fonts/Muyao-Softbrush.ttf`，免费可商用，已随 skill 携带，@font-face 加载）
-- 副标题/日期字体：苹方（PingFang SC）
+- 字体：黑体系（PingFang SC / Hei SC，主标题字重 800，科技感取向），副标题/日期苹方（PingFang SC）
 
 ## Workflow
 
