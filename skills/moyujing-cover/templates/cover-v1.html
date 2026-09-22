@@ -52,12 +52,17 @@
   }
   .title {
     color: var(--title);
-    font-size: 76px;
+    font-size: 64px;
     font-weight: 800;
-    line-height: 1.15;
+    line-height: 1.2;
     text-align: center;
     padding: 0 40px;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
+  }
+  /* 中西文混排整齐化：拉丁 run 两侧补对称间隙（替代手敲空格）；
+     全角标点做标点挤压，取消标点后的多余空位 */
+  .title .lat { letter-spacing: 0.5px; margin: 0 7px; }
+  .title .pq { letter-spacing: -0.32em; margin-right: 0.32em;
   }
   .subtitle {
     display: inline-block;
@@ -65,8 +70,8 @@
     color: var(--subtitle);
     font-family: "PingFang SC", "苹方-简", sans-serif;
     font-weight: 600;
-    font-size: 33px;
-    padding: 6px 16px;
+    font-size: 26px;
+    padding: 6px 14px;
     text-align: center;
   }
   .badge {

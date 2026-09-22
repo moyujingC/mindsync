@@ -25,6 +25,10 @@ const tplName = arg("template", "cover-v1");
 const name = arg("name", "wx-cover-01");
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+// 混排整齐化：拉丁/数字 run 包 .lat（两侧对称间隙），全角标点包 .pq（挤压空位）
+const rich = (s) => esc(s)
+  .replace(/[A-Za-z0-9]+/g, (m) => `<span class="lat">${m}</span>`)
+  .replace(/([，。！？；：、「」『』（）《》])/g, (m) => `<span class="pq">${m}</span>`);
 let bgImage = "", artDisplay = "none", veil = Number(arg("veil", "-1"));
 const artArg = arg("art"), genArt = arg("gen-art");
 if (genArt) {
@@ -47,7 +51,7 @@ const html = readFileSync(join(SKILL, "templates", tplName + ".html"), "utf8")
   .replace("{{ART_DISPLAY}}", artDisplay)
   .replace("{{VEIL_OPACITY}}", String(veil))
   .replace("{{WATERMARK}}", esc(watermark))
-  .replace("{{TITLE}}", esc(title))
+  .replace("{{TITLE}}", rich(title))
   .replace("{{SUBTITLE}}", esc(subtitle))
   .replace("{{DATE}}", esc(date));
 
