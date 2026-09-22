@@ -26,7 +26,8 @@ const name = arg("name", "wx-cover-01");
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 // 混排整齐化：拉丁/数字 run 包 .lat（两侧对称间隙），全角标点包 .pq（挤压空位）
-const rich = (s) => esc(s)
+// 先去掉所有空格（拉丁 run 的 margin 会补回对称间隙，手敲空格反而破环对称）
+const rich = (s) => esc(s.replace(/\s+/g, ""))
   .replace(/[A-Za-z0-9]+/g, (m) => `<span class="lat">${m}</span>`)
   .replace(/([，。！？；：、「」『』（）《》])/g, (m) => `<span class="pq">${m}</span>`);
 let bgImage = "", artDisplay = "none", veil = Number(arg("veil", "-1"));

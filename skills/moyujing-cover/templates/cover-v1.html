@@ -57,13 +57,12 @@
     line-height: 1.2;
     text-align: center;
     padding: 0 40px;
-    letter-spacing: 1px;
   }
-  /* 中西文混排整齐化：拉丁 run 两侧补对称间隙（替代手敲空格）；
-     全角标点做标点挤压，取消标点后的多余空位 */
-  .title .lat { letter-spacing: 0.5px; margin: 0 7px; }
-  .title .pq { letter-spacing: -0.32em; margin-right: 0.32em;
-  }
+  /* 中西文混排整齐化：拉丁 run 两侧补 4px 对称间隙（叠加字母自身侧轴承，
+     与相邻 CJK 的默认间隙视觉等宽）。任何 margin/letter-spacing 必须
+     左右对称，否则行宽变化会让 text-align:center 产生偏移 */
+  .title .lat { margin: 0 10px; }
+  .title .pq { }
   .subtitle {
     display: inline-block;
     background: var(--subtitle-bg);
