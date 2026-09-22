@@ -32,7 +32,8 @@ description: Generate WeChat official account cover images (900×383) for finish
 
 顶部金赭条纹 → 居中「墨予镜」低对比水印 → 黑体白色主标题 → 灰蓝底副标题块 → 底部金赭日期徽章。配色全部走 CSS 变量，候选差异仅配色不同。
 
-- 字体：黑体系（PingFang SC / Hei SC，主标题字重 800，科技感取向），副标题/日期苹方（PingFang SC）
+- 字体：黑体系（PingFang SC / Hei SC），主标题 64px/字重 800，副标题 26px、日期 17px、水印 22px（PingFang SC）
+- 中西文混排整齐化（渲染脚本自动处理）：拉丁/数字 run 包 `.lat` 补对称间隙；全角标点包 `.pq` 做标点挤压。标题里的中英文空格可写可不写，渲染层统一
 
 ## Workflow
 
