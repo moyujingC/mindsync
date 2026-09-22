@@ -30,6 +30,15 @@ for (const c of cards) {
     .replace("{{CONTENT}}", c.content || "");
   const page = await browser.newPage({ viewport: { width: 1080, height: 1440 }, deviceScaleFactor: 2 });
   await page.setContent(html, { waitUntil: "networkidle" });
+  // 溢出检测：内容高度超画布或侵入页脚带（底部 120px）即告警
+  const m = await page.evaluate(() => {
+    const body = document.querySelector(".body");
+    const foot = document.querySelector(".foot");
+    const bodyBottom = body.getBoundingClientRect().bottom;
+    const footTop = foot.getBoundingClientRect().top;
+    return { bodyBottom, footTop, scroll: document.body.scrollHeight, overflow: document.body.scrollHeight > 1440 || bodyBottom > footTop - 12 };
+  });
+  if (m.overflow) console.warn(`  ⚠ 溢出风险 ${c.name}：scroll=${m.scroll} bodyBottom=${Math.round(m.bodyBottom)} footTop=${Math.round(m.footTop)}`);
   const out = join(outDir, c.name + ".png");
   await page.screenshot({ path: out, clip: { x: 0, y: 0, width: 1080, height: 1440 } });
   await page.close();
