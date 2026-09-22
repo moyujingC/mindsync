@@ -1,11 +1,11 @@
 ---
 name: moyujing-card
-description: Generate Xiaohongshu/Rednote 3:4 knowledge card sets (cover + content pages) in the 墨予镜 Field Memo style — giant question titles, numbered/bullet content blocks, black banner quotes, light & dark dual themes. Use when the user asks for 小红书图文, 知识卡片, 卡片套图, 3:4 卡片, carousel cards, or 墨予镜-style social cards from an article or outline.
+description: Generate 3:4 竖版知识卡片套图（墨予镜简报风格：浅色简报 / 深色简报）— giant question titles, numbered/bullet content blocks, banner quotes, dual themes. 发布渠道：小红书 + 公众号贴图。Use when the user asks for 小红书图文, 知识卡片, 卡片套图, 简报, 3:4 卡片, or 墨予镜-style cards from an article or outline.
 ---
 
 # Moyujing Card · 墨予镜 Field Memo 卡片
 
-从成稿/大纲生成小红书 3:4 知识卡片套图。风格：企业问答备忘录范式（HA7CH 式）——巨字问句标题 + 模块化内容块 + 金句横幅，浅/深双主题同构反色。
+从成稿/大纲生成 3:4 竖版知识卡片套图（小红书、公众号贴图通用）。风格名：**浅色简报 / 深色简报**——企业问答备忘录范式，巨字问句标题 + 模块化内容块 + 金句横幅，浅/深双主题同构反色。
 
 架构参考 guizang-social-card（SKILL.md + references + assets 模板 + scripts 渲染），风格系统独立自研。不得复制 guizang 模板与素材。
 
@@ -30,10 +30,11 @@ description: Generate Xiaohongshu/Rednote 3:4 knowledge card sets (cover + conte
 1. ** intake**：拿到成稿/大纲，先定卡组叙事线：封面宣言 → 逐问逐答（每张一个问题）→ 收尾金句。
 2. **分块**：把内容映射成卡片。每张卡一个核心问题或一个论点；超出的内容移到下一张，禁止塞满。
 3. **生成 cards.json**：优先用规划器 `node scripts/plan_cards.mjs <成稿.md> --out <任务目录>/cards.json [--theme theme-light] [--max-cards 8]`（LLM 拆稿，key 读排版工坊 engine/.env）；有特殊拆法需求时手写 JSON（契约见 render_cards.mjs 头注释）。content 字段只用模板定义的组件 class。
-4. **渲染**：`node scripts/render_cards.mjs cards.json <out目录>`（依赖 skill 内 node_modules 的 playwright，Chromium 用系统缓存）。
-5. **出双主题**（可选）：浅色定稿后，复制 cards.json 改每张 `"theme": "theme-dark"`，渲到 `<out目录>-dark` 并列存放（浅色给企业/决策者向，深色给 Builder/从业者向）。
-6. **QA**：逐张跑 references/qa-checklist.md，不合格改 JSON 重渲。
-7. **交付**：路径清单 + 缩略拼图（可选）。
+4. **出文字稿给人审（必经 gate）**：`node scripts/preview_cards.mjs <cards.json> <文字稿.md>` 导出可自由编辑的 Markdown 文字稿，交给用户改；用户确认后把改动同步回 cards.json，再进下一步。未经确认不渲染。
+5. **渲染**：`node scripts/render_cards.mjs cards.json <out目录>`（依赖 skill 内 node_modules 的 playwright，Chromium 用系统缓存）。
+6. **出双主题**（可选）：浅色定稿后，复制 cards.json 改每张 `"theme": "theme-dark"`，渲到 `<out目录>-dark` 并列存放（浅色给企业/决策者向，深色给 Builder/从业者向）。
+7. **QA**：逐张跑 references/qa-checklist.md，不合格改 JSON 重渲。
+8. **交付**：路径清单 + 缩略拼图（可选）。
 
 ## 禁忌
 
