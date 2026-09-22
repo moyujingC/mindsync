@@ -1,0 +1,3 @@
+display_name: 墨予镜公众号封面
+short_description: 为墨予镜成稿生成公众号头条封面候选和封面 manifest。
+default_prompt: 为这篇墨予镜成稿直接生成 3 张 900×383 公众号封面候选，保存封面文件，并输出封面 manifest。

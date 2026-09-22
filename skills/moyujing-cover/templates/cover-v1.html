@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<style>
+  /* 账号统一封面模板 v1：IP水印 + 主标题 + 副标题 + 日期
+     画布 900×383（2.35:1），所有颜色走 CSS 变量，变体只改变量 */
+  :root {
+    --bg: #1e525d;            /* 深青底色 */
+    --stripe: #8a6d1f;        /* 顶部金赭条纹 */
+    --watermark: #4d8291;     /* IP 水印（同色系提亮，低对比） */
+    --title: #ffffff;
+    --subtitle-bg: #97a0b4;   /* 副标题灰蓝底块 */
+    --subtitle: #ffffff;
+    --badge: #8a6d1f;         /* 日期徽章（同条纹色） */
+    --badge-text: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @font-face {
+    font-family: "Muyao-Softbrush";
+    src: url("{{FONT_URL}}") format("truetype");
+  }
+  html, body { width: 900px; height: 383px; }
+  body {
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    font-family: "Muyao-Softbrush", "翩翩体-简", sans-serif;
+  }
+  .stripe {
+    position: absolute; top: 0; left: 0; right: 0; height: 12px;
+    background: var(--stripe);
+  }
+  .watermark {
+    position: absolute; top: 34px; left: 0; right: 0;
+    text-align: center;
+    color: var(--watermark);
+    font-size: 22px;
+    letter-spacing: 8px;
+    text-indent: 8px;
+  }
+  .stage {
+    position: absolute; top: 12px; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 18px;
+  }
+  .title {
+    color: var(--title);
+    font-size: 64px;
+    line-height: 1.15;
+    text-align: center;
+    padding: 0 40px;
+    letter-spacing: 2px;
+  }
+  .subtitle {
+    display: inline-block;
+    background: var(--subtitle-bg);
+    color: var(--subtitle);
+    font-family: "PingFang SC", "苹方-简", sans-serif;
+    font-weight: 600;
+    font-size: 26px;
+    padding: 6px 14px;
+    text-align: center;
+  }
+  .badge {
+    position: absolute; bottom: 26px; left: 0; right: 0;
+    text-align: center;
+  }
+  .badge span {
+    display: inline-block;
+    background: var(--badge);
+    color: var(--badge-text);
+    font-family: "PingFang SC", "苹方-简", sans-serif;
+    font-weight: 500;
+    font-size: 17px;
+    padding: 5px 14px;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+  <div class="stripe"></div>
+  <div class="watermark">{{WATERMARK}}</div>
+  <div class="stage">
+    <div class="title">{{TITLE}}</div>
+    <div class="subtitle">{{SUBTITLE}}</div>
+  </div>
+  <div class="badge"><span>{{DATE}}</span></div>
+</body>
+</html>
