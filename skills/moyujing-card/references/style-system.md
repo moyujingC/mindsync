@@ -24,7 +24,7 @@
 ## 字体
 
 - 全部苹方（PingFang SC）：标题 800、正文 400/600、标签 600 加字距。
-- 字号阶梯：title 84 / lead 38 / lead-sm 33 / kicker-text 32 / blist 33 / num-item t 36 d 30 / banner 38 / kicker 24 / foot 19。
+- 字号阶梯：title 104 / banner 40 / lead 36 / num-item t 34 / kicker-text 30 / lead-sm 30 / blist 30 / num-item d 27 / group-label 24 / kicker 22 / foot 19 / logo 34。对比原则：巨字主导（title 与正文级差 3 倍以上），次级一律收缩，标签最小。
 - 数字与英文用同一字族，letter-spacing 2~4px 制造「标签感」。
 
 ## 组件（assets/template-field-card.html 已实现）
