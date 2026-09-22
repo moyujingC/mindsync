@@ -1,0 +1,45 @@
+# 墨予镜 Field Memo 风格系统
+
+设计源型：企业问答备忘录卡片（HA7CH FDE Sprint 范式）。视觉锚点：像一份现场工作备忘录被放大成海报——大问句、硬分隔、低装饰。
+
+## 画布
+
+- 1080×1440（3:4），XHS 直传。渲染 2x（2160×2880 PNG）。
+- 页边距：左右 88px，上 64px，下 120px（页脚占位）。
+
+## 双主题
+
+| token | theme-light | theme-dark |
+| --- | --- | --- |
+| --bg | #f7f6f2（暖纸白） | #0b0b0b（近黑） |
+| --ink | #141414 | #f2f1ec |
+| --ink-soft | #6f6f6a | #9a9a94 |
+| --label | #8a8a84 | #7c7c76 |
+| --hairline | #e3e1da | #262624 |
+| --banner-bg/--banner-ink | 黑底白字 | 白底黑字 |
+| --watermark | #efeee9 | #161615 |
+
+主题选择按受众：企业/决策者 → light；从业者/Builder → dark。一套卡统一主题。
+
+## 字体
+
+- 全部苹方（PingFang SC）：标题 800、正文 400/600、标签 600 加字距。
+- 字号阶梯：title 84 / lead 38 / lead-sm 33 / kicker-text 32 / blist 33 / num-item t 36 d 30 / banner 38 / kicker 24 / foot 19。
+- 数字与英文用同一字族，letter-spacing 2~4px 制造「标签感」。
+
+## 组件（assets/template-field-card.html 已实现）
+
+1. `.head` 页眉：logo 34px 800 italic + meta 右对齐（系列名 / 页码两行）+ 发丝线
+2. `.wm` 巨型水印页码：420px 800，右侧出血 -40px，z-index 0 垫底
+3. `h1.title`：84px/1.22/800，问句优先
+4. `.lead`：38px/700 关键论断
+5. `.lead-sm`：33px 说明段
+6. `.kicker` + `.kicker-text`：英文/编号小标签 + 正文（RESULT 01 / DIRECTION A 式）
+7. `.num-item`：① 式加粗引导 + 灰色说明（时间线卡用）
+8. `.group-label` + `ul.blist`：分组标题 + ‣ 子弹列表（项间发丝线）
+9. `.banner`：金句横幅，38px/800，padding 34×38，上边距 48
+10. `.foot`：页脚标语左右分列，19px/字距 3
+
+## 叙事节奏
+
+封面宣言卡（大标题 + 一句主张）→ 内容卡每张一个问题 → 收尾金句卡（单 banner 或单 lead）。
