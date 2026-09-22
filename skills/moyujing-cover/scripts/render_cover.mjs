@@ -1,8 +1,14 @@
 // 账号统一封面渲染：HTML 模板 → Playwright 截图，直出 900×383。
 // 用法：node scripts/render_cover.mjs --title "主标题" --subtitle "副标题" --date 2026.09.22 --out /abs/dir
 // 可选：--watermark 墨予镜（默认） --template cover-v1 --name wx-cover-01
-//        --palette "bg=#1e525d,stripe=#8a6d1f,subtitle-bg=#97a0b4,badge=#8a6d1f,watermark=#4d8291" 覆盖配色
+//        --palette "bg=#...,stripe=#..." 覆盖配色
+//        --art <图片路径> 使用已有底图；--gen-art "<提示词>" 先用 gpt-image-2 生成底图（存 <out>/cover-art.png）
+//        --veil 0.35 底图压暗系数（0=不压，默认 --art/--gen-art 时 0.35，纯底色时 0）
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+
+// Playwright setContent 页（about:blank 源）禁止加载 file:// 子资源，
+// 字体与底图一律内联成 base64 data URL，跨机器渲染结果才一致。
+const dataUrl = (path, mime) => `data:${mime};base64,${readFileSync(path).toString("base64")}`;
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,9 +24,29 @@ const watermark = arg("watermark", "墨予镜");
 const tplName = arg("template", "cover-v1");
 const name = arg("name", "wx-cover-01");
 
-const FONT_URL = "file://" + join(SKILL, "assets/fonts/Muyao-Softbrush.ttf");
+const FONT_URL = dataUrl(join(SKILL, "assets/fonts/Muyao-Softbrush.ttf"), "font/ttf");
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+let bgImage = "", artDisplay = "none", veil = Number(arg("veil", "-1"));
+const artArg = arg("art"), genArt = arg("gen-art");
+if (genArt) {
+  const { genImage, fitSize } = await import("/Users/xinran/Downloads/dev/mindsync/projects/content-matrix/排版工坊/engine/lib/img.mjs");
+  const artPath = join(outDir, "cover-art.png");
+  console.log("gpt-image-2 生成底图…");
+  await genImage({ prompt: genArt, size: fitSize(900, 383), quality: arg("quality", "low"), out: artPath });
+  console.log("✓ 底图 → " + artPath);
+  bgImage = dataUrl(artPath, "image/png"); artDisplay = "block";
+  if (veil < 0) veil = 0.35;
+} else if (artArg) {
+  const artPath = artArg.startsWith("/") ? artArg : join(process.cwd(), artArg);
+  const mime = artPath.toLowerCase().endsWith(".jpg") || artPath.toLowerCase().endsWith(".jpeg") ? "image/jpeg" : "image/png";
+  bgImage = dataUrl(artPath, mime); artDisplay = "block";
+  if (veil < 0) veil = 0.35;
+} else if (veil < 0) veil = 0;
+
 const html = readFileSync(join(SKILL, "templates", tplName + ".html"), "utf8")
+  .replace("{{BG_IMAGE}}", bgImage)
+  .replace("{{ART_DISPLAY}}", artDisplay)
+  .replace("{{VEIL_OPACITY}}", String(veil))
   .replace("{{FONT_URL}}", FONT_URL)
   .replace("{{WATERMARK}}", esc(watermark))
   .replace("{{TITLE}}", esc(title))

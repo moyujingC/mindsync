@@ -56,6 +56,12 @@ node $SKILL/scripts/render_cover.mjs ... --name wx-cover-03 --palette "bg=#22262
 
 `--title --subtitle --date --out` 必填；`--watermark`（默认 墨予镜）、`--name`（默认 wx-cover-01）、`--template`（默认 cover-v1）、`--palette "k=#hex,..."` 覆盖配色变量（变量名：bg / stripe / watermark / subtitle-bg / badge / badge-text / title / subtitle）。依赖：skill 目录下 node_modules 里的 playwright（Chromium 用系统缓存）。
 
+底图（可选，增强科技感）：
+- `--art <图片路径>`：用已有图片做底图，模板内叠一层深青 veil（遮罩）统一色调
+- `--gen-art "<英文提示词>"`：先用 gpt-image-2 生成底图（存 `<out>/cover-art.png`），再渲染；提示词要点名主色（如 dark teal #1e525d）+ 风格（fine glowing circuit lines, premium tech editorial, no text）
+- `--veil 0.35`：遮罩不透明度，默认 0.35；数值越低底图越清晰
+- 字体与底图均内联为 base64（Playwright setContent 页禁止 file:// 子资源），渲染结果跨机器一致
+
 ## Verification
 
 - 产物存在且为 900×383（截图已按 clip 锁定）。
