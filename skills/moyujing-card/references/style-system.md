@@ -24,7 +24,7 @@
 ## 字体
 
 - 全部苹方（PingFang SC）：标题 800、正文 400/600、标签 600 加字距。
-- 字号阶梯：title-xl 140（巨型标题，仅封面宣言卡/收尾卡）/ title 104（内容卡）/ banner 40 / lead 36 / num-item t 34 / kicker-text 30 / lead-sm 30 / blist 30 / num-item d 27 / group-label 24 / kicker 22 / foot 19 / logo 34。对比原则：巨型标题与正文级差 4 倍以上，次级一律收缩，标签最小。
+- 字号阶梯：title-xl 168（巨型标题，仅封面宣言卡/收尾卡）/ title 104（内容卡）/ banner 40 / lead 36 / num-item t 34 / kicker-text 30 / lead-sm 30 / blist 30 / num-item d 27 / group-label 24 / kicker 22 / foot 19 / logo 34。对比原则：巨型标题与正文级差 4 倍以上，次级一律收缩，标签最小。
 - 数字与英文用同一字族，letter-spacing 2~4px 制造「标签感」。
 
 ## 组件（assets/template-field-card.html 已实现）
@@ -32,7 +32,7 @@
 1. `.head` 页眉：logo 34px 800 italic + meta 右对齐（系列名 / 页码两行）+ 发丝线
 2. `.wm` 巨型水印页码：420px 800，右侧出血 -40px，z-index 0 垫底
 3. `h1.title`：104px/1.2/800，问句优先（内容卡）
-3b. `h1.title-xl`：140px/1.22/800，仅封面宣言卡与收尾卡；每行 3~5 字按词组自然断行，balance 均衡
+3b. `h1.title-xl`：168px/1.18/800，仅封面宣言卡与收尾卡；每行 3~5 字按词组自然断行，balance 均衡
 4. `.lead`：38px/700 关键论断
 5. `.lead-sm`：33px 说明段
 6. `.kicker` + `.kicker-text`：英文/编号小标签 + 正文（RESULT 01 / DIRECTION A 式）
