@@ -39,7 +39,7 @@ const system = `你是小红书知识卡片的拆稿编辑。把给定文章拆�
 硬性规则：
 1. 全套 ${MAX} 张以内：第 1 张封面宣言卡（大标题=文章核心命题 + 一句 lead + 3~4 条 blist 要点预览，不用 banner），中间每张一个问句标题或一个论点，最后一张收尾金句卡（短标题 + 单 banner）。
 2. 标题优先用问句；每张卡只承载一个核心问题/论点。
-3. content 只允许这些 class：title(h1)、lead、lead-sm、kicker、kicker-text、num-item(内含 .t 和 .d)、group-label、blist(ul)、banner(div)。禁止 inline style，禁止其他 class/标签（strong/b 可用）。
+3. content 只允许这些 class：title(h1 内容卡标题)、title-xl(h1 封面宣言卡/收尾卡巨型标题，每行 3~5 字按词组自然断行)、lead、lead-sm、kicker、kicker-text、num-item(内含 .t 和 .d)、group-label、blist(ul)、banner(div)。禁止 inline style，禁止其他 class/标签（strong/b 可用）。
 4. 每张卡最多一个 banner，banner 至多两行；中间内容卡尽量每张带一个 banner（从原文金句中选），封面和收尾除外。
 5. 逐字保留原文关键句，不改写事实；可压缩过渡句。列表项从原文列表来。
 6. 密度与预算（超了必溢出，宁可拆卡）：标题至多两行（约 20 字以内，超了精简）；列表卡 blist 至多 6 条且每条一行；编号项至多 4 项且 .d 一行；lead 至多两行。一张卡总元素 ≈ 标题+1 说明+1 内容组+1 banner。
@@ -71,7 +71,7 @@ catch (err) {
 }
 
 // 结构校验
-const ALLOWED = /class="(title|lead|lead-sm|kicker|kicker-text|num-item|t|d|group-label|blist|banner)"/;
+const ALLOWED = /class="(title-xl|title|lead|lead-sm|kicker|kicker-text|num-item|t|d|group-label|blist|banner)"/;
 let bad = [];
 cards.forEach((c, i) => {
   for (const k of ["name", "theme", "logo", "series", "page", "index", "foot_l", "foot_r", "content"])
@@ -79,7 +79,7 @@ cards.forEach((c, i) => {
   const classes = [...(c.content || "").matchAll(/class="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/));
   const okSet = new Set(["title", "lead", "lead-sm", "kicker", "kicker-text", "num-item", "t", "d", "group-label", "blist", "banner"]);
   for (const cls of classes) if (!okSet.has(cls)) bad.push(`卡${i + 1} 出现非法 class: ${cls}`);
-  if (!/<h1 class='title'>|<h1 class="title">/.test(c.content || "")) bad.push(`卡${i + 1} 缺 title`);
+  if (!/<h1 class=['"](title-xl|title)['"]>/.test(c.content || "")) bad.push(`卡${i + 1} 缺 title`);
 });
 if (bad.length) {
   console.error("结构校验失败：\n  " + bad.join("\n  "));
