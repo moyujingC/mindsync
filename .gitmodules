@@ -6,3 +6,6 @@
 	path = projects/research-center/courses/2026-08-17-Codex AI 工程交付行动营/CodexFDE
 	url = https://github.com/congde/CodexFDE.git
 	branch = main
+[submodule "projects/ai-service-studio/references/FDE-case-library"]
+	path = projects/ai-service-studio/references/FDE-case-library
+	url = https://github.com/guminghao-avi/FDE-case-library.git
