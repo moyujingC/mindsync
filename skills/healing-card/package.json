@@ -1,0 +1,9 @@
+{
+  "name": "healing-cards",
+  "version": "1.0.0",
+  "description": "一镜一梳 暖愈疗愈风 3:4 知识卡片",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright": "^1.63.0"
+  }
+}
