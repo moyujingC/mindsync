@@ -39,10 +39,10 @@ const system = `你是小红书知识卡片的拆稿编辑。把给定文章拆�
 硬性规则：
 1. 全套 ${MAX} 张以内：第 1 张封面宣言卡（大标题=文章核心命题 + 一句 lead + 3~4 条 blist 要点预览，不用 banner），中间每张一个问句标题或一个论点，最后一张收尾金句卡（短标题 + 单 banner）。
 2. 标题优先用问句；每张卡只承载一个核心问题/论点。
-3. content 只允许这些 class：title(h1 内容卡标题)、title-xl(h1 封面宣言卡/收尾卡巨型标题，每行 3~5 字按词组自然断行)、lead、lead-sm、kicker、kicker-text、num-item(内含 .t 和 .d)、group-label、blist(ul)、banner(div)。禁止 inline style，禁止其他 class/标签（strong/b 可用）。
+3. content 只允许这些 class：title(h1 内容卡标题，超过 7 字必须用 <br> 按词组断行，每行不超过 8 字，禁止顶满版心左右边距)、title-xl(h1 封面宣言卡/收尾卡巨型标题，必须输出 <br> 手动断行，每行 3~5 字成词组，禁止顶满版心左右边距)、lead、lead-sm、kicker、kicker-text、num-item(内含 .t 和 .d)、group-label、blist(ul)、banner(div)。禁止 inline style，禁止其他 class/标签（strong/b 可用）。
 4. 每张卡最多一个 banner，banner 至多两行；中间内容卡尽量每张带一个 banner（从原文金句中选），封面和收尾除外。
 5. 逐字保留原文关键句，不改写事实；可压缩过渡句。列表项从原文列表来。
-6. 密度与预算（超了必溢出，宁可拆卡）：标题至多两行（约 20 字以内，超了精简）；列表卡 blist 至多 6 条且每条一行；编号项至多 4 项且 .d 一行；lead 至多两行。一张卡总元素 ≈ 标题+1 说明+1 内容组+1 banner。
+6. 密度与预算（超了必溢出，宁可拆卡）：标题至多三行（title-xl 每行 3~5 字、title 每行不超过 8 字，用 <br> 断行），总字数约 20 字以内，超了精简；列表卡 blist 至多 6 条且每条一行；编号项至多 4 项且 .d 一行；lead 至多两行。一张卡总元素 ≈ 标题+1 说明+1 内容组+1 banner。
 7. num-item 的编号用 ①②③④⑤ 字符放在 .t 开头；kicker 用英文大写标签（如 RESULT 01 / DAY 1 MORNING）。
 8. page 和 index 用两位数字，与数组顺序一致；name 用 两位数字-中文短slug。
 9. 原文没有的数据、案例、数字禁止编造。

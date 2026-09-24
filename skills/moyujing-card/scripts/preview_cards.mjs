@@ -15,7 +15,7 @@ function contentToText(content) {
   const out = [];
   const push = (label, body) => out.push(`${label}${body}\n`);
   // h1 标题
-  s = s.replace(/<h1 class='title'>([\s\S]*?)<\/h1>/g, (_, m) => { push("【标题】", txt(m)); return "\n"; });
+  s = s.replace(/<h1 class='title(-xl)?'>([\s\S]*?)<\/h1>/g, (_, _x, m) => { push("【标题】", txt(m)); return "\n"; });
   // 金句横幅
   s = s.replace(/<div class='banner'>([\s\S]*?)<\/div>/g, (_, m) => { push("【金句横幅】", txt(m)); return "\n"; });
   // lead / lead-sm
