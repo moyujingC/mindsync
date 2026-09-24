@@ -68,8 +68,8 @@ archive/**/*.zip
 archive/**/*.tar.gz
 
 # Generated card images (图片不进 git)
-projects/content-matrix/accounts/墨予镜/小红书出图/
-projects/content-matrix/accounts/一镜一梳/小红书出图/
+projects/content-matrix/accounts/墨予镜/图文出图/
+projects/content-matrix/accounts/一镜一梳/图文出图/
 
 # 抓取的公众号原文快照（中间产物，风格已抽成 styles/*.json）
 projects/content-matrix/accounts/墨予镜/reference-samples/*/content.html
