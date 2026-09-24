@@ -1,9 +1,9 @@
 # 排版工坊（内部版）
 
 > 状态：current
-> 版本：0.1.0
+> 版本：0.1.1
 > owner：CEO
-> last_updated：2026-09-21
+> last_updated：2026-09-25
 > source_of_truth：projects/content-matrix/排版工坊/PROJECT.md
 
 ## 是什么
@@ -33,6 +33,6 @@
 - [x] 架构拆解（见 teardown/HiStyle-架构拆解.md）
 - [x] 运行时截获看守工具（tools/watch-runtime.mjs）
 - [x] 运行时截获：已收兵（api-key 模式无本地落点，五路线失败记录见 teardown）
-- [ ] 选定 1-2 套风格做复刻终验（8 套预览已出，等 CEO 拍板）
+- [x] 选定 1-2 套风格做复刻终验（CEO 拍板 2026-09-25：**011·暗房放映·奶油巨字 的轻盈版**（--mode light，样章 b8b3ee88 showcase-new-1）；跑法：node bin/typeset.mjs <成稿.md> --style 011 --mode light）
 - [ ] 合规规则反推：preview vs wechat 成品 diff 分析（原料在本地 sqlite）
 - [ ] 自研排版引擎 M1（CLI：md → 公众号 HTML，风格库驱动）
