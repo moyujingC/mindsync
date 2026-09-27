@@ -2,40 +2,44 @@
   "course_title": "自我疗愈入门",
   "chapters": [
     {
-      "title": "开始之前",
+      "title": "认识自我疗愈",
       "lessons": [
         { "file": "lesson-01.md", "title": "你为什么来到这里", "core_question": "我的困扰和自我疗愈有什么关系？", "access": "free" },
-        { "file": "lesson-02.md", "title": "静心不是什么", "core_question": "我对静心的误解有哪些？", "access": "free" },
-        { "file": "lesson-03.md", "title": "静心的益处与门槛", "core_question": "每天 5 分钟我能怎么开始静心？", "access": "free" }
+        { "file": "lesson-02.md", "title": "自我疗愈能解决什么", "core_question": "自我疗愈是什么、边界在哪里？", "access": "free" },
+        { "file": "lesson-03.md", "title": "静心的三个误解", "core_question": "我对静心的误解有哪些？", "access": "free" }
       ]
     },
     {
-      "title": "你可以自己疗愈自己",
+      "title": "静心：安顿自己的基础能力",
       "lessons": [
-        { "file": "lesson-04.md", "title": "身体比头脑诚实", "core_question": "身体感受和情绪是什么关系？", "access": "paid" },
-        { "file": "lesson-05.md", "title": "初心与初学者心态", "core_question": "怎样不带期待地开始练习？", "access": "paid" }
+        { "file": "lesson-04.md", "title": "让静心成为日常", "core_question": "每天 5-15 分钟怎么坚持下来？", "access": "paid" },
+        { "file": "lesson-05.md", "title": "身体比头脑诚实", "core_question": "身体感受和情绪是什么关系？", "access": "paid" },
+        { "file": "lesson-06.md", "title": "与身体对话", "core_question": "怎样用练习听见身体的信号？", "access": "paid" },
+        { "file": "lesson-07.md", "title": "初心与初学者心态", "core_question": "怎样不带期待地开始练习？", "access": "paid" }
       ]
     },
     {
       "title": "你的自我疗愈地图",
       "lessons": [
-        { "file": "lesson-06.md", "title": "地图总览", "core_question": "自我疗愈有哪些路径，各自解决什么？", "access": "paid" },
-        { "file": "lesson-07.md", "title": "什么状态下选什么工具", "core_question": "我现在的状态适合用哪个工具？", "access": "paid" }
+        { "file": "lesson-08.md", "title": "地图总览", "core_question": "自我疗愈有哪些路径，各自解决什么？", "access": "paid" },
+        { "file": "lesson-09.md", "title": "书写与呼吸", "core_question": "思绪乱、静不下来时可以用什么？", "access": "paid" },
+        { "file": "lesson-10.md", "title": "冥想与身体", "core_question": "想安定、想回到当下时可以用什么？", "access": "paid" },
+        { "file": "lesson-11.md", "title": "艺术疗愈与曼陀罗", "core_question": "说不出、想不动时可以用什么？", "access": "paid" }
       ]
     },
     {
       "title": "曼陀罗带练",
       "lessons": [
-        { "file": "lesson-08.md", "title": "第一次画曼陀罗", "core_question": "第一次画曼陀罗是什么体验？", "access": "paid" },
-        { "file": "lesson-09.md", "title": "四种涂色动作", "core_question": "不同的涂法带给身体什么不同感受？", "access": "paid" },
-        { "file": "lesson-10.md", "title": "清理、疗愈、显化", "core_question": "核心画法的完整闭环怎么走？", "access": "paid" },
-        { "file": "lesson-11.md", "title": "综合深练", "core_question": "如何独立完成一次完整的曼陀罗自我疗愈练习？", "access": "paid" }
+        { "file": "lesson-12.md", "title": "第一次画曼陀罗", "core_question": "第一次画曼陀罗是什么体验？", "access": "paid" },
+        { "file": "lesson-13.md", "title": "四种涂色动作", "core_question": "不同的涂法带给身体什么不同感受？", "access": "paid" },
+        { "file": "lesson-14.md", "title": "清理、疗愈、显化", "core_question": "核心画法的完整闭环怎么走？", "access": "paid" },
+        { "file": "lesson-15.md", "title": "综合深练", "core_question": "如何独立完成一次完整的曼陀罗自我疗愈练习？", "access": "paid" }
       ]
     },
     {
       "title": "带着地图继续走",
       "lessons": [
-        { "file": "lesson-12.md", "title": "整理你的练习记录", "core_question": "结课时我带走了什么、接下来怎么走？", "access": "paid" }
+        { "file": "lesson-16.md", "title": "整理你的练习记录", "core_question": "结课时我带走了什么、接下来怎么走？", "access": "paid" }
       ]
     }
   ]
