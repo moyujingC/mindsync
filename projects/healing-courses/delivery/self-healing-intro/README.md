@@ -1,12 +1,12 @@
 # 自我疗愈入门（课1）课程目录
 
 > 状态：draft
-> 版本：0.3.0
+> 版本：0.4.0
 > owner：CEO / Orchestrator
 > last_updated：2026-09-27
 > source_of_truth：projects/healing-courses/delivery/self-healing-intro/README.md
 > 输入包：../../specs/2026-09-27-课1正式稿-AI师傅输入包.md
-> 平台：AI 师傅（app.ai-shifu.cn），新建课程，标题暂定「自我疗愈入门」
+> 平台：AI 师傅（app.ai-shifu.cn），新建课程，课程名《安顿内心，开启自愈之旅》（CEO 定案 2026-09-27）
 
 ## 设计控制（intake 归一化结果）
 
@@ -82,7 +82,7 @@
 1. 大纲结构（5 章 16 节 v0.2）与切分点（L04 起付费）
 2. 主讲身份名（沿用「灵犀」或另起）
 3. Listen Mode 开不开
-4. 对外课程名（候选见 README 下方「课程名候选」，CEO 选定后更新 structure.json 与平台）
+4. 对外课程名：《安顿内心，开启自愈之旅》（已定案， CEO 自选方案，替换候选 A-D）
 
 ## 下一步（M2 评审通过后）
 
