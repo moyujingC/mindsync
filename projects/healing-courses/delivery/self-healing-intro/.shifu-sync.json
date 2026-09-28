@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "shifu_bid": "60a4b6534bc749bdaa2b298199689108",
+  "base_url": "https://app.ai-shifu.cn",
+  "course": {
+    "revision": 385164,
+    "name": "安顿内心，开启自愈之旅",
+    "description": "晚上躺下，脑子还在放电影；为一件事反复纠结出不来；身体绷得紧紧的，或者累到什么都不想做——这些困扰不是你有问题，是它们一直没被好好安顿过。\n\n《安顿内心，开启自愈之旅》是一门自我疗愈入门课，陪你把\"难受的时候怎么办\"这件事学会。\n\n课程分三段走。第一段，破除对静心的误解，学会随时随地能用的呼吸和身体练习，这是安顿自己的基础能力。第二段，交给你一张\"状态 → 工具\"自我疗愈地图：脑子转不停、陷在一件事里出不来、浑身发紧坐不住、提不起劲没力气、心里堵得慌、说不清哪里不对——六种当下状态，对应书写、呼吸、冥想、舞动、曼陀罗五条路径，每条路径配一个 5 分钟就能开始的小动作和 5-15 分钟的延展练习。第三段，四次曼陀罗带练，从第一次自由画，到清理、疗愈、显化的完整闭环，结课时你手里有自己的画和一份练习记录。\n\n适合正在被情绪、睡眠、压力困扰，想让日子松一点、却不知道从哪下手的普通人。不需要绘画基础，不需要心理学背景。\n\n这门课教你的是日常状态的自我照顾，不替代医疗和专业心理服务；如果你正经历持续的情绪危机，请优先寻求专业帮助。",
+    "updated_at": "2026-09-28T16:20:18Z",
+    "updated_user_bid": "c08cf7aa438b4317a9f6073c329eed3f"
+  },
+  "lessons": [
+    {
+      "file": null,
+      "outline_bid": "363216e21bf94946a41e8824c3379773",
+      "name": "认识自我疗愈",
+      "parent_bid": "",
+      "revision": null,
+      "is_chapter": true,
+      "content_sha256": null
+    },
+    {
+      "file": "lessons/lesson-01.md",
+      "outline_bid": "4638bd402bdc4f09bb37038a0353bacb",
+      "name": "你为什么来到这里",
+      "parent_bid": "363216e21bf94946a41e8824c3379773",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "e859d13fc4688c0c7c03c101fe3596d3626b19dcafadda5657dc5f5ef0fc7ec4"
+    },
+    {
+      "file": "lessons/lesson-02.md",
+      "outline_bid": "8ccf82285fa34a219d8a1e8a581d1fac",
+      "name": "自我疗愈能解决什么",
+      "parent_bid": "363216e21bf94946a41e8824c3379773",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "2f495ac0202ff33551b0524ac920793736bbcfe5bd29fb0ebfe55e888339450a"
+    },
+    {
+      "file": "lessons/lesson-03.md",
+      "outline_bid": "4d62b1f34f47486d9c650cac1e6d25dd",
+      "name": "静心的三个误解",
+      "parent_bid": "363216e21bf94946a41e8824c3379773",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "5642f8a4dc7714f5a475c2c6fb49c529ce337b54224843c3b8c81de80f13782f"
+    },
+    {
+      "file": null,
+      "outline_bid": "f2f4b299633b4b119be3d07abd9777a9",
+      "name": "静心：安顿自己的基础能力",
+      "parent_bid": "",
+      "revision": null,
+      "is_chapter": true,
+      "content_sha256": null
+    },
+    {
+      "file": "lessons/lesson-04.md",
+      "outline_bid": "cf12a61f2204472aab0cff406eb0a770",
+      "name": "让静心成为日常",
+      "parent_bid": "f2f4b299633b4b119be3d07abd9777a9",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "1a9abb81fb2d45e0b34b53207eb6b1897a1d3c2a09dba80389ba5ecca8223914"
+    },
+    {
+      "file": "lessons/lesson-05.md",
+      "outline_bid": "7a530d10b85445e6abffe288233a5406",
+      "name": "身体比头脑诚实",
+      "parent_bid": "f2f4b299633b4b119be3d07abd9777a9",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "6205f15363444302c8e71769928ee065c5b3d6fffc9dbf9e901494119ef81127"
+    },
+    {
+      "file": "lessons/lesson-06.md",
+      "outline_bid": "8c3819f36c2d4f5bb6472ee09805ba16",
+      "name": "与身体对话",
+      "parent_bid": "f2f4b299633b4b119be3d07abd9777a9",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "817ce88b07faf19f61fb88e7e7c501ded5df360a5f39496b5c411fbd910bc671"
+    },
+    {
+      "file": "lessons/lesson-07.md",
+      "outline_bid": "b515989899734011b233f3a500b52f15",
+      "name": "初心与初学者心态",
+      "parent_bid": "f2f4b299633b4b119be3d07abd9777a9",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "58da5e1536609e691a14b92d5421b5f6e6ac77e77b27c25f73ddc130e7f69ba1"
+    },
+    {
+      "file": null,
+      "outline_bid": "e85457a0570d4d5598c926ff42050d2c",
+      "name": "你的自我疗愈地图",
+      "parent_bid": "",
+      "revision": null,
+      "is_chapter": true,
+      "content_sha256": null
+    },
+    {
+      "file": "lessons/lesson-08.md",
+      "outline_bid": "f8bf44e6dd68477f8b74a18540cac6e8",
+      "name": "地图总览",
+      "parent_bid": "e85457a0570d4d5598c926ff42050d2c",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "57c5a04111a10dac074af7d6dfdd1a062a7933873fbff4dbb3940420b60a1be0"
+    },
+    {
+      "file": "lessons/lesson-09.md",
+      "outline_bid": "0ce7a97e1beb4328ae3a6c389f958b83",
+      "name": "书写与呼吸",
+      "parent_bid": "e85457a0570d4d5598c926ff42050d2c",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "112362ede233b0431deebd1b1baeb251d3e918918e54f102ee095de175b78652"
+    },
+    {
+      "file": "lessons/lesson-10.md",
+      "outline_bid": "8e814049b4044f059dd6e34352d674ae",
+      "name": "冥想与舞动",
+      "parent_bid": "e85457a0570d4d5598c926ff42050d2c",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "a5e8bf3c3abd47cdf002972888c56c1f4827a3a5b9aca65dcf91b9ef5e0d8929"
+    },
+    {
+      "file": "lessons/lesson-11.md",
+      "outline_bid": "51a789f25157405d98c4daf98d9fdd4d",
+      "name": "艺术疗愈与曼陀罗",
+      "parent_bid": "e85457a0570d4d5598c926ff42050d2c",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "8c85c0724d076ffd497639b02abc040c2a70913041401f645f519f5356249451"
+    },
+    {
+      "file": null,
+      "outline_bid": "025a718c70d4423995d8ca086e41ea8e",
+      "name": "曼陀罗带练",
+      "parent_bid": "",
+      "revision": null,
+      "is_chapter": true,
+      "content_sha256": null
+    },
+    {
+      "file": "lessons/lesson-12.md",
+      "outline_bid": "22fc62526f4e4a8dab7837f8f23058ab",
+      "name": "第一次画曼陀罗",
+      "parent_bid": "025a718c70d4423995d8ca086e41ea8e",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "08e06156e10dc0723914e95a558277ca25bc18a32d60c60f133e9722abed393b"
+    },
+    {
+      "file": "lessons/lesson-13.md",
+      "outline_bid": "74837c2adb95446fa4e13c2847b37491",
+      "name": "四种涂色动作",
+      "parent_bid": "025a718c70d4423995d8ca086e41ea8e",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "b21c0d0e73945df7dd45f090c7db06a7f4412a770e9ddd120365f99e72b7844d"
+    },
+    {
+      "file": "lessons/lesson-14.md",
+      "outline_bid": "a6bb7750e65a4f42b209bd789c410be2",
+      "name": "清理、疗愈、显化",
+      "parent_bid": "025a718c70d4423995d8ca086e41ea8e",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "d2f1447bb45714a0818c5ae36bbde9d8a233366a4bbfdeaa89b9d7046c886153"
+    },
+    {
+      "file": "lessons/lesson-15.md",
+      "outline_bid": "4f29b8936a0b4dad9434c80e4ef9d36e",
+      "name": "综合深练",
+      "parent_bid": "025a718c70d4423995d8ca086e41ea8e",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "e901e3d02da145c18de576976c1fea938c3d37be1b520cfe118614e1da863401"
+    },
+    {
+      "file": null,
+      "outline_bid": "1c2e520f8a414f70919db43c1049d515",
+      "name": "带着地图继续走",
+      "parent_bid": "",
+      "revision": null,
+      "is_chapter": true,
+      "content_sha256": null
+    },
+    {
+      "file": "lessons/lesson-16.md",
+      "outline_bid": "60c5922398b64428aa61d57154fb1d43",
+      "name": "整理你的练习记录",
+      "parent_bid": "1c2e520f8a414f70919db43c1049d515",
+      "revision": null,
+      "is_chapter": false,
+      "content_sha256": "363a45c6a8a0f5812bc1bdedb69e81cbf15066c86a66c44df57bfb4cec0c4943"
+    }
+  ],
+  "last_pull_at": "2026-09-28T16:20:35Z",
+  "last_push_at": null
+}
