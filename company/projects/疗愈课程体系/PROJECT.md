@@ -98,9 +98,7 @@
 
 - [projects/healing-courses/PROJECT.md](../../../projects/healing-courses/PROJECT.md)
 
-首门课规格：
-
-- [首门课：曼陀罗自我疗愈入门 SPEC](../../../projects/healing-courses/specs/2026-05-22-曼陀罗自我疗愈入门课程-SPEC.md)
+首门课《安顿内心，开启自愈之旅》已上线（AI 师傅平台 + 官网 courses.jingshu.cc），交付物见 [delivery/self-healing-intro](../../../projects/healing-courses/delivery/self-healing-intro/README.md)。
 
 课程系列边界：
 
