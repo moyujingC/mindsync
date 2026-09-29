@@ -8,7 +8,7 @@
   "tts_enabled": true,
   "tts_provider": "tencent_texttovoice",
   "tts_model": "large-model",
-  "tts_voice_id": "601013",
+  "tts_voice_id": "601012",
   "tts_speed": 0.0,
   "tts_pitch": 0,
   "tts_emotion": "",
