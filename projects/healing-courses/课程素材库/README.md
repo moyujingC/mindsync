@@ -44,10 +44,6 @@ miro 仓库路径：`/Users/xinran/Downloads/dev/miro/docs/knowledge/mandala/`�
 - 阴阳解读法（候选·待验证）：[yin-yang-interpretation.md](../../../../miro/docs/knowledge/mandala/yin-yang-interpretation.md)
 - 11 例完整解读案例（含原画）：[cases/index.md](../../../../miro/docs/knowledge/mandala/cases/index.md) — 真实案例素材，课程举例可用
 
-### 课程输入稿
-
-- [曼陀罗自我疗愈入门课程输入稿](../docs/曼陀罗自我疗愈入门课程输入稿.md)
-
 ### 市场研究
 
 - [中国大陆职场女性曼陀罗艺术疗愈课程市场需求分析报告](../research/中国大陆职场女性曼陀罗艺术疗愈课程市场需求分析报告.md)

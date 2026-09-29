@@ -3,7 +3,7 @@
 > 状态：draft
 > 版本：0.1.0
 > owner：CEO / Orchestrator
-> last_updated：2026-05-22
+> last_updated：2026-09-30
 > source_of_truth：projects/healing-courses/PROJECT.md
 > 公司侧入口：[company/projects/疗愈课程体系/PROJECT.md](../../company/projects/疗愈课程体系/PROJECT.md)
 
@@ -15,9 +15,9 @@
 
 当前首门课程是：
 
-- `曼陀罗自我疗愈入门`
+- `安顿内心，开启自愈之旅`（自我疗愈入门课，交付物见 `delivery/self-healing-intro/`，2026-09 已在 AI 师傅平台上线）
 
-它面向没有画过曼陀罗的人，帮助用户完成第一次安全、温和、可复盘的曼陀罗自我疗愈练习。
+它面向被情绪、睡眠、压力困扰的普通人，教会在难受时安顿自己的基础练习和「状态 → 工具」自我疗愈地图。
 
 当前课程体系至少包含两条课程组织方式：
 
@@ -26,9 +26,9 @@
 
 ## 2. 当前阶段
 
-当前阶段为 `problem-framing / spec`。
+当前阶段为 `delivery / 运营`。
 
-本阶段只建立项目和首门课的最小定义，不进入完整课程制作、技术实现、支付系统或社群运营设计。
+首门课已完成制作并在 AI 师傅平台上线（早鸟价 ¥69，2026-10-13 起恢复 ¥99），课程官网 courses.jingshu.cc 已上线。
 
 ## 3. 目录约定
 
@@ -42,13 +42,10 @@
 
 ## 4. 当前入口
 
-课程体系全景（两条获客线、六课梯队、定价依据）：
+首门课交付物（唯一现行口径）：
 
-- [docs/课程体系与定价.md](./docs/课程体系与定价.md)
-
-首门课规格：
-
-- [specs/2026-05-22-曼陀罗自我疗愈入门课程-SPEC.md](./specs/2026-05-22-曼陀罗自我疗愈入门课程-SPEC.md)
+- [delivery/self-healing-intro/README.md](./delivery/self-healing-intro/README.md) — 《安顿内心，开启自愈之旅》5 章 16 节
+- 课程官网：<https://courses.jingshu.cc>（源码 `site/`）
 
 课程边界：
 

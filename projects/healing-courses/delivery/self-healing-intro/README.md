@@ -5,7 +5,6 @@
 > owner：CEO / Orchestrator
 > last_updated：2026-09-29
 > source_of_truth：projects/healing-courses/delivery/self-healing-intro/README.md
-> 输入包：../../specs/2026-09-27-课1正式稿-AI师傅输入包.md
 > 平台：AI 师傅（app.ai-shifu.cn），新建课程，课程名《安顿内心，开启自愈之旅》（CEO 定案 2026-09-27）
 
 ## 设计控制（intake 归一化结果）
