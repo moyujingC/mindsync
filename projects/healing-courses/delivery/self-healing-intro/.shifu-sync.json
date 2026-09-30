@@ -3,10 +3,10 @@
   "shifu_bid": "60a4b6534bc749bdaa2b298199689108",
   "base_url": "https://app.ai-shifu.cn",
   "course": {
-    "revision": 385489,
+    "revision": 385494,
     "name": "安顿内心，开启自愈之旅",
     "description": "晚上躺下，脑子还在放电影；为一件事反复纠结出不来；身体绷得紧紧的，或者累到什么都不想做——这些困扰不是你有问题，是它们一直没被好好安顿过。\n\n《安顿内心，开启自愈之旅》是一门自我疗愈入门课，陪你把\"难受的时候怎么办\"这件事学会。\n\n课程分三段。第一段，破除对静心的误解，学会随时可用的呼吸和身体练习，这是安顿自己的基础能力。第二段，交给你一张\"状态 → 工具\"自我疗愈地图：脑子转不停、陷在一件事里出不来、浑身发紧坐不住、提不起劲没力气、心里堵得慌、说不清哪里不对——六种当下状态，对应书写、呼吸、冥想、舞动、曼陀罗五条路径，每条路径配一个 5 分钟就能开始的小动作和 5-15 分钟的延展练习。第三段，四次曼陀罗带练，从自由画到清理、疗愈、显化的完整闭环，结课时你手里有自己的画和一份练习记录。\n\n适合正在被情绪、睡眠、压力困扰，想让日子松一点、却不知道从哪下手的普通人。不需要绘画基础，不需要心理学背景。\n\n这门课教你的是日常状态的自我照顾，不替代医疗和专业心理服务；如果你正经历持续的情绪危机，请优先寻求专业帮助。\n\n限时早鸟价 69 元，2026 年 10 月 13 日起恢复原价 99 元。",
-    "updated_at": "2026-09-29T14:06:03Z",
+    "updated_at": "2026-09-29T14:09:52Z",
     "updated_user_bid": "c08cf7aa438b4317a9f6073c329eed3f"
   },
   "lessons": [
@@ -24,9 +24,9 @@
       "outline_bid": "4638bd402bdc4f09bb37038a0353bacb",
       "name": "你为什么来到这里",
       "parent_bid": "363216e21bf94946a41e8824c3379773",
-      "revision": 367997,
+      "revision": 368224,
       "is_chapter": false,
-      "content_sha256": "b257310d48c0a4e3185bd84d7847d9dc19b032a849439b28410c3a37ac842f52"
+      "content_sha256": "df616011456f65129f24911a8013233c1665585be616ee343bf645ed723d1724"
     },
     {
       "file": "lessons/lesson-02.md",
@@ -105,7 +105,7 @@
       "outline_bid": "f8bf44e6dd68477f8b74a18540cac6e8",
       "name": "地图总览",
       "parent_bid": "e85457a0570d4d5598c926ff42050d2c",
-      "revision": 367998,
+      "revision": null,
       "is_chapter": false,
       "content_sha256": "7592f886f4732ab7ac1980a05a0502362a4e4393397724dca074c1da31652bdb"
     },
@@ -123,7 +123,7 @@
       "outline_bid": "8e814049b4044f059dd6e34352d674ae",
       "name": "冥想与舞动",
       "parent_bid": "e85457a0570d4d5598c926ff42050d2c",
-      "revision": 367999,
+      "revision": null,
       "is_chapter": false,
       "content_sha256": "1bb1aafe6b7e3c24c146a80b3be8049c42ec593918e544af212e18da094e0067"
     },
@@ -168,7 +168,7 @@
       "outline_bid": "a6bb7750e65a4f42b209bd789c410be2",
       "name": "清理、疗愈、显化",
       "parent_bid": "025a718c70d4423995d8ca086e41ea8e",
-      "revision": 368000,
+      "revision": null,
       "is_chapter": false,
       "content_sha256": "bf21aaf5f57413be975e5d8c33641839abacfb36a5d1853028021e06afcaceda"
     },
@@ -177,7 +177,7 @@
       "outline_bid": "4f29b8936a0b4dad9434c80e4ef9d36e",
       "name": "综合深练",
       "parent_bid": "025a718c70d4423995d8ca086e41ea8e",
-      "revision": 368001,
+      "revision": null,
       "is_chapter": false,
       "content_sha256": "bc7992fda168181ea375c904216f564c0d68b02593402053e6ff5226437db41f"
     },
@@ -200,6 +200,6 @@
       "content_sha256": "363a45c6a8a0f5812bc1bdedb69e81cbf15066c86a66c44df57bfb4cec0c4943"
     }
   ],
-  "last_pull_at": "2026-09-29T14:05:05Z",
-  "last_push_at": "2026-09-29T14:09:51Z"
+  "last_pull_at": "2026-09-30T03:19:32Z",
+  "last_push_at": "2026-09-30T03:20:20Z"
 }
