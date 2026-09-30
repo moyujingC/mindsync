@@ -5,16 +5,12 @@ import { Select } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { TagsInput } from '@/components/ui/tags-input'
+import { CityMultiSelect, type CityOption } from '@/components/config/CityMultiSelect'
+import { ResumeUploadSection } from '@/components/config/ResumeUploadSection'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Save, RotateCcw, Upload, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
-import { useState, useEffect } from 'react'
-
-// City options
-const CITIES = [
-  '北京', '上海', '深圳', '广州', '杭州', '成都', '武汉', '南京',
-  '西安', '苏州', '天津', '重庆', '郑州', '长沙', '东莞', '佛山',
-  '合肥', '厦门', '青岛', '大连'
-]
+import { Save, RotateCcw, ChevronDown, ChevronRight, Loader2 } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { PLATFORM_LABELS, PLATFORM_SHORT_LABELS } from '@/lib/platforms'
 
 const AI_SERVICES = {
   anthropic: {
@@ -48,48 +44,96 @@ const AI_SERVICES = {
 } as const
 
 type AiService = keyof typeof AI_SERVICES
+type PlatformId = 'boss' | 'zhilian' | '51job' | 'liepin'
+
+const BOSS_FILTER_OPTIONS = {
+  job_type: ['全职', '兼职', '实习'],
+  experience: ['经验不限', '应届生', '1年以内', '1-3年', '3-5年', '5-10年', '10年以上', '在校生'],
+  degree: ['学历不限', '大专', '本科', '硕士', '博士', '高中', '中专/中技', '初中及以下'],
+  scale: ['0-20人', '20-99人', '100-499人', '500-999人', '1000-9999人', '10000人以上'],
+  salary: ['3K以下', '3-5K', '5-10K', '10-20K', '20-50K', '50K以上'],
+} as const
 
 export default function ConfigPage() {
   const { config, schema, loading, saving, dirty, error, message, updateConfig, saveConfig, resetConfig } = useConfig()
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ profile: true, search: true })
-  const [resumeInfo, setResumeInfo] = useState<any>(null)
-  const [resumeUploadError, setResumeUploadError] = useState('')
+  const requestedSection = new URLSearchParams(window.location.search).get('section')
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => ({
+    profile: true,
+    search: true,
+    ...(requestedSection ? { [requestedSection]: true } : {}),
+  }))
   const [aiTest, setAiTest] = useState<{ testing: boolean; ok?: boolean; message?: string }>({ testing: false })
+  const [modelList, setModelList] = useState<{ loading: boolean; models: string[]; message?: string; error?: boolean }>({ loading: false, models: [] })
+  const modelRequest = useRef<AbortController | null>(null)
+  const [cityOptions, setCityOptions] = useState<CityOption[]>([])
+  const [zhilianCityOptions, setZhilianCityOptions] = useState<CityOption[]>([])
+  const [job51CityOptions, setJob51CityOptions] = useState<CityOption[]>([])
+  const [liepinCityOptions, setLiepinCityOptions] = useState<CityOption[]>([])
+  const [cityRefreshing, setCityRefreshing] = useState(false)
+  const [cityMessage, setCityMessage] = useState('')
 
   useEffect(() => {
-    fetch('/api/resume').then(r => r.json()).then(setResumeInfo).catch(() => {})
+    setModelList({ loading: false, models: [] })
+    return () => modelRequest.current?.abort()
+  }, [config?.ai?.service, config?.ai?.provider, config?.ai?.base_url, config?.ai?.api_key, config?.ai?.api_key_masked, config?.ai?.auth_token_masked, config?.ai?.clear_credentials])
+
+  const handleFetchModels = async () => {
+    modelRequest.current?.abort()
+    const controller = new AbortController()
+    modelRequest.current = controller
+    setModelList({ loading: true, models: [] })
+    try {
+      const res = await fetch('/api/config/models', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ai: config?.ai || {} }),
+        signal: controller.signal,
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || '获取模型列表失败')
+      if (!Array.isArray(data.models) || !data.models.every((model: unknown) => typeof model === 'string')) {
+        throw new Error('模型列表格式不正确，可手动填写模型 ID')
+      }
+      if (!controller.signal.aborted) setModelList({
+        loading: false,
+        models: data.models,
+        message: data.models.length ? `已获取 ${data.models.length} 个模型，请选择或继续手动填写。` : '服务商未返回可用模型，可手动填写模型 ID。',
+      })
+    } catch (error) {
+      if (!controller.signal.aborted) setModelList({ loading: false, models: [], error: true, message: error instanceof Error ? error.message : '获取模型列表失败，请重试' })
+    }
+  }
+
+  useEffect(() => {
+    fetch('/api/cities', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data.cities)) setCityOptions(data.cities)
+        if (!data.ok) setCityMessage(data.error || '本地城市列表读取失败')
+      })
+      .catch(() => setCityMessage('本地城市列表读取失败'))
+    fetch('/api/cities?platform=zhilian', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data.cities)) setZhilianCityOptions(data.cities)
+      })
+      .catch(() => {})
+    fetch('/api/cities?platform=51job', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data.cities)) setJob51CityOptions(data.cities)
+      })
+      .catch(() => {})
+    fetch('/api/cities?platform=liepin', { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data.cities)) setLiepinCityOptions(data.cities)
+      })
+      .catch(() => {})
   }, [])
 
   const toggleSection = (key: string) => {
     setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }))
-  }
-
-  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setResumeUploadError('')
-    const form = new FormData()
-    form.append('file', file)
-    try {
-      const res = await fetch('/api/resume/upload', { method: 'POST', body: form })
-      const data = await res.json()
-      if (!res.ok || !data.success) {
-        setResumeUploadError(data.error || '简历上传失败')
-        return
-      }
-      setResumeInfo({ filename: data.filename, size: data.size, path: data.path })
-      updateConfig('profile.resume_path', data.path)
-    } catch {
-      setResumeUploadError('网络错误，简历上传失败')
-    } finally {
-      e.target.value = ''
-    }
-  }
-
-  const handleResumeDelete = async () => {
-    await fetch('/api/resume', { method: 'DELETE' })
-    setResumeInfo(null)
-    updateConfig('profile.resume_path', '')
   }
 
   const handleAiTest = async () => {
@@ -133,6 +177,83 @@ export default function ConfigPage() {
     setAiTest({ testing: false })
   }
 
+  const handleCityRefresh = async () => {
+    setCityRefreshing(true)
+    setCityMessage('')
+    try {
+      const res = await fetch('/api/cities/refresh', { method: 'POST' })
+      const data = await res.json()
+      if (Array.isArray(data.cities)) setCityOptions(data.cities)
+      if (!res.ok || !data.ok) throw new Error(data.error || '刷新失败，继续使用本地城市列表')
+      setCityMessage(`已刷新 ${data.count} 个城市。`)
+    } catch (error) {
+      setCityMessage(error instanceof Error ? error.message : '刷新失败，继续使用本地城市列表')
+    } finally {
+      setCityRefreshing(false)
+    }
+  }
+
+  const platformSearch = (platform: PlatformId) => {
+    const legacy = platform === 'boss' && config?.search && typeof config.search === 'object' ? config.search : {}
+    const specific = config?.platforms?.[platform]?.search && typeof config.platforms[platform].search === 'object'
+      ? config.platforms[platform].search
+      : {}
+    return {
+      ...legacy,
+      ...specific,
+      filters: { ...(legacy.filters || {}), ...(specific.filters || {}) },
+      keywords: specific.keywords?.length ? specific.keywords : legacy.keywords,
+      cities: specific.cities?.length ? specific.cities : legacy.cities,
+      city_codes: Object.keys(specific.city_codes || {}).length ? specific.city_codes : legacy.city_codes,
+      max_pages: specific.max_pages || legacy.max_pages || (platform === 'boss' ? 3 : 1),
+      sort: specific.sort || legacy.sort || 'default',
+    }
+  }
+
+  const updatePlatformSearch = (platform: PlatformId, key: string, value: any) => {
+    updateConfig(`platforms.${platform}.search.${key}`, value)
+    if (platform === 'boss') updateConfig(`search.${key}`, value)
+  }
+
+  const updateBossFilter = (search: any, key: keyof typeof BOSS_FILTER_OPTIONS | 'industry', value: string, multiple = true) => {
+    const current = Array.isArray(search.filters?.[key]) ? search.filters[key] : []
+    const next = multiple
+      ? (current.includes(value) ? current.filter((item: string) => item !== value) : [...current, value])
+      : (value ? [value] : [])
+    updatePlatformSearch('boss', `filters.${key}`, next)
+  }
+
+  const updatePlatformCities = (platform: PlatformId, cities: string[]) => {
+    const platformCityOptions = platform === 'zhilian' ? zhilianCityOptions : platform === 'liepin' ? liepinCityOptions : job51CityOptions
+    const cityCodes = platform !== 'boss'
+      ? Object.fromEntries(cities.map(city => {
+        const found = platformCityOptions.find(option => option.name.replace(/市$/, '') === city.replace(/市$/, ''))
+        return [city, found?.code || '']
+      }).filter(([, code]) => code))
+      : Object.fromEntries(cityOptions.filter(city => cities.includes(city.name)).map(city => [city.name, city.code]))
+    updatePlatformSearch(platform, 'cities', cities)
+    updatePlatformSearch(platform, 'city_codes', cityCodes)
+    if (platform === 'boss') updateConfig('profile.target_cities', cities)
+  }
+
+  const setPlatformEnabled = (platform: PlatformId, enabled: boolean) => {
+    updateConfig(`platforms.${platform}.enabled`, enabled)
+    const currentOrder: PlatformId[] = Array.isArray(config?.collection?.default_order)
+      ? config.collection.default_order.filter((item: unknown): item is PlatformId => item === 'boss' || item === 'zhilian' || item === '51job' || item === 'liepin')
+      : ['boss'] as PlatformId[]
+    const nextOrder = enabled
+      ? [...currentOrder, ...(!currentOrder.includes(platform) ? [platform] : [])]
+      : currentOrder.filter(item => item !== platform)
+    updateConfig('collection.default_order', nextOrder.length ? nextOrder : ['boss'])
+  }
+
+  const setCollectionOrder = (value: string) => {
+    const enabled = (['boss', 'zhilian', '51job', 'liepin'] as PlatformId[]).filter(platform => config?.platforms?.[platform]?.enabled !== false)
+    const requested = value.split(',').filter((item): item is PlatformId => item === 'boss' || item === 'zhilian' || item === '51job' || item === 'liepin')
+    const next = [...requested, ...enabled.filter(platform => !requested.includes(platform))]
+    updateConfig('collection.default_order', next.length ? next : ['boss'])
+  }
+
   if (loading) {
     return <div className="flex items-center justify-center h-full text-muted text-sm">加载中...</div>
   }
@@ -140,26 +261,36 @@ export default function ConfigPage() {
   if (error || !config) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="max-w-md rounded-2xl border border-card-border bg-[#FFFCFA] p-6 text-center">
+        <div className="max-w-md rounded-2xl border border-card-border bg-surface p-6 text-center">
           <div className="text-sm font-black text-foreground">配置加载失败</div>
           <p className="mt-2 text-xs leading-6 text-muted">
             请确认后端服务已启动：在项目根目录运行 bosshunter web，或启动 127.0.0.1:8686 后刷新页面。
           </p>
-          {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-500">{error}</p>}
+          {error && <p className="mt-3 rounded-lg bg-danger-soft px-3 py-2 text-xs text-danger">{error}</p>}
           <Button className="mt-4" size="sm" onClick={resetConfig}>重试</Button>
         </div>
       </div>
     )
   }
 
+  const bossSearchEstimate = platformSearch('boss')
+  const bossEstimateKeywords = Array.isArray(bossSearchEstimate.keywords) ? bossSearchEstimate.keywords : []
+  const bossEstimateCities = Array.isArray(bossSearchEstimate.cities) && bossSearchEstimate.cities.length
+    ? bossSearchEstimate.cities
+    : (config.profile?.target_cities || [])
+  const bossEstimateMaxPages = Math.max(Number(bossSearchEstimate.max_pages) || 1, 1)
+  const bossTheoreticalPages = bossEstimateKeywords.length * bossEstimateCities.length * bossEstimateMaxPages
+  const bossDailySearchLimit = Math.max(Number(config.collection?.daily_search_page_limit) || 60, 1)
+  const bossTheoreticalExceedsLimit = bossTheoreticalPages > bossDailySearchLimit
+
   return (
     <div className="h-full overflow-y-auto space-y-4 pr-4">
         {/* Actions bar */}
         <div className="flex items-center justify-between sticky top-0 bg-background z-10 py-2">
           <div className="flex items-center gap-2">
-            {dirty && <span className="text-xs text-amber-400">有未保存的更改</span>}
+            {dirty && <span className="text-xs text-warning">有未保存的更改</span>}
             {message && (
-              <span className={`text-xs ${message.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+              <span className={`text-xs ${message.type === 'success' ? 'text-success' : 'text-danger'}`}>
                 {message.text}
               </span>
             )}
@@ -173,42 +304,109 @@ export default function ConfigPage() {
         {/* Profile Section */}
         <SectionCard title="个人信息" sectionKey="profile" expanded={expandedSections} toggle={toggleSection}>
           <div className="space-y-4">
-            {/* Resume upload */}
-            <div>
-              <label className="block text-xs text-foreground mb-2">简历文件</label>
-              {resumeInfo ? (
-                <div className="flex items-center gap-3 rounded-md border border-card-border bg-[#FFFCFA] p-3">
-                  <span className="text-sm font-bold text-foreground">📄 {resumeInfo.filename}</span>
-                  <span className="text-xs text-muted">({(resumeInfo.size / 1024).toFixed(1)} KB)</span>
-                  <button onClick={handleResumeDelete} className="ml-auto text-red-400 hover:text-red-300">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-card-border p-6 transition-colors hover:border-primary/50 hover:bg-[#FFFCFA]">
-                  <Upload className="mb-2 h-6 w-6 text-muted" />
-                  <span className="text-sm text-muted">拖拽或点击上传 (.md、.docx)</span>
-                  <input type="file" accept=".md,.docx" onChange={handleResumeUpload} className="hidden" />
-                </label>
-              )}
-              {resumeUploadError && (
-                <p className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-500">{resumeUploadError}</p>
-              )}
-            </div>
+            <ResumeUploadSection
+              currentResumePath={config.profile?.resume_path || ''}
+              updateConfig={updateConfig}
+            />
             <div className="grid grid-cols-2 gap-4">
-              <Field label="最低薪资 (K)">
-                <Input type="number" value={config.profile?.salary_min || 0} onChange={e => updateConfig('profile.salary_min', Number(e.target.value))} min={0} max={200} />
+              <Field label="最高学历">
+                <Select value={config.profile?.education || ''} onChange={e => updateConfig('profile.education', e.target.value)}>
+                  <option value="">未设置</option>
+                  <option value="博士">博士</option>
+                  <option value="硕士">硕士</option>
+                  <option value="本科">本科</option>
+                  <option value="大专">大专</option>
+                  <option value="其他">其他</option>
+                </Select>
               </Field>
-              <Field label="最高薪资 (K)">
-                <Input type="number" value={config.profile?.salary_max || 0} onChange={e => updateConfig('profile.salary_max', Number(e.target.value))} min={0} max={200} />
+              <Field label="求职招聘类型">
+                <Select value={config.profile?.recruitment_type || ''} onChange={e => updateConfig('profile.recruitment_type', e.target.value)}>
+                  <option value="">未设置</option>
+                  <option value="campus">校招</option>
+                  <option value="experienced">社招</option>
+                  <option value="both">校招、社招均可</option>
+                </Select>
               </Field>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <label className="text-xs text-foreground">AI 生成招呼语</label>
+                <p className="mt-1 text-xs text-muted">关闭后使用你填写的固定文案，发送仍需确认。</p>
+              </div>
+              <Switch
+                aria-label="AI 生成招呼语"
+                checked={config.profile?.ai_greeting_enabled ?? true}
+                onChange={value => updateConfig('profile.ai_greeting_enabled', value)}
+              />
+            </div>
+            {(config.profile?.ai_greeting_enabled ?? true) === false && (
+              <Field label="固定招呼语">
+                <textarea
+                  aria-label="固定招呼语"
+                  value={config.profile?.fixed_greeting || ''}
+                  onChange={e => updateConfig('profile.fixed_greeting', e.target.value)}
+                  placeholder="填写你希望使用的招呼语"
+                  rows={3}
+                  maxLength={300}
+                  className="w-full resize-y rounded-md border border-card-border bg-surface px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+                />
+                <p className="mt-1 text-xs text-muted">保存后，新生成时原样使用，不调用 AI。已有文案保留，可逐条编辑。</p>
+              </Field>
+            )}
+            {(config.profile?.ai_greeting_enabled ?? true) && <Field label="招呼语偏好">
+              <textarea
+                value={config.profile?.greeting_preference || ''}
+                onChange={e => updateConfig('profile.greeting_preference', e.target.value)}
+                placeholder="例如：语气简洁；不要主动询问薪资；不要提能否出差"
+                rows={3}
+                maxLength={500}
+                className="w-full resize-y rounded-md border border-card-border bg-surface px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted focus:border-primary"
+              />
+              <p className="mt-1 text-xs text-muted">仅补充语气和内容偏好，不能覆盖真实简历与安全规则。</p>
+            </Field>}
+            <NumberRangeField
+              label="期望薪资范围（K）"
+              minValue={config.profile?.salary_min ?? 0}
+              maxValue={config.profile?.salary_max ?? 0}
+              onMinChange={value => updateConfig('profile.salary_min', value)}
+              onMaxChange={value => updateConfig('profile.salary_max', value)}
+              min={0}
+              max={200}
+            />
+            <Field label={`薪资上限放宽倍数：${config.profile?.salary_ceil_ratio ?? 1.5}`}>
+              <Slider
+                value={config.profile?.salary_ceil_ratio ?? 1.5}
+                onChange={value => updateConfig('profile.salary_ceil_ratio', value)}
+                min={1}
+                max={5}
+                step={0.1}
+              />
+              <p className="mt-1 text-xs text-muted">按岗位薪资区间下限判断；下限超过最高薪资 × 放宽倍数时会在 AI 评分前跳过。</p>
+            </Field>
+            <div className="flex items-center justify-between rounded-xl border border-card-border bg-surface px-3 py-2">
+              <div>
+                <label className="text-xs text-foreground">过滤面议/无法解析薪资</label>
+                <p className="mt-1 text-xs text-muted">{config.profile?.allow_internship ? '已接受实习，自动关闭此过滤，避免日薪岗位被误排除。' : '关闭后这类岗位会保留给 AI 综合判断。'}</p>
+              </div>
+              <Switch aria-label="过滤面议/无法解析薪资" checked={config.profile?.allow_internship ? false : (config.profile?.filter_unparsed_salary ?? true)} disabled={config.profile?.allow_internship === true} onChange={v => updateConfig('profile.filter_unparsed_salary', v)} />
             </div>
             <Field label="排除关键词">
               <TagsInput value={config.profile?.deal_breakers || []} onChange={v => updateConfig('profile.deal_breakers', v)} placeholder="如：外包、996" />
             </Field>
+            <Field label="JD 排除关键词">
+              <TagsInput value={config.profile?.jd_deal_breakers || []} onChange={v => updateConfig('profile.jd_deal_breakers', v)} placeholder="如：需频繁出差、纯销售" />
+              <p className="mt-1 text-xs text-muted">完整 JD 含这些词时会在 AI 评分前跳过。</p>
+            </Field>
+            <Field label="屏蔽公司">
+              <TagsInput value={config.profile?.blocked_companies || []} onChange={v => updateConfig('profile.blocked_companies', v)} placeholder="输入公司名称或关键词" />
+              <p className="mt-1 text-xs text-muted">公司名包含这些词时不采集，也不会进入 AI 评分。</p>
+            </Field>
             <div className="flex items-center justify-between">
               <label className="text-xs text-foreground">接受实习/管培岗位</label>
-              <Switch checked={config.profile?.allow_internship ?? false} onChange={v => updateConfig('profile.allow_internship', v)} />
+              <Switch aria-label="接受实习/管培岗位" checked={config.profile?.allow_internship ?? false} onChange={v => {
+                updateConfig('profile.allow_internship', v)
+                if (v) updateConfig('profile.filter_unparsed_salary', false)
+              }} />
             </div>
           </div>
         </SectionCard>
@@ -216,34 +414,130 @@ export default function ConfigPage() {
         {/* Search Section */}
         <SectionCard title="搜索设置" sectionKey="search" expanded={expandedSections} toggle={toggleSection}>
           <div className="space-y-4">
-            <Field label="搜索关键词">
-              <TagsInput value={config.search?.keywords || []} onChange={v => updateConfig('search.keywords', v)} />
-            </Field>
-            <Field label="城市">
-              <div className="flex flex-wrap gap-2">
-                {CITIES.map(city => {
-                  const cities = (config.search?.cities?.length ? config.search.cities : config.profile?.target_cities) || []
-                  const selected = cities.includes(city)
-                  return (
-                    <button
-                      key={city}
-                      type="button"
-                      onClick={() => {
-                        const newCities = selected ? cities.filter((c: string) => c !== city) : [...cities, city]
-                        updateConfig('search.cities', newCities)
-                        updateConfig('profile.target_cities', newCities)
-                      }}
-                      className={`px-2 py-1 text-xs rounded border transition-colors ${selected ? 'bg-primary/20 border-primary/50 text-primary' : 'border-card-border bg-[#FFFCFA] text-muted hover:border-primary/40 hover:text-foreground'}`}
-                    >
-                      {city}
-                    </button>
-                  )
-                })}
+            <p className="rounded-xl border border-card-border bg-surface px-3 py-2 text-xs leading-5 text-muted">
+              智联、前程无忧和猎聘只自动采集、评分和生成招呼语；岗位池会提供原平台链接，你完成投递后可手动标记“已发送”。BossHunter 不会替你在这些平台发送、回复或监听。
+            </p>
+            {(['boss', 'zhilian', '51job', 'liepin'] as PlatformId[]).map(platform => {
+              const search = platformSearch(platform)
+              const label = PLATFORM_LABELS[platform]
+              const platformCityOptions = platform === 'zhilian' ? zhilianCityOptions : platform === 'liepin' ? liepinCityOptions : job51CityOptions
+              const enabled = config.platforms?.[platform]?.enabled ?? platform === 'boss'
+              const cities = Array.isArray(search.cities) && search.cities.length
+                ? search.cities
+                : platform === 'boss' ? (config.profile?.target_cities || []) : []
+              const cityInput = cities.join(', ')
+              const bossFilters = search.filters && typeof search.filters === 'object' ? search.filters : {}
+              return (
+                <div key={platform} className={`rounded-2xl border p-4 ${enabled ? 'border-primary/30 bg-surface' : 'border-card-border bg-card opacity-70'}`}>
+                  <div className="flex items-center justify-between gap-3">
+                    <label className="flex items-center gap-2 text-sm font-black text-foreground">
+                      <input type="checkbox" checked={enabled} onChange={event => setPlatformEnabled(platform, event.target.checked)} className="h-4 w-4 accent-primary" />
+                      {label}
+                    </label>
+                    <span className="text-xs text-muted">{enabled ? '已启用' : '未启用'}</span>
+                  </div>
+                  {enabled && <div className="mt-4 space-y-3">
+                    <Field label="搜索关键词" hint={platform === 'boss' ? '输入岗位后请按回车键确认，多岗位用","隔开，否则配置无法保存。' : undefined}>
+                      <TagsInput value={Array.isArray(search.keywords) ? search.keywords : []} onChange={value => updatePlatformSearch(platform, 'keywords', value)} placeholder="如：人力、产品运营" />
+                    </Field>
+                    <Field label="搜索城市">
+                      {platform === 'boss' ? <CityMultiSelect
+                        options={cityOptions}
+                        value={cities}
+                        onChange={value => updatePlatformCities(platform, value)}
+                        onRefresh={handleCityRefresh}
+                        refreshing={cityRefreshing}
+                        message={cityMessage}
+                      /> : <>
+                        <Input list={`config-${platform}-city-options`} value={cityInput} onChange={event => updatePlatformCities(platform, event.target.value.split(/[,，]/).map(value => value.trim()).filter(Boolean))} placeholder={platform === '51job' ? '如：上海' : '如：深圳'} />
+                        <datalist id={`config-${platform}-city-options`}>{platformCityOptions.map(city => <option key={city.code} value={city.name} />)}</datalist>
+                        <p className="mt-1 text-xs text-muted">{PLATFORM_SHORT_LABELS[platform]}只使用已验证的城市编码；当前内置 {platformCityOptions.length} 个城市。</p>
+                        {!!cities.length && <div className="mt-2 flex flex-wrap gap-1">{cities.map((city: string) => {
+                          const matched = platformCityOptions.find(option => option.name.replace(/市$/, '') === city.replace(/市$/, ''))
+                          return <span key={city} className={`rounded-full px-2 py-1 text-xs ${matched ? 'bg-success-soft text-success' : 'bg-warning-soft text-warning'}`}>{city} · {matched ? '已自动识别' : '暂未收录'}</span>
+                        })}</div>}
+                      </>}
+                    </Field>
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <Field label="最大页数">
+                        <Input type="number" value={search.max_pages || (platform === 'boss' ? 3 : 1)} onChange={event => updatePlatformSearch(platform, 'max_pages', Number(event.target.value))} min={1} max={10} />
+                        {platform === 'boss' && bossTheoreticalPages > 0 && (
+                          <p className={`mt-1 rounded-lg px-3 py-2 text-xs ${bossTheoreticalExceedsLimit ? 'bg-warning-soft font-bold text-warning' : 'bg-success-soft text-success'}`}>
+                            理论最多 {bossTheoreticalPages} 页（{bossEstimateKeywords.length} 个关键词 × {bossEstimateCities.length} 个城市 × {bossEstimateMaxPages} 页）。
+                            {bossTheoreticalExceedsLimit
+                              ? ` 已超过每日 ${bossDailySearchLimit} 页上限，到达上限后会提示并停止 BOSS 当前轮。`
+                              : ` 未超过每日 ${bossDailySearchLimit} 页上限。`}
+                          </p>
+                        )}
+                      </Field>
+                      <Field label="排序">
+                        <Select value={search.sort || 'default'} onChange={event => updatePlatformSearch(platform, 'sort', event.target.value)}>
+                          <option value="default">默认</option>
+                          {platform !== '51job' && <option value="newest">最新</option>}
+                        </Select>
+                      </Field>
+                    </div>
+                    {platform === 'boss' && <div className="space-y-3 rounded-xl border border-card-border bg-card p-3">
+                      <p className="text-xs font-black text-foreground">BOSS 搜索筛选（可选）</p>
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <Field label="职位类型">
+                          <Select value={Array.isArray(bossFilters.job_type) ? bossFilters.job_type[0] || '' : ''} onChange={event => updateBossFilter(search, 'job_type', event.target.value, false)}>
+                            <option value="">不限</option>
+                            {BOSS_FILTER_OPTIONS.job_type.map(option => <option key={option} value={option}>{option}</option>)}
+                          </Select>
+                        </Field>
+                        <Field label="薪资范围">
+                          <Select value={Array.isArray(bossFilters.salary) ? bossFilters.salary[0] || '' : ''} onChange={event => updateBossFilter(search, 'salary', event.target.value, false)}>
+                            <option value="">不限</option>
+                            {BOSS_FILTER_OPTIONS.salary.map(option => <option key={option} value={option}>{option}</option>)}
+                          </Select>
+                        </Field>
+                      </div>
+                      {(['experience', 'degree', 'scale'] as const).map(key => {
+                        const labels = { experience: '工作经验', degree: '学历要求', scale: '公司规模' }
+                        const selected: string[] = Array.isArray(bossFilters[key]) ? bossFilters[key] : []
+                        return <Field key={key} label={labels[key]}>
+                          <div className="flex flex-wrap gap-1.5">
+                            {BOSS_FILTER_OPTIONS[key].map(option => <button
+                              key={option}
+                              type="button"
+                              onClick={() => updateBossFilter(search, key, option)}
+                              className={`rounded-full border px-2.5 py-1 text-xs font-bold ${selected.includes(option) ? 'border-primary bg-secondary text-primary' : 'border-card-border bg-card text-muted hover:border-primary/40'}`}
+                            >{option}</button>)}
+                          </div>
+                        </Field>
+                      })}
+                      <Field label="行业编码">
+                        <TagsInput
+                          value={Array.isArray(bossFilters.industry) ? bossFilters.industry : []}
+                          onChange={value => updatePlatformSearch('boss', 'filters.industry', value)}
+                          placeholder="输入 BOSS 行业数字编码后按回车"
+                        />
+                        <p className="mt-1 text-xs text-muted">只接受数字编码；无效内容会被安全忽略。</p>
+                      </Field>
+                    </div>}
+                  </div>}
+                </div>
+              )
+            })}
+            <div className="grid gap-3 md:grid-cols-2">
+              <Field label="默认执行顺序">
+                <Select value={Array.isArray(config.collection?.default_order) ? config.collection.default_order.join(',') : 'boss'} onChange={event => setCollectionOrder(event.target.value)}>
+                  <option value="boss">BOSS 直聘</option>
+                  <option value="zhilian">智联招聘</option>
+                  <option value="boss,zhilian">BOSS 直聘 → 智联招聘</option>
+                  <option value="zhilian,boss">智联招聘 → BOSS 直聘</option>
+                  <option value="51job">前程无忧</option>
+                  <option value="liepin">猎聘</option>
+                  <option value="boss,zhilian,51job">BOSS → 智联 → 前程无忧</option>
+                  <option value="boss,zhilian,51job,liepin">BOSS → 智联 → 前程无忧 → 猎聘</option>
+                </Select>
+              </Field>
+              <div className="flex items-center justify-between rounded-xl border border-card-border bg-surface px-3 py-2 text-xs font-bold text-muted">
+                采集后自动评分
+                <Switch checked={config.collection?.auto_score_default ?? false} onChange={value => updateConfig('collection.auto_score_default', value)} />
               </div>
-            </Field>
-            <Field label="每关键词翻页数">
-              <Input type="number" value={config.search?.max_pages || 3} onChange={e => updateConfig('search.max_pages', Number(e.target.value))} min={1} max={10} />
-            </Field>
+            </div>
           </div>
         </SectionCard>
 
@@ -255,42 +549,6 @@ export default function ConfigPage() {
             </Field>
             <Field label="每轮最大候选数">
               <Input type="number" value={config.scoring?.max_candidates || 20} onChange={e => updateConfig('scoring.max_candidates', Number(e.target.value))} min={1} max={100} />
-            </Field>
-          </div>
-        </SectionCard>
-
-        {/* Throttle Section */}
-        <SectionCard title="反检测设置" sectionKey="throttle" expanded={expandedSections} toggle={toggleSection}>
-          <div className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              <Field label="每日发送上限">
-                <Input type="number" value={config.throttle?.daily_limit || 30} onChange={e => updateConfig('throttle.daily_limit', Number(e.target.value))} />
-              </Field>
-              <Field label="最短间隔 (秒)">
-                <Input type="number" value={config.throttle?.interval_min || 60} onChange={e => updateConfig('throttle.interval_min', Number(e.target.value))} />
-              </Field>
-              <Field label="最长间隔 (秒)">
-                <Input type="number" value={config.throttle?.interval_max || 180} onChange={e => updateConfig('throttle.interval_max', Number(e.target.value))} />
-              </Field>
-            </div>
-            <div className="flex items-center justify-between">
-              <label className="text-xs text-foreground">发送前模拟浏览</label>
-              <Switch checked={config.throttle?.browse_before_greet ?? true} onChange={v => updateConfig('throttle.browse_before_greet', v)} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="浏览最短时长 (秒)">
-                <Input type="number" value={config.throttle?.browse_duration_min || 15} onChange={e => updateConfig('throttle.browse_duration_min', Number(e.target.value))} />
-              </Field>
-              <Field label="浏览最长时长 (秒)">
-                <Input type="number" value={config.throttle?.browse_duration_max || 30} onChange={e => updateConfig('throttle.browse_duration_max', Number(e.target.value))} />
-              </Field>
-            </div>
-            <Field label="发送时间窗口">
-              <TagsInput value={config.throttle?.send_windows || ['09:00-16:00']} onChange={v => updateConfig('throttle.send_windows', v)} placeholder="HH:MM-HH:MM" />
-              <p className="mt-1 text-xs text-muted">后台任务会在当天最后一个发送窗口结束时自动停止。</p>
-            </Field>
-            <Field label="随机休息概率">
-              <Input type="number" value={config.throttle?.day_off_probability || 0.05} onChange={e => updateConfig('throttle.day_off_probability', Number(e.target.value))} step={0.01} min={0} max={1} />
             </Field>
           </div>
         </SectionCard>
@@ -314,22 +572,42 @@ export default function ConfigPage() {
               </p>
             </Field>
             <Field label="模型名称">
-              <Input value={config.ai?.model || ''} onChange={e => {
-                updateConfig('ai.model', e.target.value)
-                setAiTest({ testing: false })
-              }} placeholder="填写服务商当前支持的模型 ID" />
+              <div className="flex flex-wrap gap-2">
+                <Input aria-label="模型名称" className="min-w-0 flex-1 basis-40" value={config.ai?.model || ''} onChange={e => {
+                  updateConfig('ai.model', e.target.value)
+                  setAiTest({ testing: false })
+                }} placeholder="填写服务商当前支持的模型 ID" />
+                <Button type="button" variant="secondary" disabled={modelList.loading} onClick={handleFetchModels}>
+                  {modelList.loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
+                  {modelList.loading ? '获取中…' : '获取模型列表'}
+                </Button>
+              </div>
+              {modelList.models.length > 0 && (
+                <Select aria-label="可用模型" className="mt-2 pr-8 appearance-auto" value={modelList.models.includes(config.ai?.model) ? config.ai.model : ''} onChange={e => {
+                  updateConfig('ai.model', e.target.value)
+                  setAiTest({ testing: false })
+                }}>
+                  <option value="" disabled>请选择模型</option>
+                  {modelList.models.map(model => <option key={model} value={model}>{model}</option>)}
+                </Select>
+              )}
+              <p role="status" className={`mt-1 text-xs ${modelList.error ? 'text-danger' : 'text-muted'}`}>
+                {modelList.message || '按当前 Base URL 和 API Key 获取，无需先保存配置。'}
+              </p>
             </Field>
             <Field label="API Key">
               <Input type="password" value={config.ai?.api_key || ''} onChange={e => {
                 updateConfig('ai.api_key', e.target.value)
                 setAiTest({ testing: false })
               }} placeholder={config.ai?.api_key_masked || '也可通过环境变量设置'} />
+              <p className="mt-1 text-xs text-muted">填写后优先生效；留空时才读取环境变量。</p>
             </Field>
             <Field label="Base URL">
               <Input value={config.ai?.base_url || ''} onChange={e => {
                 updateConfig('ai.base_url', e.target.value)
                 setAiTest({ testing: false })
               }} placeholder="留空使用默认" />
+              <p className="mt-1 text-xs text-muted">填写后优先生效；留空时使用环境变量或服务商默认地址。</p>
             </Field>
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="Thinking 模式">
@@ -364,7 +642,36 @@ export default function ConfigPage() {
                 max={600}
               />
             </Field>
-            <div className="rounded-2xl border border-card-border bg-[#FFFCFA] p-3">
+            <Field label="AI 评分并发数">
+              <Select
+                value={String(config.ai?.scoring_concurrency || 1)}
+                onChange={e => updateConfig('ai.scoring_concurrency', Number(e.target.value))}
+              >
+                {[1, 2, 3].map(value => <option key={value} value={value}>{value}</option>)}
+              </Select>
+              <p className="mt-1 text-xs text-muted">默认 1；提高并发会增加 API 限流风险。</p>
+            </Field>
+            <div className="flex items-center justify-between rounded-lg border border-card-border bg-surface p-3">
+              <div>
+                <label className="text-xs font-bold text-foreground">临界评分二次复核</label>
+                <p className="mt-1 text-xs text-muted">默认关闭；开启后会增加 AI 调用次数。</p>
+              </div>
+              <Switch checked={config.ai?.scoring_second_review ?? false} onChange={v => updateConfig('ai.scoring_second_review', v)} />
+            </div>
+            {(config.profile?.ai_greeting_enabled ?? true) && <div className="rounded-2xl border border-primary/20 bg-surface-muted p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <label className="text-sm font-black text-foreground">招呼语质量提醒</label>
+                  <p className="mt-1 text-xs leading-5 text-muted">可选检查一次，只提供建议，不拒绝或自动改写文案。默认关闭。</p>
+                </div>
+                <Switch
+                  aria-label="招呼语质量提醒"
+                  checked={config.ai?.greeting_style_suggestions ?? false}
+                  onChange={value => updateConfig('ai.greeting_style_suggestions', value)}
+                />
+              </div>
+            </div>}
+            <div className="rounded-2xl border border-card-border bg-surface p-3">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-black text-foreground">AI 连接检测</div>
@@ -376,11 +683,100 @@ export default function ConfigPage() {
               </div>
               {aiTest.message && (
                 <p className={`mt-2 rounded-lg px-3 py-2 text-xs ${
-                  aiTest.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-500'
+                  aiTest.ok ? 'bg-success-soft text-success' : 'bg-danger-soft text-danger'
                 }`}>
                   {aiTest.message}
                 </p>
               )}
+            </div>
+          </div>
+        </SectionCard>
+
+        {/* Anti-monitoring Section */}
+        <SectionCard title="反监测设置" sectionKey="collection" expanded={expandedSections} toggle={toggleSection}>
+          <div className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="BOSS 单日搜索页上限">
+                <Input type="number" value={config.collection?.daily_search_page_limit ?? 60} onChange={e => updateConfig('collection.daily_search_page_limit', Number(e.target.value))} min={1} max={200} />
+                {bossTheoreticalPages > 0 && (
+                  <p className={`mt-1 text-xs ${bossTheoreticalExceedsLimit ? 'font-bold text-warning' : 'text-muted'}`}>
+                    当前搜索组合理论最多 {bossTheoreticalPages} 页；{bossTheoreticalExceedsLimit ? `超过本上限 ${bossDailySearchLimit} 页，会在设置处和执行时提示。` : '未超过本上限。'}
+                  </p>
+                )}
+              </Field>
+              <Field label="BOSS 单日详情页尝试上限">
+                <Input type="number" value={config.collection?.daily_detail_page_limit ?? 900} onChange={e => updateConfig('collection.daily_detail_page_limit', Number(e.target.value))} min={1} max={1000} />
+                <p className="mt-1 text-xs text-muted">只计算打开岗位详情的尝试；列表中跳过的重复、过滤岗位不占用详情额度。详情访问也计入下方总上限。</p>
+              </Field>
+              <Field label="BOSS 连续页面失败停止阈值">
+                <Input type="number" value={config.collection?.max_consecutive_page_failures ?? 3} onChange={e => updateConfig('collection.max_consecutive_page_failures', Number(e.target.value))} min={1} max={10} />
+              </Field>
+              <NumberRangeField
+                label="BOSS 风险暂停范围（分钟）"
+                minValue={config.collection?.risk_pause_min_minutes ?? 5}
+                maxValue={config.collection?.risk_pause_max_minutes ?? 10}
+                onMinChange={value => updateConfig('collection.risk_pause_min_minutes', value)}
+                onMaxChange={value => updateConfig('collection.risk_pause_max_minutes', value)}
+                min={1}
+                max={60}
+              />
+              <Field label="BOSS 操作间隔倍率">
+                <Input type="number" value={config.collection?.collection_delay_multiplier ?? 1.5} onChange={e => updateConfig('collection.collection_delay_multiplier', Number(e.target.value))} min={1} max={5} step={0.1} />
+                <p className="mt-1 text-xs text-muted">同时作用于 BOSS 采集和监测的页面操作与每轮等待；数值越大，间隔越长。</p>
+              </Field>
+              <NumberRangeField
+                label="BOSS 采集后投递冷却范围（分钟）"
+                minValue={config.collection?.delivery_cooldown_min_minutes ?? 5}
+                maxValue={config.collection?.delivery_cooldown_max_minutes ?? 15}
+                onMinChange={value => updateConfig('collection.delivery_cooldown_min_minutes', value)}
+                onMaxChange={value => updateConfig('collection.delivery_cooldown_max_minutes', value)}
+                min={0}
+                max={240}
+              />
+            </div>
+            <p className="text-xs text-muted">完成 BOSS 采集后，每次会在设定区间内随机等待一次再投递；默认为 5–15 分钟，单独采集不受影响。</p>
+            <Field label="BOSS 单日页面访问总上限">
+              <Input type="number" value={config.safety?.daily_platform_page_limit ?? 1100} onChange={e => updateConfig('safety.daily_platform_page_limit', Number(e.target.value))} min={1} max={2000} />
+              <p className="mt-1 text-xs text-muted">合计 BOSS 搜索页、详情页、自动投递和监测打开的页面；默认 1100 次，可容纳 60 次搜索与 900 次详情，另余 140 次供其他操作使用。其他平台不占用。</p>
+            </Field>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="每日发送上限">
+                <Input type="number" value={config.throttle?.daily_limit || 30} onChange={e => updateConfig('throttle.daily_limit', Number(e.target.value))} />
+              </Field>
+              <NumberRangeField
+                label="发送间隔范围（秒）"
+                minValue={config.throttle?.interval_min ?? 60}
+                maxValue={config.throttle?.interval_max ?? 180}
+                onMinChange={value => updateConfig('throttle.interval_min', value)}
+                onMaxChange={value => updateConfig('throttle.interval_max', value)}
+                min={10}
+                max={600}
+              />
+            </div>
+            <div className="grid items-end gap-4 md:grid-cols-2">
+              <div className="flex h-9 items-center justify-between rounded-md border border-card-border bg-surface px-3">
+                <label className="text-xs text-foreground">发送前模拟浏览</label>
+                <Switch checked={config.throttle?.browse_before_greet ?? true} onChange={v => updateConfig('throttle.browse_before_greet', v)} />
+              </div>
+              <NumberRangeField
+                label="模拟浏览时长范围（秒）"
+                minValue={config.throttle?.browse_duration_min ?? 15}
+                maxValue={config.throttle?.browse_duration_max ?? 30}
+                onMinChange={value => updateConfig('throttle.browse_duration_min', value)}
+                onMaxChange={value => updateConfig('throttle.browse_duration_max', value)}
+                min={5}
+                max={120}
+                disabled={!(config.throttle?.browse_before_greet ?? true)}
+              />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="发送时间窗口">
+                <TagsInput value={config.throttle?.send_windows || ['09:00-16:00']} onChange={v => updateConfig('throttle.send_windows', v)} placeholder="HH:MM-HH:MM" />
+                <p className="mt-1 text-xs text-muted">当天最后一个窗口结束时自动停止。</p>
+              </Field>
+              <Field label="随机休息概率">
+                <Input type="number" value={config.throttle?.day_off_probability || 0.05} onChange={e => updateConfig('throttle.day_off_probability', Number(e.target.value))} step={0.01} min={0} max={1} />
+              </Field>
             </div>
           </div>
         </SectionCard>
@@ -390,14 +786,25 @@ export default function ConfigPage() {
           <div className="space-y-4">
             <Field label="检查间隔 (分钟)">
               <Input type="number" value={config.monitor?.interval || 30} onChange={e => updateConfig('monitor.interval', Number(e.target.value))} min={1} max={120} />
+              <p className="mt-1 text-xs text-muted">单独监测会立即检查一次；后续轮询还会乘以 BOSS 操作间隔倍率。</p>
+            </Field>
+            <Field label="全流程首次监测冷却 (分钟)">
+              <Input type="number" value={config.monitor?.initial_cooldown_minutes ?? 10} onChange={e => updateConfig('monitor.initial_cooldown_minutes', Number(e.target.value))} min={0} max={120} />
+              <p className="mt-1 text-xs text-muted">仅运行全流程发送结束后生效；单独监测立即检查，停止任务可取消等待。</p>
             </Field>
             <Field label="聊天页 URL">
               <Input value={config.monitor?.chat_url || ''} onChange={e => updateConfig('monitor.chat_url', e.target.value)} />
             </Field>
+            <Field label="每轮最多处理对话数">
+              <Input type="number" value={config.monitor?.max_conversations_per_cycle ?? 5} onChange={e => updateConfig('monitor.max_conversations_per_cycle', Number(e.target.value))} min={1} max={20} />
+            </Field>
+            <Field label="连续页面失败停止阈值">
+              <Input type="number" value={config.monitor?.max_consecutive_page_failures ?? 3} onChange={e => updateConfig('monitor.max_consecutive_page_failures', Number(e.target.value))} min={1} max={10} />
+            </Field>
             <Field label="每轮最多发简历数">
               <Input type="number" value={config.monitor?.max_resume_sends_per_cycle || 5} onChange={e => updateConfig('monitor.max_resume_sends_per_cycle', Number(e.target.value))} min={1} />
             </Field>
-            <div className="flex items-center justify-between rounded-2xl border border-card-border bg-[#FFFCFA] p-4">
+            <div className="flex items-center justify-between rounded-2xl border border-card-border bg-surface p-4">
               <div>
                 <label className="text-sm font-black text-foreground">检测到 HR 问题时自动回复</label>
                 <p className="mt-1 text-xs text-muted">默认关闭。关闭时只生成回复建议，需要你在“监测执行”中确认后发送。</p>
@@ -444,7 +851,7 @@ function SectionCard({ title, sectionKey, expanded, toggle, children }: {
   return (
     <Card>
       <button
-        className="w-full flex items-center justify-between p-4 transition-colors hover:bg-[#FFFCFA]"
+        className="w-full flex items-center justify-between p-4 transition-colors hover:bg-surface"
         onClick={() => toggle(sectionKey)}
       >
         <span className="text-sm font-black text-foreground">{title}</span>
@@ -455,11 +862,70 @@ function SectionCard({ title, sectionKey, expanded, toggle, children }: {
   )
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
     <div>
-      <label className="block text-xs text-foreground mb-1.5">{label}</label>
+      <div className="mb-1.5 flex items-baseline justify-between gap-2">
+        <label className="block text-xs text-foreground">{label}</label>
+        {hint && <span className="text-[11px] leading-4 text-muted">{hint}</span>}
+      </div>
       {children}
     </div>
+  )
+}
+
+function NumberRangeField({
+  label,
+  minValue,
+  maxValue,
+  onMinChange,
+  onMaxChange,
+  min,
+  max,
+  step,
+  disabled = false,
+}: {
+  label: string
+  minValue: number
+  maxValue: number
+  onMinChange: (value: number) => void
+  onMaxChange: (value: number) => void
+  min?: number
+  max?: number
+  step?: number
+  disabled?: boolean
+}) {
+  const inputClassName = 'h-9 min-w-0 flex-1 bg-transparent px-2 text-center text-sm text-foreground outline-none disabled:cursor-not-allowed disabled:text-muted'
+
+  return (
+    <Field label={label}>
+      <div className="flex h-9 items-center overflow-hidden rounded-md border border-card-border bg-card focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30">
+        <span className="shrink-0 pl-3 text-[11px] text-muted">最少</span>
+        <input
+          aria-label={`${label}最少`}
+          className={inputClassName}
+          type="number"
+          value={minValue}
+          onChange={event => onMinChange(Number(event.target.value))}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+        />
+        <span className="flex h-full shrink-0 items-center border-x border-card-border bg-surface px-3 text-xs font-bold text-muted">至</span>
+        <span className="shrink-0 pl-3 text-[11px] text-muted">最多</span>
+        <input
+          aria-label={`${label}最多`}
+          className={inputClassName}
+          type="number"
+          value={maxValue}
+          onChange={event => onMaxChange(Number(event.target.value))}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+        />
+      </div>
+    </Field>
   )
 }

@@ -1,8 +1,8 @@
 """Sender module - Auto-send greetings with throttle control."""
 
 import time
+from contextlib import nullcontext
 import json
-from pathlib import Path
 from threading import Event
 from urllib.parse import urljoin
 from rich.console import Console
@@ -16,117 +16,18 @@ from bosshunter.browser import (
     get_page_targets,
     navigate,
     press_key,
-    set_files,
     type_text,
+    wait_for_load,
 )
-from bosshunter.db import get_db, get_jobs_ready_to_send, update_job_greeting, update_job_status, add_history, add_risk_event
+from bosshunter.db import (
+    get_db, get_jobs_ready_to_send, update_job_status, update_job_last_error,
+    add_history, add_risk_event, set_platform_safety_lock,
+)
+from bosshunter.collection.capabilities import platform_supports
 from bosshunter.throttle import RequestThrottle, SendWindowChecker, ProgressiveBackoff, should_take_day_off
-from bosshunter.ai.greeter import strip_web_addresses
+from bosshunter.platform_safety import PlatformAccessGuard, PlatformSafetyStop
 
 console = Console()
-
-RESUME_IMAGE_ROLE_KEYWORDS = {
-    "fde": ("fde", "forward deployed", "解决方案", "售前", "交付工程师", "实施工程师"),
-    "product": ("产品经理", "product manager", "pm", "产品负责人", "ai builder"),
-    "engineering": ("应用工程师", "大模型工程师", "agent工程师", "agent 工程师", "算法工程师", "研发工程师"),
-}
-
-
-def _resolve_resume_image(job: dict, profile_config: dict, base_dir: Path | None = None) -> tuple[str | None, str | None]:
-    """Select the matching configured image resume for one job."""
-    configured_paths = profile_config.get("resume_image_paths", {})
-    if not isinstance(configured_paths, dict):
-        return None, None
-    job_text = " ".join(str(job.get(field) or "") for field in ("title", "jd", "score_reason")).lower()
-    role = next(
-        (name for name, keywords in RESUME_IMAGE_ROLE_KEYWORDS.items() if any(keyword in job_text for keyword in keywords)),
-        str(profile_config.get("resume_image_default_role") or "").lower() or None,
-    )
-    raw_path = configured_paths.get(role) if role else None
-    if not isinstance(raw_path, str) or not raw_path.strip():
-        return role, None
-    candidate = Path(raw_path).expanduser()
-    if not candidate.is_absolute() and base_dir:
-        candidate = base_dir / candidate
-    return role, str(candidate.resolve())
-
-
-def _select_resume_image_input(target_id: str) -> dict:
-    """Return a chat image input selector without clicking a send control."""
-    return _parse_js_result(evaluate(target_id, """
-    (() => {
-        const inputs = Array.from(document.querySelectorAll('input[type="file"]'));
-        const imageInput = inputs.find((input) => {
-            const accept = String(input.getAttribute('accept') || '').toLowerCase();
-            return /image/.test(accept) || /png|jpe?g|webp/.test(accept);
-        }) || inputs[0];
-        if (!imageInput) return JSON.stringify({success: false, error: 'resume_image_input_missing'});
-        if (!imageInput.id) imageInput.id = 'bosshunter-resume-image-input';
-        return JSON.stringify({success: true, selector: '#' + CSS.escape(imageInput.id)});
-    })()
-    """))
-
-
-def _resume_image_delivery_state(target_id: str, file_name: str) -> str:
-    """Verify that the selected image filename is visible in the current chat."""
-    expected = json.dumps(file_name, ensure_ascii=False)
-    result = _parse_js_result(evaluate(target_id, f"""
-    (() => {{
-        const expected = {expected};
-        const text = document.querySelector('.chat-record, .chat-conversation, .chat-content')?.innerText || '';
-        const images = Array.from(document.querySelectorAll('.chat-record img, .chat-conversation img, .chat-content img'));
-        return JSON.stringify({{state: text.includes(expected) || images.length > 0 ? 'delivered' : 'missing'}});
-    }})()
-    """))
-    return str(result.get("state") or "missing")
-
-
-def _send_resume_image_after_greeting(target_id: str, job: dict, send_config: dict) -> dict:
-    profile_config = send_config.get("_profile", {})
-    if not profile_config.get("send_resume_image_after_greeting", False):
-        return {"success": True, "skipped": "disabled"}
-    base_dir = Path(profile_config.get("resume_path") or Path.cwd()).expanduser().resolve().parent
-    role, image_path = _resolve_resume_image(job, profile_config, base_dir)
-    if not image_path:
-        return {"success": False, "error": "resume_image_role_unmatched", "history_detail": "图片简历未发送：岗位未匹配到已配置的图片简历"}
-    image_file = Path(image_path)
-    if not image_file.is_file() or image_file.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp"}:
-        return {"success": False, "error": "resume_image_missing", "history_detail": f"图片简历未发送：{role or '默认'} 图片文件不存在或格式不支持"}
-    input_state = _select_resume_image_input(target_id)
-    if not input_state.get("success"):
-        return {**input_state, "history_detail": "图片简历未发送：聊天页没有可验证的图片上传入口"}
-    if not set_files(target_id, input_state["selector"], [str(image_file)]):
-        return {"success": False, "error": "resume_image_upload_failed", "history_detail": "图片简历未发送：图片文件未能写入平台上传控件"}
-    send_button = _parse_js_result(evaluate(target_id, """
-    (() => {
-        const button = Array.from(document.querySelectorAll('.btn-send, .send-btn, [class*="send"]'))
-            .find((element) => !element.disabled && !element.classList.contains('disabled'));
-        if (!button) return JSON.stringify({success: false, error: 'resume_image_send_button_unavailable'});
-        button.click();
-        return JSON.stringify({success: true});
-    })()
-    """))
-    if not send_button.get("success"):
-        return {**send_button, "history_detail": "图片简历已选择，但未找到可用的发送按钮"}
-    if _sleep_or_stop(2, send_config.get("_workbench_stop_event")):
-        return {"success": False, "error": "stopped", "history_detail": "用户已请求停止"}
-    if _resume_image_delivery_state(target_id, image_file.name) != "delivered":
-        return {
-            "success": False,
-            "error": "resume_image_delivery_unverified",
-            "history_detail": "图片简历已点击发送，但聊天记录中未确认送达",
-        }
-    return {"success": True, "role": role, "path": str(image_file)}
-
-
-def _complete_verified_greeting(target_id: str, job: dict, send_config: dict, result: dict) -> tuple[dict, None]:
-    resume_image = _send_resume_image_after_greeting(target_id, job, send_config)
-    close_tab(target_id)
-    if resume_image.get("skipped") == "disabled":
-        return result, None
-    if resume_image.get("success"):
-        return {**result, "resume_image_sent": True, "resume_image_role": resume_image.get("role")}, None
-    return {**result, "resume_image_sent": False, "resume_image_error": resume_image.get("error", "unknown"), "resume_image_detail": resume_image.get("history_detail", "图片简历未发送")}, None
 
 CHAT_BUTTON_SELECTOR = (
     'a[redirect-url*="/web/geek/chat"], '
@@ -137,6 +38,16 @@ CHAT_BUTTON_SELECTOR = (
     '[ka*="gochat"], '
     '.op-btn-chat, '
     '.btn-startchat-wrap'
+)
+
+# 命中任一即视为岗位已关闭/下架/停止招聘/招满。用于岗位详情页失败时推断真实业务状态。
+JOB_CLOSED_MARKERS = (
+    "访问的页面不存在", "您访问的页面不存在", "Oops!",
+    "职位已关闭", "职位已经关闭", "该职位已关闭", "此职位已关闭", "岗位已关闭",
+    "该职位已下线", "该职位已下架", "职位已下线", "职位已下架",
+    "该职位已暂停招聘", "职位已暂停招聘", "职位暂停招聘", "停止招聘", "已停止招聘",
+    "暂停招聘", "招聘已暂停", "该职位已招满", "职位已招满", "已招满",
+    "该职位暂不招人", "暂不招人",
 )
 
 CHAT_BUTTON_SCRIPT_FOR_TESTS = """
@@ -565,20 +476,37 @@ def _message_delivery_state(target_id: str, greeting: str) -> str:
     greeting_escaped = json.dumps(greeting, ensure_ascii=False)
     result = _parse_js_result(evaluate(target_id, f"""
     (() => {{
-        const normalize = (value) => String(value || '').replace(/\\s+/g, ' ').trim();
+        const normalize = (value) => String(value || '')
+            .replace(/[\\u200b-\\u200f\\ufeff]/g, '')
+            .replace(/\\s+/g, ' ')
+            .trim();
+        const removeDeliveryLabels = (value) => normalize(value)
+            .replace(/(发送中|已读|未读|送达|发送成功|重试|重新发送)$/g, '')
+            .trim();
+        const textMatchesExpected = (value, expectedText) => {{
+            const text = removeDeliveryLabels(value);
+            return text === expectedText || text.includes(expectedText);
+        }};
+        const messageText = (node) => {{
+            const contentNode = node.querySelector(
+                '.message-content, .text, .content, .message-text, '
+                + '[class*="message-content"], [class*="msg-content"], [class*="text"]'
+            );
+            return normalize(contentNode ? contentNode.innerText || contentNode.textContent : node.innerText || node.textContent);
+        }};
         const expected = normalize({greeting_escaped});
         const ownMessages = Array.from(document.querySelectorAll(
             '.chat-record .message-item.item-myself, .chat-record .item-myself, '
             + '.chat-record .message-item.item-self, .chat-record [class*="item-my"]'
         ));
-        const matching = ownMessages.filter((node) => normalize(node.innerText || node.textContent) === expected);
+        const matching = ownMessages.filter((node) => textMatchesExpected(messageText(node), expected));
         const messageList = document.querySelector('.chat-record');
         const vue = messageList && messageList.__vue__;
         const records = vue && Array.isArray(vue.list$) ? vue.list$ : [];
         const matchingRecords = records.filter((message) => {{
             if (!message || !message.isSelf) return false;
-            const text = message.text || message.lastText || message.content || '';
-            return normalize(text) === expected;
+            const text = message.text || message.lastText || message.content || message.message || message.body || '';
+            return textMatchesExpected(text, expected);
         }});
         if (!matching.length && !matchingRecords.length) {{
             return JSON.stringify({{success: true, state: 'missing'}});
@@ -605,6 +533,67 @@ def _message_delivery_state(target_id: str, greeting: str) -> str:
     if not result.get("success"):
         return "missing"
     return str(result.get("state") or "missing")
+
+
+def _verify_greeting_in_chat_list(
+    job: dict,
+    greeting: str,
+    stop_event,
+    attempts: int = 6,
+) -> bool:
+    """Confirm an ambiguous send from the matching BOSS chat-list row.
+
+    A cleared input only proves that the page handled the submit action. Require
+    the target company and complete greeting in the same row before recording a
+    success, so this fallback cannot cause an automatic duplicate or false sent
+    state.
+    """
+    company = " ".join(str(job.get("company") or "").split())
+    expected = " ".join(str(greeting or "").split())
+    if not company or not expected:
+        return False
+
+    target_id = new_tab("https://www.zhipin.com/web/geek/chat", background=True)
+    if not target_id:
+        return False
+
+    try:
+        wait_for_load(target_id, timeout=10)
+        company_json = json.dumps(company, ensure_ascii=False)
+        expected_json = json.dumps(expected, ensure_ascii=False)
+        expression = f"""
+        (() => {{
+			const normalize = (value) => String(value || '').replace(/\\s+/g, ' ').trim();
+            const expectedCompany = normalize({company_json});
+            const expectedGreeting = normalize({expected_json});
+            const rows = Array.from(document.querySelectorAll('li[role=listitem]'));
+            const matched = rows.some((row) => {{
+                const nameBox = row.querySelector('.name-box');
+                const spans = nameBox ? Array.from(nameBox.querySelectorAll('span')) : [];
+                const actualCompany = normalize(spans.length >= 2 ? spans[1].textContent : '');
+                const lastMessage = row.querySelector('.last-msg-text, .last-msg, .message-text');
+                const actualMessage = normalize(lastMessage ? lastMessage.textContent : row.innerText);
+                const companyMatches = actualCompany && (
+                    actualCompany === expectedCompany
+                    || actualCompany.includes(expectedCompany)
+                    || expectedCompany.includes(actualCompany)
+                );
+                return companyMatches && actualMessage.includes(expectedGreeting);
+            }});
+            return JSON.stringify({{success: true, matched}});
+        }})()
+        """
+        for attempt in range(max(1, attempts)):
+            if _stop_requested(stop_event):
+                return False
+            result = _parse_js_result(evaluate(target_id, expression, timeout=5))
+            if result.get("success") and result.get("matched"):
+                return True
+            if attempt + 1 < attempts and _sleep_or_stop(1, stop_event):
+                return False
+        return False
+    finally:
+        close_tab(target_id)
 
 
 def _submit_chat_message_background(target_id: str, greeting: str) -> dict:
@@ -731,6 +720,35 @@ JS_SEND_GREETING = """
 """
 
 
+def _detect_job_closed_on_page(target_id: str) -> dict | None:
+    """Attempt to confirm whether the opened job page reports the job as closed/down.
+
+    Used as a fallback when a step on the job-detail page fails (e.g. no chat button),
+    so we can surface the real business conclusion ("job is closed") instead of only the
+    technical step that failed. Returns a send-result dict when a closed marker is found.
+    """
+    markers = list(JOB_CLOSED_MARKERS)
+    probe = _parse_js_result(evaluate(target_id, f"""
+    (() => {{
+        const text = document.body ? document.body.innerText : '';
+        const title = document.title || '';
+        const markers = {json.dumps(markers, ensure_ascii=False)};
+        const hit = title.includes('访问的页面不存在') || markers.some((m) => text.includes(m));
+        if (!hit) return JSON.stringify({{closed: false}});
+        const snippet = markers.find((m) => text.includes(m)) || '职位已关闭';
+        return JSON.stringify({{closed: true, snippet}});
+    }})()
+    """))
+    if probe.get("closed"):
+        return {
+            "success": False,
+            "error": "job_page_unavailable",
+            "history_detail": "岗位已关闭或下架",
+            "skip_backoff": True,
+        }
+    return None
+
+
 def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tuple[dict, str | None]:
     stop_event = throttle_config.get("_workbench_stop_event")
     existing_target_ids = {
@@ -738,6 +756,16 @@ def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tupl
         for target in get_page_targets()
         if target.get("targetId")
     }
+    access_guard = throttle_config.get("_platform_access_guard")
+    if isinstance(access_guard, PlatformAccessGuard):
+        try:
+            access_guard.reserve("job_page")
+        except PlatformSafetyStop as exc:
+            return {
+                "success": False,
+                "error": exc.reason,
+                "history_detail": "为了账户安全，已达到平台页面访问上限或仍处于风险冷却",
+            }, None
     target_id = new_tab(job["url"], background=True)
     if not target_id:
         return {"success": False, "error": "open_page_failed", "history_detail": "无法打开页面", "skip_backoff": True}, None
@@ -755,24 +783,24 @@ def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tupl
             close_tab(target_id)
             return {"success": False, "error": "stopped", "history_detail": "用户已请求停止", "skip_backoff": True}, None
 
-    page_check_js = """
-    (() => {
+    page_check_js = f"""
+    (() => {{
         const text = document.body ? document.body.innerText : '';
         const title = document.title || '';
+        const closedMarkers = {json.dumps(list(JOB_CLOSED_MARKERS), ensure_ascii=False)};
         if (
             title.includes('访问的页面不存在') ||
-            text.includes('您访问的页面不存在') ||
-            text.includes('Oops!')
-        ) {
-            return JSON.stringify({
+            closedMarkers.some((marker) => text.includes(marker))
+        ) {{
+            return JSON.stringify({{
                 success: false,
                 error: 'job_page_unavailable',
-                history_detail: '岗位页面不存在或已下架',
+                history_detail: '岗位已关闭或下架',
                 skip_backoff: true
-            });
-        }
-        return JSON.stringify({success: true});
-    })()
+            }});
+        }}
+        return JSON.stringify({{success: true}});
+    }})()
     """
     page_check = _parse_js_result(evaluate(target_id, page_check_js))
     if not page_check.get("success"):
@@ -782,7 +810,10 @@ def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tupl
     chat_button_attempts = int(throttle_config.get("_chat_button_attempts", 30))
     result1a = _click_chat_button(target_id, stop_event, chat_button_attempts)
     if not result1a.get("success"):
+        closed_result = _detect_job_closed_on_page(target_id)
         close_tab(target_id)
+        if closed_result:
+            return closed_result, None
         return {"success": False, "error": "no_chat_button", "history_detail": "无法找到沟通按钮", "skip_backoff": True}, None
 
     if _sleep_or_stop(4, stop_event):
@@ -833,6 +864,14 @@ def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tupl
 
     if not chat_ready.get("success"):
         if contact_action == "first_contact_submitted":
+            if _verify_greeting_in_chat_list(job, greeting, stop_event):
+                close_tab(target_id)
+                return {
+                    "success": True,
+                    "verified": True,
+                    "first_contact": True,
+                    "verified_from_chat_list": True,
+                }, None
             return {
                 "success": False,
                 "error": "first_contact_navigation_unverified",
@@ -865,17 +904,34 @@ def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tupl
                     close_tab(target_id)
                     return {"success": False, "error": "stopped", "history_detail": "用户已请求停止", "skip_backoff": True}, None
                 if _message_delivery_state(target_id, greeting) == "delivered":
-                    return _complete_verified_greeting(target_id, job, throttle_config, {
+                    close_tab(target_id)
+                    return {
                         "success": True,
                         "verified": True,
                         "first_contact": True,
-                    })
+                    }, None
+                if _verify_greeting_in_chat_list(job, greeting, stop_event):
+                    close_tab(target_id)
+                    return {
+                        "success": True,
+                        "verified": True,
+                        "first_contact": True,
+                        "verified_from_chat_list": True,
+                    }, None
                 return {
                     "success": False,
                     "error": "first_contact_send_not_stable",
                     "history_detail": "首次招呼语曾出现但未稳定保留在会话中",
                     "skip_backoff": True,
                 }, target_id
+        if _verify_greeting_in_chat_list(job, greeting, stop_event):
+            close_tab(target_id)
+            return {
+                "success": True,
+                "verified": True,
+                "first_contact": True,
+                "verified_from_chat_list": True,
+            }, None
         return {
             "success": False,
             "error": "first_contact_delivery_unverified",
@@ -932,13 +988,29 @@ def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tupl
                 close_tab(target_id)
                 return {"success": False, "error": "stopped", "history_detail": "用户已请求停止", "skip_backoff": True}, None
             if _message_delivery_state(target_id, greeting) == "delivered":
-                return _complete_verified_greeting(target_id, job, throttle_config, {"success": True, "verified": True})
+                close_tab(target_id)
+                return {"success": True, "verified": True}, None
+            if _verify_greeting_in_chat_list(job, greeting, stop_event):
+                close_tab(target_id)
+                return {
+                    "success": True,
+                    "verified": True,
+                    "verified_from_chat_list": True,
+                }, None
             return {
                 "success": False,
                 "error": "send_not_stable",
                 "history_detail": "消息曾出现但未稳定保留在会话中，未记录为已发送",
                 "skip_backoff": True,
             }, target_id
+
+    if _verify_greeting_in_chat_list(job, greeting, stop_event):
+        close_tab(target_id)
+        return {
+            "success": True,
+            "verified": True,
+            "verified_from_chat_list": True,
+        }, None
 
     return {
         "success": False,
@@ -948,10 +1020,14 @@ def _send_greeting_once(job: dict, greeting: str, throttle_config: dict) -> tupl
     }, target_id
 
 
-def send_greetings(config: dict, force: bool = False) -> int:
-    """Send generated greetings. Returns count of successfully sent."""
-    db = get_db()
-    throttle_config = config.get("throttle", {})
+def send_greetings(config: dict, force: bool = False, db_path=None) -> int:
+    """Send generated greetings. Returns count of successfully sent.
+
+    ``db_path`` lets web callers pin the runtime database; without it the
+    module-level default (CWD-relative) is used for CLI compatibility.
+    """
+    db = get_db(db_path)
+    throttle_config = dict(config.get("throttle", {}))
     stop_event = config.get("_workbench_stop_event")
     workbench_job_ids = {str(job_id) for job_id in config.get("_workbench_job_ids", [])}
     send_report = {
@@ -963,14 +1039,25 @@ def send_greetings(config: dict, force: bool = False) -> int:
         "failed_count": 0,
         "deferred_count": len(workbench_job_ids),
         "quota_deferred_count": 0,
+        "already_sent": 0,
+        "daily_limit": 0,
+        "remaining_quota": 0,
         "stop_reason": None,
     }
     # Keep the integer return value for CLI/backward compatibility while giving
     # the web workflow enough detail to distinguish failures from quota deferrals.
     config["_workbench_send_report"] = send_report
     if isinstance(stop_event, Event):
-        throttle_config = dict(throttle_config)
         throttle_config["_workbench_stop_event"] = stop_event
+    access_guard = PlatformAccessGuard(db, config, "send")
+    throttle_config["_platform_access_guard"] = access_guard
+    try:
+        access_guard.ensure_unlocked()
+    except PlatformSafetyStop as exc:
+        send_report["stop_reason"] = exc.reason
+        console.print("[yellow]为了账户安全，平台风险冷却尚未结束，已停止投递[/yellow]")
+        db.close()
+        return 0
 
     # Anti-ban: random day off (可通过 --force 跳过)
     day_off_prob = throttle_config.get("day_off_probability", 0.05)
@@ -994,8 +1081,20 @@ def send_greetings(config: dict, force: bool = False) -> int:
         return 0
 
     jobs = get_jobs_ready_to_send(db)
+    # Review choices made during generation require a separate send confirmation.
+    pending_review_ids = config.get("_workbench_pending_review_ids", set())
+    jobs = [job for job in jobs if str(job["id"]) not in pending_review_ids]
     if workbench_job_ids:
         jobs = [job for job in jobs if str(job["id"]) in workbench_job_ids]
+    unsupported_jobs = [
+        job for job in jobs
+        if not platform_supports(str(job.get("source_platform") or "boss"), "deliver")
+    ]
+    if unsupported_jobs:
+        send_report["unsupported_platform_ids"] = [str(job["id"]) for job in unsupported_jobs]
+        for job in unsupported_jobs:
+            console.print(f"[yellow]跳过岗位：{job.get('company', '')}｜{job.get('title', '')}（来源平台未提供发送适配器）[/yellow]")
+        jobs = [job for job in jobs if job not in unsupported_jobs]
     send_report["eligible_count"] = len(jobs)
     send_report["deferred_count"] = len(workbench_job_ids) if workbench_job_ids else len(jobs)
 
@@ -1017,6 +1116,9 @@ def send_greetings(config: dict, force: bool = False) -> int:
     already_sent = today_sent["cnt"] if today_sent else 0
 
     remaining_quota = daily_limit - already_sent
+    send_report["already_sent"] = already_sent
+    send_report["daily_limit"] = daily_limit
+    send_report["remaining_quota"] = max(remaining_quota, 0)
     if remaining_quota <= 0:
         console.print(f"[yellow]今日已达发送上限 ({daily_limit})[/yellow]")
         send_report["quota_deferred_count"] = len(jobs)
@@ -1032,6 +1134,7 @@ def send_greetings(config: dict, force: bool = False) -> int:
     throttle = RequestThrottle(delay_min=interval_min, delay_max=interval_max)
     backoff = ProgressiveBackoff()
     sent_count = 0
+    workbench_log = config.get("_workbench_log")
 
     console.print(f"[bold]准备发送 {len(jobs_to_send)} 条招呼语[/bold] (今日已发 {already_sent}/{daily_limit})")
 
@@ -1044,100 +1147,138 @@ def send_greetings(config: dict, force: bool = False) -> int:
     ) as progress:
         task = progress.add_task("发送中", total=len(jobs_to_send))
 
-        for job in jobs_to_send:
+        for index, job in enumerate(jobs_to_send):
             if _stop_requested(stop_event):
                 console.print("[yellow]已请求停止，结束发送[/yellow]")
                 send_report["stop_reason"] = "stopped"
                 break
 
-            greeting = strip_web_addresses(job.get("greeting", ""))
-            if not greeting:
-                update_job_status(db, job["id"], "error")
-                send_report["attempted_count"] += 1
-                send_report["failed_count"] += 1
-                progress.update(task, advance=1)
-                continue
-            if greeting != job.get("greeting", ""):
-                update_job_greeting(db, job["id"], greeting)
+            current_job = f"{job.get('company') or '公司未知'}｜{job.get('title') or '职位未知'}"
+            next_job = jobs_to_send[index + 1] if index + 1 < len(jobs_to_send) else None
+            next_label = (
+                f"下一条：{next_job.get('company') or '公司未知'}｜{next_job.get('title') or '职位未知'}"
+                if next_job else "下一条：无"
+            )
 
             # Wait between sends (except first)
             if sent_count > 0:
+                if callable(workbench_log):
+                    workbench_log(
+                        f"招呼语进度 {index + 1}/{len(jobs_to_send)}\n等待发送：{current_job}\n{next_label}"
+                    )
                 progress.update(task, description="等待间隔...")
                 if throttle.wait(stop_event):
                     console.print("[yellow]已请求停止，结束发送[/yellow]")
                     send_report["stop_reason"] = "stopped"
                     break
 
-            progress.update(task, description=f"发送: {job['company'][:10]} - {job['title'][:15]}")
-
-            send_config = dict(throttle_config)
-            send_config["_profile"] = config.get("profile", {})
-            result_data, failed_target_id = _send_greeting_once(job, greeting, send_config)
-            if result_data.get("error") == "stopped":
-                send_report["stop_reason"] = "stopped"
-                break
-            if result_data.get("error") == "no_chat_input" and failed_target_id:
-                console.print("[yellow]    ! 未进入具体聊天会话，重新打开岗位页再试一次[/yellow]")
-                close_tab(failed_target_id)
-                result_data, failed_target_id = _send_greeting_once(job, greeting, send_config)
-                if result_data.get("error") == "stopped":
-                    send_report["stop_reason"] = "stopped"
-                    break
-
-            send_report["attempted_count"] += 1
-
-            if not result_data.get("success"):
-                console.print(f"[yellow]    ! 发送失败，已记录并关闭任务页面: {result_data.get('error', 'unknown')}[/yellow]")
-                if failed_target_id:
-                    close_tab(failed_target_id)
-                    failed_target_id = None
-
-            if result_data.get("success"):
-                throttle.mark()
-                update_job_status(db, job["id"], "sent")
-                add_history(db, job["id"], "sent", greeting[:50])
-                if result_data.get("resume_image_sent"):
-                    add_history(db, job["id"], "resume_image_sent", str(result_data.get("resume_image_role") or ""))
-                elif result_data.get("resume_image_sent") is False:
-                    add_history(db, job["id"], "resume_image_failed", result_data.get("resume_image_detail", "图片简历未发送"))
-                sent_count += 1
-                send_report["sent_count"] = sent_count
-                backoff.record_success()
-            else:
-                error = result_data.get("error", "unknown")
-                send_report["failed_count"] += 1
-                update_job_status(db, job["id"], "error")
-                add_history(db, job["id"], "error", result_data.get("history_detail", f"发送失败: {error}"))
-                if result_data.get("skip_backoff"):
+            activity_guard = config.get("_workbench_greeting_activity")
+            with activity_guard(job["id"], "sending") if callable(activity_guard) else nullcontext(True) as acquired:
+                if not acquired:
+                    progress.update(task, advance=1)
+                    continue
+                if callable(activity_guard):
+                    row = db.execute("SELECT * FROM jobs WHERE id = ? AND deleted_at IS NULL", (job["id"],)).fetchone()
+                    if row is None or row["status"] not in {"ready", "approved"} or row["greeting_selection"] == "pending":
+                        progress.update(task, advance=1)
+                        continue
+                    job = dict(row)
+                greeting = job.get("greeting", "")
+                if not greeting:
+                    update_job_status(db, job["id"], "error")
+                    update_job_last_error(db, job["id"], "该岗位没有已生成的招呼语，无法发送", "no_greeting")
+                    send_report["attempted_count"] += 1
+                    send_report["failed_count"] += 1
                     progress.update(task, advance=1)
                     continue
 
-                throttle.mark()
+                if callable(workbench_log):
+                    workbench_log(
+                        f"招呼语进度 {index + 1}/{len(jobs_to_send)}\n正在发送：{current_job}\n{next_label}"
+                    )
+                progress.update(task, description=f"发送: {job['company'][:10]} - {job['title'][:15]}")
 
-                # Progressive backoff on errors
-                pause_duration = backoff.record_error()
-                add_risk_event(db, "send_error", f"{error} (连续{backoff._consecutive_errors}次)")
-
-                # If we encounter rate limiting, stop immediately
-                if error in ["captcha", "rate_limit", "blocked"]:
-                    console.print(f"\n[red]⚠ 检测到风控信号: {error}，安全暂停[/red]")
-                    add_risk_event(db, error, f"触发风控: {error}")
-                    send_report["stop_reason"] = error
+                result_data, failed_target_id = _send_greeting_once(job, greeting, throttle_config)
+                if result_data.get("error") == "stopped":
+                    send_report["stop_reason"] = "stopped"
                     break
-
-                # If too many consecutive errors, pause
-                if backoff.should_pause_long:
-                    console.print(f"\n[red]⚠ 连续错误过多，暂停 {int(pause_duration/60)} 分钟[/red]")
-                    add_risk_event(db, "backoff_pause", f"暂停{int(pause_duration)}秒")
-                    send_report["stop_reason"] = "consecutive_errors"
-                    break
-                elif pause_duration > 0:
-                    console.print(f"\n[yellow]  错误退避: 额外等待 {int(pause_duration)}秒[/yellow]")
-                    if _sleep_or_stop(pause_duration, stop_event):
+                if result_data.get("error") == "no_chat_input" and failed_target_id:
+                    console.print("[yellow]    ! 未进入具体聊天会话，重新打开岗位页再试一次[/yellow]")
+                    close_tab(failed_target_id)
+                    result_data, failed_target_id = _send_greeting_once(job, greeting, throttle_config)
+                    if result_data.get("error") == "stopped":
                         send_report["stop_reason"] = "stopped"
                         break
 
-            progress.update(task, advance=1)
+                send_report["attempted_count"] += 1
+
+                if not result_data.get("success"):
+                    console.print(f"[yellow]    ! 发送失败，已记录并关闭任务页面: {result_data.get('error', 'unknown')}[/yellow]")
+                    if failed_target_id:
+                        close_tab(failed_target_id)
+                        failed_target_id = None
+
+                if result_data.get("success"):
+                    throttle.mark()
+                    update_job_status(db, job["id"], "sent")
+                    update_job_last_error(db, job["id"], "")
+                    add_history(db, job["id"], "sent", greeting[:50])
+                    sent_count += 1
+                    send_report["sent_count"] = sent_count
+                    backoff.record_success()
+                else:
+                    error = result_data.get("error", "unknown")
+                    if error in {"daily_platform_page_limit", "persistent_risk_lock"}:
+                        send_report["stop_reason"] = error
+                        console.print("[yellow]为了账户安全，已达到平台页面访问上限或仍处于风险冷却，停止投递[/yellow]")
+                        break
+                    send_report["failed_count"] += 1
+                    history_detail = result_data.get("history_detail", f"发送失败: {error}")
+                    update_job_status(db, job["id"], "error")
+                    update_job_last_error(db, job["id"], history_detail, error)
+                    add_history(db, job["id"], "error", history_detail)
+                    if result_data.get("skip_backoff"):
+                        progress.update(task, advance=1)
+                        continue
+
+                    throttle.mark()
+
+                    # Progressive backoff on errors
+                    pause_duration = backoff.record_error()
+                    add_risk_event(db, "send_error", f"{error} (连续{backoff._consecutive_errors}次)")
+
+                    # If we encounter rate limiting, stop immediately
+                    if error in ["captcha", "rate_limit", "blocked"]:
+                        console.print(f"\n[red]⚠ 检测到风控信号: {error}，安全暂停[/red]")
+                        add_risk_event(db, error, f"触发风控: {error}")
+                        lock_minutes = config.get("safety", {}).get("risk_lock_minutes", 10)
+                        try:
+                            lock_minutes = max(int(lock_minutes), 1)
+                        except (TypeError, ValueError):
+                            lock_minutes = 10
+                        set_platform_safety_lock(db, error, minutes=lock_minutes)
+                        send_report["stop_reason"] = error
+                        break
+
+                    # If too many consecutive errors, pause
+                    if backoff.should_pause_long:
+                        console.print(f"\n[red]⚠ 连续错误过多，暂停 {int(pause_duration/60)} 分钟[/red]")
+                        add_risk_event(db, "backoff_pause", f"暂停{int(pause_duration)}秒")
+                        lock_minutes = config.get("safety", {}).get("risk_lock_minutes", 10)
+                        try:
+                            lock_minutes = max(int(lock_minutes), 1)
+                        except (TypeError, ValueError):
+                            lock_minutes = 10
+                        set_platform_safety_lock(db, "consecutive_errors", minutes=lock_minutes)
+                        send_report["stop_reason"] = "consecutive_errors"
+                        break
+                    elif pause_duration > 0:
+                        console.print(f"\n[yellow]  错误退避: 额外等待 {int(pause_duration)}秒[/yellow]")
+                        if _sleep_or_stop(pause_duration, stop_event):
+                            send_report["stop_reason"] = "stopped"
+                            break
+
+                progress.update(task, advance=1)
 
     console.print(f"\n[green]✓ 成功发送 {sent_count} 条[/green]")
     report_total = len(workbench_job_ids) if workbench_job_ids else len(jobs)

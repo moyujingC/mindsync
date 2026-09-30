@@ -1,3 +1,4 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,8 +13,9 @@ class ResumeArtifactTests(unittest.TestCase):
         self.assertIn("不输出任何前言、说明、备注、免责声明", RESUME_TAILOR_PROMPT)
         self.assertIn("不允许单独新增“岗位匹配亮点”", RESUME_TAILOR_PROMPT)
         self.assertIn("{resume_max_pages} 页以内", RESUME_TAILOR_PROMPT)
-        self.assertIn("只保留与目标岗位相关的内容", RESUME_TAILOR_PROMPT)
+        self.assertIn("不得为了控页删除母版中的项目或教育背景", RESUME_TAILOR_PROMPT)
         self.assertIn("项目经历必须按岗位相关度排序", RESUME_TAILOR_PROMPT)
+        self.assertIn("不得把团队成果改写为候选人的个人成果", RESUME_TAILOR_PROMPT)
         self.assertIn("尽可能覆盖岗位JD中的职责和要求", RESUME_TAILOR_PROMPT)
         self.assertIn("无法用候选人真实经历支撑的要求不要硬编", RESUME_TAILOR_PROMPT)
         self.assertIn("不要输出JD逐条对照", RESUME_TAILOR_PROMPT)
@@ -184,7 +186,7 @@ class ResumeArtifactTests(unittest.TestCase):
             "jd": "需要 Python 经验",
         }
         get_db.return_value = db
-        call_claude.return_value = "## 岗位匹配亮点\n以下内容基于原始简历整理。"
+        call_claude.return_value = "# 张三\n\n## 岗位匹配亮点\n以下内容基于原始简历整理。"
         render_pdf.return_value = False
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -268,7 +270,7 @@ class ResumeArtifactTests(unittest.TestCase):
         }
         get_db.return_value = db
         tailored = (
-            "# 候选人\n\n"
+            "# 候选人\n\n求职方向：科技记者/PR媒体关系｜格灵深瞳\n\n"
             "## 基本信息\n\n"
             "## 个人优势\n\n"
             "具备AI科技内容传播、媒体关系和品牌传播经验。\n\n"
@@ -305,12 +307,14 @@ class ResumeArtifactTests(unittest.TestCase):
             self.assertIsNotNone(result)
             saved_md = result.read_text(encoding="utf-8")
             self.assertNotIn(RESUME_COMPLETION_MARKER, saved_md)
+            self.assertNotIn("求职方向", saved_md)
+            self.assertNotIn("格灵深瞳", saved_md)
             self.assertIn("AI科技内容传播、媒体关系和品牌传播经验", saved_md)
 
     @patch("bosshunter.ai.resume._render_pdf")
     @patch("bosshunter.ai.resume._call_claude")
     @patch("bosshunter.ai.resume.get_db")
-    def test_nearly_unchanged_resume_output_is_still_written_for_user_review(
+    def test_nearly_unchanged_resume_is_retried_without_replacing_existing_artifacts(
         self, get_db, call_claude, render_pdf
     ):
         from bosshunter.ai.resume import RESUME_COMPLETION_MARKER, generate_tailored_resume
@@ -355,12 +359,12 @@ class ResumeArtifactTests(unittest.TestCase):
                 },
             )
 
-            self.assertIsNotNone(result)
-            self.assertTrue(result.exists())
-            self.assertIn("原始工作内容", result.read_text(encoding="utf-8"))
+            self.assertIsNone(result)
+            self.assertFalse(output_dir.exists())
 
-        self.assertEqual(call_claude.call_count, 1)
-        render_pdf.assert_called_once()
+        self.assertEqual(call_claude.call_count, 2)
+        render_pdf.assert_not_called()
+        db.commit.assert_not_called()
 
     @patch("bosshunter.ai.resume._render_pdf")
     @patch("bosshunter.ai.resume._call_claude")
@@ -500,7 +504,7 @@ class ResumeArtifactTests(unittest.TestCase):
         retry_prompt = call_claude.call_args_list[1].args[0]
         self.assertIn("上一次生成结果质量检查未通过", retry_prompt)
         self.assertIn("简历内容过长", retry_prompt)
-        self.assertIn("必须压缩到", retry_prompt)
+        self.assertIn("作为优化目标；若与完整保留项目冲突，以保留项目为先", retry_prompt)
 
     @patch("bosshunter.ai.resume._render_pdf")
     @patch("bosshunter.ai.resume._call_claude")
@@ -575,10 +579,16 @@ class ResumeArtifactTests(unittest.TestCase):
 
 
 class ResumePdfRuntimeTests(unittest.TestCase):
+    def setUp(self):
+        pagination = patch("bosshunter.ai.resume._balance_pdf_pages")
+        self.balance_pages = pagination.start()
+        self.addCleanup(pagination.stop)
+
+    @patch("bosshunter.ai.resume.wait_for_load", return_value=True)
     @patch("bosshunter.ai.resume.close_tab")
     @patch("bosshunter.ai.resume.print_pdf")
     @patch("bosshunter.ai.resume.new_tab")
-    def test_render_pdf_via_cdp_uses_browser_facade(self, new_tab, print_pdf, close_tab):
+    def test_render_pdf_via_cdp_uses_browser_facade(self, new_tab, print_pdf, close_tab, wait_for_load):
         from bosshunter.ai.resume import _render_pdf_via_cdp
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -592,13 +602,42 @@ class ResumePdfRuntimeTests(unittest.TestCase):
         new_tab.assert_called_once()
         self.assertTrue(new_tab.call_args.args[0].startswith("file:///"))
         self.assertIs(new_tab.call_args.kwargs["background"], True)
-        print_pdf.assert_called_once_with("target-1", output)
+        wait_for_load.assert_called_once_with("target-1", timeout=10)
+        print_pdf.assert_called_once_with("target-1", output.resolve())
+        self.balance_pages.assert_called_once_with("target-1")
         close_tab.assert_called_once_with("target-1")
 
+    @patch("bosshunter.ai.resume.wait_for_load", return_value=True)
+    @patch("bosshunter.ai.resume.close_tab")
+    @patch("bosshunter.ai.resume.print_pdf")
+    @patch("bosshunter.ai.resume.new_tab", return_value="target-1")
+    def test_render_pdf_via_cdp_resolves_relative_output_for_runtime(
+        self, new_tab, print_pdf, close_tab, wait_for_load
+    ):
+        from bosshunter.ai.resume import _render_pdf_via_cdp
+
+        def write_pdf(_target, destination):
+            self.assertTrue(destination.is_absolute())
+            destination.write_bytes(b"%PDF-1.4\n")
+            return True
+
+        print_pdf.side_effect = write_pdf
+        with tempfile.TemporaryDirectory() as tmp:
+            expected_output = (Path(tmp) / "resume.pdf").resolve()
+            output = Path(os.path.relpath(expected_output, Path.cwd()))
+            self.assertFalse(output.is_absolute())
+            result = _render_pdf_via_cdp("<html><body>中文</body></html>", output)
+
+        self.assertTrue(result)
+        print_pdf.assert_called_once_with("target-1", expected_output)
+
+    @patch("bosshunter.ai.resume.wait_for_load", return_value=True)
     @patch("bosshunter.ai.resume.close_tab")
     @patch("bosshunter.ai.resume.print_pdf")
     @patch("bosshunter.ai.resume.new_tab")
-    def test_render_pdf_via_cdp_rejects_missing_output_file(self, new_tab, print_pdf, close_tab):
+    def test_render_pdf_via_cdp_rejects_missing_output_file(
+        self, new_tab, print_pdf, close_tab, wait_for_load
+    ):
         from bosshunter.ai.resume import _render_pdf_via_cdp
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -609,7 +648,107 @@ class ResumePdfRuntimeTests(unittest.TestCase):
             result = _render_pdf_via_cdp("<html><body>ok</body></html>", output)
 
         self.assertFalse(result)
-        close_tab.assert_called_once_with("target-1")
+        self.assertEqual(new_tab.call_count, 2)
+        self.assertEqual(wait_for_load.call_count, 2)
+        self.assertEqual(print_pdf.call_count, 2)
+        self.assertEqual(close_tab.call_count, 2)
+
+    @patch("bosshunter.ai.resume._render_pdf_via_cdp", return_value=False)
+    def test_render_pdf_does_not_emit_fontless_fallback_pdf(self, render_via_cdp):
+        from bosshunter.ai.resume import _render_pdf
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "resume.pdf"
+
+            result = _render_pdf("# 中文简历\n\n正常正文", output)
+
+            self.assertFalse(result)
+            self.assertFalse(output.exists())
+        render_via_cdp.assert_called_once()
+
+
+class ResumePaginationTests(unittest.TestCase):
+    def test_section_preference_does_not_leave_large_uneven_blank_areas(self):
+        from bosshunter.ai.resume import _balanced_page_starts
+
+        boundaries = [
+            {"y": 0}, {"y": 600, "section": True}, {"y": 800},
+            {"y": 1400, "section": True}, {"y": 1600}, {"y": 2400},
+        ]
+        self.assertEqual(_balanced_page_starts(boundaries, 1000), [2, 4])
+
+    def test_display_aliases_preserve_custom_sections_order_and_all_content(self):
+        from bosshunter.ai.resume import _resume_display_markdown
+
+        source = (
+            "# 候选人\n\n## 个人优势\n- 真实成果\n\n"
+            "## 代表性传播案例\n### 案例一\n- 原始证据\n\n"
+            "## 工作经历\n### 公司\n- 工作内容\n\n"
+            "## 教育经历\n学校\n\n## 相关技能\n技能\n\n"
+            "## 荣誉\n奖项\n\n## 个人优势\n- 第二段内容\n"
+        )
+        result = _resume_display_markdown(source)
+        expected = source.replace("## 个人优势", "## 个人概述").replace(
+            "## 教育经历", "## 教育背景"
+        ).replace("## 相关技能", "## 专业技能")
+        self.assertEqual(result, expected)
+        self.assertEqual(_resume_display_markdown(result), expected)
+
+    def test_layout_keeps_metadata_links_and_narrative_paragraphs(self):
+        from bosshunter.ai.resume import _resume_html
+
+        html = _resume_html(
+            "# 候选人\n\n邮箱：candidate@example.com\n"
+            "GitHub：[作品](https://example.com/work)\n\n"
+            "## 工作经历\n### 公司｜职位\n**2020 - 2024｜行业**\n\n"
+            "- 交付原始成果\n\n### 项目\n这是一段完整的项目介绍，不是日期。\n\n"
+            "- 验证范围\n\n### 项目二\n2020年完成了有来源的交付。\n"
+        )
+        self.assertIn('href="https://example.com/work"', html)
+        self.assertIn('邮箱：candidate@example.com<br>', html)
+        self.assertIn('<p class="resume-meta"><strong>2020 - 2024｜行业</strong></p>', html)
+        self.assertIn('<h3>项目</h3>\n\n<p>这是一段完整的项目介绍，不是日期。</p>', html)
+        self.assertIn('交付原始成果', html)
+        self.assertIn('验证范围', html)
+        self.assertIn('<h3>项目二</h3>\n\n<p>2020年完成了有来源的交付。</p>', html)
+
+    def test_balances_sparse_last_page_at_section_boundary(self):
+        from bosshunter.ai.resume import _balanced_page_starts
+
+        boundaries = [
+            {"y": 0}, {"y": 350}, {"y": 700, "section": True},
+            {"y": 980}, {"y": 1300},
+        ]
+        self.assertEqual(_balanced_page_starts(boundaries, 1000), [2])
+
+    def test_adds_page_when_indivisible_groups_need_it(self):
+        from bosshunter.ai.resume import _balanced_page_starts
+
+        self.assertEqual(_balanced_page_starts([{"y": y} for y in (0, 600, 1200, 1800)], 1000), [1, 2])
+
+    def test_short_or_oversized_content_uses_native_pagination(self):
+        from bosshunter.ai.resume import _balanced_page_starts
+
+        self.assertEqual(_balanced_page_starts([{"y": y} for y in (0, 300, 500)], 1000), [])
+        self.assertEqual(_balanced_page_starts([{"y": y} for y in (0, 1200, 1500)], 1000), [])
+
+    @patch("bosshunter.ai.resume.evaluate")
+    def test_applies_measured_break_without_changing_font_or_text(self, evaluate):
+        from bosshunter.ai.resume import _balance_pdf_pages
+
+        evaluate.side_effect = [[{"y": 0}, {"y": 700, "section": True}, {"y": 1400}], True]
+        _balance_pdf_pages("resume-tab")
+        self.assertIn("document.fonts.ready", evaluate.call_args_list[0].args[1])
+        self.assertIn("const starts = [1]", evaluate.call_args_list[1].args[1])
+        self.assertIn("breakBefore", evaluate.call_args_list[1].args[1])
+
+    def test_cjk_bold_labels_render_without_markdown_markers(self):
+        from bosshunter.ai.resume import _resume_html
+
+        html = _resume_html("- **团队管理：**组织5人团队\n- **付费实践：**不到一个月30人")
+        self.assertIn("<strong>团队管理</strong>：组织5人团队", html)
+        self.assertIn("<strong>付费实践</strong>：不到一个月30人", html)
+        self.assertNotIn("**", html)
 
 
 if __name__ == "__main__":

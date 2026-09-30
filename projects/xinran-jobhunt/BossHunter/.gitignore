@@ -4,7 +4,6 @@ __pycache__/
 *$py.class
 *.egg-info/
 dist/
-!src/bosshunter/web/frontend/dist/
 build/
 *.egg
 
@@ -21,12 +20,15 @@ env/
 
 # Config with secrets
 config.yaml
+.*.credentials.yaml
 
 # Personal resume
 resume.md
 
 # Data (contains personal info, resumes, DB)
 data/
+!src/bosshunter/data/
+!src/bosshunter/data/boss_cities.json
 *.db
 *.db-shm
 *.db-wal
@@ -34,6 +36,9 @@ data/
 # Node
 node_modules/
 *.tsbuildinfo
+
+# Frontend build output (built on demand, not tracked in VCS)
+src/bosshunter/web/frontend/dist/
 
 # Local generated artifacts
 output/
