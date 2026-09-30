@@ -15,7 +15,7 @@ if (!mdPath || !outPath) { console.error("用法：node scripts/plan_cards.mjs <
 
 const THEME = arg("theme", "theme-light");
 const LOGO = arg("logo", "墨予镜");
-const SERIES = arg("series", "墨予镜 · FIELD NOTES");
+const SERIES = arg("series", "深入浅出聊FDE");
 const FOOT_L = arg("foot-l", "墨予镜 · 企业 AI 落地");
 const FOOT_R = arg("foot-r", "现场 / 工程 / 结果 / 沉淀");
 const MAX = Number(arg("max-cards", "8"));
