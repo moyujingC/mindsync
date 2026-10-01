@@ -34,18 +34,34 @@
 - 横版：左 400px 文字栏（标题左对齐 54px + 下划线 + 副题 + 正文 + 徽章），右侧拼贴舞台。
 - 拼贴舞台：水彩底斑（蓝/绿/赭径向渐变）+ 主图（拱形 mask-arch，卡纸+微旋转底层）+ 1~3 张小圆图（mask-circle）；角落固定枝叶 SVG。
 
+## 版式（layout）
+
+| layout | 说明 |
+| --- | --- |
+| `hero`（竖版推荐） | 满版插画出血：一张大图横贯画布，上下撕纸边（deckle）+ 底角撕纸山形；标题区 + 底部正文/徽章 |
+| `collage`（默认） | 拼贴舞台：拱形主图 + 1~3 圆形小图 + 卡纸底 + 水彩底斑；适合小图组合 |
+
+hero 版式配图为「一张满版拼贴大图」（生图 prompt 要求整幅充满、多场景撕纸衔接，参考稿做法），collage 版式配图为「主图 + 小圆图」分别生成。
+
 ## cards.json 字段契约
 
 | 字段 | 说明 |
 | --- | --- |
 | `name` | 输出文件名（NN-标题） |
 | `canvas` | `portrait` / `landscape` |
+| `layout` | `hero` / `collage`（默认 collage；hero 仅竖版） |
 | `badge_class` | 徽章配色，三选一 |
-| `title` / `sub` / `sub_rule` | 标题 / 副题 / 副题是否带发丝线小叶 |
+| `title` | 标题（可含「一、」序号） |
+| `title_sprigs` | true=标题两侧大枝叶（hero 推荐） |
+| `sun` | `left`/`right`，标题上方赭石太阳圆点 |
+| `underline` | `brush`（默认，笔触线）/ `ruledot`（—●— 点线）/ `none` |
+| `sub` / `sub_rule` | 副题 / 副题是否带发丝线小叶 |
 | `para` | 正文（`\n` 换行，建议 ≤2 行） |
-| `badge` | 徽章文字（2~5 字） |
+| `para_layout` | `block`（默认居中）/ `split`（小笔刷标签 \| 竖线 \| 正文，配 `para_label`） |
+| `badge` / `badge_style` | 徽章文字（2~6 字）/ `brush`（默认，毛边笔刷形）/ `pill`（胶囊形） |
+| `mountains` | hero 底角撕纸山形，false 可关 |
 | `watermark` | 默认「轻疗愈」 |
-| `images.main` | 主图（必填），m1~m3 小圆图（可缺省） |
+| `images.main` | 主图（必填），m1~m3 小圆图（collage 用，可缺省） |
 | `img_focus` | 如 `{"main": "72% 42%"}` 调主图 object-position 取景 |
 
 ## 生图规范（generate_art.mjs）

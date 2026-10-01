@@ -1,5 +1,24 @@
 [
   {
+    "name": "00-先安顿情绪-hero",
+    "canvas": "portrait",
+    "layout": "hero",
+    "badge_class": "badge-clay",
+    "title": "一、先安顿情绪",
+    "title_sprigs": true,
+    "sun": "left",
+    "underline": "ruledot",
+    "sub": "身体是所有计划的起点",
+    "images": {
+      "main": "art/hero-p.png"
+    },
+    "para": "停下来，看见自己在难过，\n不急着评判，也不急着解决。",
+    "para_layout": "split",
+    "para_label": "认识自己",
+    "badge": "先照顾好自己",
+    "watermark": "轻疗愈"
+  },
+  {
     "name": "01-先安顿情绪-竖",
     "canvas": "portrait",
     "badge_class": "badge-clay",

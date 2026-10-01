@@ -17,7 +17,7 @@ description: Generate 一镜一梳知识卡片，双风格——①疗愈书院�
 ## 插画拼贴风 · 快速上手
 
 1. **生图**：每卡先出配图 `node scripts/generate_art.mjs <prompt.txt> <out.png> [portrait|landscape]`（走 AITechFlux 中继 gpt-image-2，key 读 内容视觉工坊V2/.env.local；prompt 只写画面内容，风格前缀脚本自动加，图中禁文字）。
-2. **写 cards.json**（契约见 render_art_cards.mjs 头注释）：`canvas`（portrait/landscape）、`title`/`sub`/`para`/`badge`、`badge_class`（badge-blue|badge-clay|badge-green）、`images.main` 必填 + `m1~m3` 小圆图可缺省、`img_focus` 可调主图取景。
+2. **写 cards.json**（字段契约见 references/art-style-system.md）：`canvas`（portrait/landscape）、`layout`（hero 满版出血 / collage 拼贴，少字多图推荐 hero）、`title`/`sub`/`para`/`badge` 及装饰件（`sun`/`title_sprigs`/`underline`/`para_layout`）、`badge_class`（badge-blue|badge-clay|badge-green）、`images.main` 必填 + `m1~m3` 小圆图（collage）可缺省、`img_focus` 调取景。
 3. **渲染**：`node scripts/render_art_cards.mjs cards.json <out目录>`。
 4. **QA**：`references/qa-art-checklist.md`。
 

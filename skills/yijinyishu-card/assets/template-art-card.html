@@ -112,9 +112,49 @@
   .canvas-landscape .sprig-br { right: 18px; bottom: 12px; transform: rotate(-30deg) scaleX(-1) scale(.8); }
 
   /* 底部结构 */
-  .canvas-portrait .art-foot { display: flex; flex-direction: column; align-items: center; gap: 34px; margin-top: 4px; }
+  .canvas-portrait .art-foot { display: flex; flex-direction: column; align-items: center; gap: 30px; margin-top: 10px; }
   .canvas-landscape .col-text { width: 400px; display: flex; flex-direction: column; gap: 20px; justify-content: center; }
   .canvas-landscape .badge-row { justify-content: flex-start; }
+  /* ---------- hero 满版布局（插画出血 + 撕纸边） ---------- */
+  .stage-hero { position: relative; margin: 14px -76px 16px; height: 770px; z-index: 1; }
+  .stage-hero .hero-img { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
+  .stage-hero .deckle { z-index: 2; }
+  .stage-hero .hero-img img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.045); }
+  /* 撕纸边：多条波浪形纸边覆盖在图像上下沿 */
+  .deckle { position: absolute; left: -3%; width: 106%; height: 52px; background: var(--bg); }
+  .deckle.d1 { top: -30px;   border-radius: 0 0 52% 44% / 0 0 100% 82%; transform: rotate(-.5deg); }
+  .deckle.d2 { top: -18px;   border-radius: 0 0 40% 62% / 0 0 82% 100%; transform: rotate(.7deg); opacity: .96; }
+  .deckle.d3 { top: -8px;    border-radius: 0 0 58% 38% / 0 0 100% 70%; transform: rotate(-.3deg); opacity: .94; }
+  .deckle.b1 { bottom: -30px; border-radius: 46% 40% 0 0 / 100% 84% 0 0; transform: rotate(.5deg); }
+  .deckle.b2 { bottom: -18px; border-radius: 38% 58% 0 0 / 82% 100% 0 0; transform: rotate(-.7deg); opacity: .96; }
+  .deckle.b3 { bottom: -8px;  border-radius: 56% 36% 0 0 / 100% 70% 0 0; transform: rotate(.3deg); opacity: .94; }
+  /* 底部撕纸山形装饰（左/右下角） */
+  .mountains { position: absolute; bottom: 0; z-index: 3; pointer-events: none; }
+  .mountains.ml { left: 0; }
+  .mountains.mr { right: 0; transform: scaleX(-1); }
+
+  /* 笔刷徽章：毛边色块衬底 + 宋体白字 */
+  .badge-brush { position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 22px 60px; }
+  .badge-brush svg { position: absolute; inset: -14px -34px; width: calc(100% + 68px); height: calc(100% + 28px); }
+  .badge-brush .txt { position: relative; color: #fdfbf4; font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 40px; font-weight: 700; letter-spacing: 7px; }
+
+  /* 标题侧大枝叶 */
+  .title-sprig { flex: none; }
+  /* 太阳圆点 */
+  .sun { position: absolute; width: 56px; height: 56px; border-radius: 50%; background: #c1683f; opacity: .92; z-index: 0; }
+  .canvas-portrait .sun { top: 40px; }
+  .sun.sl { left: 60px; } .sun.sr { right: 60px; }
+  /* 标题下点线分隔：— ● — */
+  .title-ruledot { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 16px 0 4px; }
+  .canvas-landscape .title-ruledot { justify-content: flex-start; }
+  .title-ruledot .rule { width: 110px; height: 1px; background: #b9b19c; }
+  .title-ruledot .dot { width: 18px; height: 18px; border-radius: 50%; background: #b8623c; }
+  /* 底部 label 竖线分行（小笔刷标签 | 正文） */
+  .split-row { display: flex; align-items: center; gap: 30px; }
+  .split-row .vline { width: 2px; align-self: stretch; background: #b8623c; opacity: .8; }
+  .split-row .mini-label { flex: none; }
+
   .watermark {
     position: absolute; right: 34px; bottom: 22px; z-index: 5;
     font-size: 21px; letter-spacing: 2px; color: var(--faint);

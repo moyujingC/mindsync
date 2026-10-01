@@ -53,6 +53,39 @@ function artHtml(c, key, cls, mask) {
   return `<div class="art ${cls} ${mask}"><div class="paper r2"></div><div class="paper r1"></div><img src="${url}"${style}></div>`;
 }
 
+// 笔刷形毛边底（徽章/小标签共用），stretch 适配文字宽度
+const BRUSH_PATH = "M20 48 C22 20 70 10 160 12 C250 10 300 22 302 50 C300 76 252 88 158 86 C66 88 18 74 20 48Z";
+function brushBadge(txt, mini = false) {
+  return `<span class="badge-brush" style="${mini ? "padding:12px 30px" : ""}">
+    <svg viewBox="0 0 320 96" preserveAspectRatio="none"><path d="${BRUSH_PATH}" fill="var(--badge)"/></svg>
+    <span class="txt" style="${mini ? "font-size:30px;letter-spacing:4px" : ""}">${txt}</span></span>`;
+}
+// 底部撕纸山形装饰
+const MOUNTAINS = (cls) => `<svg class="mountains ${cls}" width="250" height="126" viewBox="0 0 240 120">
+  <path d="M0 120 L0 70 L58 18 L118 66 L168 28 L240 82 L240 120Z" fill="#2b4d7d" opacity=".30"/>
+  <path d="M0 120 L0 92 L70 48 L140 92 L202 58 L240 96 L240 120Z" fill="#b8623c" opacity=".32"/>
+  <path d="M0 120 L0 104 L52 74 L112 104 L182 82 L240 108 L240 120Z" fill="#6c7f5c" opacity=".34"/>
+</svg>`;
+// 标题侧大枝叶
+const BIG_SPRIG = `<svg class="title-sprig" width="92" height="92" viewBox="0 0 86 86" fill="none">
+<path d="M40 80 C42 54 44 30 52 10" stroke="#6c7f5c" stroke-width="4" stroke-linecap="round"/>
+<path d="M44 58 C30 52 22 42 20 28 C34 32 42 42 44 58Z" fill="#6c7f5c" opacity=".9"/>
+<path d="M46 40 C58 34 66 24 68 10 C54 14 47 24 46 40Z" fill="#8a9a6e" opacity=".9"/>
+<circle cx="52" cy="9" r="6" fill="#b8623c"/></svg>`;
+
+function stageHeroHtml(c) {
+  const url = imgUrl(c, "main");
+  const focus = c.img_focus?.main;
+  const style = focus ? ` style="object-position:${focus}"` : "";
+  const img = url ? `<div class="hero-img"><img src="${url}"${style}></div>` : "";
+  return `<div class="stage-hero">
+    ${img}
+    <div class="deckle d1"></div><div class="deckle d2"></div><div class="deckle d3"></div>
+    <div class="deckle b1"></div><div class="deckle b2"></div><div class="deckle b3"></div>
+    ${c.mountains === false ? "" : MOUNTAINS("ml") + MOUNTAINS("mr")}
+  </div>`;
+}
+
 function stageHtml(c) {
   return `<div class="stage">
     <div class="blob blob-b blob-1"></div><div class="blob blob-g blob-2"></div><div class="blob blob-c blob-3"></div>
@@ -64,13 +97,30 @@ function stageHtml(c) {
 }
 
 function headHtml(c) {
+  const sun = c.sun ? `<div class="sun ${c.sun === "right" ? "sr" : "sl"}"></div>` : "";
+  const sprigs = c.title_sprigs ? `${BIG_SPRIG}` : "";
+  const sprigsR = c.title_sprigs ? BIG_SPRIG.replace('class="title-sprig"', 'class="title-sprig" style="transform:scaleX(-1)"') : "";
+  const underline = c.underline === "ruledot"
+    ? `<div class="title-ruledot"><span class="rule"></span><span class="dot"></span><span class="rule"></span></div>`
+    : c.underline === "none" ? "" : UL;
   const sub = c.sub ? `<div class="art-sub">${c.sub_rule ? `<span class="rule"></span>${LEAF_PAIR}` : ""}<span>${c.sub}</span>${c.sub_rule ? `${LEAF_PAIR}<span class="rule"></span>` : ""}</div>` : "";
-  return `<div class="art-head"><div class="art-title-row"><h1 class="art-title">${c.title || ""}</h1></div>${c.title ? UL : ""}${sub}</div>`;
+  return `<div class="art-head">${sun}<div class="art-title-row">${sprigs}<h1 class="art-title">${c.title || ""}</h1>${sprigsR}</div>${c.title ? underline : ""}${sub}</div>`;
 }
 
 function footHtml(c) {
-  const para = c.para ? `<p class="art-para">${(c.para || "").replace(/\n/g, "<br>")}</p>` : "";
-  const badge = c.badge ? `<div class="badge-row">${LEAF}<div class="badge">${c.badge}</div>${LEAF.replace("<svg ", '<svg style="transform:scaleX(-1)" ')}</div>` : "";
+  const paraText = (c.para || "").replace(/\n/g, "<br>");
+  let para = "";
+  if (c.para && c.para_layout === "split") {
+    para = `<div class="split-row">${c.para_label ? `<span class="mini-label">${brushBadge(c.para_label, true)}</span>` : ""}<span class="vline"></span><p class="art-para" style="text-align:left">${paraText}</p></div>`;
+  } else if (c.para) {
+    para = `<p class="art-para">${paraText}</p>`;
+  }
+  let badge = "";
+  if (c.badge) {
+    badge = c.badge_style === "pill"
+      ? `<div class="badge-row">${LEAF}<div class="badge">${c.badge}</div>${LEAF.replace("<svg ", '<svg style="transform:scaleX(-1)" ')}</div>`
+      : `<div class="badge-row">${brushBadge(c.badge)}</div>`;
+  }
   return `<div class="art-foot">${para}${badge}</div>`;
 }
 
@@ -78,7 +128,7 @@ for (const c of cards) {
   const canvas = c.canvas === "landscape" ? "landscape" : "portrait";
   const [W, H] = SIZES[canvas];
   const layout = canvas === "portrait"
-    ? `${headHtml(c)}${stageHtml(c)}${footHtml(c)}`
+    ? (c.layout === "hero" ? `${headHtml(c)}${stageHeroHtml(c)}${footHtml(c)}` : `${headHtml(c)}${stageHtml(c)}${footHtml(c)}`)
     : `<div class="col-text">${headHtml(c)}${footHtml(c)}</div>${stageHtml(c)}`;
   const html = tpl
     .replace("{{CANVAS}}", "canvas-" + canvas)
