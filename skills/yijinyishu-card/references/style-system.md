@@ -24,7 +24,7 @@
 3. 内容区 `.body`（flex 纵向）：
    - 步骤卡：`.head-q`（页眉问题行）+ 发丝线 → `.big-num` 大序号 → `h1.title` 巨字 → `.sub` 灰色副题 → 3 个 `.item` → `.note` 金句条（`margin-top:auto` 靠底）。
    - 总览卡：`.kicker` 金赭引导句 → `h1.title`（可 `<br>` 断行）→ `.sub.green` 墨绿副题 → `.title-ul` 短下划线 → N 个 `.item`，body 加 `spread` 均布。
-4. 页脚：发丝线 + 左系列名 + 右 `一镜一书 · 知识与练习`。
+4. 页脚：发丝线 + 左系列名 + 右 `一镜一梳 · 知识与练习`。
 
 ## 组件清单（content 字段可用 class）
 

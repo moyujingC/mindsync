@@ -1,7 +1,7 @@
-// 一镜一书疗愈书院卡渲染器：cards.json → 逐张 PNG（1080×1440，3:4）
+// 一镜一梳疗愈书院卡渲染器：cards.json → 逐张 PNG（1080×1440，3:4）
 // cards.json: [{ "name": "01-接纳情绪", "stripe": "stripe-green",
-//   "brand": "一镜一书 · 疗愈学院", "page": "01 / 06",
-//   "foot_l": "理解情绪", "foot_r": "一镜一书 · 知识与练习",
+//   "brand": "一镜一梳 · 疗愈学院", "page": "01 / 06",
+//   "foot_l": "理解情绪", "foot_r": "一镜一梳 · 知识与练习",
 //   "content": "<div class='big-num'>01</div><h1 class='title'>...</h1>..." }]
 // 用法：node render_cards.mjs <cards.json> <out目录>
 import { readFileSync, mkdirSync } from "node:fs";
@@ -22,7 +22,7 @@ for (const c of cards) {
   const html = tpl
     .replace("{{STRIPE}}", c.stripe || "stripe-green")
     .replace("{{SPREAD}}", c.spread ? "spread" : "")
-    .replace("{{BRAND}}", c.brand || "一镜一书")
+    .replace("{{BRAND}}", c.brand || "一镜一梳")
     .replace("{{PAGE}}", c.page || "")
     .replace("{{FOOT_L}}", c.foot_l || "")
     .replace("{{FOOT_R}}", c.foot_r || "")
