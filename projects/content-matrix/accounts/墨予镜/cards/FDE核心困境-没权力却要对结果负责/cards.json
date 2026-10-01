@@ -1,0 +1,90 @@
+[
+  {
+    "name": "01-封面宣言",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "01 / 08",
+    "index": "01",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title-xl'>FDE核心困境<br>：没权力，<br>却要对结果<br>负责</h1><ul class='blist'><li>权责为什么天生不对等</li><li>你到底对什么负责</li><li>没权力靠什么推动事情</li><li>三个坑与一张清单</li></ul>"
+  },
+  {
+    "name": "02-核心矛盾",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "02 / 08",
+    "index": "02",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<div class='kicker'><span class='kicker-text'>THE DILEMMA</span></div><h1 class='title'>为什么权责<br>天生不对等？</h1><p class='lead-sm'>项目做砸了，老板第一个找你。</p><ul class='blist'><li>人事权，不在你手里</li><li>预算权，不在你手里</li><li>拍板权，不在你手里</li><li>结果好不好，账算在你头上</li></ul><div class='banner'>责任是你的，权力是别人的。</div>"
+  },
+  {
+    "name": "03-责任边界",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "03 / 08",
+    "index": "03",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<div class='kicker'><span class='kicker-text'>OWNERSHIP</span></div><h1 class='title'>你到底对<br>什么负责？</h1><div class='group-label'>项目能不能成，取决于五件事</div><ul class='blist'><li>方向对不对——老板拍的</li><li>资源够不够——老板批的</li><li>配不配合——业务部门决定的</li><li>系统能不能接——IT 部门决定的</li><li>技术能不能实现——这才是你负责的</li></ul><div class='banner'>你以为对全部结果负责，其实只对其中一部分负责。</div>"
+  },
+  {
+    "name": "04-三把钥匙",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "04 / 08",
+    "index": "04",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<div class='kicker'><span class='kicker-text'>THREE KEYS</span></div><h1 class='title'>没有权力，<br>靠什么推动？</h1><div class='num-item'><div class='t'>① 信任：说到做到</div><div class='d'>一件一件小事做成，一次一次攒</div></div><div class='num-item'><div class='t'>② 价值：先给好处</div><div class='d'>配合你对他有好处，他才愿意配合</div></div><div class='num-item'><div class='t'>③ 专业：判断清楚</div><div class='d'>你说得准、靠得住，别人才交决定权</div></div><div class='banner'>信任不是一次性建立的，是一次一次「说到做到」攒出来的。</div>"
+  },
+  {
+    "name": "05-利益出发",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "05 / 08",
+    "index": "05",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<div class='kicker'><span class='kicker-text'>VALUE FIRST</span></div><h1 class='title'>找人配合，<br>先说什么？</h1><p class='lead-sm'>别先说你要什么，先告诉他能得到什么。</p><ul class='blist'><li>找业务：「我帮你们每天少干两小时」</li><li>找 IT：「以后不用天天帮人导数据」</li><li>找老板：「三个月省两个人力成本」</li></ul><div class='banner'>永远从对方的利益出发，而不是从你的任务出发。</div>"
+  },
+  {
+    "name": "06-三个坑",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "06 / 08",
+    "index": "06",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<div class='kicker'><span class='kicker-text'>THREE TRAPS</span></div><h1 class='title'>哪三个坑<br>最容易踩？</h1><div class='num-item'><div class='t'>① 把自己当乙方</div><div class='d'>你是医生不是执行者，要敢说「不」</div></div><div class='num-item'><div class='t'>② 所有事自己扛</div><div class='d'>把该别人担的责任，放回别人肩上</div></div><div class='num-item'><div class='t'>③ 跟怀疑者死磕</div><div class='d'>给安全感；给不了，就绕开</div></div><div class='banner'>一个人扛下所有，不是能力强，是不会借力。</div>"
+  },
+  {
+    "name": "07-行动清单",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "07 / 08",
+    "index": "07",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<div class='kicker'><span class='kicker-text'>CHECKLIST</span></div><h1 class='title'>推不动时，<br>对照这张清单</h1><div class='num-item'><div class='t'>① 先划清边界</div><div class='d'>哪些你负责，哪些一起扛，让所有人知道</div></div><div class='num-item'><div class='t'>② 用三把钥匙</div><div class='d'>信任从小事攒，价值先给对方，专业说清楚</div></div><div class='num-item'><div class='t'>③ 避开三个坑</div><div class='d'>不当乙方、不自己扛、不跟怀疑者死磕</div></div><div class='banner'>没权力是常态，但没权力不等于没话语权。</div>"
+  },
+  {
+    "name": "08-收尾金句",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "08 / 08",
+    "index": "08",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<div class='kicker'><span class='kicker-text'>LAST WORD</span></div><h1 class='title-xl'>能成事的人<br>永远最值钱</h1><div class='banner'>你做成的每一件事，都是你下一件事的通行证。</div>"
+  }
+]
