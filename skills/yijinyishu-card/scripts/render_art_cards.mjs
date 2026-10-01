@@ -26,7 +26,7 @@ const browser = await chromium.launch();
 const SIZES = { portrait: [1080, 1440], landscape: [1080, 608] };
 
 // 赭石笔触下划线（SVG）
-const UL = `<svg class="art-ul" width="230" height="16" viewBox="0 0 230 16"><path d="M6 11 C 66 4, 160 15, 224 8" stroke="#b8623c" stroke-width="6" fill="none" stroke-linecap="round" opacity=".85"/></svg>`;
+const UL = `<svg class="art-ul" width="230" height="16" viewBox="0 0 230 16"><path d="M6 11 C 66 4, 160 15, 224 8" stroke="#b8623c" stroke-width="6" fill="none" stroke-linecap="round" opacity=".85" filter="url(#brushRough)"/></svg>`;
 // 小枝叶（徽章两侧）
 const LEAF = `<svg width="58" height="58" viewBox="0 0 86 86" fill="none">
 <path d="M40 80 C42 54 44 30 52 10" stroke="#6c7f5c" stroke-width="4" stroke-linecap="round"/>
@@ -57,7 +57,7 @@ function artHtml(c, key, cls, mask) {
 const BRUSH_PATH = "M20 48 C22 20 70 10 160 12 C250 10 300 22 302 50 C300 76 252 88 158 86 C66 88 18 74 20 48Z";
 function brushBadge(txt, mini = false) {
   return `<span class="badge-brush" style="${mini ? "padding:12px 30px" : ""}">
-    <svg viewBox="0 0 320 96" preserveAspectRatio="none"><path d="${BRUSH_PATH}" fill="var(--badge)"/></svg>
+    <svg viewBox="0 0 320 96" preserveAspectRatio="none"><path d="${BRUSH_PATH}" fill="var(--badge)" filter="url(#brushRough)"/></svg>
     <span class="txt" style="${mini ? "font-size:30px;letter-spacing:4px" : ""}">${txt}</span></span>`;
 }
 // 底部撕纸山形装饰
@@ -80,8 +80,6 @@ function stageHeroHtml(c) {
   const img = url ? `<div class="hero-img"><img src="${url}"${style}></div>` : "";
   return `<div class="stage-hero">
     ${img}
-    <div class="deckle d1"></div><div class="deckle d2"></div><div class="deckle d3"></div>
-    <div class="deckle b1"></div><div class="deckle b2"></div><div class="deckle b3"></div>
     ${c.mountains === false ? "" : MOUNTAINS("ml") + MOUNTAINS("mr")}
   </div>`;
 }

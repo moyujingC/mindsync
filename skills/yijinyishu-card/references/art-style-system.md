@@ -64,9 +64,11 @@ hero 版式配图为「一张满版拼贴大图」（生图 prompt 要求整幅�
 | `images.main` | 主图（必填），m1~m3 小圆图（collage 用，可缺省） |
 | `img_focus` | 如 `{"main": "72% 42%"}` 调主图 object-position 取景 |
 
-## 生图规范（generate_art.mjs）
+## 生图规范（generate_art.mjs → yijinyishu-watercolor-style）
 
-- 一条命令一张图：`node scripts/generate_art.mjs <prompt.txt> <out.png> [portrait|landscape]`。
-- prompt 文件只写画面内容；风格前缀（水彩拼贴、配色、禁文字）脚本内置。
-- 竖版主图 1024×1536，横版 1536×1024，小图可复用竖版图（圆形裁切）。
+- `scripts/generate_art.mjs` 是薄封装，转发到风格 skill `yijinyishu-watercolor-style/scripts/generate.mjs`；风格 prompt 单一源头在那边，本 skill 不复制。
+- 一条命令一张图：`node scripts/generate_art.mjs <prompt.txt> <out.png> [portrait|landscape] [--bleed]`。
+- prompt 文件只写画面内容；风格前缀（水彩拼贴、配色 hex、禁文字）生成器内置。
+- hero 满版配图必须加 `--bleed`（画面延伸到四边）；collage 主图/小圆图不加。
+- 竖版 1024×1536，横版 1536×1024，小图可复用竖版图（圆形裁切）。
 - 图中严禁任何文字/字母/数字（文字一律由 HTML 模板渲染）。

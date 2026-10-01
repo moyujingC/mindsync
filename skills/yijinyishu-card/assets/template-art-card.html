@@ -118,16 +118,7 @@
   /* ---------- hero 满版布局（插画出血 + 撕纸边） ---------- */
   .stage-hero { position: relative; margin: 14px -76px 16px; height: 770px; z-index: 1; }
   .stage-hero .hero-img { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
-  .stage-hero .deckle { z-index: 2; }
-  .stage-hero .hero-img img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.045); }
-  /* 撕纸边：多条波浪形纸边覆盖在图像上下沿 */
-  .deckle { position: absolute; left: -3%; width: 106%; height: 52px; background: var(--bg); }
-  .deckle.d1 { top: -30px;   border-radius: 0 0 52% 44% / 0 0 100% 82%; transform: rotate(-.5deg); }
-  .deckle.d2 { top: -18px;   border-radius: 0 0 40% 62% / 0 0 82% 100%; transform: rotate(.7deg); opacity: .96; }
-  .deckle.d3 { top: -8px;    border-radius: 0 0 58% 38% / 0 0 100% 70%; transform: rotate(-.3deg); opacity: .94; }
-  .deckle.b1 { bottom: -30px; border-radius: 46% 40% 0 0 / 100% 84% 0 0; transform: rotate(.5deg); }
-  .deckle.b2 { bottom: -18px; border-radius: 38% 58% 0 0 / 82% 100% 0 0; transform: rotate(-.7deg); opacity: .96; }
-  .deckle.b3 { bottom: -8px;  border-radius: 56% 36% 0 0 / 100% 70% 0 0; transform: rotate(.3deg); opacity: .94; }
+  .stage-hero .hero-img img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.03); mask: url(#heroMask); -webkit-mask: url(#heroMask); }
   /* 底部撕纸山形装饰（左/右下角） */
   .mountains { position: absolute; bottom: 0; z-index: 3; pointer-events: none; }
   .mountains.ml { left: 0; }
@@ -162,6 +153,21 @@
   }
 </style>
 </head>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="brushRough" x="-15%" y="-35%" width="130%" height="170%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="11" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="9"/>
+    </filter>
+    <filter id="tornEdge" x="-15%" y="-15%" width="130%" height="130%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.007 0.02" numOctaves="4" seed="5" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="48"/>
+    </filter>
+    <mask id="heroMask" maskUnits="userSpaceOnUse" x="-80" y="-80" width="1240" height="1100">
+      <rect x="-80" y="34" width="1240" height="702" fill="#ffffff" filter="url(#tornEdge)"/>
+    </mask>
+  </defs>
+</svg>
 <body class="{{CANVAS}} {{BADGE_CLASS}}">
   <!-- 角落枝叶 -->
   <svg class="sprig sprig-tl" width="86" height="86" viewBox="0 0 86 86" fill="none">
