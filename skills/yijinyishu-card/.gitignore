@@ -1,2 +1,4 @@
 node_modules/
 local-tests/demo/out/
+local-tests/art-demo/out/
+local-tests/art-demo/art/*.png

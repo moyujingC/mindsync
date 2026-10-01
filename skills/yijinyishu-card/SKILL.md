@@ -1,17 +1,31 @@
 ---
 name: yijinyishu-card
-description: Generate 3:4 竖版知识卡片套图（一镜一梳 · 疗愈书院风：米白纸底 + 深墨绿宋体大标题 + 金赭编号点缀）— 步骤卡 / 总览卡两类版式，发丝线分隔，金句条收尾。发布渠道：小红书 + 公众号贴图。Use when the user asks for 一镜一梳卡片, 疗愈书院风卡片, 知识卡片, 卡片套图, 3:4 卡片, or 疗愈/课程类小红书图文。
+description: Generate 一镜一梳知识卡片，双风格——①疗愈书院风（3:4 竖版 1080×1440，米白纸底+深墨绿宋体标题+金赭编号，纯排版，步骤卡/总览卡）；②插画拼贴风（竖版 3:4 或横版 16:9 1080×608，水彩插画+拼贴卡纸+赭石徽章，文生图配图，少字多图）。发布渠道：小红书 + 公众号图文/配图。Use when the user asks for 一镜一梳卡片, 知识卡片, 卡片套图, 3:4 卡片, 16:9 配图, 插画卡片, or 疗愈/课程类小红书图文。
 ---
 
-# 一镜一梳 Card · 疗愈书院风知识卡片
+# 一镜一梳 Card · 知识卡片（双风格）
 
-从成稿/大纲生成 3:4 竖版知识卡片套图（小红书、公众号贴图通用）。风格名：**疗愈书院风**——米白纸底、深墨绿宋体巨字标题、金赭（金棕色）编号与 kicker（眉题）、发丝线分隔，书院讲义式版面。
+从成稿/大纲生成一镜一梳知识卡片。内置两个独立风格：
+
+| 风格 | 画幅 | 模板/脚本 | 特征 |
+| --- | --- | --- | --- |
+| **疗愈书院风** | 竖版 3:4（1080×1440） | `assets/template-book-card.html` + `scripts/render_cards.mjs` | 纯排版：米白纸底、深墨绿宋体巨字、金赭编号、发丝线、金句条；步骤卡/总览卡 |
+| **插画拼贴风** | 竖版 3:4 或横版 16:9（1080×608） | `assets/template-art-card.html` + `scripts/render_art_cards.mjs` + `scripts/generate_art.mjs` | 文生图水彩插画 + 拼贴卡纸（撕纸边/拱形/圆形遮罩）、赭石笔触下划线、枝叶点缀、彩色徽章；少字多图 |
 
 架构参考 guizang-social-card（SKILL.md + references + assets 模板 + scripts 渲染），风格系统独立自研。不得复制 guizang 模板与素材。
 
+## 插画拼贴风 · 快速上手
+
+1. **生图**：每卡先出配图 `node scripts/generate_art.mjs <prompt.txt> <out.png> [portrait|landscape]`（走 AITechFlux 中继 gpt-image-2，key 读 内容视觉工坊V2/.env.local；prompt 只写画面内容，风格前缀脚本自动加，图中禁文字）。
+2. **写 cards.json**（契约见 render_art_cards.mjs 头注释）：`canvas`（portrait/landscape）、`title`/`sub`/`para`/`badge`、`badge_class`（badge-blue|badge-clay|badge-green）、`images.main` 必填 + `m1~m3` 小圆图可缺省、`img_focus` 可调主图取景。
+3. **渲染**：`node scripts/render_art_cards.mjs cards.json <out目录>`。
+4. **QA**：`references/qa-art-checklist.md`。
+
+画幅选用：小红书/公众号图文 → portrait 3:4；公众号正文配图 → landscape 16:9。
+
 ## 产出契约
 
-- 任务文件夹制：每次生成在 `<用户指定目录>/cards-<slug>/` 下进行，不在 skill 根目录留产物；skill 内自测只允许在 `local-tests/<slug>/`。
+- 任务文件夹制：每次生成在 `<用户指定目录>/cards-<slug>/` 下进行，不在 skill 根目录留产物；skill 内自测只允许在 `local-tests/<slug>/`。插画拼贴风的生图 prompt 与中间图也存任务文件夹。
 - 一套卡片 = 1 张总览卡（可选）+ N 张步骤卡（通常 4~8 张）+ 可选金句收尾卡。
 - 每张输出 `NN-标题.png`（1080×1440，2x PNG），数字编号与页眉页码一致。
 - 完成后输出清单：每张的文件路径 + 一句话内容摘要，供用户逐张过目。

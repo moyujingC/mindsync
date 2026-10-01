@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<style>
+  /* 一镜一梳 · 插画拼贴风知识卡片
+     竖版 1080×1440（小红书/公众号图文 3:4）；横版 1080×608（公众号配图 16:9）
+     用法：<body class="canvas-portrait|canvas-landscape badge-clay"> */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    --bg: #f7f2e7;            /* 米色纸底 */
+    --navy: #1f3d6b;          /* 深蓝：标题/正文 */
+    --clay: #b8623c;          /* 赭石：徽章/笔触 */
+    --green: #43684a;         /* 灰绿：徽章 */
+    --sage: #6c7f5c;          /* 鼠尾草绿：枝叶 */
+    --ink: #57534a;           /* 副题灰 */
+    --faint: #a39e8e;         /* 水印 */
+    --paper: #fbf8ef;         /* 拼贴卡纸 */
+    position: relative; overflow: hidden;
+    background: var(--bg); color: var(--navy);
+    font-family: "PingFang SC", "苹方-简", sans-serif;
+    background-image: radial-gradient(rgba(87,83,74,0.05) 1px, transparent 1px);
+    background-size: 26px 26px;
+  }
+  .badge-blue  { --badge: #2b4d7d; }
+  .badge-clay  { --badge: #b8623c; }
+  .badge-green { --badge: #43684a; }
+  .canvas-portrait  { width: 1080px; height: 1440px; padding: 66px 76px 56px; }
+  .canvas-landscape { width: 1080px; height: 608px;  padding: 48px 64px 44px; display: flex; gap: 44px; }
+
+  /* ---------- 文字组件 ---------- */
+  .art-head { text-align: center; }
+  .art-title {
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    font-size: 88px; font-weight: 800; color: var(--navy);
+    letter-spacing: 4px; line-height: 1.25; text-wrap: balance;
+  }
+  .canvas-landscape .art-title { font-size: 54px; text-align: left; letter-spacing: 2px; }
+  .art-title-row { display: flex; align-items: center; justify-content: center; gap: 26px; }
+  .canvas-landscape .art-title-row { justify-content: flex-start; }
+  .art-ul { display: block; margin: 18px auto 6px; }
+  .canvas-landscape .art-ul { margin: 12px 0 6px; }
+  .art-sub {
+    display: flex; align-items: center; justify-content: center; gap: 22px;
+    font-size: 37px; color: var(--ink); letter-spacing: 3px; margin: 18px 0 0;
+  }
+  .canvas-landscape .art-sub { justify-content: flex-start; font-size: 26px; margin-top: 12px; }
+  .art-sub .rule { width: 88px; height: 1px; background: #c9c2ae; }
+  .art-sub .leaf-pair { display: flex; gap: 6px; }
+  .art-para {
+    font-size: 34px; line-height: 1.65; color: var(--navy);
+    letter-spacing: 2px; text-align: center; text-wrap: balance;
+  }
+  .canvas-landscape .art-para { font-size: 25px; line-height: 1.6; text-align: left; }
+
+  /* 徽章 + 两侧枝叶 */
+  .badge-row { display: flex; align-items: center; justify-content: center; gap: 24px; }
+  .badge {
+    background: var(--badge); color: #fdfbf4;
+    font-size: 40px; font-weight: 700; letter-spacing: 6px;
+    padding: 20px 58px; border-radius: 999px;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+    box-shadow: 0 3px 0 rgba(31,61,107,0.18);
+  }
+  .canvas-landscape .badge { font-size: 26px; padding: 12px 36px; letter-spacing: 4px; }
+
+  /* ---------- 插画舞台（拼贴） ---------- */
+  .stage { position: relative; }
+  .canvas-portrait .stage { height: 660px; margin: 26px 0 30px; }
+  .canvas-landscape .stage { flex: 1; }
+  /* 水彩底斑 */
+  .blob { position: absolute; border-radius: 50%; filter: blur(2px); opacity: .5; }
+  .blob-b { background: radial-gradient(closest-side, rgba(43,77,125,0.16), transparent); }
+  .blob-g { background: radial-gradient(closest-side, rgba(108,127,92,0.20), transparent); }
+  .blob-c { background: radial-gradient(closest-side, rgba(184,98,60,0.16), transparent); }
+  .canvas-portrait .blob-1 { width: 620px; height: 480px; left: 60px;  top: 40px; }
+  .canvas-portrait .blob-2 { width: 460px; height: 420px; right: 30px; top: 170px; }
+  .canvas-portrait .blob-3 { width: 380px; height: 340px; left: 250px; bottom: 0; }
+  .canvas-landscape .blob-1 { width: 420px; height: 420px; left: 40px; top: 20px; }
+  .canvas-landscape .blob-2 { width: 300px; height: 300px; right: 20px; bottom: 10px; }
+
+  /* 拼贴画片：卡纸底 + 图 */
+  .art { position: absolute; }
+  .art .paper {
+    position: absolute; inset: -14px;
+    background: var(--paper); border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(87,83,74,0.16);
+  }
+  .art .paper.r2 { transform: rotate(-4deg); z-index: -1; opacity: .9; }
+  .art .paper.r1 { transform: rotate(2deg); }
+  .art img { position: relative; display: block; width: 100%; height: 100%; object-fit: cover; }
+  .mask-arch img { border-radius: 300px 300px 18px 18px; }
+  .mask-circle img { border-radius: 50%; }
+  .canvas-portrait .art-main { width: 470px; height: 600px; left: 50%; top: 6px; transform: translateX(-50%); z-index: 2; }
+  .canvas-portrait .art-main .paper.r1 { transform: rotate(-1.5deg); }
+  .art-mini .paper { inset: -9px; border-radius: 10px; }
+  .canvas-portrait .mini-1 { width: 205px; height: 205px; left: 8px;   top: 64px;  z-index: 3; }
+  .canvas-portrait .mini-2 { width: 205px; height: 205px; right: 4px;  top: 210px; z-index: 3; }
+  .canvas-portrait .mini-3 { width: 185px; height: 185px; left: 44px;  bottom: 6px; z-index: 3; }
+  .canvas-landscape .art-main { width: 330px; height: 420px; left: 90px; top: 6px; z-index: 2; }
+  .canvas-landscape .mini-1 { width: 150px; height: 150px; right: 56px; top: 20px; z-index: 3; }
+  .canvas-landscape .mini-2 { width: 140px; height: 140px; right: 150px; bottom: 4px; z-index: 3; }
+  .art.hidden { display: none; }
+
+  /* 角落枝叶装饰 */
+  .sprig { position: absolute; z-index: 4; opacity: .92; }
+  .canvas-portrait .sprig-tl { left: 30px; top: 26px; transform: rotate(-14deg); }
+  .canvas-portrait .sprig-tr { right: 40px; top: 44px; transform: rotate(40deg) scaleX(-1); }
+  .canvas-portrait .sprig-bl { left: 44px; bottom: 130px; transform: rotate(24deg); }
+  .canvas-portrait .sprig-br { right: 36px; bottom: 120px; transform: rotate(-30deg) scaleX(-1); }
+  .canvas-landscape .sprig-tl { left: 20px; top: 14px; transform: rotate(-14deg) scale(.8); }
+  .canvas-landscape .sprig-br { right: 18px; bottom: 12px; transform: rotate(-30deg) scaleX(-1) scale(.8); }
+
+  /* 底部结构 */
+  .canvas-portrait .art-foot { display: flex; flex-direction: column; align-items: center; gap: 34px; margin-top: 4px; }
+  .canvas-landscape .col-text { width: 400px; display: flex; flex-direction: column; gap: 20px; justify-content: center; }
+  .canvas-landscape .badge-row { justify-content: flex-start; }
+  .watermark {
+    position: absolute; right: 34px; bottom: 22px; z-index: 5;
+    font-size: 21px; letter-spacing: 2px; color: var(--faint);
+    display: flex; align-items: center; gap: 8px;
+  }
+</style>
+</head>
+<body class="{{CANVAS}} {{BADGE_CLASS}}">
+  <!-- 角落枝叶 -->
+  <svg class="sprig sprig-tl" width="86" height="86" viewBox="0 0 86 86" fill="none">
+    <path d="M40 80 C42 54 44 30 52 10" stroke="#6c7f5c" stroke-width="3" stroke-linecap="round"/>
+    <path d="M44 58 C30 52 22 42 20 28 C34 32 42 42 44 58Z" fill="#6c7f5c" opacity=".85"/>
+    <path d="M46 40 C58 34 66 24 68 10 C54 14 47 24 46 40Z" fill="#8a9a6e" opacity=".85"/>
+    <circle cx="54" cy="8" r="5" fill="#b8623c"/>
+  </svg>
+  <svg class="sprig sprig-tr" width="86" height="86" viewBox="0 0 86 86" fill="none">
+    <path d="M40 80 C42 54 44 30 52 10" stroke="#6c7f5c" stroke-width="3" stroke-linecap="round"/>
+    <path d="M44 58 C30 52 22 42 20 28 C34 32 42 42 44 58Z" fill="#6c7f5c" opacity=".85"/>
+    <path d="M46 40 C58 34 66 24 68 10 C54 14 47 24 46 40Z" fill="#8a9a6e" opacity=".85"/>
+  </svg>
+  <svg class="sprig sprig-bl" width="96" height="96" viewBox="0 0 86 86" fill="none">
+    <path d="M40 80 C42 54 44 30 52 10" stroke="#6c7f5c" stroke-width="3" stroke-linecap="round"/>
+    <path d="M44 58 C30 52 22 42 20 28 C34 32 42 42 44 58Z" fill="#6c7f5c" opacity=".85"/>
+    <path d="M46 40 C58 34 66 24 68 10 C54 14 47 24 46 40Z" fill="#8a9a6e" opacity=".85"/>
+    <circle cx="24" cy="66" r="5" fill="#b8623c"/>
+  </svg>
+  <svg class="sprig sprig-br" width="96" height="96" viewBox="0 0 86 86" fill="none">
+    <path d="M40 80 C42 54 44 30 52 10" stroke="#6c7f5c" stroke-width="3" stroke-linecap="round"/>
+    <path d="M44 58 C30 52 22 42 20 28 C34 32 42 42 44 58Z" fill="#6c7f5c" opacity=".85"/>
+    <path d="M46 40 C58 34 66 24 68 10 C54 14 47 24 46 40Z" fill="#8a9a6e" opacity=".85"/>
+    <circle cx="58" cy="60" r="6" fill="#b8623c" opacity=".9"/>
+  </svg>
+
+  {{LAYOUT}}
+
+  <div class="watermark">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="8.5" stroke="#a39e8e" stroke-width="1.6"/>
+      <path d="M6 12 C7 8 9 6.5 10 6.5 C11 6.5 13 8 14 12" stroke="#a39e8e" stroke-width="1.6" fill="none"/>
+    </svg>
+    {{WATERMARK}}
+  </div>
+</body>
+</html>

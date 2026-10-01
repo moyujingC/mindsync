@@ -1,0 +1,37 @@
+[
+  {
+    "name": "01-先安顿情绪-竖",
+    "canvas": "portrait",
+    "badge_class": "badge-clay",
+    "title": "一、先安顿情绪",
+    "sub": "情绪稳了，人才有选择",
+    "sub_rule": true,
+    "para": "停下来，看见自己在难过，\n不急着评判，也不急着解决。",
+    "badge": "照顾自己",
+    "watermark": "轻疗愈",
+    "images": {
+      "main": "art/main-p.png",
+      "m1": "art/m1.png",
+      "m2": "art/m2.png",
+      "m3": "art/m3.png"
+    }
+  },
+  {
+    "name": "01-先安顿情绪-横",
+    "canvas": "landscape",
+    "badge_class": "badge-green",
+    "title": "情绪来了，先安顿自己",
+    "sub": "情绪稳了，人才有选择",
+    "para": "停下来，看见自己在难过，\n不急着评判，也不急着解决。",
+    "badge": "照顾自己",
+    "watermark": "轻疗愈",
+    "images": {
+      "main": "art/main-l.png",
+      "m1": "art/m1.png",
+      "m2": "art/m2.png"
+    },
+    "img_focus": {
+      "main": "72% 42%"
+    }
+  }
+]
