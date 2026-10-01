@@ -1,0 +1,21 @@
+[
+  {
+    "name": "01-接纳情绪",
+    "stripe": "stripe-green",
+    "brand": "一镜一书 · 疗愈学院",
+    "page": "01 / 06",
+    "foot_l": "理解情绪",
+    "foot_r": "一镜一书 · 知识与练习",
+    "content": "<div class='head-q'>接纳情绪，就是任由自己难受吗？</div><div class='hairline'></div><div class='big-num'>01</div><h1 class='title'>接纳情绪</h1><div class='sub'>难受的时候，也可以照顾自己、处理问题</div><div class='item'><div class='h'><span class='num'>01</span><span class='t'>承认感受</span></div><div class='d'>「我现在确实很失落。」先知道自己怎么了，不急着批评自己太敏感。</div></div><div class='item'><div class='h'><span class='num'>02</span><span class='t'>选择怎么回应</span></div><div class='d'>生气时可以先暂停谈话，等准备好了，再说清自己的想法和需要。</div></div><div class='item'><div class='h'><span class='num'>03</span><span class='t'>处理现实问题</span></div><div class='d'>接纳感受，不等于接受所有对待。该沟通、设立边界或求助时，仍然可以行动。</div></div><div class='note'>感受可以被承认，行为可以选择，处境也可以尝试改变。</div>"
+  },
+  {
+    "name": "02-能力地图",
+    "stripe": "stripe-gold",
+    "spread": true,
+    "brand": "一镜一书 · 疗愈学院 / 疗愈学习地图",
+    "page": "01 / 08",
+    "foot_l": "疗愈学习笔记",
+    "foot_r": "一镜一书 · 知识与练习",
+    "content": "<div class='kicker'>建议收藏 · 理清疗愈学习的方向</div><h1 class='title'>疗愈学习<br>能力地图</h1><div class='sub green'>需要学习哪些能力？</div><div class='title-ul'></div><div class='item'><div class='h'><span class='num'>01—02</span><span class='t'>角色与边界 · 自我觉察</span></div><div class='d soft'>明确能做什么，也看见自己的反应</div></div><div class='item'><div class='h'><span class='num'>03—04</span><span class='t'>倾听回应 · 提问支持</span></div><div class='d soft'>先听懂，再帮助对方说清感受</div></div><div class='item'><div class='h'><span class='num'>05—06</span><span class='t'>工具选择 · 带领过程</span></div><div class='d soft'>知道何时使用，也照顾完整过程</div></div><div class='item'><div class='h'><span class='num'>07</span><span class='t'>复盘与持续学习</span></div><div class='d soft'>让亲身练习、反馈与知识彼此联系</div></div>"
+  }
+]

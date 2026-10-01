@@ -1,0 +1,10 @@
+{
+  "name": "yijinyishu-card",
+  "version": "1.0.0",
+  "description": "一镜一书 疗愈书院风知识卡片（3:4）渲染",
+  "type": "module",
+  "license": "ISC",
+  "dependencies": {
+    "playwright": "^1.63.0"
+  }
+}

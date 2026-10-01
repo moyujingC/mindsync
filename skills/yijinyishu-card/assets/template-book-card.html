@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<style>
+  /* 一镜一书 · 疗愈书院风知识卡片
+     画布 1080×1440（3:4），适配小红书 / 公众号贴图
+     用法：<body class="stripe-green|stripe-gold">，内容块 class 见 references/style-system.md */
+  :root {
+    --canvas: 1080px; --h: 1440px;
+    --pad-x: 84px;
+  }
+  .stripe-green { --stripe: #1e4633; }
+  .stripe-gold  { --stripe: #a8894a; }
+  body {
+    --bg: #f7f3ea;
+    --ink: #26261f;            /* 正文深灰黑 */
+    --green: #1e4633;          /* 深墨绿：标题/主强调 */
+    --gold: #a8894a;           /* 金赭：编号/kicker/引用条 */
+    --soft: #6f6c5f;           /* 次级灰 */
+    --faint: #8f8c7e;          /* 页眉页脚灰 */
+    --hairline: #ddd5c2;       /* 米灰发丝线 */
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: var(--canvas); height: var(--h); }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "PingFang SC", "苹方-简", sans-serif;
+    position: relative; overflow: hidden;
+    padding: 68px var(--pad-x) 116px;
+    display: flex; flex-direction: column;
+  }
+  /* 左缘竖条：整套卡组里绿/金交替或按封面定 */
+  .stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: var(--stripe); }
+  /* 页眉 */
+  .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 20px; border-bottom: 1px solid var(--hairline);
+    font-size: 21px; letter-spacing: 2px; color: var(--faint);
+  }
+  .head .crumb b { color: var(--green); font-weight: 700; }
+  /* 页眉下的问题行（内容卡用）：墨绿粗体 */
+  .head-q {
+    font-size: 30px; font-weight: 700; color: var(--green);
+    padding: 26px 0 24px; letter-spacing: 1px;
+  }
+  .head-q + .hairline, .hairline { border-bottom: 1px solid var(--hairline); }
+  /* 内容区：纵向 flex，note（金句条）靠底 */
+  .body { position: relative; z-index: 1; padding-top: 52px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  /* 大步骤序号（步骤卡用） */
+  .big-num {
+    font-family: "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+    font-size: 80px; font-weight: 800; color: var(--green); line-height: 1;
+    letter-spacing: 2px; margin-bottom: 12px;
+  }
+  /* 巨型标题：宋体粗体墨绿 */
+  h1.title {
+    font-family: "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+    font-size: 104px; font-weight: 800; line-height: 1.22;
+    letter-spacing: 3px; color: var(--green); margin-bottom: 28px; text-wrap: balance;
+  }
+  /* 标题下的短墨绿下划线（总览卡用） */
+  .title-ul { width: 108px; height: 7px; background: var(--green); margin: 8px 0 44px; flex: none; }
+  /* 灰色副题 */
+  .sub { font-size: 33px; line-height: 1.55; color: var(--soft); margin-bottom: 40px; }
+  .sub.green { color: var(--green); font-weight: 700; }
+  /* 金赭 kicker（总览卡引导句） */
+  .kicker { font-size: 27px; letter-spacing: 2px; color: var(--gold); margin: 28px 0 28px; font-weight: 600; }
+  /* 编号条目：标题行 = 金编号 + 墨绿粗体（.h 行内横向） */
+  .item { padding: 20px 0; border-bottom: 1px solid var(--hairline); }
+  .item:first-of-type { border-top: 1px solid var(--hairline); }
+  .item .h { display: flex; align-items: baseline; }
+  .item .num {
+    font-family: "Songti SC", "STSong", "Noto Serif SC", "SimSun", serif;
+    font-size: 34px; font-weight: 700; color: var(--gold);
+    min-width: 132px; letter-spacing: 1px; flex: none;
+  }
+  .item .t { font-size: 38px; font-weight: 700; color: var(--green); letter-spacing: 1px; }
+  .item .d { font-size: 29px; line-height: 1.6; color: var(--ink); margin-top: 12px; }
+  .item .d.soft { color: var(--soft); }
+  /* 总览卡均布模式：body 加 spread 类，条目间均分留白（条目保持自然高度） */
+  body.spread .body { justify-content: space-evenly; }
+  /* 金句条：左金竖线 */
+  .note {
+    border-left: 6px solid var(--gold);
+    padding: 26px 34px; font-size: 30px; line-height: 1.6; color: var(--ink);
+    margin-top: auto; margin-bottom: 8px;
+  }
+  /* 页脚 */
+  .foot {
+    position: absolute; bottom: 46px; left: var(--pad-x); right: var(--pad-x);
+    border-top: 1px solid var(--hairline); padding-top: 22px;
+    display: flex; justify-content: space-between;
+    font-size: 21px; letter-spacing: 2px; color: var(--faint);
+  }
+</style>
+</head>
+<body class="{{STRIPE}} {{SPREAD}}">
+  <div class="stripe"></div>
+  <div class="head">
+    <div class="crumb">{{BRAND}}</div>
+    <div class="page">{{PAGE}}</div>
+  </div>
+  <div class="body">
+{{CONTENT}}
+  </div>
+  <div class="foot"><span>{{FOOT_L}}</span><span>{{FOOT_R}}</span></div>
+</body>
+</html>
