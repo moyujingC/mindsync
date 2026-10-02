@@ -112,7 +112,6 @@
 例如：
 
 - `aimandala/dev`
-- `relayhub/dev`
 - `content-matrix/dev`
 - `research-center/dev`
 - `xinran-jobhunt/dev`
@@ -237,7 +236,6 @@ GitHub / Git 的正式理解应是：
 
 例如：
 
-- `relayhub/dev`
 - `aimandala/dev`
 - `content-matrix/dev`
 - `research-center/dev`
@@ -253,14 +251,12 @@ GitHub / Git 的正式理解应是：
 
 - `aimandala/dev`
   - 作为 `AI Mandala` 默认开发主线
-- `relayhub/dev`
-  - 作为 `RelayHub` 长期服务器测试分支和内部部署主线
 - 其他项目
   - 采用 `<project>/dev` 作为长期开发分支时，也应明确写入各自项目入口文档
 
 再补一条约束：
 
-- `aimandala/dev`、`relayhub/dev`、`research-center/dev`、`content-matrix/dev`、`xinran-jobhunt/dev`
+- `aimandala/dev`、`research-center/dev`、`content-matrix/dev`、`xinran-jobhunt/dev`
   - 都允许长期存在并高频迭代
   - 但它们是“可用的独立开发台”，不是“必须使用的唯一开发入口”
   - 只有当你真的在这些分支上形成独立演进时，才需要考虑它们与 `main` 的同步策略
@@ -358,21 +354,7 @@ GitHub Actions 不会识别“你是从哪个 `worktree` 推上去的”。
 - 正式发布：
   - 由既定发布流程进入 `release`
 
-### 8.3 RelayHub
-
-- 当前单人主线开发：
-  - 默认可以直接在 `main` 根工作区推进
-- 需要长期服务器测试线、隔离实验或并行任务时：
-  - 再使用 `relayhub/dev` 或其任务分支推进
-- 内部试用与服务器测试：
-  - 如果已经启用 `relayhub/dev`，统一收口到 `relayhub/dev`
-  - 如果当前直接基于 `main` 推进，则按项目 runbook 明确从 `main` 部署或验证
-- 当前不要求：
-  - 先并回 `main` 才允许部署
-- 当前也不要求：
-  - 为 `RelayHub` 额外拆出仓库级 `release` 轨
-
-### 8.4 分支之间的默认合并同步
+### 8.3 分支之间的默认合并同步
 
 当前默认采用“main 优先、项目分支按需回收”的策略：
 
@@ -387,9 +369,6 @@ GitHub Actions 不会识别“你是从哪个 `worktree` 推上去的”。
   - 仅在项目明确依赖主干新治理、新共享脚本或分叉过大时回灌
 - `main -> release`
   - 当前只保留给 `AI Mandala` 既有发布语义
-- `relayhub/dev -> main`
-  - 定期但不高频
-  - 只在阶段能力稳定后回收
 
 进一步收紧为：
 
@@ -409,7 +388,7 @@ GitHub Actions 不会识别“你是从哪个 `worktree` 推上去的”。
 
 但如果这些工作本来就是在 `main` 上完成的，就不存在额外“带回 main”的动作；此时关键是保持提交小、说明清楚、验证口径明确。
 
-### 8.5 服务器主镜像区 / 巡检区
+### 8.4 服务器主镜像区 / 巡检区
 
 例如：
 
@@ -421,7 +400,7 @@ GitHub Actions 不会识别“你是从哪个 `worktree` 推上去的”。
 - 主镜像参考区
 - 巡检参考区
 
-### 8.6 服务器隔离执行区
+### 8.5 服务器隔离执行区
 
 例如：
 

@@ -1,9 +1,9 @@
 # Paperclip Agent 模型配置总表
 
 > 状态：current
-> 版本：0.1.1
+> 版本：0.1.2
 > owner：Engineer
-> last_updated：2026-05-04
+> last_updated：2026-10-02
 > source_of_truth：company/Paperclip-Agent-模型配置总表.md
 
 这份文档用于收口 `Paperclip` 当前各类 Agent 的运行时模型配置。
@@ -49,15 +49,19 @@
 
 | Agent 分组 | 当前 Agent | Adapter | Base URL | Model | 鉴权方式 | 当前口径 |
 | --- | --- | --- | --- | --- | --- | --- |
-| CEO | CEO | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
+| CEO | CEO | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | ⚠️ RelayHub 已删除（2026-10-02），此入口待重配 |
 | 工程实现 | Engineer | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.4` | Codex provider API key 配置 | 当前正式口径改为直接走 PPChat，不再经过 RelayHub |
 | 测试验收 | Test / QA | `codex_local` | `https://code.ppchat.vip/v1` | `gpt-5.4` | Codex provider API key 配置 | 当前正式口径改为直接走 PPChat，不再经过 RelayHub |
-| 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-mac` 或 `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | 当前正式口径改为固定接 RelayHub，由入口绑定决定真实上游 |
-| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | Claude Code 免登录 API-key 模式 |
+| 需求澄清 | Idea Clarifier | `pi_local` | `RelayHub /v1/chat/completions` | `relayhub-entry-paperclip-pi-local-mac` 或 `relayhub-entry-paperclip-pi-local-server` | Paperclip -> RelayHub 访问凭证 | ⚠️ RelayHub 已删除（2026-10-02），此入口待重配 |
+| 规划/产品/内容/研究 | Architect, UI / UX, Business Lead, Product Spec Lead, Research & Knowledge Lead, Content Lead | `claude_local` | `RelayHub Claude Code` | `relayhub-entry-paperclip-claude-local-server` | `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` | ⚠️ RelayHub 已删除（2026-10-02），此入口待重配 |
+
+> **状态变更（2026-10-02）**：RelayHub 项目已整体删除（服务器部署、本地 worktree、`relayhub/dev` 分支均已清理，域名与证书已注销）。上表中经 RelayHub 的模型入口（CEO、Idea Clarifier、规划/产品/内容/研究组）当前不可用，重新配置模型入口前这些 agent 无法执行模型任务。Engineer / Test QA 走 PPChat 直连，不受影响。
 
 ## 3. 分组展开
 
 ### 3.1 CEO
+
+> ⚠️ 本节 RelayHub 入口已于 2026-10-02 随项目删除下线，模型入口待重配；保留原文仅供重配时参考。
 
 - Agent：`CEO`
 - Adapter：`claude_local`
@@ -171,6 +175,8 @@
 
 ### 3.4 claude_local 系列
 
+> ⚠️ 本节 RelayHub 入口已于 2026-10-02 随项目删除下线，模型入口待重配；保留原文仅供重配时参考。
+
 当前这组 Agent 包括：
 
 - `Architect`
@@ -225,6 +231,8 @@
   - 才进入排障流程
 
 ### 3.5 Idea Clarifier
+
+> ⚠️ 本节 RelayHub 入口已于 2026-10-02 随项目删除下线，模型入口待重配；保留原文仅供重配时参考。
 
 - Agent：`Idea Clarifier`
 - Adapter：`pi_local`

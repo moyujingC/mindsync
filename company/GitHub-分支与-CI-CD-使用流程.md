@@ -58,7 +58,6 @@
 它当前不表示：
 
 - 所有项目的统一发布口
-- `RelayHub` 的默认发布分支
 
 ### 2.3 `aimandala/dev`
 
@@ -67,15 +66,7 @@
 - `AI Mandala` 可选的项目开发主线
 - 当 `main` 根工作区不够用时，用于本地开发、联调和验证的独立主线
 
-### 2.4 `relayhub/dev`
-
-`relayhub/dev` 当前固定表示：
-
-- `RelayHub` 可选的长期服务器测试分支
-- 当需要和 `main` 隔离时，作为内部部署主线
-- 若当前直接基于 `main` 推进，则部署来源应以项目 runbook 或 workflow 配置为准
-
-### 2.5 任务分支
+### 2.4 任务分支
 
 任务分支不是 IDE 代理的默认动作。
 
@@ -130,27 +121,6 @@
 - `aimandala/dev` 稳定后再回 `main`
 - 生产发布时再进入 `release`
 
-### 3.3 RelayHub
-
-适合分支：
-
-- `main`
-- `relayhub/dev`
-- 从 `relayhub/dev` 分出的任务分支
-
-适合工作：
-
-- RelayHub console / control-plane / dev-relay 开发
-- 内部试用与服务器测试
-- `relayhub.jingshu.cc` 对应链路迭代
-
-默认路径：
-
-- 单人当前主线开发可以直接在 `main` 完成
-- 若启用了 `relayhub/dev`，任务分支先回 `relayhub/dev`
-- `relayhub/dev` push 后按该分支的内部部署链验证
-- 项目分支形成阶段稳定点后，再定期回 `main`
-
 ## 4. 分支之间的合并同步
 
 ### 4.1 默认策略
@@ -186,22 +156,11 @@
 - 有共享工具、共享规范、共享脚本更新必须下发
 - 项目分支与主干偏差过大，已影响后续收口
 
-### 4.4 何时把 `RelayHub` 回收进 `main`
-
-`relayhub/dev -> main` 默认定期但不高频。
-
-只在以下条件满足时进行：
-
-- 某阶段能力已稳定
-- 需要把项目级实现、文档和结论纳入主仓长期真理源
-- 不会把未准备好的内部试验态内容一并带入 `main`
-
-### 4.5 哪些项目分支不应长期高频回灌 `main`
+### 4.4 哪些项目分支不应长期高频回灌 `main`
 
 以下分支默认都属于“项目开发主线”而不是“公司主干”：
 
 - `aimandala/dev`
-- `relayhub/dev`
 - `research-center/dev`
 - `content-matrix/dev`
 - `xinran-jobhunt/dev`
@@ -347,35 +306,11 @@
 - 只有命中 `projects/aimandala/toC/**`、`projects/aimandala/deploy/**`、`shared/tools/ci/**` 或对应 workflow 文件时，才会触发增强链路的 `deploy-dev`
 - 增强链路中的 `push -> release` 也同样受这组路径过滤约束
 
-因此如果一次 `main` merge 主要改的是 `RelayHub`、研究文档或公司治理文档，就算已经 push 到 `main`，也通常**不需要**额外手动补触发 `AI Mandala deploy`
+因此如果一次 `main` merge 主要改的是研究文档或公司治理文档，就算已经 push 到 `main`，也通常**不需要**额外手动补触发 `AI Mandala deploy`
 
 但如果当前目标是“确认 `Aimandala` 最小 CI/CD 是否可用”，优先检查 `mvp-ci` 的 run，而不是先看增强链路的 self-hosted runner / Paperclip 回写链路。
 
-### 5.2 RelayHub
-
-- `push -> relayhub/dev`
-  - 跑轻量 CI
-  - 成功后执行自动部署
-  - 部署后执行最小 smoke
-
-路径过滤只监听：
-
-- `projects/relayhub/**`
-- `shared/tools/ci/**`
-- `.github/workflows/relayhub-*.yml`
-
-当前需要在 GitHub Secrets 中补齐：
-
-- `RELAYHUB_RELEASE_HOST`
-  - 当前建议填写 `42.192.65.145`
-- `RELAYHUB_RELEASE_USER`
-  - 当前建议填写 `ubuntu`
-- `RELAYHUB_RELEASE_SSH_KEY`
-  - 当前建议填写 release 机对应的 SSH 私钥内容
-
-这些 secret 只服务 `RelayHub` 自己的自动部署链，不和 `AI Mandala` 的 deploy secret 混用。
-
-### 5.3 一个常见误解
+### 5.2 一个常见误解
 
 GitHub 页面上看起来像“每个 worktree 一套 CI/CD”，实际上通常只是：
 
@@ -390,7 +325,7 @@ GitHub 页面上看起来像“每个 worktree 一套 CI/CD”，实际上通常
 - `sha`
 - `paths`
 
-### 5.4 何时需要手动补触发 `main / release` 对应部署
+### 5.3 何时需要手动补触发 `main / release` 对应部署
 
 默认先按下面顺序判断：
 
@@ -425,15 +360,6 @@ GitHub 页面上看起来像“每个 worktree 一套 CI/CD”，实际上通常
 
 默认验收要点：
 
-- `RelayHub`
-  - `push -> relayhub/dev` 后，GitHub 侧应触发 `relayhub-ci-deploy`
-  - 若失败，`PaperclipAI` 中对应任务应落为：
-    - `task_class: automation-execution`
-    - `execution_route: server_automation`
-    - `source: deploy-or-smoke-failure` 或对应失败源
-  - 若成功，至少应能从回写 comment 看见：
-    - `adapter: github-actions/self-hosted-runner:deploy`
-    - `host: automation@150.158.9.95`
 - `AI Mandala`
   - `PR -> main` 的完整 CI 失败，应进入 `PaperclipAI` 的 CI 失败链，而不是误记成 deploy 失败
   - `push -> main` 的 `deploy-dev` 失败，应进入 deploy / smoke 失败链
@@ -456,7 +382,6 @@ GitHub 页面上看起来像“每个 worktree 一套 CI/CD”，实际上通常
 - 公司治理工作：上 `main`
 - 单人当前主线开发：优先上 `main`
 - `AI Mandala` 需要隔离时：上 `aimandala/dev`
-- `RelayHub` 需要内部部署隔离时：上 `relayhub/dev`
 - 任务开发：当前主线在 `main` 就回 `main`；已启用项目开发分支才先回项目开发分支
 - 项目分支阶段稳定：再回 `main`
 - `AI Mandala` 正式发布：再进入 `release`
