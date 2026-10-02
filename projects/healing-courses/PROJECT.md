@@ -42,6 +42,10 @@
 
 ## 4. 当前入口
 
+课程体系全景（两条获客线、六课梯队、定价依据）：
+
+- [docs/课程体系与定价.md](./docs/课程体系与定价.md)
+
 首门课交付物（唯一现行口径）：
 
 - [delivery/self-healing-intro/README.md](./delivery/self-healing-intro/README.md) — 《安顿内心，开启自愈之旅》5 章 16 节
