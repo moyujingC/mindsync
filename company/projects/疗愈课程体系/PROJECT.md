@@ -100,10 +100,9 @@
 
 首门课《安顿内心，开启自愈之旅》已上线（AI 师傅平台 + 官网 courses.jingshu.cc），交付物见 [delivery/self-healing-intro](../../../projects/healing-courses/delivery/self-healing-intro/README.md)。
 
-课程系列边界：
+课程体系与定价（现行真相源，含课程生产规范）：
 
-- [曼陀罗系列课程边界](../../../projects/healing-courses/docs/曼陀罗系列课程边界.md)
-- [议题系列课程边界](../../../projects/healing-courses/docs/议题系列课程边界.md)
+- [课程体系与定价](../../../projects/healing-courses/docs/课程体系与定价.md)
 
 曼陀罗知识库入口：
 

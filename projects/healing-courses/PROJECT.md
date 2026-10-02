@@ -51,10 +51,10 @@
 - [delivery/self-healing-intro/README.md](./delivery/self-healing-intro/README.md) — 《安顿内心，开启自愈之旅》5 章 16 节
 - 课程官网：<https://courses.jingshu.cc>（源码 `site/`）
 
-课程边界：
+课程边界与生产规范：
 
-- [docs/曼陀罗系列课程边界.md](./docs/曼陀罗系列课程边界.md)
-- [docs/议题系列课程边界.md](./docs/议题系列课程边界.md)
+- 收编于 [docs/课程体系与定价.md](./docs/课程体系与定价.md) 第 6 节（2026-10-02，替代已删除的曼陀罗系列 / 议题系列课程边界草案）
+- [docs/财富议题课程输入稿.md](./docs/财富议题课程输入稿.md) — 课2 财富课生产输入
 
 课程研究：
 
