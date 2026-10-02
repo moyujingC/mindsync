@@ -29,25 +29,25 @@
         {
           "file": "lesson-04.md",
           "title": "让静心成为日常",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         },
         {
           "file": "lesson-05.md",
           "title": "身体比头脑诚实",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         },
         {
           "file": "lesson-06.md",
           "title": "与身体对话",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         },
         {
           "file": "lesson-07.md",
           "title": "初心与初学者心态",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         }
       ]
@@ -58,25 +58,25 @@
         {
           "file": "lesson-08.md",
           "title": "地图总览",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         },
         {
           "file": "lesson-09.md",
           "title": "书写与呼吸",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         },
         {
           "file": "lesson-10.md",
           "title": "冥想与舞动",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         },
         {
           "file": "lesson-11.md",
           "title": "艺术疗愈与曼陀罗",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         }
       ]
@@ -87,25 +87,25 @@
         {
           "file": "lesson-12.md",
           "title": "第一次画曼陀罗",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         },
         {
           "file": "lesson-13.md",
           "title": "四种涂色动作",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         },
         {
           "file": "lesson-14.md",
           "title": "清理、疗愈、显化",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         },
         {
           "file": "lesson-15.md",
           "title": "综合深练",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         }
       ]
@@ -116,7 +116,7 @@
         {
           "file": "lesson-16.md",
           "title": "整理你的练习记录",
-          "access": "guest",
+          "access": "normal",
           "hidden": false
         }
       ]
