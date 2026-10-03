@@ -39,6 +39,8 @@ for (const c of cards) {
     return { bodyBottom, footTop, scroll: document.body.scrollHeight, overflow: document.body.scrollHeight > 1440 || bodyBottom > footTop - 12 };
   });
   if (m.overflow) console.warn(`  ⚠ 溢出风险 ${c.name}：scroll=${m.scroll} bodyBottom=${Math.round(m.bodyBottom)} footTop=${Math.round(m.footTop)}`);
+  const blank = m.footTop - m.bodyBottom;
+  if (!m.overflow && blank > 280) console.warn(`  ⚠ 下部留白偏大 ${c.name}：内容底部距页脚带 ${Math.round(blank)}px（>280px）；收尾卡可豁免，其余卡考虑补内容或上移 banner`);
   const out = join(outDir, c.name + ".png");
   await page.screenshot({ path: out, clip: { x: 0, y: 0, width: 1080, height: 1440 } });
   await page.close();

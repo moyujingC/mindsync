@@ -33,7 +33,7 @@ description: Generate 3:4 竖版知识卡片套图（墨予镜简报风格：浅
 4. **出文字稿给人审（必经 gate）**：`node scripts/preview_cards.mjs <cards.json> <文字稿.md>` 导出可自由编辑的 Markdown 文字稿，交给用户改；用户确认后把改动同步回 cards.json，再进下一步。未经确认不渲染。
 5. **渲染**：`node scripts/render_cards.mjs cards.json <out目录>`（依赖 skill 内 node_modules 的 playwright，Chromium 用系统缓存）。
 6. **出双主题**（可选）：浅色定稿后，复制 cards.json 改每张 `"theme": "theme-dark"`，渲到 `<out目录>-dark` 并列存放（浅色给企业/决策者向，深色给 Builder/从业者向）。
-7. **QA**：逐张跑 references/qa-checklist.md，不合格改 JSON 重渲。
+7. **QA**：逐张跑 references/qa-checklist.md，不合格改 JSON 重渲。脚本告警（溢出/下部留白）只是初筛；交付前必须目检 PNG——缩略拼图看整体 + 封面与版式特殊卡单张放大看和谐度，未目检不得交付。
 8. **交付**：路径清单 + 缩略拼图（可选）。
 
 ## 禁忌
