@@ -19,7 +19,7 @@
 
 收束成一套长期可维护的系统。
 
-截至 `2026-06-01`，`MindSync` 已将 `Paperclip` 推荐目标版本提升到 `v2026.529.0`。
+截至 `2026-08-24`，`MindSync` 已将 `Paperclip` 推荐目标版本提升到 `v2026.817.0`。
 因此当前默认边界也同步调整为：
 
 - `Paperclip` 原生优先负责：
@@ -144,7 +144,7 @@
 - 正常推进中的执行任务
 - 已长时间无活动的“假进行中”任务
 
-升级到 `v2026.529.0` 后，这类“卡住 / 假进行中”识别应优先利用原生 productivity review 与 liveness recovery，再由本地审计补业务解释。
+升级到 `v2026.817.0` 后，这类“卡住 / 假进行中”识别应优先利用原生 productivity review 与 liveness recovery，再由本地审计补业务解释。
 
 ### 5.3 `in_review`
 
@@ -257,7 +257,7 @@
 - 可直接暴露 `execution_workspace_policy_not_materialized`
 - 可直接暴露 `server_writable_execution_not_allowed`
 
-升级到 `v2026.529.0` 后，这些审计项的默认职责应改成：
+升级到 `v2026.817.0` 后，这些审计项的默认职责应改成：
 
 1. 先验证原生 workspace / finalize / dependency 行为是否兑现
 2. 再补本地执行边界、标签缺失与治理漂移解释

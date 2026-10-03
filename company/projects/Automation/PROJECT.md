@@ -35,7 +35,7 @@
 
 `Automation Platform` 更像执行底座，负责把控制面的执行语义落到真实宿主机、工作区与巡检链路上。
 
-截至 `2026-06-01`，`MindSync` 已将 `Paperclip` 推荐目标版本提升到 `v2026.529.0`。从这一版开始，默认分工也同步收口为：
+截至 `2026-08-24`，`MindSync` 已将 `Paperclip` 推荐目标版本提升到 `v2026.817.0`。从这一版开始，默认分工也同步收口为：
 
 - `Paperclip`
   - 优先负责 review / dependency（审阅 / 依赖）交互
@@ -143,10 +143,10 @@ MVP 阶段默认补充：
 
 - 版本基线与升级后最小回归检查
   - 看 [projects/aimandala/deploy/paperclip-automation/README.md](../../../projects/aimandala/deploy/paperclip-automation/README.md)
-  - 当前推荐目标版本：`v2026.529.0`
+  - 当前推荐目标版本：`v2026.817.0`
   - 当前最低安全修复线：`v2026.416.0`
-  - 当前项目已验证基线：`v2026.416.0`
-  - 升级验证任务：应以 `v2026.529.0` 为目标版本，替代旧的 `v2026.428.0` 验证计划
+  - 当前项目已验证基线：`v2026.817.0`
+  - 最近升级验证：`2026-08-24` 已完成运行时升级与最小回归
 - `codex_local` 的正式安全边界
   - 看 [company/Paperclip-Agent-模型配置总表.md](../../../company/Paperclip-Agent-模型配置总表.md)
   - 与 [company/服务器与基础设施入口.md](../../../company/服务器与基础设施入口.md) 配套阅读
