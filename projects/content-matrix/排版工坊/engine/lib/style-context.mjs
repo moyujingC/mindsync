@@ -6,16 +6,22 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const LIB = JSON.parse(readFileSync(join(ROOT, "raw/style-library.json"), "utf8"));
 const STYLES = LIB.state.styles;
-const MAX_REF_CHARS = 24000; // 参考 HTML 截断上限（含 style）
+const MAX_REF_CHARS = 40000; // 参考 HTML 截断上限（含 style）
 
 export function listStyles() {
   return STYLES.map((s) => ({ serial: s.serialNumber, name: s.name, tier: s.accessTier }));
 }
 
-export function buildStyleContext(styleName) {
+const MODE_FLAVOR = { standard: "color", lively: "lively", light: "light" };
+
+export function buildStyleContext(styleName, mode = "standard") {
   const s = STYLES.find((x) => x.name === styleName || String(x.serialNumber) === String(styleName));
   if (!s) throw new Error(`风格不存在：${styleName}（用 --list-styles 看全部）`);
-  const main = s.showcaseFiles.find((f) => /showcase-new-0/.test(f.downloadUrl) && !/灵动/.test(f.originalName))
+  // 三版本：标准版取 flavor=color（非灵动），灵动版取 flavor=lively（或文件名含灵动），轻盈版取 flavor=light
+  const want = MODE_FLAVOR[mode] || "color";
+  const main = s.showcaseFiles.find((f) => f.flavor === want)
+    || (want === "lively" ? s.showcaseFiles.find((f) => /灵动/.test(f.originalName)) : null)
+    || s.showcaseFiles.find((f) => /showcase-new-0/.test(f.downloadUrl) && !/灵动/.test(f.originalName))
     || s.showcaseFiles.find((f) => /showcase-new-0/.test(f.downloadUrl));
   const file = join(ROOT, "raw/style-assets", s.id, "assets", main.downloadUrl.split("/assets/")[1]);
   if (!existsSync(file)) throw new Error(`样章缺失：${file}`);
@@ -27,5 +33,5 @@ export function buildStyleContext(styleName) {
   const body = rootM ? rootM[1] : html;
   let ref = `<style>${css}</style>\n<div id="article-root">${body}</div>`;
   if (ref.length > MAX_REF_CHARS) ref = ref.slice(0, MAX_REF_CHARS) + "\n<!-- 参考截断 -->";
-  return { name: s.name, serial: s.serialNumber, ref, chars: ref.length };
+  return { name: s.name, serial: s.serialNumber, mode, ref, chars: ref.length };
 }
