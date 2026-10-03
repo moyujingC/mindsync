@@ -1,0 +1,10 @@
+{
+  "description": "Discover self-healing courses designed for everyday individuals, offering practical tools and techniques to manage emotional well-being through mandala art.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
