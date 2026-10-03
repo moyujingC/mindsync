@@ -77,3 +77,6 @@ projects/content-matrix/accounts/一镜一梳/图文出图/
 projects/content-matrix/accounts/墨予镜/reference-samples/*/content.html
 projects/content-matrix/accounts/墨予镜/reference-samples/*/meta.json
 
+
+# 百度网盘加密视频占位（dataless，内容仅在云端，不入库）
+*.sz
