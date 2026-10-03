@@ -83,6 +83,33 @@
     font-size: 40px; font-weight: 800; line-height: 1.5;
     padding: 34px 38px; margin-top: 48px;
   }
+  /* 7 阶梯：层级递进（序号字号+色阶双递进，1→5 由弱到强） */
+  .ladder { margin: 30px 0; }
+  .ladder-item { display: flex; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--hairline); }
+  .ladder-item:last-child { border-bottom: none; }
+  .ladder-item .no { width: 150px; flex: none; font-weight: 800; line-height: 1; letter-spacing: -2px; }
+  .ladder-item:nth-child(1) .no { font-size: 40px; color: color-mix(in srgb, var(--ink) 20%, var(--bg)); }
+  .ladder-item:nth-child(2) .no { font-size: 52px; color: color-mix(in srgb, var(--ink) 40%, var(--bg)); }
+  .ladder-item:nth-child(3) .no { font-size: 64px; color: color-mix(in srgb, var(--ink) 60%, var(--bg)); }
+  .ladder-item:nth-child(4) .no { font-size: 76px; color: color-mix(in srgb, var(--ink) 80%, var(--bg)); }
+  .ladder-item:nth-child(5) .no { font-size: 88px; color: var(--ink); }
+  .ladder-item .t { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+  .ladder-item .d { font-size: 27px; line-height: 1.5; color: var(--ink-soft); }
+  /* 8 判定条：问题 → 判定，两栏对齐 */
+  .judge { margin: 30px 0; }
+  .judge-row { display: flex; justify-content: space-between; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--hairline); }
+  .judge-row:last-child { border-bottom: none; }
+  .judge-row .q { font-size: 30px; line-height: 1.5; flex: 1; padding-right: 32px; }
+  .judge-row .v { font-size: 30px; font-weight: 800; white-space: nowrap; }
+  /* 9 大数字 callout */
+  .bignum { margin: 44px 0; }
+  .bignum .n { font-size: 150px; font-weight: 800; line-height: 1.05; letter-spacing: -3px; }
+  .bignum .n small { font-size: 56px; font-weight: 800; letter-spacing: 0; }
+  .bignum .d { font-size: 30px; line-height: 1.6; color: var(--ink-soft); margin-top: 12px; }
+  /* 10 对话体：问 / 答交替缩进 */
+  .qa { margin: 30px 0; }
+  .qa .qq { font-size: 32px; font-weight: 800; line-height: 1.5; padding: 12px 0 12px 28px; border-left: 6px solid var(--ink); }
+  .qa .aa { font-size: 30px; line-height: 1.55; color: var(--ink-soft); padding: 4px 0 30px 36px; }
   /* 页脚标语 */
   .foot {
     position: absolute; bottom: 48px; left: var(--pad-x); right: var(--pad-x);

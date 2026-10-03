@@ -20,7 +20,7 @@ description: Generate 3:4 竖版知识卡片套图（墨予镜简报风格：浅
 
 - 页眉：左 logo（墨予镜），右系列名 + 页码 `NN / N`，下压发丝线。
 - 标题：问句优先，84px/800 字重，一屏只一个标题。
-- 内容块只许用模板定义的 6 类组件：`.lead` / `.kicker`+`.kicker-text` / `.num-item` / `.group-label`+`ul.blist` / `.banner` / `.lead-sm`。
+- 内容块只许用模板定义的组件（现 10 类，详见 references/style-system.md）：`.lead` / `.lead-sm` / `.kicker`+`.kicker-text` / `.num-item` / `.group-label`+`ul.blist` / `.banner` / `.ladder` / `.judge` / `.bignum` / `.qa`。
 - 每张最多一个 `.banner`（黑底白字金句，浅色主题）或反色横幅（深色主题）。
 - 右侧巨型水印页码（420px，同色系极浅）是必须项，不得删除。
 - 深色主题用于 Builder/从业者向内容，浅色用于企业/决策者向；一套卡组统一一个主题，封面可例外。
@@ -28,7 +28,7 @@ description: Generate 3:4 竖版知识卡片套图（墨予镜简报风格：浅
 ## 工作流
 
 1. ** intake**：拿到成稿/大纲，先定卡组叙事线：封面宣言 → 逐问逐答（每张一个问题）→ 收尾金句。
-2. **分块**：把内容映射成卡片。每张卡一个核心问题或一个论点；超出的内容移到下一张，禁止塞满。
+2. **分块**：先定信息结构（并列/递进/对比/判定/数字/对话/单观点），按 references/layout-recipes.md 映射表选版式；再把内容映射成卡片。每张卡一个核心问题或一个论点；超出的内容移到下一张，禁止塞满；禁止无差别套 R1。
 3. **生成 cards.json**：优先用规划器 `node scripts/plan_cards.mjs <成稿.md> --out <任务目录>/cards.json [--theme theme-light] [--max-cards 8]`（LLM 拆稿，key 读排版工坊 engine/.env）；有特殊拆法需求时手写 JSON（契约见 render_cards.mjs 头注释）。content 字段只用模板定义的组件 class。
 4. **出文字稿给人审（必经 gate）**：`node scripts/preview_cards.mjs <cards.json> <文字稿.md>` 导出可自由编辑的 Markdown 文字稿，交给用户改；用户确认后把改动同步回 cards.json，再进下一步。未经确认不渲染。
 5. **渲染**：`node scripts/render_cards.mjs cards.json <out目录>`（依赖 skill 内 node_modules 的 playwright，Chromium 用系统缓存）。

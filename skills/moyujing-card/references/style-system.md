@@ -24,7 +24,7 @@
 ## 字体
 
 - 全部苹方（PingFang SC）：标题 800、正文 400/600、标签 600 加字距。
-- 字号阶梯：title-xl 150（巨型标题，仅封面宣言卡/收尾卡）/ title 104（内容卡）/ banner 40 / lead 36 / num-item t 34 / kicker-text 30 / lead-sm 30 / blist 30 / num-item d 27 / group-label 24 / kicker 22 / foot 19 / logo 34。对比原则：巨型标题与正文级差 4 倍以上，次级一律收缩，标签最小。
+- 字号阶梯：title-xl 150（巨型标题，仅封面宣言卡/收尾卡）/ title 104（内容卡）/ bignum n 150 / banner 40 / lead 36 / num-item t 34 / kicker-text 30 / lead-sm 30 / blist 30 / num-item d 27 / group-label 24 / kicker 22 / foot 19 / logo 34。对比原则：巨型标题与正文级差 4 倍以上，次级一律收缩，标签最小。
 - 数字与英文用同一字族，letter-spacing 2~4px 制造「标签感」。
 
 ## 组件（assets/template-field-card.html 已实现）
@@ -39,7 +39,11 @@
 7. `.num-item`：① 式加粗引导 + 灰色说明（时间线卡用）
 8. `.group-label` + `ul.blist`：分组标题 + ‣ 子弹列表（项间发丝线）
 9. `.banner`：金句横幅，38px/800，padding 34×38，上边距 48
-10. `.foot`：页脚标语左右分列，19px/字距 3
+10. `.ladder`：阶梯（层级递进）——左序号 40→88px 字号与色阶双递进（color-mix 向 --bg 收敛，双主题自动成立），右 t 32/800 + d 27 灰；项间发丝线；限 5 阶
+11. `.judge`：判定条（问题→结论两栏）——q 30px 弹性栏 + v 30/800 不折行右栏，项间发丝线
+12. `.bignum`：大数字 callout——n 150/800（单位小字 56）+ d 30 灰注解；一卡 1~2 个
+13. `.qa`：对话体——qq 32/800 左侧 6px 实色竖条，aa 30 灰缩进答句；问答对交替
+14. `.foot`：页脚标语左右分列，19px/字距 3
 
 ## 叙事节奏
 
