@@ -7,6 +7,7 @@ services:
         USER_UID: "${USER_UID:-1000}"
         USER_GID: "${USER_GID:-1000}"
         HERMES_GIT_REF: "${HERMES_GIT_REF:-v2026.4.13}"
+        HERMES_INSTALL_MODE: "${HERMES_INSTALL_MODE:-download}"
         HTTP_PROXY: "${HTTP_PROXY:-}"
         HTTPS_PROXY: "${HTTPS_PROXY:-}"
         NO_PROXY: "${NO_PROXY:-}"
@@ -44,4 +45,29 @@ services:
       - "${MINDSYNC_RUNTIME_REPO:-/opt/automation/runtime-tools/mindsync}:${MINDSYNC_RUNTIME_REPO:-/opt/automation/runtime-tools/mindsync}:ro"
       - "${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}:${PAPERCLIP_HEARTBEAT_REPO:-/opt/automation/app/mindsync-heartbeat}:ro"
       - "${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}:${PAPERCLIP_EXECUTION_WORKTREE_ROOT:-/opt/automation/worktrees}"
+      - "${HERMES_VENV_DIR:-/opt/hermes-agent/venv}:/opt/hermes:ro"
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        set -eu
+        if [ -n "$${OPENAI_BASE_URL:-}" ] && [ -n "$${OPENAI_API_KEY:-}" ]; then
+          mkdir -p /paperclip/.hermes
+          {
+            printf '%s\n' 'default_provider: main'
+            printf '%s\n' 'providers:'
+            printf '%s\n' '  main:'
+            printf '    base_url: "%s"\n' "$${OPENAI_BASE_URL}"
+            printf '    api_key: "%s"\n' "$${OPENAI_API_KEY}"
+            printf '    model: "%s"\n' "$${OPENAI_MODEL:-}"
+            printf '%s\n' 'auxiliary:'
+            printf '%s\n' '  compression:'
+            printf '%s\n' '    provider: custom'
+            printf '    base_url: "%s"\n' "$${OPENAI_BASE_URL}"
+            printf '    api_key: "%s"\n' "$${OPENAI_API_KEY}"
+            printf '    model: "%s"\n' "$${OPENAI_MODEL:-}"
+          } > /paperclip/.hermes/config.yaml
+        fi
+        exec /usr/local/bin/paperclip-entrypoint.sh node --import ./server/node_modules/tsx/dist/loader.mjs server/dist/index.js
     restart: unless-stopped

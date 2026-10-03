@@ -575,52 +575,55 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 
 这份 runbook 同时承担 `aimandala` 当前 `Paperclip` 服务端版本基线入口。
 
-截至 `2026-06-01`，当前正式治理口径固定为：
+截至 `2026-08-24`，当前正式治理口径固定为：
 
-- 当前推荐目标版本：`v2026.529.0`
+- 当前推荐目标版本：`v2026.817.0`
 - 当前最低安全修复线：`v2026.416.0`
-- 当前项目已验证基线：`v2026.416.0`
-- 当前升级状态：`待计划内验证后升级`
+- 当前项目已验证基线：`v2026.817.0`
+- 当前升级状态：`已完成计划内升级与最小回归`
 - 当前判断证据：
   - 官方 GitHub Releases
   - 官方 GitHub Security Advisories
   - 官方仓库近期高影响 merged changes（已合并改动）
-  - `2026-06-01` 周检结论
+  - `2026-08-24` 周检结论
+  - `2026-08-24` 运行时升级验证记录
 
-为什么当前推荐目标切到 `v2026.529.0`：
+为什么当前推荐目标切到 `v2026.817.0`：
 
-1. `2026-05-30` 官方发布了 `v2026.529.0`
-2. 截至 `2026-06-01`，官方没有更高 stable release（稳定正式发布版）
-3. `2026-05-25` 至 `2026-06-01` 未出现新的 security advisory（安全通告）
-4. 按当前版本判断规则，无安全紧急性时默认优先采用最新 stable release
-5. `v2026.529.0` 额外包含：
-   - inline document annotations（文档内联批注）
-   - accepted-plan exact-once decomposition（计划只分解一次）
-   - tighter workspace finalize gates（更严格的工作区收尾闸门）
-6. 上述变更直接命中 `MindSync` 当前 review、document handoff、execution workspace 与 dependency（依赖）治理主链
+1. `2026-08-18` 官方发布了 `v2026.817.0` stable release（稳定正式发布版）。
+2. 截至 `2026-08-24`，官方没有更高 stable release。
+3. `2026-08-17` 至 `2026-08-24` 未出现新的 security advisory（安全通告）。
+4. 按当前版本判断规则，无安全紧急性时默认优先采用最新 stable release。
+5. `v2026.817.0` 额外包含：
+   - release channels（发布通道）收口，Docker `latest` 现在表示 stable
+   - Decisions（一等决策流）
+   - full-fidelity company Import / Export（公司数据完整导入 / 导出）
+   - managed CLI install / update / service lifecycle（托管 CLI 安装、更新与服务生命周期）
+   - Activity / Audit 合并
+   - workspace resilience（执行工作区韧性）与 Codex adapter reliability（Codex 适配器可靠性）
+6. 上述变更直接命中 `MindSync` 当前 review、decision、document handoff、execution workspace 与运维升级主链。
 
 为什么仍保留 `v2026.416.0` 为最低安全修复线：
 
-1. `2026-04-16` 官方发布了 `v2026.416.0`
-2. 同日公开了多条安全通告
-3. 其中至少一条 critical（严重）级 execution workspace 命令注入问题明确写明修复版本为 `v2026.416.0`
-4. 当前 `aimandala` 已正式依赖 execution workspace policy、`/opt/automation/worktrees` 与 authenticated（鉴权）模式，因此不应继续停留在更低版本口径
+1. `2026-04-16` 官方发布了 `v2026.416.0`。
+2. 同日公开了多条安全通告。
+3. 其中至少一条 critical（严重）级 execution workspace 命令注入问题明确写明修复版本为 `v2026.416.0`。
+4. 当前 `aimandala` 已正式依赖 execution workspace policy、`/opt/automation/worktrees` 与 authenticated（鉴权）模式，因此不应继续停留在更低版本口径。
 
-为什么当前不直接把已验证基线改成 `v2026.529.0`：
+为什么当前已验证基线可以更新为 `v2026.817.0`：
 
-1. `v2026.529.0` 是推荐目标，不等于当前项目已完成验证
-2. 当前部署包含自定义 Dockerfile、Hermes、`pi_local` / `codex_local` / `claude_local` 运行链和本地 / 服务器分流治理
-3. 升级前必须先完成一份面向 `v2026.529.0` 的新验证计划，替代旧的 `v2026.428.0` 验证计划
+1. `2026-08-24` 已在 automation 节点完成运行时升级。
+2. 升级前已备份 Paperclip 实例配置、环境文件、当前容器 inspect、Paperclip 源码状态与 MindSync 部署 diff。
+3. 升级后已完成最小 smoke（冒烟验证）：服务进程、HTTP 入口、版本 / health、关键数据目录与容器运行状态。
+4. 更完整的业务级回归仍应在后续任务中继续覆盖 Decisions、Import / Export、artifact review、workspace materialization 与 adapter 多轮执行。
 
 当前版本判断规则：
 
-1. 若出现新的安全通告，优先采用首个已修复稳定版或更高稳定版
-2. 若无安全紧急性，默认优先采用最新正式 stable release（稳定正式发布版）
-3. 默认不把 `canary` 当长期目标版本
-4. 只有当 stable 明显不能覆盖当前已命中的关键问题时，才允许短期继续停留在更高 `canary`
-5. 若当前运行实例已经高于稳定版安全修复线，但仍是 `canary`
-   - 应优先把服务端主仓代码收正到对应 stable
-   - 而不是长期把 `canary` 当正式口径
+1. 若出现新的安全通告，优先采用首个已修复稳定版或更高稳定版。
+2. 若无安全紧急性，默认优先采用最新正式 stable release（稳定正式发布版）。
+3. 默认不把 `canary` 当长期目标版本。
+4. 只有当 stable 明显不能覆盖当前已命中的关键问题时，才允许短期继续停留在更高 `canary`。
+5. 若当前运行实例已经高于稳定版安全修复线，但仍是 `canary`，应优先把服务端主仓代码收正到对应 stable，而不是长期把 `canary` 当正式口径。
 
 升级后最小回归检查清单：
 
@@ -631,29 +634,35 @@ ssh -i /Users/xinran/.ssh/automationKey.pem -o IdentitiesOnly=yes ubuntu@150.158
 2. heartbeat 与 execution health strict gate 通过
    - 不新增 `execution_workspace_policy_not_materialized`
    - 不新增 `server_writable_execution_not_allowed`
-3. accepted plan 不重复分解子任务
-   - review / accept 后不应再次 fan-out（扇出）相同子任务
-4. blocker 未解除前，下游 issue 不提前唤醒
-   - finalize 后再触发 dependent issue wake（依赖任务唤醒）
-5. issue document 审阅能力可用
+3. Decisions 决策流可用
+   - agent 能提出 governed decision（受治理的决策）
+   - 用户能明确批准、拒绝或调整
+4. Import / Export 可用于备份迁移
+   - 至少完成一次小规模 export dry run（导出试跑）
+   - 不替代底层数据目录备份
+5. issue document 与 Markdown artifact review 可用
    - document locks、inline annotations 至少完成一轮最小验证
-6. `manual-review-required` 任务未被误送入 `server_automation`
-7. `done` 的服务器侧 issue 不再留下 dirty worktree
-8. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
-9. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
-10. 若本轮升级涉及 auth / host / port 相关修复
-   - 同步验证公网入口、Tailscale 入口、`publicBaseUrl` 与回跳行为
+   - Markdown work product 应能进入统一 document review surface
+6. accepted plan 不重复分解子任务
+   - review / accept 后不应再次 fan-out（扇出）相同子任务
+7. blocker 未解除前，下游 issue 不提前唤醒
+   - finalize 后再触发 dependent issue wake（依赖任务唤醒）
+8. `manual-review-required` 任务未被误送入 `server_automation`
+9. `done` 的服务器侧 issue 不再留下 dirty worktree
+10. `codex_local` / `claude_local` / `pi_local` 的基本唤醒、comment 回写与最小环境探测正常
+11. authenticated 模式下关键敏感接口不存在跨 company（跨公司）越权回归
+12. 若本轮升级涉及 auth / host / port 相关修复，同步验证公网入口、Tailscale 入口、`publicBaseUrl` 与回跳行为
 
 当前补充治理要求：
 
-1. 周检报告可作为版本判断证据
-2. 但项目级正式版本口径仍以本 runbook 为 deploy 入口
+1. 周检报告可作为版本判断证据。
+2. 项目级正式版本口径仍以本 runbook 为 deploy 入口。
 3. 若后续推荐目标版本变化，应同步更新：
    - 本文
    - [company/服务器与基础设施入口.md](../../../../company/服务器与基础设施入口.md)
    - [company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md](../../../../company/knowledge-base/system/Paperclip-周检机制与版本跟踪说明.md)
-4. 升级到 `v2026.529.0` 后，默认采用：
-   - `Paperclip` 原生 structured interactions、document locks、inline annotations、finalize gates 与 exact-once decomposition 作为主机制
+4. 升级到 `v2026.817.0` 后，默认采用：
+   - `Paperclip` 原生 structured interactions、document locks、inline annotations、Decisions、Import / Export、workspace resilience 与 release channels 作为主机制
    - `MindSync` 本地治理继续保留 `type:*`、`review:*`、`task_class:*`、`execution_route:*`、冻结策略与审计兜底
 
 ## 4.2 `hermes_local` 容器原生方案
