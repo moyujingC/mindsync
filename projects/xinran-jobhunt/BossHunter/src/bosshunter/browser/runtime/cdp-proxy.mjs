@@ -78,7 +78,7 @@ function checkPort(port, host = '127.0.0.1', timeoutMs = 2000) {
 
 async function getChromeVersion(port) {
   try {
-    const response = await fetch(`http://127.0.0.1:${port}/json/version`, { signal: AbortSignal.timeout(2000) });
+    const response = await fetch(`http://localhost:${port}/json/version`, { signal: AbortSignal.timeout(2000) });
     if (!response.ok) return null;
     const data = await response.json();
     if (!data.webSocketDebuggerUrl) return null;
@@ -129,7 +129,7 @@ function probeDevtoolsWsPath(port, wsPath, timeoutMs = 5000) {
     socket.once('connect', () => {
       socket.write(
         `GET ${wsPath} HTTP/1.1\r\n`
-          + `Host: 127.0.0.1:${port}\r\n`
+          + `Host: localhost:${port}\r\n`
           + 'Upgrade: websocket\r\n'
           + 'Connection: Upgrade\r\n'
           + `Sec-WebSocket-Key: ${randomBytes(16).toString('base64')}\r\n`
@@ -159,7 +159,7 @@ async function discoverChromePort() {
         // always expose /json/version, so a recorded path that actually upgrades
         // to a DevTools socket counts as proof too.
         const wsUrl = version?.webSocketDebuggerUrl
-          || (wsPath && await probeDevtoolsWsPath(port, wsPath) ? `ws://127.0.0.1:${port}${wsPath}` : null);
+          || (wsPath && await probeDevtoolsWsPath(port, wsPath) ? `ws://localhost:${port}${wsPath}` : null);
         if (!wsUrl) {
           continue;
         }
@@ -190,7 +190,7 @@ async function discoverChromePort() {
 
 function getWebSocketUrl(port, wsPath, wsUrl) {
   if (wsUrl) return wsUrl;
-  if (wsPath) return `ws://127.0.0.1:${port}${wsPath}`;
+  if (wsPath) return `ws://localhost:${port}${wsPath}`;
   return null;
 }
 
