@@ -80,3 +80,6 @@ projects/content-matrix/accounts/墨予镜/reference-samples/*/meta.json
 
 # 百度网盘加密视频占位（dataless，内容仅在云端，不入库）
 *.sz
+
+# 企业级AI编程实战营（整夹为百度网盘同步占位，不入库）
+projects/research-center/courses/2026-07-16-年企业级AI编程实战营/
