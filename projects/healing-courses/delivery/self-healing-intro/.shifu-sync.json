@@ -24,9 +24,9 @@
       "outline_bid": "5a9af7e4ec774a24bec34f7c11310788",
       "name": "你为什么来到这里",
       "parent_bid": "78295c71e04e4924abb36f05f1be9cb7",
-      "revision": null,
+      "revision": 369138,
       "is_chapter": false,
-      "content_sha256": "8bc097a64e34f356d8d601288d55fc3a1b038a75b5cea41ffb43a2a469a0f574"
+      "content_sha256": "8f0defe96a487cf3a28b88962f467ee51c9cc7c05201711ab9d045ab7808b2a5"
     },
     {
       "file": "lessons/lesson-02.md",
@@ -201,5 +201,5 @@
     }
   ],
   "last_pull_at": "2026-10-04T01:26:52Z",
-  "last_push_at": "2026-10-04T01:27:01Z"
+  "last_push_at": "2026-10-04T06:20:35Z"
 }
