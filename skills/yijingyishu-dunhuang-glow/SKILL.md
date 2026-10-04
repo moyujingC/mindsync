@@ -1,5 +1,5 @@
 ---
-name: yijinyishu-dunhuang-glow
+name: yijingyishu-dunhuang-glow
 description: Generate 一镜一梳敦煌柔光风插画（Dunhuang soft-glow illustration）——深夜蓝渐变夜空、月光漫射柔光、低饱和鎏金点缀、极简构图大留白的治愈系文生图风格，关键母题为玉梳/月牙/星河/沙漠驼队/飞天/金蝶。Use when the user asks for 敦煌风插画, 一镜一梳配图, 公众号/小绿书/小红书卡片底图, 网站 hero/空状态/封面插画, 或任何需要本风格 DNA 的 AI 生图。
 ---
 
@@ -8,7 +8,7 @@ description: Generate 一镜一梳敦煌柔光风插画（Dunhuang soft-glow ill
 只负责**生图**这一层：给定画面内容描述，产出本风格的柔光插画 PNG。
 不负责卡片排版（标题/正文/徽章由排版层后期渲染）——**图中永远不出文字**。
 
-与 `yijinyishu-watercolor-style`（水彩拼贴风）是同一产品的两条视觉线：
+与 `yijingyishu-watercolor-style`（水彩拼贴风）是同一产品的两条视觉线：
 水彩拼贴 = 纸感手绘日景；敦煌柔光 = 月光厚涂夜景。一次任务只选一条线。
 
 ## 快速上手

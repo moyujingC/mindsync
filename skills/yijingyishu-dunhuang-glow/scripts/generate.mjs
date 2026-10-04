@@ -1,5 +1,5 @@
 // 一镜一梳敦煌柔光风 · 文生图生成器（风格 prompt 单一源头）
-// 走 AITechFlux 中继的 gpt-image-2（与 yijinyishu-watercolor-style 同通道）。
+// 走 AITechFlux 中继的 gpt-image-2（与 yijingyishu-watercolor-style 同通道）。
 // key 默认读 <mindsync>/projects/content-matrix/内容视觉工坊V2/.env.local，
 // 可用环境变量 ART_ENV_PATH 指定其他 .env（需含 AITECHFLUX_API_KEY/BASE_URL/IMAGE_MODEL）。
 // 用法：node generate.mjs <prompt.md|纯文本prompt> <out.png> [portrait|landscape|square] [--bleed] [--comb]
