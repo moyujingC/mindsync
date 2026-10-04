@@ -1,9 +1,9 @@
 # 疗愈课程体系项目工作区
 
 > 状态：draft
-> 版本：0.1.1
+> 版本：0.1.2
 > owner：CEO / Orchestrator
-> last_updated：2026-10-04
+> last_updated：2026-10-05
 > source_of_truth：projects/healing-courses/PROJECT.md
 > 公司侧入口：[company/projects/疗愈课程体系/PROJECT.md](../../company/projects/疗愈课程体系/PROJECT.md)
 
@@ -28,7 +28,7 @@
 
 当前阶段为 `delivery / 运营`。
 
-首门课已完成制作并在 AI 师傅平台上线（早鸟价 ¥69，2026-10-13 起恢复 ¥99）。课程体系官网现运行于 www.jingshu.cc（2026-10-04 起由 web.jingshu.cc 切换，旧域名 301 跳转；课1官网为 /course01 子路径），courses.jingshu.cc 让位给 AI-Shifu 自部署学习端。
+首门课已完成制作并在 AI 师傅平台上线（早鸟价 ¥69，2026-10-13 起恢复 ¥99）。课程体系官网现运行于 www.jingshu.cc（2026-10-05 完成切换：web.jingshu.cc 与裸域 jingshu.cc 均 301 跳转到 www；课1官网为 /course01 子路径），courses.jingshu.cc 让位给 AI-Shifu 自部署学习端。
 
 ## 3. 目录约定
 
