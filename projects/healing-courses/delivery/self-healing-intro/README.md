@@ -5,7 +5,7 @@
 > owner：CEO / Orchestrator
 > last_updated：2026-09-29
 > source_of_truth：projects/healing-courses/delivery/self-healing-intro/README.md
-> 平台：AI 师傅（app.ai-shifu.cn），课程名《安顿内心，开启自愈之旅》（CEO 定案 2026-09-27），课程 BID 60a4b6534bc749bdaa2b298199689108
+> 平台：AI 师傅（app.ai-shifu.cn），课程名《安顿内心：自我疗愈入门》（2026-09-27 定名《安顿内心，开启自愈之旅》，2026-10-04 更名，CEO 定案），课程 BID 60a4b6534bc749bdaa2b298199689108
 
 ## 同步口径（2026-10-03 CEO 定案）
 
@@ -87,7 +87,7 @@
 1. 大纲结构（5 章 16 节 v0.2）与切分点（L04 起付费）
 2. 主讲身份名（沿用「灵犀」或另起）
 3. Listen Mode 开不开
-4. 对外课程名：《安顿内心，开启自愈之旅》（已定案， CEO 自选方案，替换候选 A-D）
+4. 对外课程名：《安顿内心：自我疗愈入门》（2026-10-04 更名：补品类词自我疗愈，情绪钩子让位封面文案，CEO 定案）
 
 ## 下一步（M2 评审通过后）
 

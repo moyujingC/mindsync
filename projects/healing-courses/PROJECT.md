@@ -15,7 +15,7 @@
 
 当前首门课程是：
 
-- `安顿内心，开启自愈之旅`（自我疗愈入门课，交付物见 `delivery/self-healing-intro/`，2026-09 已在 AI 师傅平台上线）
+- `安顿内心：自我疗愈入门`（自我疗愈入门课，交付物见 `delivery/self-healing-intro/`，2026-09 已在 AI 师傅平台上线）
 
 它面向被情绪、睡眠、压力困扰的普通人，教会在难受时安顿自己的基础练习和「状态 → 工具」自我疗愈地图。
 
@@ -48,7 +48,7 @@
 
 首门课交付物（唯一现行口径）：
 
-- [delivery/self-healing-intro/README.md](./delivery/self-healing-intro/README.md) — 《安顿内心，开启自愈之旅》5 章 16 节
+- [delivery/self-healing-intro/README.md](./delivery/self-healing-intro/README.md) — 《安顿内心：自我疗愈入门》5 章 16 节
 - 课程体系官网：<https://web.jingshu.cc>（课1官网 <https://web.jingshu.cc/course01/>，源码 `site/`）
 - AI 学习端（AI-Shifu 自部署）：<https://courses.jingshu.cc>
 

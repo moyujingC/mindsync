@@ -5,7 +5,7 @@
 > owner：CEO / Orchestrator
 > last_updated：2026-09-27
 > source_of_truth：projects/healing-courses/delivery/self-healing-intro/material-requirements.md
-> 用途：课1《安顿内心，开启自愈之旅》每节课的内容槽位与素材需求。标【CEO 生产】的条目需要馨冉亲自提供或拍板，其余由 assistant 汇编/改写/设计。
+> 用途：课1《安顿内心：自我疗愈入门》每节课的内容槽位与素材需求。标【CEO 生产】的条目需要馨冉亲自提供或拍板，其余由 assistant 汇编/改写/设计。
 
 ## 0. CEO 生产清单（汇总，按优先级）
 
