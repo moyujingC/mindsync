@@ -10,7 +10,7 @@
 ## 同步口径（2026-10-03 CEO 定案）
 
 - **默认测试目标 = AI 师傅官方平台**（app.ai-shifu.cn，BID 60a4b6534bc749bdaa2b298199689108）：每次课节打磨改完即推送，.shifu-sync.json 基线跟随本平台。
-- 自部署服务器（courses.jingshu.cc，BID 75f1a0f0354c4bf891544d426eea6fb6）只在 CEO 明确要求时同步，同步时用 SHIFU_BASE_URL=https://courses.jingshu.cc 覆盖并重新 pull 建立基线。
+- 自部署服务器（courses.jingshu.cc，BID 75f1a0f0354c4bf891544d426eea6fb6）只在 CEO 明确要求时同步，同步时用 SHIFU_BASE_URL=https://www.jingshu.cc/learn 覆盖并重新 pull 建立基线。
 - 注意：zsh 不对未加引号变量做分词，循环里传多个参数会粘成一个，update-lesson 等命令请逐条显式执行。
 
 ## 设计控制（intake 归一化结果）

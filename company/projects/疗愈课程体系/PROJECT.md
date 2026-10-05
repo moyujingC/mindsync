@@ -98,7 +98,7 @@
 
 - [projects/healing-courses/PROJECT.md](../../../projects/healing-courses/PROJECT.md)
 
-首门课《安顿内心，开启自愈之旅》已上线（AI 师傅平台 + 官网 courses.jingshu.cc），交付物见 [delivery/self-healing-intro](../../../projects/healing-courses/delivery/self-healing-intro/README.md)。
+首门课《安顿内心，开启自愈之旅》已上线（AI 师傅平台 + 官网 www.jingshu.cc/learn（原 courses.jingshu.cc 已 301）），交付物见 [delivery/self-healing-intro](../../../projects/healing-courses/delivery/self-healing-intro/README.md)。
 
 课程体系与定价（现行真相源）：
 

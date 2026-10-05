@@ -28,7 +28,7 @@
 
 当前阶段为 `delivery / 运营`。
 
-首门课已完成制作并在 AI 师傅平台上线（早鸟价 ¥69，2026-10-13 起恢复 ¥99）。课程体系官网现运行于 www.jingshu.cc（2026-10-05 完成切换：web.jingshu.cc 与裸域 jingshu.cc 均 301 跳转到 www；课1官网为 /course01 子路径），courses.jingshu.cc 让位给 AI-Shifu 自部署学习端。
+首门课已完成制作并在 AI 师傅平台上线（早鸟价 ¥69，2026-10-13 起恢复 ¥99）。课程体系官网现运行于 www.jingshu.cc（2026-10-05 完成切换：web.jingshu.cc 与裸域 jingshu.cc 均 301 跳转到 www；课1官网为 /course01 子路径），courses.jingshu.cc 原学习端已于 2026-10-06 并入 www.jingshu.cc/learn（旧域 301）。
 
 ## 3. 目录约定
 
@@ -50,7 +50,7 @@
 
 - [delivery/self-healing-intro/README.md](./delivery/self-healing-intro/README.md) — 《安顿内心：自我疗愈入门》5 章 16 节
 - 课程体系官网：<https://www.jingshu.cc>（课1官网 <https://www.jingshu.cc/course01/>，源码 `site/`）
-- AI 学习端（AI-Shifu 自部署）：<https://courses.jingshu.cc>
+- AI 学习端（AI-Shifu 自部署）：<https://www.jingshu.cc/learn>（2026-10-06 起；courses.jingshu.cc 301 跳转）
 
 课2 生产输入：
 
