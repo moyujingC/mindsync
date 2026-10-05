@@ -51,7 +51,7 @@
           <span class="price-num"><small>¥</small>69</span>
           <div><span class="early-pill">早鸟价</span><p>10 月 13 日起恢复 ¥99</p></div>
         </div>
-        <button class="button primary detail-full-button" data-open-trial>免费体验前 3 节 <span aria-hidden="true">→</span></button>
+        <a class="button primary detail-full-button" href="https://courses.jingshu.cc/c/75f1a0f0354c4bf891544d426eea6fb6" target="_blank" rel="noopener">免费体验前 3 节 <span aria-hidden="true">→</span></a>
         <p class="detail-free-note">不需要先付费，走完前三节再决定</p>
       </div>
       <div class="art-slot art-slot--dark detail-art" role="img" aria-label="插画位：cover-self-v4.png" style="--ratio: 4 / 3"><span>插画位 · cover-self-v4.png</span></div>
@@ -199,7 +199,7 @@
         <span class="price-num"><small>¥</small>69</span>
         <div><span class="early-pill">早鸟价</span><p>10 月 13 日起恢复 ¥99</p></div>
       </div>
-      <button class="button primary" data-open-trial>免费体验前 3 节 <span aria-hidden="true">→</span></button>
+      <a class="button primary" href="https://courses.jingshu.cc/c/75f1a0f0354c4bf891544d426eea6fb6" target="_blank" rel="noopener">免费体验前 3 节 <span aria-hidden="true">→</span></a>
       <div class="pill-row"><span>16 节课</span><span>前 3 节免费</span><span>按自己节奏走</span></div>
     </aside>
   </div>
@@ -255,7 +255,7 @@
     <div class="split-copy">
       <div class="eyebrow"><span>BEGIN</span><i aria-hidden="true"></i><span>开始</span></div>
       <h2 class="t-h2">你的画里，有你还没说出口的话。</h2>
-      <button class="button primary" data-open-trial>免费体验前 3 节 <span aria-hidden="true">→</span></button>
+      <a class="button primary" href="https://courses.jingshu.cc/c/75f1a0f0354c4bf891544d426eea6fb6" target="_blank" rel="noopener">免费体验前 3 节 <span aria-hidden="true">→</span></a>
       <div class="detail-cta-signature">一镜一梳 · 照见即疗愈</div>
     </div>
   </div>
@@ -264,30 +264,14 @@
 <!-- 移动端吸底 -->
 <aside class="detail-sticky" id="detail-sticky" aria-label="开始体验课程">
   <span><strong>早鸟 ¥69</strong><span class="sticky-divider"> · </span><small>前 3 节免费</small></span>
-  <button class="button primary" data-open-trial>开始体验</button>
+  <a class="button primary" href="https://courses.jingshu.cc/c/75f1a0f0354c4bf891544d426eea6fb6" target="_blank" rel="noopener">开始体验</a>
 </aside>
 
-<dialog class="trial-dialog" id="trial-dialog">
-  <button class="dialog-close" aria-label="关闭" data-close-trial>×</button>
-  <div class="eyebrow"><span>TRIAL</span><i aria-hidden="true"></i><span>自我疗愈入门课</span></div>
-  <h2 class="t-h3">免费体验前 3 节</h2>
-  <p>不需要先付费，走完前三节再决定。</p>
-  <a class="button primary" href="https://courses.jingshu.cc/c/75f1a0f0354c4bf891544d426eea6fb6" target="_blank" rel="noopener">免费体验前 3 节 <span aria-hidden="true">→</span></a>
-  <button class="button secondary" data-close-trial style="margin-top:12px">返回课程详情</button>
-</dialog>
+
+
 
 <script>
 (function () {
-  var dialog = document.getElementById('trial-dialog');
-  document.querySelectorAll('[data-open-trial]').forEach(function (btn) {
-    btn.addEventListener('click', function () { dialog.showModal(); });
-  });
-  document.querySelectorAll('[data-close-trial]').forEach(function (btn) {
-    btn.addEventListener('click', function () { dialog.close(); });
-  });
-  dialog.addEventListener('click', function (event) {
-    if (event.target === dialog) dialog.close();
-  });
   // 头图滚出视口后，移动端显示吸底栏
   var intro = document.getElementById('detail-intro');
   var sticky = document.getElementById('detail-sticky');

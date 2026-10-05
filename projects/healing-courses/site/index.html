@@ -68,7 +68,7 @@
               <div><span class="early-pill">早鸟价</span><p>10 月 13 日起恢复 ¥99</p></div>
             </div>
             <div class="course-actions">
-              <button class="button primary" data-open-trial>免费体验前 3 节 <span aria-hidden="true">↗</span></button>
+              <a class="button primary" href="https://courses.jingshu.cc/c/75f1a0f0354c4bf891544d426eea6fb6" target="_blank" rel="noopener">免费体验前 3 节 <span aria-hidden="true">↗</span></a>
               <a class="button secondary" href="./course01/">查看课程详情 →</a>
             </div>
           </div>
@@ -191,29 +191,7 @@
   </div>
 </footer>
 
-<dialog class="trial-dialog" id="trial-dialog">
-  <button class="dialog-close" aria-label="关闭" data-close-trial>×</button>
-  <div class="eyebrow"><span>TRIAL</span><i aria-hidden="true"></i><span>先体验，再决定</span></div>
-  <h2 class="t-h3">免费体验前 3 节</h2>
-  <p>不用会画画，不需要心理学背景。合不合适，你的身体会知道。</p>
-  <a class="button primary" href="https://courses.jingshu.cc/c/75f1a0f0354c4bf891544d426eea6fb6" target="_blank" rel="noopener">免费体验前 3 节 <span aria-hidden="true">→</span></a>
-  <button class="button secondary" data-close-trial style="margin-top:12px">回到课程首页</button>
-</dialog>
 
-<script>
-(function () {
-  var dialog = document.getElementById('trial-dialog');
-  document.querySelectorAll('[data-open-trial]').forEach(function (btn) {
-    btn.addEventListener('click', function () { dialog.showModal(); });
-  });
-  document.querySelectorAll('[data-close-trial]').forEach(function (btn) {
-    btn.addEventListener('click', function () { dialog.close(); });
-  });
-  dialog.addEventListener('click', function (event) {
-    if (event.target === dialog) dialog.close();
-  });
-})();
-</script>
 
 </body>
 </html>
