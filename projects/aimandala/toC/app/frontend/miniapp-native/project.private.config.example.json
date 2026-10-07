@@ -1,8 +1,0 @@
-{
-  "appid": "wx__replace_with_gray_appid__",
-  "projectname": "aimandala-miniapp-native-gray",
-  "setting": {
-    "compileHotReLoad": true,
-    "urlCheck": false
-  }
-}
