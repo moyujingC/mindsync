@@ -1,0 +1,101 @@
+[
+  {
+    "name": "01-FDE是不是外包换名字",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "01 / 09",
+    "index": "01",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title-xl'>FDE 是不是<br>外包换名字？</h1><p class='lead'>别纠结名字，看需求。</p><ul class='blist'><li>外包：确定性的一次性需求</li><li>咨询：认知和判断的需求</li><li>实施：把成熟产品用起来</li><li>售前：帮我把东西卖出去</li></ul><p class='lead-sm'>换个角度看：企业有哪几种需求，每种匹配什么模式，FDE 对应的新需求长什么样。</p>"
+  },
+  {
+    "name": "02-外包和咨询匹配什么需求",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "02 / 09",
+    "index": "02",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title'>外包和咨询<br>各自匹配什么需求</h1><p class='lead'>每个模式能活下来，都不是靠忽悠，而是真的解决了一类问题。</p><div class='kicker'>OUTSOURCING · 外包</div><p class='kicker-text'>匹配「确定性的一次性需求」：官网、小程序、数据迁移，做完就完事；按项目结算，帮你省掉长期养人的成本。</p><div class='kicker'>CONSULTING · 咨询</div><p class='kicker-text'>匹配「认知和判断的需求」：进新市场、做转型，没有标准答案；卖的是方案、建议和经验判断力。</p><div class='banner'>模式没有高低贵贱，只有需求匹配不匹配。</div>"
+  },
+  {
+    "name": "03-实施和售前匹配什么需求",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "03 / 09",
+    "index": "03",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title'>实施和售前<br>又在匹配什么</h1><p class='lead'>一个在产品下游，一个在销售环节，各就各位跑了几十年。</p><div class='kicker'>IMPLEMENTATION · 实施</div><p class='kicker-text'>匹配「把产品用起来的需求」：产品已定型，帮你接系统、配流程、教用户，让它在你公司真正跑起来。</p><div class='kicker'>PRE-SALES · 售前</div><p class='kicker-text'>匹配「帮我把东西卖出去的需求」：配合销售讲清复杂方案，考核指标是签单，立场决定动作。</p><div class='banner'>实施对「跑起来」负责，售前对「签单」负责。</div>"
+  },
+  {
+    "name": "04-特点一需求是模糊的",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "04 / 09",
+    "index": "04",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title'>特点一：需求<br>一开始就是模糊的</h1><p class='lead'>客户只会说一句「我也想用 AI」，连自己要解决什么问题都不知道。</p><ul class='blist'><li>连要做什么都不知道，外包没法报价、没法开工</li><li>得有人蹲到现场，看人家怎么干活、跟业务的人聊</li><li>第一步不是写代码做方案，是把真问题一点点挖出来</li></ul><div class='banner'>找问题，是这类项目的第一步。</div>"
+  },
+  {
+    "name": "05-特点二对业务结果负责",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "05 / 09",
+    "index": "05",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title'>特点二：代码写完<br>不等于干完</h1><p class='lead'>客户要的不是方案和代码，是真的降本、真的增效、真的被业务用起来。</p><ul class='blist'><li>没用起来、没产生效果，就等于活没干完</li><li>既要跟老板聊战略，也要蹲下来写代码</li><li>找问题、做方案、写代码、上线、教用户用，一竿子插到底</li></ul><div class='banner'>对工时负责是老模式，对业务结果负责才是新需求。</div>"
+  },
+  {
+    "name": "06-特点三经验能沉淀带走",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "06 / 09",
+    "index": "06",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title'>特点三：经验<br>得能沉淀带走</h1><p class='lead'>经验带不走，干十个客户还是十份体力活——本质还是高级外包。</p><ul class='blist'><li>踩过的坑、验证过的场景，做成提示词模板和工作流</li><li>下一个客户不用从零开始，改一改、配一配就能用</li><li>以前沉淀靠文档和培训，现在直接变成 AI 能力的一部分</li></ul><div class='banner'>以前不是不想沉淀，是成本太高；AI 把成本打下来了。</div>"
+  },
+  {
+    "name": "07-三个并且叠加出空档",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "07 / 09",
+    "index": "07",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title'>三个「并且」叠加<br>老模式全接不住</h1><p class='lead'>不是「或者」，是「并且」——模糊、扛结果、可沉淀，三个同时满足。</p><div class='group-label'>四种老模式各自缺什么</div><ul class='blist'><li>外包：需求一模糊，就没法报价开工</li><li>咨询：出完方案就走，不对结果负责</li><li>实施：没有成熟产品，有劲没处使</li><li>售前：只负责签单，不定义需求也不沉淀</li></ul><div class='banner'>老模式里没有一个角色：既能找问题、又能做出来、还能带走经验。</div>"
+  },
+  {
+    "name": "08-需求三问",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "08 / 09",
+    "index": "08",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title'>判断一个项目<br>是不是新需求？问三问</h1><p class='lead-sm'>别纠结它叫不叫 FDE，用三个问题测需求本身。</p><div class='judge'><div class='row'><div class='q'>需求一开始是明确的，还是模糊的？</div><div class='v'>模糊，才算</div></div><div class='row'><div class='q'>对交付物负责，还是对业务结果负责？</div><div class='v'>结果，才算</div></div><div class='row'><div class='q'>做完一个，经验能沉淀到下一个吗？</div><div class='v'>能，才算</div></div><div class='row'><div class='q'>三条全中呢？</div><div class='v'>就是新需求</div></div></div><div class='banner'>只满足一两个，大概率是老模式换了个包装。</div>"
+  },
+  {
+    "name": "09-叫什么真的不重要",
+    "theme": "theme-light",
+    "logo": "墨予镜",
+    "series": "深入浅出聊FDE",
+    "page": "09 / 09",
+    "index": "09",
+    "foot_l": "墨予镜 · 企业 AI 落地",
+    "foot_r": "现场 / 工程 / 结果 / 沉淀",
+    "content": "<h1 class='title-xl'>叫什么<br>真的不重要</h1><div class='banner'>重要的是你能识别这类新需求，并用合适的方式接住它。</div>"
+  }
+]
